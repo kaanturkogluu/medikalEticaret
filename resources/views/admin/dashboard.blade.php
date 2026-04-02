@@ -24,9 +24,9 @@
         <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-between hover:shadow-md transition-shadow relative overflow-hidden group">
             <div class="z-10">
                 <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Toplam Ürün</p>
-                <h3 class="text-3xl font-extrabold text-slate-900 tabular-nums tracking-tight tracking-tight tracking-tight">2,543</h3>
+                <h3 class="text-3xl font-extrabold text-slate-900 tabular-nums tracking-tight">{{ number_format($stats['total_products']) }}</h3>
                 <p class="text-xs text-brand-500 mt-3 font-semibold flex items-center gap-1">
-                    <i class="fas fa-box"></i> Veritabanındaki ürünler
+                    <i class="fas fa-box"></i> Stoktaki Ürünler
                 </p>
             </div>
             <div class="absolute -right-4 -bottom-4 h-24 w-24 bg-brand-50 rounded-full flex items-center justify-center transition-transform group-hover:scale-110">
@@ -37,38 +37,38 @@
         <!-- Card 2 -->
         <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-between hover:shadow-md transition-shadow relative overflow-hidden group">
             <div class="z-10">
-                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Senkronize Ürün</p>
-                <h3 class="text-3xl font-extrabold text-slate-900 tabular-nums">2,481</h3>
+                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Aktif Kanallar</p>
+                <h3 class="text-3xl font-extrabold text-slate-900 tabular-nums">{{ $stats['active_channels'] }}</h3>
                 <p class="text-xs text-emerald-500 mt-3 font-semibold flex items-center gap-1">
-                    <i class="fas fa-check-circle"></i> %97.5 Başarı Oranı
+                    <i class="fas fa-check-circle"></i> Bağlı Entegrasyonlar
                 </p>
             </div>
             <div class="absolute -right-4 -bottom-4 h-24 w-24 bg-emerald-50 rounded-full flex items-center justify-center transition-transform group-hover:scale-110">
-                <i class="fas fa-check-double text-emerald-200 text-4xl"></i>
+                <i class="fas fa-link text-emerald-200 text-4xl"></i>
             </div>
         </div>
 
         <!-- Card 3 -->
         <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-between hover:shadow-md transition-shadow relative overflow-hidden group border-l-4 border-l-amber-500">
             <div class="z-10">
-                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Bekleyen Kuyruk</p>
-                <h3 class="text-3xl font-extrabold text-slate-900 tabular-nums">42</h3>
+                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Toplam Sipariş</p>
+                <h3 class="text-3xl font-extrabold text-slate-900 tabular-nums">{{ number_format($stats['total_orders']) }}</h3>
                 <p class="text-xs text-amber-500 mt-3 font-semibold flex items-center gap-1">
-                    <i class="fas fa-history"></i> İşlenmeyi bekliyor
+                    <i class="fas fa-history"></i> Tüm siparişler
                 </p>
             </div>
             <div class="absolute -right-4 -bottom-4 h-24 w-24 bg-amber-50 rounded-full flex items-center justify-center transition-transform group-hover:scale-110">
-                <i class="fas fa-hourglass-half text-amber-200 text-4xl"></i>
+                <i class="fas fa-shopping-cart text-amber-200 text-4xl"></i>
             </div>
         </div>
 
         <!-- Card 4 -->
         <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-between hover:shadow-md transition-shadow relative overflow-hidden group border-l-4 border-l-red-500">
             <div class="z-10">
-                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Hatalı Joblar</p>
-                <h3 class="text-3xl font-extrabold text-slate-900 tabular-nums">12</h3>
+                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Hata Kayıtları</p>
+                <h3 class="text-3xl font-extrabold text-slate-900 tabular-nums">0</h3>
                 <p class="text-xs text-red-500 mt-3 font-semibold flex items-center gap-1">
-                    <i class="fas fa-exclamation-triangle"></i> Acil müdahale gerekir
+                    <i class="fas fa-exclamation-triangle"></i> Kritik hatalar
                 </p>
             </div>
             <div class="absolute -right-4 -bottom-4 h-24 w-24 bg-red-50 rounded-full flex items-center justify-center transition-transform group-hover:scale-110">
@@ -77,16 +77,16 @@
         </div>
 
         <!-- Card 5 -->
-        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-between hover:shadow-md transition-shadow relative overflow-hidden group border-l-4 border-l-brand-600 bg-brand-600 !text-white">
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-between hover:shadow-md transition-shadow relative overflow-hidden group border-l-4 border-l-brand-600 bg-brand-600 !text-white shadow-xl shadow-brand-500/20">
             <div class="z-10">
-                <p class="text-[10px] font-bold text-brand-200 uppercase tracking-widest mb-1">Günlük Sipariş</p>
-                <h3 class="text-3xl font-extrabold text-white tabular-nums">1,120₺</h3>
+                <p class="text-[10px] font-bold text-brand-200 uppercase tracking-widest mb-1">Ciro</p>
+                <h3 class="text-3xl font-extrabold text-white tabular-nums">{{ number_format($stats['total_sales'], 2) }} ₺</h3>
                 <p class="text-xs text-brand-100 mt-3 font-semibold flex items-center gap-1">
-                    <i class="fas fa-shopping-cart"></i> Bugün gelen siparişler
+                    <i class="fas fa-coins"></i> Toplam Satış Hacmi
                 </p>
             </div>
             <div class="absolute -right-4 -bottom-4 h-24 w-24 bg-brand-500/50 rounded-full flex items-center justify-center transition-transform group-hover:scale-110">
-                <i class="fas fa-shopping-bag text-brand-400 text-4xl"></i>
+                <i class="fas fa-wallet text-brand-400 text-4xl"></i>
             </div>
         </div>
     </div>
@@ -147,32 +147,44 @@
         </div>
     </div>
 
-    <!-- Recent Logs / Debug Quick View -->
+    <!-- Recent Orders -->
     <div class="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm">
         <div class="flex items-center justify-between mb-6">
             <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
-                <i class="fas fa-terminal text-brand-600"></i> Son Sistem Logları
+                <i class="fas fa-shopping-cart text-brand-600"></i> Son Siparişler
             </h3>
-            <a href="/admin/logs" class="text-brand-500 text-xs font-bold hover:underline tracking-tight">Tümünü İncele</a>
+            <a href="{{ route('admin.orders') }}" class="text-brand-500 text-xs font-bold hover:underline tracking-tight">Tüm Siparişler</a>
         </div>
-        <div class="space-y-3">
-            <template x-for="i in 3" :key="i">
-                <div class="flex items-center gap-4 p-4 bg-slate-50 rounded-xl border border-slate-100 hover:border-brand-300 transition-all cursor-pointer group">
-                    <div class="h-10 w-10 flex items-center justify-center rounded-lg bg-emerald-100 text-emerald-600 group-hover:bg-emerald-500 group-hover:text-white transition-colors">
-                        <i class="fas fa-check-circle"></i>
-                    </div>
-                    <div class="flex-1">
-                        <div class="flex items-center gap-2 mb-1">
-                            <span class="text-xs font-bold text-slate-800 tracking-tight">Trendyol Stock Update Success</span>
-                            <span class="text-[10px] px-2 py-0.5 bg-slate-200 text-slate-600 rounded-full font-bold uppercase tracking-wider">SKU: TR-99AD</span>
-                        </div>
-                        <p class="text-[11px] text-slate-500 font-medium">Update stock to 45 for provider Trendyol at 15:42:01</p>
-                    </div>
-                    <div class="text-right">
-                        <p class="text-[10px] font-bold text-slate-400">2 dk önce</p>
-                    </div>
-                </div>
-            </template>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left">
+                <thead>
+                    <tr class="text-[10px] font-bold text-slate-400 uppercase tracking-widest border-b border-slate-50">
+                        <th class="pb-3 px-2">Sipariş No</th>
+                        <th class="pb-3 px-2">Pazaryeri</th>
+                        <th class="pb-3 px-2">Müşteri</th>
+                        <th class="pb-3 px-2 text-right">Tutar</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-50">
+                    @foreach($recentOrders as $ro)
+                        <tr class="group hover:bg-slate-50 transition-colors">
+                            <td class="py-4 px-2">
+                                <span class="text-xs font-bold text-slate-800">#{{ $ro->external_order_id }}</span>
+                            </td>
+                            <td class="py-4 px-2">
+                                <span class="px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 text-[9px] font-bold uppercase">{{ $ro->channel->name }}</span>
+                            </td>
+                            <td class="py-4 px-2 text-xs text-slate-600 font-medium">{{ $ro->customer_name }}</td>
+                            <td class="py-4 px-2 text-xs font-black text-slate-900 text-right tabular-nums">{{ number_format($ro->total_price, 2) }} ₺</td>
+                        </tr>
+                    @endforeach
+                    @if($recentOrders->isEmpty())
+                        <tr>
+                            <td colspan="4" class="py-8 text-center text-xs text-slate-400 italic">Henüz sipariş bulunmuyor.</td>
+                        </tr>
+                    @endif
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
