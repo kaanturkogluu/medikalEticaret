@@ -7,6 +7,7 @@ use App\Models\Channel;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -21,20 +22,54 @@ class OrderService
     {
         Channel::where('active', true)->each(function (Channel $channel) {
             $this->fetchChannelOrders($channel);
+            // Her kanal sonrası 1 saniye mola (Spam önleme)
+            usleep(1000000);
         });
     }
 
     public function fetchChannelOrders(Channel $channel): void
     {
-        try {
-            $adapter = $this->manager->getAdapter($channel);
-            $externalOrders = $adapter->fetchOrders();
+        $lockKey = "sync_orders_{$channel->slug}";
+        
+        // Eğer zaten bir senkronizasyon çalışıyorsa (Son 10 dk içinde başladıysa) durdur (Spam kilidi)
+        if (Cache::has($lockKey)) {
+            Log::warning("SYNC [ORDER] [ABORT] Zaten aktif veya yeni bir senkronizasyon yapıldı: {$channel->slug}");
+            return;
+        }
 
-            foreach ($externalOrders as $orderData) {
-                $this->processOrder($channel, $orderData);
-            }
+        try {
+            // Kilidi 10 dakika boyunca tut (Butona ard arda basılsa bile API yorulmaz)
+            Cache::put($lockKey, true, now()->addMinutes(10));
+
+            $adapter = $this->manager->getAdapter($channel);
+            $page = 0;
+            $size = 50;
+            $total = 0;
+            $maxPages = 50; // Güvenlik kilidi
+
+            do {
+                $externalOrders = $adapter->fetchOrders($page, $size);
+                
+                if ($externalOrders->isEmpty()) break;
+
+                foreach ($externalOrders as $orderData) {
+                    $this->processOrder($channel, $orderData);
+                    $total++;
+                }
+
+                $page++;
+                
+                // --- RATE LIMIT GÜVENLİĞİ ---
+                usleep(500000); // 0.5 saniye mola
+
+                if ($page >= $maxPages) break;
+
+            } while ($externalOrders->count() === $size);
+
+            Log::info("SYNC [ORDER] [TAMAM] Kanal [{$channel->slug}], Toplam: {$total}");
 
         } catch (\Exception $e) {
+            Cache::forget($lockKey); // Hata durumunda kilidi aç ki tekrar denenebilsin
             Log::error("Failed to fetch orders for channel: {$channel->slug}: " . $e->getMessage());
         }
     }

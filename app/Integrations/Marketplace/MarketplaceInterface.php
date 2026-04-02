@@ -35,10 +35,21 @@ interface MarketplaceInterface
     /**
      * Fetch new orders from the marketplace.
      * 
-     * @param int $page Optional page number for pagination
+     * @param int $page Optional page number
+     * @param int $size Items per page
      * @return Collection Collection of Order data arrays
      */
-    public function fetchOrders(int $page = 0): Collection;
+    public function fetchOrders(int $page = 0, int $size = 50): Collection;
+
+    /**
+     * Fetch products from the marketplace.
+     * 
+     * @param int $page Page number
+     * @param int $size Items per page
+     * @param bool $approved Filter by approved status
+     * @return Collection Collection of Product data arrays
+     */
+    public function fetchProducts(int $page = 0, int $size = 50, bool $approved = true): Collection;
 
     /**
      * Get marketplace identifier slug (trendyol, hepsiburada, etc.)

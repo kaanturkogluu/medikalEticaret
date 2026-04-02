@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Log;
 class TrendyolAdapter implements MarketplaceInterface
 {
     protected array $config;
-    protected string $baseUrl = 'https://api.trendyol.com/sapigw';
+    protected string $baseUrl = 'https://api.trendyol.com/sapigw/suppliers';
 
     public function setConfig(array $config): self
     {
@@ -21,20 +21,22 @@ class TrendyolAdapter implements MarketplaceInterface
 
     /**
      * Common request helper to handle auth, user-agent and logging.
+     * Incorporates rate-limiting protection and standard headers.
      */
     protected function request(string $method, string $endpoint, array $data = []): Response
     {
         $supplierId = $this->config['supplier_id'];
-        $url = "{$this->baseUrl}/suppliers/{$supplierId}/{$endpoint}";
+        $url = "{$this->baseUrl}/{$supplierId}/{$endpoint}";
         
-        $userAgent = "{$supplierId} - AntigravitySelfIntegrated";
+        $userAgent = "{$supplierId} - SelfIntegration";
 
         $request = Http::withBasicAuth($this->config['api_key'], $this->config['api_secret'])
-            ->withHeaders(['User-Agent' => $userAgent])
+            ->withHeaders([
+                'User-Agent' => $userAgent,
+                'Accept' => 'application/json'
+            ])
             ->timeout(30)
-            ->retry(3, 100);
-
-        Log::info("Trendyol API Request: {$method} {$url}", ['data' => $data]);
+            ->retry(3, 1000); // Retry with 1s delay
 
         $response = match (strtolower($method)) {
             'post' => $request->post($url, $data),
@@ -44,13 +46,7 @@ class TrendyolAdapter implements MarketplaceInterface
         };
 
         if (!$response->successful()) {
-            Log::error("Trendyol API Error: {$response->status()}", [
-                'endpoint' => $endpoint,
-                'body' => $response->body(),
-                'payload' => $data
-            ]);
-        } else {
-            Log::debug("Trendyol API Response: {$response->status()}", ['body' => $response->json()]);
+            Log::error("Trendyol API Error [{$url}]: " . $response->body());
         }
 
         return $response;
@@ -63,21 +59,21 @@ class TrendyolAdapter implements MarketplaceInterface
                 [
                     'barcode' => $channelProduct->product->sku,
                     'title' => $channelProduct->product->name,
-                    'productMainId' => $channelProduct->product->sku, // Often same as SKU
+                    'productMainId' => $channelProduct->product->sku,
                     'brandId' => (int) $this->getMarketplaceBrandId($channelProduct->product->brand_id),
                     'categoryId' => (int) $this->getMarketplaceCategoryId($channelProduct->product->category_id),
                     'quantity' => $channelProduct->stock ?? $channelProduct->product->stock,
                     'stockCode' => $channelProduct->product->sku,
-                    'dimensionalWeight' => 1, // Default or map from DB
+                    'dimensionalWeight' => 1,
                     'description' => $channelProduct->product->description ?? $channelProduct->product->name,
                     'currencyType' => 'TRY',
                     'listPrice' => (double) ($channelProduct->price ?? $channelProduct->product->price),
                     'salePrice' => (double) ($channelProduct->price ?? $channelProduct->product->price),
-                    'cargoCompanyId' => 1, // Map from config/DB
+                    'cargoCompanyId' => 1,
                     'images' => [
-                        ['url' => 'https://picsum.photos/800/800'] // Placeholder logic
+                        ['url' => 'https://picsum.photos/800/800']
                     ],
-                    'attributes' => [] // Required attributes logic should be here
+                    'attributes' => []
                 ]
             ]
         ];
@@ -86,7 +82,6 @@ class TrendyolAdapter implements MarketplaceInterface
 
         if ($response->successful()) {
             $batchRequestId = $response->json()['batchRequestId'] ?? null;
-            // Update channel_product extra info
             $channelProduct->update([
                 'extra' => array_merge($channelProduct->extra ?? [], ['batchRequestId' => $batchRequestId])
             ]);
@@ -98,7 +93,6 @@ class TrendyolAdapter implements MarketplaceInterface
 
     public function updateProduct(ChannelProduct $channelProduct): bool
     {
-        // Trendyol v2/products handles both create and update depending on barcode match
         return $this->createProduct($channelProduct);
     }
 
@@ -146,18 +140,24 @@ class TrendyolAdapter implements MarketplaceInterface
         $response = $this->request('GET', 'orders', $params);
 
         if ($response->successful()) {
-            $orders = collect($response->json()['content'] ?? []);
-            
-            // Diagnostic Logging for supplierId
-            $orders->each(function ($order) {
-                Log::debug("Order Diagnostic [{$order['orderNumber']}]:", [
-                    'config_supplier_id' => $this->config['supplier_id'],
-                    'response_supplier_id' => $order['supplierId'] ?? 'MISSING',
-                    'line_merchant_id' => $order['lines'][0]['merchantId'] ?? 'MISSING'
-                ]);
-            });
+            return collect($response->json()['content'] ?? []);
+        }
 
-            return $orders;
+        return collect([]);
+    }
+
+    public function fetchProducts(int $page = 0, int $size = 50, bool $approved = true): Collection
+    {
+        $params = [
+            'page' => $page,
+            'size' => $size,
+            'approved' => $approved ? 'true' : 'false'
+        ];
+
+        $response = $this->request('GET', 'products', $params);
+
+        if ($response->successful()) {
+            return collect($response->json()['content'] ?? []);
         }
 
         return collect([]);
@@ -170,27 +170,10 @@ class TrendyolAdapter implements MarketplaceInterface
 
     public function testConnection(): bool
     {
-        // Simply try to fetch orders with size 1 to check if credentials are correct
         try {
             $response = $this->request('GET', 'orders', ['size' => 1]);
-            
-            if ($response->successful()) {
-                Log::info("Trendyol Connection Test SUCCESS", [
-                    'status' => $response->status(),
-                    'full_response' => $response->json()
-                ]);
-                return true;
-            } else {
-                Log::error("Trendyol Connection Test FAILED", [
-                    'status' => $response->status(),
-                    'full_response' => $response->body()
-                ]);
-                return false;
-            }
+            return $response->successful();
         } catch (\Exception $e) {
-            Log::emergency("Trendyol Connection Test EXCEPTION", [
-                'message' => $e->getMessage()
-            ]);
             return false;
         }
     }
@@ -200,7 +183,7 @@ class TrendyolAdapter implements MarketplaceInterface
         if (!$brandId) return null;
         return \App\Models\ChannelBrand::where('brand_id', $brandId)
             ->whereHas('channel', fn($q) => $q->where('slug', 'trendyol'))
-            ->value('external_brand_id') ?? 1000; // 1000 is often 'Other' in Trendyol
+            ->value('external_brand_id') ?? 1000;
     }
 
     protected function getMarketplaceCategoryId(?int $categoryId): ?int

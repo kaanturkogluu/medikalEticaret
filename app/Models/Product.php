@@ -9,7 +9,15 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Product extends Model
 {
     protected $fillable = [
-        'brand_id', 'category_id', 'sku', 'name', 'description', 'price', 'stock', 'active'
+        'brand_id', 'category_id', 'sku', 'barcode', 'name', 'brand_name', 'category_name', 
+        'description', 'price', 'stock', 'active', 'attributes', 'raw_marketplace_data', 
+        'marketplace_status'
+    ];
+
+    protected $casts = [
+        'active' => 'boolean',
+        'attributes' => 'array',
+        'raw_marketplace_data' => 'array'
     ];
 
     public function brand(): BelongsTo
@@ -25,5 +33,12 @@ class Product extends Model
     public function channelProducts(): HasMany
     {
         return $this->hasMany(ChannelProduct::class);
+    }
+
+    public function channels()
+    {
+        return $this->belongsToMany(Channel::class, 'channel_products')
+            ->withPivot(['external_id', 'price', 'stock', 'sync_status', 'sync_error', 'extra'])
+            ->withTimestamps();
     }
 }
