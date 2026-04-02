@@ -12,6 +12,9 @@
             <p class="text-sm text-slate-500 mt-1">Sistemin anlık durumunu ve başarılı senkronizasyonları inceleyin.</p>
         </div>
         <div class="flex items-center gap-2">
+            <a href="{{ route('admin.test-products') }}" class="px-4 py-2 bg-brand-600 text-white rounded-lg text-sm font-semibold hover:bg-brand-700 transition-all flex items-center gap-2 shadow-lg shadow-brand-500/20">
+                <i class="fas fa-vial text-[10px]"></i> Trendyol API Test
+            </a>
             <button @click="notify('success', 'Veriler Güncellendi!')" class="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors flex items-center gap-2">
                 <i class="fas fa-sync text-brand-500 text-[10px]"></i> Verileri Yenile
             </button>

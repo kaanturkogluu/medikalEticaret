@@ -12,6 +12,7 @@ Route::prefix('admin')->group(function () {
     Route::view('/products', 'admin.products')->name('admin.products');
     Route::get('/orders', [\App\Http\Controllers\Admin\OrderController::class, 'index'])->name('admin.orders');
     Route::get('/orders/{order}', [\App\Http\Controllers\Admin\OrderController::class, 'show'])->name('admin.orders.show');
+    Route::get('/test-products', [\App\Http\Controllers\Admin\OrderController::class, 'testProducts'])->name('admin.test-products');
     Route::view('/sync/stock', 'admin.sync.stock')->name('admin.sync.stock');
     Route::view('/sync/price', 'admin.sync.price')->name('admin.sync.price');
     
