@@ -1,0 +1,31 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
+class Order extends Model
+{
+    protected $fillable = [
+        'channel_id', 'external_order_id', 'customer_name', 'customer_email', 'customer_phone',
+        'total_price', 'currency', 'order_status', 'address_info', 'raw_marketplace_data', 'synced'
+    ];
+
+    protected $casts = [
+        'address_info' => 'array',
+        'raw_marketplace_data' => 'array',
+        'synced' => 'boolean'
+    ];
+
+    public function channel(): BelongsTo
+    {
+        return $this->belongsTo(Channel::class);
+    }
+
+    public function items(): HasMany
+    {
+        return $this->hasMany(OrderItem::class);
+    }
+}
