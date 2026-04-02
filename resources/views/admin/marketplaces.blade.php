@@ -5,10 +5,27 @@
     testing: null,
     testConnection(channelId, slug) {
         this.testing = channelId;
-        setTimeout(() => {
+        
+        fetch(`/admin/marketplaces/${channelId}/test`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
             this.testing = null;
-            notify('success', `${slug.charAt(0).toUpperCase() + slug.slice(1)} Bağlantısı Doğrulandı!`);
-        }, 2000);
+            if (data.success) {
+                notify('success', data.message);
+            } else {
+                notify('error', data.message);
+            }
+        })
+        .catch(err => {
+            this.testing = null;
+            notify('error', 'Bir hata oluştu!');
+        });
     }
 }">
     <!-- Header -->
@@ -61,13 +78,13 @@
                 <div class="space-y-4 flex-1">
                     <div class="p-4 bg-slate-50 rounded-2xl border border-slate-100">
                         <p class="text-[10px] font-bold text-slate-400 uppercase mb-2">Tedarikçi Kimliği (Supplier ID)</p>
-                        <p class="text-xs font-black text-slate-800 tabular-nums tracking-tighter">{{ $m->credential->supplier_id ?? '---' }}</p>
+                        <p class="text-xs font-black text-slate-800 tabular-nums tracking-tighter">{{ $m->credential?->supplier_id ?? '---' }}</p>
                     </div>
                     <div class="p-4 bg-slate-50 rounded-2xl border border-slate-100 relative group/key">
                         <p class="text-[10px] font-bold text-slate-400 uppercase mb-2">API Key & Secret</p>
                         <div class="flex items-center justify-between">
                             <p class="text-xs font-black text-slate-800 tabular-nums tracking-tighter">
-                                {{ $m->credential->api_key ? substr($m->credential->api_key, 0, 5) . '**********' : '---' }}
+                                {{ $m->credential?->api_key ? substr($m->credential?->api_key, 0, 5) . '**********' : '---' }}
                             </p>
                             <button class="p-1.5 hover:bg-slate-200 rounded transition-colors text-slate-400">
                                 <i class="fas fa-eye text-[10px]"></i>

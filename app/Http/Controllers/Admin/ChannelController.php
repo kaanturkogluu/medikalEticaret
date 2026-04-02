@@ -65,4 +65,25 @@ class ChannelController extends Controller
         return redirect()->route('admin.marketplaces')
             ->with('success', 'Marketplace settings updated successfully.');
     }
+
+    /**
+     * Test the connection to the marketplace.
+     */
+    public function test(\App\Models\Channel $channel, \App\Integrations\Marketplace\MarketplaceManager $manager)
+    {
+        try {
+            $adapter = $manager->getAdapter($channel);
+            $success = $adapter->testConnection();
+
+            return response()->json([
+                'success' => $success,
+                'message' => $success ? 'Bağlantı Başarılı!' : 'Bağlantı Hatası: Lütfen API bilgilerini kontrol edin.'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Hata: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }

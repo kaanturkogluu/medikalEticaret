@@ -44,4 +44,9 @@ interface MarketplaceInterface
      * Get marketplace identifier slug (trendyol, hepsiburada, etc.)
      */
     public function getIdentifier(): string;
+
+    /**
+     * Test the connection to the marketplace.
+     */
+    public function testConnection(): bool;
 }

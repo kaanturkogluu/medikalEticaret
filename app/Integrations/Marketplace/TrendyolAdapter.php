@@ -146,7 +146,18 @@ class TrendyolAdapter implements MarketplaceInterface
         $response = $this->request('GET', 'orders', $params);
 
         if ($response->successful()) {
-            return collect($response->json()['content'] ?? []);
+            $orders = collect($response->json()['content'] ?? []);
+            
+            // Diagnostic Logging for supplierId
+            $orders->each(function ($order) {
+                Log::debug("Order Diagnostic [{$order['orderNumber']}]:", [
+                    'config_supplier_id' => $this->config['supplier_id'],
+                    'response_supplier_id' => $order['supplierId'] ?? 'MISSING',
+                    'line_merchant_id' => $order['lines'][0]['merchantId'] ?? 'MISSING'
+                ]);
+            });
+
+            return $orders;
         }
 
         return collect([]);
@@ -155,6 +166,33 @@ class TrendyolAdapter implements MarketplaceInterface
     public function getIdentifier(): string
     {
         return 'trendyol';
+    }
+
+    public function testConnection(): bool
+    {
+        // Simply try to fetch orders with size 1 to check if credentials are correct
+        try {
+            $response = $this->request('GET', 'orders', ['size' => 1]);
+            
+            if ($response->successful()) {
+                Log::info("Trendyol Connection Test SUCCESS", [
+                    'status' => $response->status(),
+                    'full_response' => $response->json()
+                ]);
+                return true;
+            } else {
+                Log::error("Trendyol Connection Test FAILED", [
+                    'status' => $response->status(),
+                    'full_response' => $response->body()
+                ]);
+                return false;
+            }
+        } catch (\Exception $e) {
+            Log::emergency("Trendyol Connection Test EXCEPTION", [
+                'message' => $e->getMessage()
+            ]);
+            return false;
+        }
     }
 
     protected function getMarketplaceBrandId(?int $brandId): ?int

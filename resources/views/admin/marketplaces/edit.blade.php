@@ -30,7 +30,7 @@
     </div>
 
     <!-- Edit Form Grid -->
-    <form ref="form" action="{{ route('admin.marketplaces.update', $channel->id) }}" method="POST" class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+    <form x-ref="form" action="{{ route('admin.marketplaces.update', $channel->id) }}" method="POST" class="grid grid-cols-1 lg:grid-cols-12 gap-8">
         @csrf
         @method('PUT')
         
@@ -98,7 +98,7 @@
                         <label class="text-xs font-bold text-slate-500 uppercase tracking-widest px-1">API Key</label>
                         <div class="relative group">
                             <i class="fas fa-id-card absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
-                            <input type="password" name="api_key" x-model="channel.api_key" class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all p-4">
+                            <input x-ref="apiKey" type="password" name="api_key" x-model="channel.api_key" class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all p-4">
                             <button type="button" @click="$refs.apiKey.type = ($refs.apiKey.type === 'password' ? 'text' : 'password')" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors">
                                 <i class="fas fa-eye text-xs"></i>
                             </button>
