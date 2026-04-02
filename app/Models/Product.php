@@ -11,7 +11,8 @@ class Product extends Model
     protected $fillable = [
         'brand_id', 'category_id', 'sku', 'barcode', 'name', 'brand_name', 'category_name', 
         'description', 'price', 'stock', 'active', 'attributes', 'raw_marketplace_data', 
-        'marketplace_status'
+        'marketplace_status', 'marketplace', 'external_id', 'platform_listing_id', 
+        'product_content_id', 'supplier_id'
     ];
 
     protected $casts = [
@@ -29,6 +30,20 @@ class Product extends Model
     {
         return $this->belongsTo(Category::class);
     }
+
+    public function productAttributes(): HasMany
+    {
+        return $this->hasMany(ProductAttribute::class);
+    }
+
+    public function productImages(): HasMany
+    {
+        return $this->hasMany(ProductImage::class);
+    }
+
+    // Shorthand for service
+    public function images() { return $this->productImages(); }
+    public function attributes() { return $this->productAttributes(); }
 
     public function channelProducts(): HasMany
     {

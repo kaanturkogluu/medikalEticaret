@@ -6,18 +6,12 @@
     statusFilter: 'all', 
     marketplaceFilter: 'all',
     syncing: null,
-    products: [
-        { id: 1, name: 'Siyah Pamuklu Tişört', sku: 'TS-001', barcode: '8680000000018', price: 299.90, stock: 45, status: 'synced', marketplaces: ['Trendyol', 'Hepsiburada'] },
-        { id: 2, name: 'Mavi Kot Pantolon', sku: 'KP-002', barcode: '8680000000025', price: 849.00, stock: 12, status: 'pending', marketplaces: ['Trendyol'] },
-        { id: 3, name: 'Deri Ceket Lüks', sku: 'CK-003', barcode: '8680000000032', price: 2450.00, stock: 4, status: 'error', marketplaces: ['Trendyol', 'N11'] },
-        { id: 4, name: 'Beyaz Sneaker', sku: 'AY-004', barcode: '8680000000049', price: 1290.00, stock: 28, status: 'synced', marketplaces: ['Trendyol', 'Hepsiburada', 'N11'] },
-        { id: 5, name: 'Kırmızı Elbise', sku: 'EL-005', barcode: '8680000000056', price: 540.00, stock: 0, status: 'synced', marketplaces: ['Hepsiburada'] },
-    ],
+    products: {{ $products->getCollection()->toJson() }},
     filteredProducts() {
         return this.products.filter(p => {
-            const matchesSearch = p.name.toLowerCase().includes(this.searchTerm.toLowerCase()) || p.sku.toLowerCase().includes(this.searchTerm.toLowerCase());
+            const matchesSearch = p.name.toLowerCase().includes(this.searchTerm.toLowerCase()) || (p.sku && p.sku.toLowerCase().includes(this.searchTerm.toLowerCase()));
             const matchesStatus = this.statusFilter === 'all' || p.status === this.statusFilter;
-            const matchesMarketplace = this.marketplaceFilter === 'all' || p.marketplaces.includes(this.marketplaceFilter);
+            const matchesMarketplace = this.marketplaceFilter === 'all' || (p.marketplaces && p.marketplaces.some(m => m.includes(this.marketplaceFilter)));
             return matchesSearch && matchesStatus && matchesMarketplace;
         });
     },
@@ -83,16 +77,21 @@
                             <td class="px-6 py-4">
                                 <div class="flex items-center gap-4">
                                     <div class="h-12 w-12 rounded-lg bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-400 group-hover:bg-white transition-colors overflow-hidden">
-                                        <i class="fas fa-image text-xl"></i>
+                                        <template x-if="p.image">
+                                            <img :src="p.image" class="h-full w-full object-cover">
+                                        </template>
+                                        <template x-if="!p.image">
+                                            <i class="fas fa-image text-xl"></i>
+                                        </template>
                                     </div>
                                     <div>
                                         <p class="text-sm font-bold text-slate-800 tracking-tight" x-text="p.name"></p>
                                         <div class="flex items-center gap-2 mt-1">
                                             <span class="text-[10px] font-bold text-slate-400 uppercase">SKU:</span>
-                                            <span class="text-[11px] font-bold text-brand-600 bg-brand-50 px-1.5 py-0.5 rounded tracking-tighter" x-text="p.sku"></span>
+                                            <span class="text-[11px] font-bold text-brand-600 bg-brand-50 px-1.5 py-0.5 rounded tracking-tighter" x-text="p.sku || '-'"></span>
                                             <span class="text-[10px] text-slate-300">|</span>
                                             <span class="text-[10px] font-bold text-slate-400 uppercase">Barkod:</span>
-                                            <span class="text-[11px] font-medium text-slate-500 tabular-nums" x-text="p.barcode"></span>
+                                            <span class="text-[11px] font-medium text-slate-500 tabular-nums" x-text="p.barcode || '-'"></span>
                                         </div>
                                     </div>
                                 </div>
@@ -101,7 +100,7 @@
                                 <div class="flex flex-col gap-1">
                                     <div class="flex items-center gap-2">
                                         <i class="fas fa-tag text-[10px] text-slate-400"></i>
-                                        <span class="text-sm font-bold text-slate-900 tabular-nums" x-text="p.price.toFixed(2) + ' ₺'"></span>
+                                        <span class="text-sm font-bold text-slate-900 tabular-nums" x-text="p.price ? p.price.toFixed(2) + ' ₺' : '0.00 ₺'"></span>
                                     </div>
                                     <div class="flex items-center gap-2">
                                         <i class="fas fa-boxes text-[10px] text-slate-400"></i>
@@ -113,6 +112,9 @@
                                 <div class="flex flex-wrap gap-1.5 max-w-[150px]">
                                     <template x-for="m in p.marketplaces">
                                         <span class="text-[9px] px-2 py-0.5 rounded-full border border-slate-200 bg-white font-bold text-slate-600 shadow-sm" x-text="m"></span>
+                                    </template>
+                                    <template x-if="!p.marketplaces || p.marketplaces.length === 0">
+                                        <span class="text-[9px] text-slate-400 italic">Kanal Yok</span>
                                     </template>
                                 </div>
                             </td>
@@ -154,14 +156,9 @@
             </table>
         </div>
         <div class="p-4 bg-slate-50 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-slate-500">
-            <p>Toplam <span class="text-slate-800" x-text="filteredProducts().length"></span> ürün listeleniyor</p>
-            <div class="flex items-center gap-1">
-                <button class="px-3 py-1 bg-white border border-slate-200 rounded hover:bg-slate-50 disabled:opacity-50">Önceki</button>
-                <div class="flex items-center gap-1 mx-2">
-                    <button class="w-8 py-1 bg-brand-600 text-white rounded shadow-md">1</button>
-                    <button class="w-8 py-1 bg-white border border-slate-200 rounded hover:bg-slate-50">2</button>
-                </div>
-                <button class="px-3 py-1 bg-white border border-slate-200 rounded hover:bg-slate-50">Sonraki</button>
+            <p>Sistemde toplam <span class="text-slate-800">{{ $products->total() }}</span> ürün kayıtlı</p>
+            <div class="pagination-container">
+                {{ $products->links() }}
             </div>
         </div>
     </div>

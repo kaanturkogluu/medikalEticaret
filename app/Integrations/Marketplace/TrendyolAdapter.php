@@ -148,13 +148,19 @@ class TrendyolAdapter implements MarketplaceInterface
 
     public function fetchProducts(int $page = 0, int $size = 50, bool $approved = true): Collection
     {
-        $params = [
-            'page' => $page,
-            'size' => $size,
-            'approved' => $approved ? 'true' : 'false'
-        ];
+        $supplierId = $this->config['supplier_id'];
+        $url = "https://apigw.trendyol.com/integration/product/sellers/{$supplierId}/products";
 
-        $response = $this->request('GET', 'products', $params);
+        $response = Http::withBasicAuth($this->config['api_key'], $this->config['api_secret'])
+            ->withHeaders([
+                'Accept' => 'application/json',
+                'User-Agent' => "{$supplierId} - SelfIntegration"
+            ])
+            ->timeout(30)
+            ->get($url, [
+                'page' => $page,
+                'size' => $size
+            ]);
 
         if ($response->successful()) {
             return collect($response->json()['content'] ?? []);
