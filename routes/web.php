@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [\App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::get('/product/{product}', [\App\Http\Controllers\HomeController::class, 'show'])->name('product.show');
+Route::get('/favorites', [\App\Http\Controllers\HomeController::class, 'favorites'])->name('favorites');
 
 // Admin Routes
 Route::prefix('admin')->group(function () {

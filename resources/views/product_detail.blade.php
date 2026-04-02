@@ -1,317 +1,98 @@
-<!DOCTYPE html>
-<html lang="tr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $product->name }} - {{ config('app.name') }}</title>
-    
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
-    
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Alpine.js -->
-    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+@extends('layouts.app')
 
-    <style>
-        :root {
-            --primary-color: #f27a1a;
-            --primary-hover: #e67216;
-            --background-color: #f5f5f5;
-            --card-bg: #ffffff;
-            --text-main: #333333;
-            --text-muted: #666666;
-            --border-color: #e6e6e6;
-            --price-color: #f27a1a;
-            --accent-green: #0bc15c;
-            --accent-blue: #3399ff;
-        }
+@section('title', $product->name)
 
-        body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #ffffff;
-            color: var(--text-main);
-        }
-
-        .ty-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 1rem;
-        }
-
-        header {
-            background: white;
-            border-bottom: 1px solid var(--border-color);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-
-        .search-bar {
-            background-color: #f3f3f3;
-            border-radius: 6px;
-            padding: 8px 40px 8px 16px;
-            width: 100%;
-            border: 2px solid transparent;
-            transition: all 0.2s;
-        }
-
-        .search-bar:focus {
-            background-color: white;
-            border-color: var(--primary-color);
-            outline: none;
-        }
-
-        .breadcrumb {
-            display: flex;
-            gap: 10px;
-            font-size: 12px;
-            color: #999;
-            padding: 20px 0;
-        }
-
-        .breadcrumb a {
-            color: #666;
-        }
-
-        .breadcrumb a:hover {
-            text-decoration: underline;
-            color: var(--primary-color);
-        }
-
-        /* Gallery */
-        .gallery-main {
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            overflow: hidden;
-            background: #fff;
-        }
-
-        .thumbnail {
-            width: 60px;
-            height: 80px;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            cursor: pointer;
-            object-fit: cover;
-            transition: border-color 0.2s;
-        }
-
-        .thumbnail.active {
-            border-color: var(--primary-color);
-            border-width: 2px;
-        }
-
-        /* Product Details */
-        .product-brand {
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--text-main);
-            margin-bottom: 4px;
-        }
-
-        .product-title {
-            font-size: 20px;
-            color: #444;
-            font-weight: 400;
-            line-height: 1.3;
-        }
-
-        .rating-stars {
-            color: #ffc000;
-            font-size: 14px;
-        }
-
-        .price-box {
-            background-color: #fafafa;
-            border: 1px solid #f2f2f2;
-            padding: 20px;
-            border-radius: 8px;
-            margin: 20px 0;
-        }
-
-        .current-price {
-            font-size: 32px;
-            font-weight: 900;
-            color: var(--primary-color);
-        }
-
-        .add-to-basket {
-            background-color: var(--primary-color);
-            color: white;
-            width: 100%;
-            padding: 16px;
-            border-radius: 8px;
-            font-weight: 700;
-            font-size: 16px;
-            transition: background 0.2s;
-        }
-
-        .add-to-basket:hover {
-            background-color: var(--primary-hover);
-        }
-
-        /* Tabs */
-        .tab-btn {
-            padding: 15px 30px;
-            font-weight: 700;
-            font-size: 14px;
-            border-bottom: 3px solid transparent;
-            cursor: pointer;
-        }
-
-        .tab-btn.active {
-            border-bottom-color: var(--primary-color);
-            color: var(--primary-color);
-        }
-
-        /* Related Products */
-        .related-card {
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 10px;
-            transition: box-shadow 0.2s;
-        }
-
-        .related-card:hover {
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-        }
-    </style>
-</head>
-<body x-data="{ activeImage: '{{ $product->productImages->first()?->url ?? 'https://via.placeholder.com/600x900' }}' }">
-
-    <!-- Header (Same as Home) -->
-    <header class="py-4 shadow-sm">
-        <div class="ty-container">
-            <div class="flex items-center gap-8">
-                <a href="{{ route('home') }}" class="flex-shrink-0">
-                    <h1 class="text-3xl font-black italic tracking-tighter text-slate-900">
-                        TREND<span class="text-[var(--primary-color)]">YOL</span>
-                    </h1>
-                </a>
-                <div class="flex-grow max-w-2xl relative group">
-                    <form action="{{ route('home') }}" method="GET">
-                        <input type="text" name="q" placeholder="Aradığınız ürün, kategori veya markayı yazınız" class="search-bar">
-                        <button type="submit" class="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--primary-color)] font-bold">
-                            <i class="fas fa-search"></i>
-                        </button>
-                    </form>
-                </div>
-                <div class="flex items-center gap-6 text-sm font-bold text-gray-700">
-                    <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-2 hover:text-[var(--primary-color)]">
-                        <i class="fas fa-cog text-lg text-gray-400"></i>
-                    </a>
-                    <a href="#" class="flex items-center gap-2 hover:text-[var(--primary-color)]">
-                        <i class="fas fa-shopping-cart text-lg text-gray-400"></i>
-                        <span class="bg-[var(--primary-color)] text-white text-[9px] px-1.5 py-0.5 rounded-full">0</span>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </header>
-
+@section('content')
     <main class="ty-container pb-20">
         <!-- Breadcrumbs -->
-        <nav class="breadcrumb">
-            <a href="{{ route('home') }}">Ana Sayfa</a>
-            <i class="fas fa-chevron-right text-[8px] self-center"></i>
-            <a href="{{ route('home', ['category' => $product->category_id]) }}">{{ $product->category->name ?? 'Kategori' }}</a>
-            <i class="fas fa-chevron-right text-[8px] self-center"></i>
-            <span class="text-gray-400">{{ str($product->name)->limit(40) }}</span>
+        <nav class="breadcrumb flex gap-10 font-bold items-center py-6">
+            <a href="{{ route('home') }}" class="text-xs text-gray-500 hover:underline">Ana Sayfa</a>
+            <i class="fas fa-chevron-right text-[8px] text-gray-400"></i>
+            <a href="{{ route('home', ['category' => $product->category_id]) }}" class="text-xs text-gray-500 hover:underline">{{ $product->category->name ?? 'Kategori' }}</a>
+            <i class="fas fa-chevron-right text-[8px] text-gray-400"></i>
+            <span class="text-xs text-gray-300">{{ str($product->name)->limit(40) }}</span>
         </nav>
 
-        <div class="flex flex-col lg:flex-row gap-12 mt-4">
-            
+        <div x-data="{ activeImage: '{{ $product->productImages->first()?->url ?? 'https://via.placeholder.com/600x900' }}' }" class="flex flex-col lg:flex-row gap-12 mt-4">
             <!-- Left: Images -->
             <div class="w-full lg:w-1/2 flex gap-4">
                 <div class="flex flex-col gap-2 shrink-0">
                     @foreach($product->productImages as $image)
                         <img src="{{ $image->url }}" 
                              @click="activeImage = '{{ $image->url }}'"
-                             :class="activeImage == '{{ $image->url }}' ? 'active' : ''"
-                             class="thumbnail" alt="thumbnail">
+                             :class="activeImage == '{{ $image->url }}' ? 'border-[var(--primary-color)] ring-2 ring-orange-50' : 'border-gray-200'"
+                             class="w-16 h-20 object-contain border rounded cursor-pointer transition-all p-1" alt="thumbnail">
                     @endforeach
                 </div>
-                <div class="flex-grow gallery-main aspect-[2/3]">
-                    <img :src="activeImage" class="w-full h-full object-contain p-4" alt="{{ $product->name }}">
+                <div class="flex-grow aspect-[2/3] border border-gray-100 rounded-xl overflow-hidden bg-white flex items-center justify-center p-8">
+                    <img :src="activeImage" class="w-full h-full object-contain" alt="{{ $product->name }}">
                 </div>
             </div>
 
             <!-- Right: Info -->
             <div class="w-full lg:w-1/2">
                 <div class="mb-4">
-                    <h2 class="product-brand uppercase">{{ $product->brand->name ?? 'Markasız' }}</h2>
-                    <h1 class="product-title">{{ $product->name }}</h1>
+                    <h2 class="text-2xl font-black italic tracking-tighter text-slate-900 uppercase underline decoration-[var(--primary-color)] decoration-4 underline-offset-8 mb-4">{{ $product->brand->name ?? 'Markasız' }}</h2>
+                    <h1 class="text-2xl text-gray-700 font-medium leading-tight">{{ $product->name }}</h1>
                 </div>
 
                 <!-- Ratings -->
-                <div class="flex items-center gap-4 py-2 border-b border-gray-100">
-                    <div class="flex items-center gap-1">
-                        <span class="font-bold text-sm">4.8</span>
-                        <div class="rating-stars flex">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
+                <div class="flex items-center gap-4 py-4 border-b border-gray-50">
+                    <div class="flex items-center gap-1 bg-amber-50 px-2 py-1 rounded">
+                        <span class="font-black text-amber-600 text-sm">4.8</span>
+                        <div class="flex text-amber-400 text-xs">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
                         </div>
                     </div>
-                    <span class="text-gray-400 text-sm">|</span>
-                    <span class="text-[var(--accent-blue)] text-sm font-bold cursor-pointer">152 Değerlendirme</span>
-                    <span class="text-gray-400 text-sm">|</span>
-                    <span class="text-[var(--accent-blue)] text-sm font-bold cursor-pointer">43 Soru & Cevap</span>
+                    <span class="text-gray-300 text-xs">|</span>
+                    <span class="text-[var(--accent-blue)] text-xs font-black cursor-pointer hover:underline">152 Değerlendirme</span>
+                    <span class="text-gray-300 text-xs">|</span>
+                    <span class="text-[var(--accent-blue)] text-xs font-black cursor-pointer hover:underline">43 Soru & Cevap</span>
                 </div>
 
                 <!-- Price Section -->
-                <div class="price-box">
-                    <div class="text-xs text-gray-500 line-through">{{ number_format($product->price * 1.2, 2) }} TL</div>
-                    <div class="flex items-end gap-2">
-                        <span class="current-price">{{ number_format($product->price, 2) }} TL</span>
-                        <span class="bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded mb-2">-%20</span>
-                    </div>
-                    <div class="text-[11px] text-green-600 font-bold mt-2">
-                        <i class="fas fa-ticket text-xs mr-1"></i> Sepette %10 İndirim (250 TL ve üzeri)
+                <div class="bg-gray-50 p-6 rounded-2xl my-8 border border-white shadow-sm ring-1 ring-gray-100">
+                    <div class="text-sm text-gray-400 line-through mb-1">{{ number_format($product->price * 1.2, 2) }} TL</div>
+                    <div class="flex items-end gap-3">
+                        <span class="text-4xl font-black text-[var(--primary-color)] tracking-tighter">{{ number_format($product->price, 2) }} TL</span>
+                        <span class="bg-red-500 text-white text-xs font-black px-2 py-1 rounded-lg mb-2">-%20</span>
                     </div>
                 </div>
 
                 <!-- Actions -->
-                <div class="flex gap-4 mb-8">
-                    <button class="add-to-basket flex-grow flex items-center justify-center gap-3">
-                        <span>Sepete Ekle</span>
+                <div class="flex gap-4 mb-10">
+                    @php $imgArr = $product->productImages->first()?->url ?? 'https://via.placeholder.com/600x900'; @endphp
+                    <button @click="$store.cart.add({id: '{{ $product->id }}', name: '{{ addslashes($product->name) }}', brand: '{{ addslashes($product->brand->name ?? '') }}', price: {{ $product->price }}, image: '{{ $imgArr }}'})" class="flex-grow h-16 bg-[var(--primary-color)] text-white text-lg font-black rounded-xl shadow-lg shadow-orange-100 hover:bg-[var(--primary-hover)] transition-all flex items-center justify-center gap-3">
+                        <i class="fas fa-shopping-basket"></i>
+                        <span>SEPETE EKLE</span>
                     </button>
-                    <button class="w-14 h-14 border border-gray-200 rounded-lg flex items-center justify-center text-gray-400 hover:text-red-500 transition-colors">
-                        <i class="far fa-heart text-xl"></i>
+                    <button @click="$store.fav.toggle({id: '{{ $product->id }}', name: '{{ addslashes($product->name) }}', brand: '{{ addslashes($product->brand->name ?? '') }}', price: {{ $product->price }}, image: '{{ $imgArr }}'})" class="w-16 h-16 border-2 border-gray-100 rounded-xl flex items-center justify-center transition-all bg-white hover:border-red-100" :class="$store.fav.has('{{ $product->id }}') ? 'text-red-500 bg-red-50' : 'text-gray-300'">
+                        <i :class="$store.fav.has('{{ $product->id }}') ? 'fas fa-heart text-2xl' : 'far fa-heart text-2xl'"></i>
                     </button>
                 </div>
 
                 <!-- Merchant -->
-                <div class="flex items-center justify-between p-4 border border-gray-100 rounded-lg mb-8">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-gray-400">
+                <div class="flex items-center justify-between p-6 border border-gray-100 rounded-2xl mb-10 bg-white">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-slate-900 rounded-full flex items-center justify-center text-white ring-4 ring-slate-100">
                             <i class="fas fa-store"></i>
                         </div>
                         <div>
-                            <div class="text-sm font-bold">UMMET MEDİKAL</div>
-                            <div class="text-xs text-green-600 font-bold">9.8 Satıcı Puanı</div>
+                            <div class="text-sm font-black text-slate-900 tracking-tight">UMMET MEDİKAL</div>
+                            <div class="text-xs text-green-600 font-bold bg-green-50 px-2 py-0.5 rounded-full w-fit mt-1">9.8 Satıcı Puanı</div>
                         </div>
                     </div>
-                    <a href="#" class="text-xs font-bold text-[var(--accent-blue)]">Mağazayı Gör</a>
+                    <a href="#" class="text-xs font-black text-[var(--accent-blue)] border-b-2 border-blue-50">Mağazayı Gör</a>
                 </div>
 
                 <!-- Highlights -->
-                <div class="space-y-3">
-                    <h3 class="text-sm font-bold text-gray-700">Öne Çıkan Özellikler:</h3>
-                    <ul class="grid grid-cols-2 gap-y-2">
+                <div class="space-y-4">
+                    <h3 class="text-sm font-black text-slate-900 uppercase tracking-widest border-l-4 border-orange-400 pl-3">Öne Çıkan Özellikler</h3>
+                    <ul class="grid grid-cols-2 gap-4">
                         @foreach($product->productAttributes->take(6) as $attr)
-                            <li class="text-xs text-gray-600 flex items-center gap-2">
-                                <span class="w-1.5 h-1.5 bg-gray-300 rounded-full"></span>
-                                <span class="font-bold">{{ $attr->name }}:</span> {{ $attr->value }}
+                            <li class="p-3 rounded-lg border border-gray-50 flex flex-col gap-1 bg-white hover:shadow-sm transition-shadow">
+                                <span class="text-[10px] text-gray-400 font-bold uppercase">{{ $attr->name }}</span>
+                                <span class="text-xs text-slate-800 font-medium">{{ $attr->value }}</span>
                             </li>
                         @endforeach
                     </ul>
@@ -320,59 +101,56 @@
         </div>
 
         <!-- Description & Details Tabs -->
-        <div class="mt-20 border-t border-gray-200" x-data="{ tab: 'description' }">
-            <div class="flex border-b border-gray-100 justify-center">
-                <button @click="tab = 'description'" :class="tab == 'description' ? 'active' : ''" class="tab-btn">Ürün Açıklaması</button>
-                <button @click="tab = 'features'" :class="tab == 'features' ? 'active' : ''" class="tab-btn">Ürün Özellikleri</button>
-                <button @click="tab = 'comments'" :class="tab == 'comments' ? 'active' : ''" class="tab-btn">Yorumlar (152)</button>
+        <div class="mt-24" x-data="{ tab: 'description' }">
+            <div class="flex border-b border-gray-200 items-center justify-center gap-12 sticky top-20 bg-white z-[100] py-4 bg-opacity-90 backdrop-blur">
+                <button @click="tab = 'description'" :class="tab == 'description' ? 'text-[var(--primary-color)] border-b-2 border-orange-500' : 'text-gray-400'" class="pb-2 font-black italic uppercase tracking-tighter transition-all">Ürün Açıklaması</button>
+                <button @click="tab = 'features'" :class="tab == 'features' ? 'text-[var(--primary-color)] border-b-2 border-orange-500' : 'text-gray-400'" class="pb-2 font-black italic uppercase tracking-tighter transition-all">Tüm Özellikler</button>
+                <button @click="tab = 'comments'" :class="tab == 'comments' ? 'text-[var(--primary-color)] border-b-2 border-orange-500' : 'text-gray-400'" class="pb-2 font-black italic uppercase tracking-tighter transition-all">Değerlendirmeler (152)</button>
             </div>
             
-            <div class="py-10 max-w-4xl mx-auto">
-                <div x-show="tab == 'description'" class="text-gray-600 leading-relaxed space-y-4">
+            <div class="py-12 max-w-4xl mx-auto min-h-[400px]">
+                <div x-show="tab == 'description'" class="text-slate-600 leading-relaxed text-sm space-y-6">
                     {!! nl2br(e($product->description)) !!}
                 </div>
                 
                 <div x-show="tab == 'features'" x-cloak>
-                    <table class="w-full border-collapse">
+                    <div class="grid grid-cols-1 gap-1">
                         @foreach($product->productAttributes as $attr)
-                            <tr class="border-b border-gray-50">
-                                <td class="py-3 text-sm font-bold text-gray-500 w-1/3">{{ $attr->name }}</td>
-                                <td class="py-3 text-sm text-gray-800">{{ $attr->value }}</td>
-                            </tr>
+                            <div class="flex items-center py-4 border-b border-gray-50 group hover:bg-gray-50 px-4 rounded-lg transition-colors">
+                                <div class="w-1/3 text-sm font-bold text-gray-400 group-hover:text-slate-500">{{ $attr->name }}</div>
+                                <div class="w-2/3 text-sm text-slate-800 font-medium">{{ $attr->value }}</div>
+                            </div>
                         @endforeach
-                    </table>
+                    </div>
                 </div>
 
-                <div x-show="tab == 'comments'" x-cloak class="text-center py-10">
-                    <p class="text-gray-400 italic">Henüz yorum yapılmamış.</p>
+                <div x-show="tab == 'comments'" x-cloak class="text-center py-24 flex flex-col items-center gap-4">
+                    <i class="far fa-comment-alt text-6xl text-gray-100"></i>
+                    <p class="text-gray-400 italic font-bold">Henüz hiç yorum yapılmamış.</p>
                 </div>
             </div>
         </div>
 
         <!-- Related Products -->
         <div class="mt-20">
-            <h3 class="text-xl font-black mb-8 italic">Benzer Ürünler</h3>
-            <div class="grid grid-cols-2 md:grid-cols-5 gap-6">
+            <h3 class="text-2xl font-black mb-10 italic tracking-tighter decoration-slate-900 underline underline-offset-8">Benzer Ürünler</h3>
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-8">
                 @foreach($relatedProducts as $rp)
-                    <a href="{{ route('product.show', $rp->id) }}" class="related-card group">
-                        <div class="aspect-[2/3] bg-gray-50 rounded-lg overflow-hidden mb-3">
-                            <img src="{{ $rp->productImages->first()?->url ?? 'https://via.placeholder.com/400x600' }}" alt="" class="w-full h-full object-cover group-hover:scale-105 transition-transform">
-                        </div>
-                        <div class="text-xs font-bold mb-1">{{ $rp->brand->name ?? 'Markasız' }}</div>
-                        <div class="text-[11px] text-gray-500 h-8 overflow-hidden">{{ $rp->name }}</div>
-                        <div class="text-sm font-black text-[var(--primary-color)] mt-2">{{ number_format($rp->price, 2) }} TL</div>
-                    </a>
+                    <div class="group relative bg-white border border-gray-100 p-3 rounded-2xl hover:shadow-xl hover:shadow-gray-100 transition-all">
+                        <a href="{{ route('product.show', $rp->id) }}">
+                            <div class="aspect-[2/3] bg-gray-50 rounded-xl overflow-hidden mb-4 p-4">
+                                <img src="{{ $rp->productImages->first()?->url ?? 'https://via.placeholder.com/400x600' }}" alt="" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500">
+                            </div>
+                            <div class="text-[10px] font-black text-slate-900 border-b-2 border-orange-100 w-fit mb-1 uppercase tracking-widest">{{ $rp->brand->name ?? 'Markasız' }}</div>
+                            <div class="text-xs text-gray-500 h-10 overflow-hidden line-clamp-2 leading-tight pr-4">{{ $rp->name }}</div>
+                            <div class="text-lg font-black text-[var(--primary-color)] mt-3 tracking-tighter">{{ number_format($rp->price, 2) }} TL</div>
+                        </a>
+                        <button @click="$store.cart.add({id: '{{ $rp->id }}', name: '{{ addslashes($rp->name) }}', brand: '{{ addslashes($rp->brand->name ?? '') }}', price: {{ $rp->price }}, image: '{{ $rp->productImages->first()?->url ?? '' }}'})" class="absolute bottom-4 right-4 bg-slate-900 text-white w-10 h-10 rounded-xl flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all shadow-xl hover:bg-orange-500">
+                            <i class="fas fa-cart-plus text-sm"></i>
+                        </button>
+                    </div>
                 @endforeach
             </div>
         </div>
     </main>
-
-    <!-- Footer (Same as Home) -->
-    <footer class="bg-slate-900 text-white py-16 mt-20">
-        <div class="ty-container text-center text-xs text-slate-500 font-bold uppercase tracking-widest">
-            <p>&copy; 2026 {{ config('app.name') }} | Trendyol Entegrasyon Sistemi</p>
-        </div>
-    </footer>
-
-</body>
-</html>
+@endsection

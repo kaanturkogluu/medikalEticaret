@@ -41,7 +41,7 @@ class HomeController extends Controller
             $query->where('price', '<=', $request->max_price);
         }
 
-        $products = $query->latest()->paginate(24);
+        $products = $query->latest()->paginate(24)->onEachSide(1);
         
         $categories = Category::whereHas('products')->withCount('products')->get();
         $brands = Brand::whereHas('products')->withCount('products')->get();
@@ -62,5 +62,10 @@ class HomeController extends Controller
         $categories = Category::whereHas('products')->take(10)->get();
 
         return view('product_detail', compact('product', 'relatedProducts', 'categories'));
+    }
+
+    public function favorites()
+    {
+        return view('favorites');
     }
 }
