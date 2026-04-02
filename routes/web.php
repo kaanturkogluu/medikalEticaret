@@ -2,9 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [\App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/product/{product}', [\App\Http\Controllers\HomeController::class, 'show'])->name('product.show');
 
 // Admin Routes
 Route::prefix('admin')->group(function () {
