@@ -12,7 +12,8 @@ class HomeController extends Controller
     public function index(Request $request)
     {
         $query = Product::with(['brand', 'category', 'productImages'])
-            ->where('active', true);
+            ->where('active', true)
+            ->where('stock', '>', 0);
 
         // Search
         if ($request->filled('q')) {
@@ -23,6 +24,27 @@ class HomeController extends Controller
             });
         }
 
+        // Sorting
+        if ($request->filled('sort')) {
+            switch ($request->sort) {
+                case 'price_low':
+                    $query->orderBy('price', 'asc');
+                    break;
+                case 'price_high':
+                    $query->orderBy('price', 'desc');
+                    break;
+                case 'newest':
+                    $query->latest();
+                    break;
+                default:
+                    $query->latest();
+                    break;
+            }
+        } else {
+            $query->latest();
+        }
+        
+        $products = $query->paginate(24)->onEachSide(1)->withQueryString();
         // Category Filter
         if ($request->filled('category')) {
             $query->where('category_id', $request->category);

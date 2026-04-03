@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', config('app.name')) - Trendyol Market</title>
+    <title>@yield('title', config('app.name')) - umutMed Market</title>
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -122,10 +122,13 @@
 
     <!-- Top Info Bar -->
     <div class="bg-gray-100 hidden md:block border-b border-gray-200">
-        <div class="ty-container h-8 flex items-center justify-end gap-6 text-[11px] text-gray-500 font-medium">
-            <a href="#" class="hover:text-amber-600 transition-colors">İndirim Kuponlarım</a>
-            <a href="#" class="hover:text-amber-600 transition-colors">Satış Yap</a>
-            <a href="#" class="hover:text-amber-600 transition-colors">Yardım & Destek</a>
+        <div class="ty-container h-8 relative flex items-center justify-end text-[11px] text-gray-500 font-medium">
+            <div class="absolute left-1/2 -translate-x-1/2 text-[var(--primary-color)] font-black text-[13px] tracking-wide uppercase">
+                Açılışa Özel %10 İndirim
+            </div>
+            <div class="flex items-center gap-6">
+                <a href="#" class="hover:text-amber-600 transition-colors">Yardım & Destek</a>
+            </div>
         </div>
     </div>
 
@@ -136,7 +139,7 @@
                 <!-- Logo -->
                 <a href="{{ route('home') }}" class="flex-shrink-0">
                     <h1 class="text-3xl font-black italic tracking-tighter text-slate-900">
-                        TREND<span class="text-[var(--primary-color)]">YOL</span>
+                        umut<span class="text-[var(--primary-color)]">Med</span>
                     </h1>
                 </a>
 
@@ -201,7 +204,7 @@
     <footer class="bg-slate-900 text-white py-16 mt-20">
         <div class="ty-container grid grid-cols-1 md:grid-cols-4 gap-12">
             <div>
-                <h4 class="text-lg font-bold mb-6">Trendyol</h4>
+                <h4 class="text-lg font-bold mb-6">umutMed</h4>
                 <ul class="space-y-3 text-sm text-gray-400 font-medium">
                     <li><a href="#" class="hover:text-white transition-colors">Hakkımızda</a></li>
                     <li><a href="#" class="hover:text-white transition-colors">Kariyer</a></li>
@@ -215,7 +218,7 @@
                     <li><a href="#" class="hover:text-white transition-colors">Aktif Kampanyalar</a></li>
                     <li><a href="#" class="hover:text-white transition-colors">Elite Üyelik</a></li>
                     <li><a href="#" class="hover:text-white transition-colors">Hediye Fikirleri</a></li>
-                    <li><a href="#" class="hover:text-white transition-colors">Trendyol Blog</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors">umutMed Blog</a></li>
                 </ul>
             </div>
             <div>

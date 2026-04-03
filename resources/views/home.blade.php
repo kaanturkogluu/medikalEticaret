@@ -6,21 +6,37 @@
     <!-- Sub Navbar Categories -->
     <nav class="category-nav hidden md:block">
         <div class="ty-container flex items-center justify-center">
-            @foreach($categories->take(10) as $cat)
-                <a href="{{ route('home', ['category' => $cat->id]) }}" class="category-link {{ request('category') == $cat->id ? 'text-[var(--primary-color)]' : '' }}">
-                    {{ str($cat->name)->upper() }}
-                </a>
-            @endforeach
             @if($categories->count() > 10)
-                <div class="category-link cursor-pointer group">
-                    TÜM KATEGORİLER
-                    <div class="absolute hidden group-hover:flex top-full left-0 bg-white border border-gray-200 shadow-xl p-6 grid grid-cols-4 w-[800px] z-[1001]">
-                        @foreach($categories->slice(10) as $cat)
-                            <a href="{{ route('home', ['category' => $cat->id]) }}" class="py-2 text-xs hover:text-[var(--primary-color)]">{{ $cat->name }}</a>
-                        @endforeach
+                <div class="category-link cursor-pointer group" x-data="{ allCatSearch: '' }">
+                    <span class="flex items-center gap-2 font-black italic">TÜM KATEGORİLER <i class="fas fa-chevron-down text-[10px]"></i></span>
+                    <div class="absolute hidden group-hover:block top-full left-0 bg-white border border-gray-100 shadow-2xl p-0 w-[1000px] z-[1001] rounded-b-xl overflow-hidden">
+                        <!-- Search Sidebar in Dropdown -->
+                        <div class="p-6 bg-gray-50/50 border-b border-gray-100">
+                            <div class="relative">
+                                <input type="text" x-model="allCatSearch" placeholder="Kategoriler arasında hızlıca ara..." class="w-full pl-10 p-3 text-sm bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)]/20 focus:border-[var(--primary-color)] transition-all">
+                                <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                            </div>
+                        </div>
+                        <!-- Categories Scrollable Grid -->
+                        <div class="p-8 grid grid-cols-4 gap-x-8 max-h-[450px] overflow-y-auto custom-scrollbar">
+                            @foreach($categories as $cat)
+                                <a href="{{ route('home', ['category' => $cat->id]) }}" 
+                                   x-show="allCatSearch === '' || '{{ str($cat->name)->lower() }}'.includes(allCatSearch.toLowerCase())"
+                                   class="py-3 text-[13px] hover:text-[var(--primary-color)] hover:translate-x-1 transition-all font-medium border-b border-gray-50 last:border-0 flex items-center justify-between group/item">
+                                    <span>{{ $cat->name }}</span>
+                                    <i class="fas fa-chevron-right text-[10px] opacity-0 group-hover/item:opacity-100 transition-opacity"></i>
+                                </a>
+                            @endforeach
+                        </div>
                     </div>
                 </div>
             @endif
+
+            @foreach($categories->take(9) as $cat)
+                <a href="{{ route('home', ['category' => $cat->id]) }}" class="category-link {{ request('category') == $cat->id ? 'text-[var(--primary-color)] border-b-2 border-[var(--primary-color)]' : '' }}">
+                    {{ str($cat->name)->upper() }}
+                </a>
+            @endforeach
         </div>
     </nav>
 @endsection
@@ -34,24 +50,35 @@
             <aside class="w-full lg:w-64 flex-shrink-0 hidden lg:block">
                 <h3 class="text-lg font-bold mb-4">Filtreler</h3>
                 
-                <div class="filter-section">
+                <div class="filter-section" x-data="{ catSearch: '' }">
                     <div class="filter-title">İlgili Kategoriler</div>
+                    <div class="mb-3 relative">
+                        <input type="text" x-model="catSearch" placeholder="Kategori ara..." class="w-full pl-8 p-2 text-xs border border-gray-200 rounded focus:outline-none focus:border-[var(--primary-color)] transition-colors">
+                        <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[10px]"></i>
+                    </div>
                     <div class="max-h-48 overflow-y-auto pr-2 custom-scrollbar space-y-1">
                         @foreach($categories as $cat)
                             <a href="{{ route('home', array_merge(request()->all(), ['category' => $cat->id])) }}" 
+                               x-show="catSearch === '' || '{{ str($cat->name)->lower() }}'.includes(catSearch.toLowerCase())"
                                class="filter-item {{ request('category') == $cat->id ? 'text-[var(--primary-color)] font-bold' : '' }}">
                                 <span class="flex-grow">{{ $cat->name }}</span>
                                 <span class="text-[10px] text-gray-400">({{ $cat->products_count }})</span>
                             </a>
                         @endforeach
+                        <div x-show="$el.querySelectorAll('a[style*=\'display: none\']').length === {{ count($categories) }}" class="text-xs text-gray-400 italic py-2">Sonuç bulunamadı</div>
                     </div>
                 </div>
 
-                <div class="filter-section">
+                <div class="filter-section" x-data="{ brandSearch: '' }">
                     <div class="filter-title">Markalar</div>
+                    <div class="mb-3 relative">
+                        <input type="text" x-model="brandSearch" @input="brandSearch = $event.target.value" placeholder="Marka ara..." class="w-full pl-8 p-2 text-xs border border-gray-200 rounded focus:outline-none focus:border-[var(--primary-color)] transition-colors">
+                        <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[10px]"></i>
+                    </div>
                     <div class="max-h-64 overflow-y-auto pr-2 custom-scrollbar space-y-1">
                         @foreach($brands as $brand)
                             <a href="{{ route('home', array_merge(request()->all(), ['brand' => $brand->id])) }}" 
+                               x-show="brandSearch === '' || '{{ str($brand->name)->lower() }}'.includes(brandSearch.toLowerCase())"
                                class="filter-item {{ request('brand') == $brand->id ? 'text-[var(--primary-color)] font-bold' : '' }}">
                                 <span class="h-4 w-4 border border-gray-300 rounded flex items-center justify-center">
                                     @if(request('brand') == $brand->id) <i class="fas fa-check text-[8px] text-[var(--primary-color)]"></i> @endif
@@ -60,6 +87,7 @@
                                 <span class="text-[10px] text-gray-400">({{ $brand->products_count }})</span>
                             </a>
                         @endforeach
+                        <div x-show="$el.querySelectorAll('a[style*=\'display: none\']').length === {{ count($brands) }}" class="text-xs text-gray-400 italic py-2 text-center">Sonuç bulunamadı</div>
                     </div>
                 </div>
 
@@ -88,11 +116,11 @@
                         @endif
                     </div>
                     <div class="flex items-center gap-4">
-                        <select class="text-sm bg-white border border-gray-200 p-2 rounded focus:outline-none">
-                            <option>Önerilen Sıralama</option>
-                            <option>En Düşük Fiyat</option>
-                            <option>En Yüksek Fiyat</option>
-                            <option>En Yeniler</option>
+                        <select onchange="let url = '{{ route('home', request()->except('sort', 'page')) }}'; let sep = url.includes('?') ? '&' : '?'; location.href = this.value ? url + sep + 'sort=' + this.value : url;" class="text-sm bg-white border border-gray-200 p-2 rounded focus:outline-none cursor-pointer">
+                            <option value="" {{ request('sort') == '' ? 'selected' : '' }}>Önerilen Sıralama</option>
+                            <option value="price_low" {{ request('sort') == 'price_low' ? 'selected' : '' }}>En Düşük Fiyat</option>
+                            <option value="price_high" {{ request('sort') == 'price_high' ? 'selected' : '' }}>En Yüksek Fiyat</option>
+                            <option value="newest" {{ request('sort') == 'newest' ? 'selected' : '' }}>En Yeniler</option>
                         </select>
                     </div>
                 </div>
