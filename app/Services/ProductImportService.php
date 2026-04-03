@@ -23,7 +23,6 @@ class ProductImportService
     protected int $updatedCount = 0;
     protected int $skippedCount = 0;
     protected array $errors = [];
-    protected ?array $categoryMap = null;
 
     public function __construct(
         protected TrendyolAdapter $adapter
@@ -204,102 +203,24 @@ class ProductImportService
         $externalCatId = $data['pimCategoryId'] ?? null;
         $catName = trim($data['categoryName'] ?? 'Genel');
         
-        if ($externalCatId) {
-            $category = $this->getOrCreateCategoryByExternalId($externalCatId, $catName);
-            $product->update(['category_id' => $category->id]);
+        $category = Category::where('external_id', $externalCatId)
+            ->orWhere(function($q) use ($catName) {
+                $q->where('name', $catName)
+                  ->orWhere('slug', Str::slug($catName));
+            })
+            ->first();
 
-            ChannelCategory::firstOrCreate(
-                ['channel_id' => $channel->id, 'external_category_id' => (string)$externalCatId],
-                ['category_id' => $category->id]
-            );
-        } else {
-            // Fallback if no external ID
-            $category = Category::firstOrCreate(
-                ['name' => $catName],
-                ['slug' => Str::slug($catName), 'active' => true]
-            );
-            $product->update(['category_id' => $category->id]);
-        }
-    }
-
-    /**
-     * Get or create a category and all its parents recursively using JSON mapping.
-     */
-    protected function getOrCreateCategoryByExternalId($externalId, string $defaultName): Category
-    {
-        $externalId = (int)$externalId;
-
-        // 1. Check DB first
-        $category = Category::where('external_id', $externalId)->first();
         if ($category) {
-            return $category;
-        }
+            $product->update(['category_id' => $category->id]);
 
-        // 2. Load and lookup in JSON
-        $this->loadCategoryMap();
-        $catData = $this->categoryMap[$externalId] ?? null;
-
-        $actualName = $catData['name'] ?? $defaultName;
-        $localParentId = null;
-
-        if ($catData && !empty($catData['parentId'])) {
-            $parentExternalId = (int)$catData['parentId'];
-            $parentData = $this->categoryMap[$parentExternalId] ?? null;
-            $parentName = $parentData['name'] ?? 'Genel Alt';
-            
-            $parentCategory = $this->getOrCreateCategoryByExternalId($parentExternalId, $parentName);
-            $localParentId = $parentCategory->id;
-        }
-
-        return Category::create([
-            'name' => $actualName,
-            'slug' => Str::slug($actualName),
-            'external_id' => $externalId,
-            'parent_id' => $localParentId,
-            'active' => true
-        ]);
-    }
-
-    /**
-     * Load the Trendyol category tree from JSON and flatten it for direct lookup.
-     */
-    protected function loadCategoryMap(): void
-    {
-        if ($this->categoryMap !== null) {
-            return;
-        }
-
-        $path = base_path('trendyol-categories.json');
-        if (!File::exists($path)) {
-            Log::warning("Category mapping JSON not found: {$path}");
-            $this->categoryMap = [];
-            return;
-        }
-
-        try {
-            $data = json_decode(File::get($path), true);
-            $this->categoryMap = [];
-            
-            $this->flattenCategories($data['categories'] ?? []);
-        } catch (\Exception $e) {
-            Log::error("Failed to parse category JSON: " . $e->getMessage());
-            $this->categoryMap = [];
-        }
-    }
-
-    /**
-     * Helper to flatten recursive subCategories into a flat ID-keyed map.
-     */
-    protected function flattenCategories(array $categories): void
-    {
-        foreach ($categories as $cat) {
-            $this->categoryMap[(int)$cat['id']] = [
-                'name' => $cat['name'],
-                'parentId' => $cat['parentId'] ?? null
-            ];
-            if (!empty($cat['subCategories'])) {
-                $this->flattenCategories($cat['subCategories']);
+            if ($externalCatId) {
+                ChannelCategory::firstOrCreate(
+                    ['channel_id' => $channel->id, 'external_category_id' => (string)$externalCatId],
+                    ['category_id' => $category->id]
+                );
             }
+        } else {
+            Log::warning("Category sync skipped: [{$catName}] (External ID: {$externalCatId}) not found in database.");
         }
     }
 
