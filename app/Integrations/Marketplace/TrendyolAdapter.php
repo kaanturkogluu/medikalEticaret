@@ -21,6 +21,22 @@ class TrendyolAdapter implements MarketplaceInterface
     }
 
     /**
+     * Get HTTP client instance configured for Trendyol API
+     */
+    protected function client()
+    {
+        $supplierId = $this->config['supplier_id'];
+        $userAgent = "{$supplierId} - SelfIntegration";
+
+        return Http::withBasicAuth($this->config['api_key'], $this->config['api_secret'])
+            ->withHeaders([
+                'User-Agent' => $userAgent,
+                'Accept' => 'application/json'
+            ])
+            ->timeout(30);
+    }
+
+    /**
      * Common request helper to handle auth, user-agent and logging.
      * Incorporates rate-limiting protection and standard headers.
      */
@@ -38,12 +54,7 @@ class TrendyolAdapter implements MarketplaceInterface
             'url' => $url
         ]);
 
-        $request = Http::withBasicAuth($this->config['api_key'], $this->config['api_secret'])
-            ->withHeaders([
-                'User-Agent' => $userAgent,
-                'Accept' => 'application/json'
-            ])
-            ->timeout(30)
+        $request = $this->client()
             ->retry(3, 1000); // Retry with 1s delay
 
         $response = match (strtolower($method)) {
@@ -142,12 +153,7 @@ class TrendyolAdapter implements MarketplaceInterface
         $supplierId = $this->config['supplier_id'];
         $url = "https://apigw.trendyol.com/integration/order/sellers/{$supplierId}/orders";
 
-        $response = Http::withBasicAuth($this->config['api_key'], $this->config['api_secret'])
-            ->withHeaders([
-                'Accept' => 'application/json',
-                'User-Agent' => "{$supplierId} - SelfIntegration"
-            ])
-            ->timeout(30)
+        $response = $this->client()
             ->get($url, [
                 'page' => $page,
                 'size' => $size,
@@ -172,12 +178,7 @@ class TrendyolAdapter implements MarketplaceInterface
             'url' => $url
         ]);
 
-        $response = Http::withBasicAuth($this->config['api_key'], $this->config['api_secret'])
-            ->withHeaders([
-                'Accept' => 'application/json',
-                'User-Agent' => "{$supplierId} - SelfIntegration"
-            ])
-            ->timeout(30)
+        $response = $this->client()
             ->get($url, [
                 'page' => $page,
                 'size' => $size
@@ -187,7 +188,7 @@ class TrendyolAdapter implements MarketplaceInterface
             return collect($response->json()['content'] ?? []);
         }
 
-        return collect([]);
+        throw new \Exception("Trendyol API Error [fetchProducts]: " . $response->body());
     }
 
     public function getIdentifier(): string
@@ -198,11 +199,10 @@ class TrendyolAdapter implements MarketplaceInterface
     public function testConnection(): bool
     {
         try {
-            $response = $this->request('GET', 'orders', ['size' => 1]);
+            // Calling fetchProducts directly to verify connection and data structure
+            $this->fetchProducts(0, 1);
 
-            Log::info("TRENDYOL [TEST_CONNECTION] Status: " . $response->status() . " Response: " . $response->body());
-
-            return $response->successful();
+            return true;
         } catch (\Exception $e) {
             Log::error("TRENDYOL [TEST_CONNECTION] [EXCEPTION]: " . $e->getMessage());
             return false;
