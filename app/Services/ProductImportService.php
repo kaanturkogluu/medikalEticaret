@@ -189,14 +189,21 @@ class ProductImportService
     {
         // Brand Normalization
         $brandName = trim($data['brand'] ?? 'Unknown');
-        $brand = Brand::firstOrCreate(['name' => $brandName], ['slug' => Str::slug($brandName)]);
-        $product->update(['brand_id' => $brand->id]);
+        $externalBrandId = $data['brandId'] ?? null;
+        
+        $brand = Brand::where('name', $brandName)->first();
 
-        if (!empty($data['brandId'])) {
-            ChannelBrand::firstOrCreate(
-                ['channel_id' => $channel->id, 'external_brand_id' => (string)$data['brandId']],
-                ['brand_id' => $brand->id]
-            );
+        if ($brand) {
+            $product->update(['brand_id' => $brand->id]);
+
+            if ($externalBrandId) {
+                ChannelBrand::firstOrCreate(
+                    ['channel_id' => $channel->id, 'external_brand_id' => (string)$externalBrandId],
+                    ['brand_id' => $brand->id]
+                );
+            }
+        } else {
+            Log::warning("Brand sync skipped: [{$brandName}] not found in database.");
         }
 
         // Category Normalization

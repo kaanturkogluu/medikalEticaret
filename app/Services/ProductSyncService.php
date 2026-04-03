@@ -77,11 +77,24 @@ class ProductSyncService
     protected function processProduct(Channel $channel, array $data): void
     {
         try {
-            // Brand Mapping
+            // Brand Normalization
             $brandId = null;
-            $brandName = $data['brand'] ?? null;
-            if ($brandName) {
-                $brandId = Brand::updateOrCreate(['name' => $brandName], ['active' => true])->id;
+            $brandName = trim($data['brand'] ?? 'Unknown');
+            $externalBrandId = $data['brandId'] ?? null;
+            
+            $brand = Brand::where('name', $brandName)->first();
+
+            if ($brand) {
+                $brandId = $brand->id;
+
+                if ($externalBrandId) {
+                    \App\Models\ChannelBrand::firstOrCreate(
+                        ['channel_id' => $channel->id, 'external_brand_id' => (string)$externalBrandId],
+                        ['brand_id' => $brand->id]
+                    );
+                }
+            } else {
+                Log::warning("Brand sync skipped: [{$brandName}] not found in database.");
             }
 
             // Category Mapping
