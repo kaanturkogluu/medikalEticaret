@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Log;
 class TrendyolAdapter implements MarketplaceInterface
 {
     protected array $config;
+
     protected string $baseUrl = 'https://api.trendyol.com/sapigw/suppliers';
 
     public function setConfig(array $config): self
@@ -27,8 +28,15 @@ class TrendyolAdapter implements MarketplaceInterface
     {
         $supplierId = $this->config['supplier_id'];
         $url = "{$this->baseUrl}/{$supplierId}/{$endpoint}";
-        
+
         $userAgent = "{$supplierId} - SelfIntegration";
+
+        Log::info("TRENDYOL [REQUEST_AUTH_DEBUG]", [
+            'api_key' => $this->config['api_key'],
+            'supplier_id' => $supplierId,
+            'api_secret' => $this->config['api_secret'],
+            'url' => $url
+        ]);
 
         $request = Http::withBasicAuth($this->config['api_key'], $this->config['api_secret'])
             ->withHeaders([
@@ -131,13 +139,20 @@ class TrendyolAdapter implements MarketplaceInterface
 
     public function fetchOrders(int $page = 0, int $size = 50): Collection
     {
-        $params = [
-            'page' => $page,
-            'size' => $size,
-            'orderByDirection' => 'DESC'
-        ];
+        $supplierId = $this->config['supplier_id'];
+        $url = "https://apigw.trendyol.com/integration/order/sellers/{$supplierId}/orders";
 
-        $response = $this->request('GET', 'orders', $params);
+        $response = Http::withBasicAuth($this->config['api_key'], $this->config['api_secret'])
+            ->withHeaders([
+                'Accept' => 'application/json',
+                'User-Agent' => "{$supplierId} - SelfIntegration"
+            ])
+            ->timeout(30)
+            ->get($url, [
+                'page' => $page,
+                'size' => $size,
+                'orderByDirection' => 'DESC'
+            ]);
 
         if ($response->successful()) {
             return collect($response->json()['content'] ?? []);
@@ -150,6 +165,12 @@ class TrendyolAdapter implements MarketplaceInterface
     {
         $supplierId = $this->config['supplier_id'];
         $url = "https://apigw.trendyol.com/integration/product/sellers/{$supplierId}/products";
+
+        Log::info("TRENDYOL [FETCH_PRODUCTS_AUTH_DEBUG]", [
+            'api_key' => $this->config['api_key'],
+            'supplier_id' => $supplierId,
+            'url' => $url
+        ]);
 
         $response = Http::withBasicAuth($this->config['api_key'], $this->config['api_secret'])
             ->withHeaders([
@@ -178,15 +199,20 @@ class TrendyolAdapter implements MarketplaceInterface
     {
         try {
             $response = $this->request('GET', 'orders', ['size' => 1]);
+
+            Log::info("TRENDYOL [TEST_CONNECTION] Status: " . $response->status() . " Response: " . $response->body());
+
             return $response->successful();
         } catch (\Exception $e) {
+            Log::error("TRENDYOL [TEST_CONNECTION] [EXCEPTION]: " . $e->getMessage());
             return false;
         }
     }
 
     protected function getMarketplaceBrandId(?int $brandId): ?int
     {
-        if (!$brandId) return null;
+        if (!$brandId)
+            return null;
         return \App\Models\ChannelBrand::where('brand_id', $brandId)
             ->whereHas('channel', fn($q) => $q->where('slug', 'trendyol'))
             ->value('external_brand_id') ?? 1000;
@@ -194,7 +220,8 @@ class TrendyolAdapter implements MarketplaceInterface
 
     protected function getMarketplaceCategoryId(?int $categoryId): ?int
     {
-        if (!$categoryId) return null;
+        if (!$categoryId)
+            return null;
         return \App\Models\ChannelCategory::where('category_id', $categoryId)
             ->whereHas('channel', fn($q) => $q->where('slug', 'trendyol'))
             ->value('external_category_id');
