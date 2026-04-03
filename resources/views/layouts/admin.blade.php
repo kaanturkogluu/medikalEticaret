@@ -172,15 +172,39 @@
 
                 <!-- Profile -->
                 <div class="relative" x-data="{ open: false }">
-                    <button @click="open = !open" class="flex items-center gap-3">
-                        <div class="h-8 w-8 rounded-lg bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center text-white font-bold text-sm shadow-md">
-                            AD
+                    <button @click="open = !open" class="flex items-center gap-3 group">
+                        <div class="h-8 w-8 rounded-lg bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center text-white font-bold text-sm shadow-md group-hover:scale-105 transition-transform">
+                            {{ substr(auth()->user()->name, 0, 1) . substr(strrchr(auth()->user()->name, ' '), 1, 1) }}
                         </div>
                         <div class="hidden lg:block text-left">
-                            <p class="text-sm font-bold text-slate-800 leading-none">Admin Demo</p>
+                            <p class="text-sm font-bold text-slate-800 leading-none">{{ auth()->user()->name }}</p>
                             <p class="text-[10px] text-slate-500 mt-1 uppercase font-semibold">Super Admin</p>
                         </div>
+                        <i class="fas fa-chevron-down text-[10px] text-slate-400 group-hover:text-slate-600 transition-colors"></i>
                     </button>
+
+                    <!-- Dropdown -->
+                    <div x-show="open" @click.away="open = false" x-cloak 
+                        x-transition:enter="transition ease-out duration-100"
+                        x-transition:enter-start="transform opacity-0 scale-95"
+                        x-transition:enter-end="transform opacity-100 scale-100"
+                        x-transition:leave="transition ease-in duration-75"
+                        x-transition:leave-start="transform opacity-100 scale-100"
+                        x-transition:leave-end="transform opacity-0 scale-95"
+                        class="absolute right-0 mt-3 w-48 bg-white rounded-2xl shadow-xl border border-slate-100 py-2 z-50 overflow-hidden">
+                        <div class="px-4 py-2 border-b border-slate-50 mb-1">
+                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">HESABIM</p>
+                        </div>
+                        <a href="{{ route('admin.settings') }}" class="px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 flex items-center gap-3 transition-colors">
+                            <i class="fas fa-user-circle text-slate-400"></i> Profilim
+                        </a>
+                        <form action="{{ route('logout') }}" method="POST" id="logout-form">
+                            @csrf
+                            <button type="submit" class="w-full text-left px-4 py-2 text-sm text-rose-600 hover:bg-rose-50 flex items-center gap-3 transition-colors">
+                                <i class="fas fa-sign-out-alt"></i> Güvenli Çıkış
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </header>

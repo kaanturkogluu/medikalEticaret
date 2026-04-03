@@ -9,10 +9,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Product extends Model
 {
     protected $fillable = [
-        'brand_id', 'category_id', 'sku', 'barcode', 'name', 'brand_name', 'category_name', 
-        'description', 'price', 'stock', 'active', 'attributes', 'raw_marketplace_data', 
-        'marketplace_status', 'marketplace', 'external_id', 'platform_listing_id', 
-        'product_content_id', 'supplier_id'
+        'parent_id', 'variant_key', 'brand_id', 'category_id', 'sku', 'barcode', 'name',
+        'brand_name', 'category_name', 'description', 'price', 'stock', 'active',
+        'attributes', 'raw_marketplace_data', 'marketplace_status', 'marketplace',
+        'external_id', 'platform_listing_id', 'product_content_id', 'supplier_id',
     ];
 
     protected $casts = [
@@ -20,6 +20,16 @@ class Product extends Model
         'attributes' => 'array',
         'raw_marketplace_data' => 'array'
     ];
+
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(Product::class, 'parent_id');
+    }
+
+    public function variants(): HasMany
+    {
+        return $this->hasMany(Product::class, 'parent_id');
+    }
 
     public function brand(): BelongsTo
     {

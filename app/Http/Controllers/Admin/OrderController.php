@@ -17,7 +17,7 @@ class OrderController extends Controller
     public function index(): View
     {
         $orders = Order::with('channel')
-            ->latest()
+            ->oldest()
             ->paginate(15);
 
         return view('admin.orders', compact('orders'));

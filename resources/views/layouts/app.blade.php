@@ -249,7 +249,6 @@
         </div>
         <div class="ty-container border-t border-slate-800 mt-16 pt-8 flex flex-col md:flex-row items-center justify-between text-xs text-slate-500 font-bold uppercase tracking-widest">
             <p>&copy; 2026 {{ config('app.name') }} | Tüm Hakları Saklıdır.</p>
-            <p>Developer by Antigravity AI Engine</p>
         </div>
     </footer>
 
