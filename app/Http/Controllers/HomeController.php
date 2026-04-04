@@ -68,7 +68,9 @@ class HomeController extends Controller
         $categories = Category::whereHas('products')->withCount('products')->get();
         $brands = Brand::whereHas('products')->withCount('products')->get();
 
-        return view('home', compact('products', 'categories', 'brands'));
+        $banners = \App\Models\Banner::where('is_active', true)->orderBy('order')->get();
+
+        return view('home', compact('products', 'categories', 'brands', 'banners'));
     }
 
     public function show(Product $product)

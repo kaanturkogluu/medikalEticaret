@@ -42,52 +42,100 @@
 @endsection
 
 @section('content')
+    @if(\App\Models\Setting::getValue('banner_active', true) && $banners->count() > 0)
     <!-- Banner Section -->
-    <div class="ty-container pt-8">
-        <div class="relative rounded-2xl overflow-hidden shadow-2xl group group-hover:shadow-3xl transition-all duration-500">
-            <!-- Background Image -->
-            <img src="{{ asset('images/banners/main_banner.png') }}" class="w-full h-[450px] object-cover transition-transform duration-1000 group-hover:scale-105" alt="Medical Banner">
-            
-            <!-- Overlay Content -->
-            <div class="absolute inset-0 bg-gradient-to-r from-slate-900/90 via-slate-900/40 to-transparent flex flex-col justify-center px-12 md:px-20">
-                <div class="inline-block bg-white/10 backdrop-blur-md border border-white/20 px-3 py-1 rounded-full mb-6 w-fit animate-pulse">
-                    <span class="text-[var(--primary-color)] font-black text-[10px] uppercase tracking-[0.2em] italic">Yeni Sezon Kampanyası</span>
+    <div class="ty-container pt-8" 
+         x-data="{ 
+            activeBanner: 0, 
+            count: {{ $banners->count() }}, 
+            timer: null,
+            init() { this.startTimer() },
+            startTimer() {
+                this.timer = setInterval(() => {
+                    this.activeBanner = (this.activeBanner + 1) % this.count;
+                }, 5000);
+            },
+            resetTimer() {
+                clearInterval(this.timer);
+                this.startTimer();
+            },
+            goTo(index) {
+                this.activeBanner = index;
+                this.resetTimer();
+            },
+            next() {
+                this.activeBanner = (this.activeBanner + 1) % this.count;
+                this.resetTimer();
+            },
+            prev() {
+                this.activeBanner = (this.activeBanner - 1 + this.count) % this.count;
+                this.resetTimer();
+            }
+         }">
+        <div class="relative rounded-[32px] overflow-hidden shadow-2xl group group-hover:shadow-3xl transition-all duration-500 bg-slate-100 h-[450px]">
+            @foreach($banners as $index => $banner)
+            <div x-show="activeBanner === {{ $index }}" 
+                 x-transition:enter="transition ease-out duration-700" 
+                 x-transition:enter-start="opacity-0 scale-105" 
+                 x-transition:enter-end="opacity-100 scale-100" 
+                 x-transition:leave="transition ease-in duration-300"
+                 x-transition:leave-start="opacity-100 scale-100"
+                 x-transition:leave-end="opacity-0 scale-95"
+                 class="absolute inset-0"
+                 style="display: none;"
+                 x-cloak>
+                <img src="{{ asset('storage/' . $banner->image_path) }}" class="w-full h-full object-cover" alt="Banner">
+                
+                <!-- Overlay Content -->
+                <div class="absolute inset-0 bg-gradient-to-r from-slate-900/90 via-slate-900/40 to-transparent flex items-center px-12 md:px-20">
+                    <div class="max-w-2xl space-y-6">
+                        @if($banner->subtitle)
+                        <div class="inline-block bg-[var(--primary-color)] text-white px-4 py-1.5 rounded-full font-black uppercase tracking-widest italic shadow-xl"
+                             style="color: {{ $banner->subtitle_color }}; font-size: {{ $banner->subtitle_size }}px;">
+                            {{ $banner->subtitle }}
+                        </div>
+                        @endif
+                        <h2 class="font-black leading-[1.1] italic tracking-tighter drop-shadow-2xl"
+                            style="color: {{ $banner->title_color }}; font-size: {{ $banner->title_size }}px;">
+                            {!! nl2br(e($banner->title)) !!}
+                        </h2>
+                        @if($banner->buttons && count($banner->buttons) > 0)
+                        <div class="flex flex-wrap gap-4 pt-4">
+                            @foreach($banner->buttons as $button)
+                            <a href="{{ $button['link'] ?? '#' }}" class="px-8 py-4 rounded-xl font-black italic shadow-2xl flex items-center gap-3 transition-all transform hover:scale-105 group/btn border border-white/10"
+                               style="background-color: {{ $button['bg'] ?? 'var(--primary-color)' }}; color: {{ $button['color'] ?? '#FFFFFF' }};">
+                                {{ $button['text'] }} 
+                                <i class="fas fa-chevron-right text-[10px] group-hover/btn:translate-x-1 transition-transform"></i>
+                            </a>
+                            @endforeach
+                        </div>
+                        @endif
+                    </div>
                 </div>
-                
-                <h2 class="text-4xl md:text-6xl font-black text-white italic tracking-tighter mb-4 leading-[0.9]">
-                    SAĞLIĞINIZ BİZİM İÇİN<br>
-                    <span class="text-[var(--primary-color)] drop-shadow-2xl">HER ŞEYDEN ÖNEMLİ</span>
-                </h2>
-                
-                <p class="text-white/80 font-medium max-w-lg mb-10 text-sm md:text-base leading-relaxed border-l-2 border-[var(--primary-color)] pl-6">
-                    En kaliteli medikal ürünler, son teknoloji cihazlar ve güvenilir sağlık ekipmanları 
-                    umutMed güvencesiyle kapınızda. Hemen keşfetmeye başlayın.
-                </p>
-                
-                <div class="flex flex-wrap gap-4">
-                    <a href="#" class="bg-[var(--primary-color)] hover:bg-orange-600 text-white px-10 py-4 rounded-xl font-black italic shadow-xl transition-all hover:translate-y-[-2px] hover:shadow-orange-900/20 uppercase tracking-tighter">
-                        ALIŞVERİŞE BAŞLA
-                    </a>
-                    <a href="#" class="bg-white/10 backdrop-blur-xl border border-white/30 hover:bg-white/20 text-white px-10 py-4 rounded-xl font-black italic transition-all hover:translate-y-[-2px] uppercase tracking-tighter flex items-center gap-3 group/btn">
-                        <span>KATALOGLARI GÖR</span>
-                        <i class="fas fa-arrow-right text-[10px] group-hover/btn:translate-x-1 transition-transform"></i>
-                    </a>
-                </div>
+
+                <!-- Decorative elements per banner can be added here if needed -->
             </div>
-            
-            <!-- Floating Decorative Elements -->
-            <div class="absolute bottom-8 right-12 hidden lg:flex items-center gap-6">
-                <div class="bg-white/10 backdrop-blur-md border border-white/20 p-4 rounded-2xl text-center min-w-[100px]">
-                    <div class="text-white font-black text-2xl italic tracking-tighter">%20</div>
-                    <div class="text-white/60 font-bold text-[9px] uppercase tracking-widest">İndirim</div>
-                </div>
-                <div class="bg-white/10 backdrop-blur-md border border-white/20 p-4 rounded-2xl text-center min-w-[100px]">
-                    <div class="text-white font-black text-2xl italic tracking-tighter">7/24</div>
-                    <div class="text-white/60 font-bold text-[9px] uppercase tracking-widest">Destek</div>
-                </div>
+            @endforeach
+
+            <!-- Slider Controls -->
+            @if($banners->count() > 1)
+            <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-3 z-10">
+                @foreach($banners as $index => $banner)
+                <button @click="goTo({{ $index }})" class="h-1.5 rounded-full transition-all duration-500" :class="activeBanner === {{ $index }} ? 'w-10 bg-[var(--primary-color)]' : 'w-3 bg-white/50 hover:bg-white'"></button>
+                @endforeach
             </div>
+
+            <!-- Arrows -->
+            <button @click="prev()" class="absolute left-6 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-full text-white flex items-center justify-center transition-all opacity-0 group-hover:opacity-100">
+                <i class="fas fa-chevron-left text-lg"></i>
+            </button>
+            <button @click="next()" class="absolute right-6 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-full text-white flex items-center justify-center transition-all opacity-0 group-hover:opacity-100">
+                <i class="fas fa-chevron-right text-lg"></i>
+            </button>
+            @endif
         </div>
     </div>
+    @endif
 
     <!-- Main Content -->
     <main class="ty-container py-8">

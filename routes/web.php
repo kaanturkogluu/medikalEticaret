@@ -43,6 +43,15 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::post('/marketplaces/{channel}/test', [\App\Http\Controllers\Admin\ChannelController::class, 'test'])->name('admin.marketplaces.test');
 
     Route::view('/logs', 'admin.logs')->name('admin.logs');
-    Route::view('/appearance', 'admin.appearance.index')->name('admin.appearance');
+    Route::get('/appearance', [\App\Http\Controllers\Admin\AppearanceController::class, 'index'])->name('admin.appearance');
+    Route::group(['prefix' => 'appearance/banner', 'as' => 'admin.appearance.banner.'], function () {
+        Route::get('/', [\App\Http\Controllers\Admin\BannerController::class, 'index'])->name('index');
+        Route::get('/create', [\App\Http\Controllers\Admin\BannerController::class, 'create'])->name('create');
+        Route::post('/store', [\App\Http\Controllers\Admin\BannerController::class, 'store'])->name('store');
+        Route::get('/{banner}/edit', [\App\Http\Controllers\Admin\BannerController::class, 'edit'])->name('edit');
+        Route::post('/{banner}/update', [\App\Http\Controllers\Admin\BannerController::class, 'update'])->name('update');
+        Route::delete('/{banner}/delete', [\App\Http\Controllers\Admin\BannerController::class, 'destroy'])->name('destroy');
+        Route::post('/{banner}/toggle', [\App\Http\Controllers\Admin\BannerController::class, 'toggle'])->name('toggle');
+    });
     Route::view('/settings', 'admin.settings')->name('admin.settings');
 });
