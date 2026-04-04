@@ -59,6 +59,25 @@
                     </div>
                 </div>
 
+                <!-- Shipping Highlight Badge -->
+                <div class="mb-8 p-4 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-100 rounded-2xl flex items-center gap-4 relative overflow-hidden group">
+                    <div class="absolute -right-2 -top-2 text-green-100/50 text-5xl rotate-12 transition-transform group-hover:rotate-0">
+                        <i class="fas fa-truck-fast"></i>
+                    </div>
+                    <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center text-green-600 shadow-sm shrink-0 ring-4 ring-green-100/50">
+                        <i class="fas fa-shipping-fast text-xl animate-bounce"></i>
+                    </div>
+                    <div class="relative z-10">
+                        <div class="text-xs font-black text-green-900 uppercase italic tracking-tighter flex items-center gap-2">
+                           <span class="w-2 h-2 bg-green-500 rounded-full animate-ping"></span>
+                           AYNI GÜN KARGO FIRSATI
+                        </div>
+                        <div class="text-[11px] text-green-700 font-bold leading-tight mt-1">
+                            Bugün saat <span class="bg-green-600 text-white px-1.5 py-0.5 rounded-md font-black italic">16:00</span>'a kadar vereceğiniz siparişlerde kargonuz <span class="text-green-900 underline decoration-green-300 decoration-2 font-black italic">BUGÜN</span> yola çıksın!
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Actions -->
                 <div class="flex gap-4 mb-10">
                     @php $imgArr = $product->productImages->first()?->url ?? 'https://via.placeholder.com/600x900'; @endphp

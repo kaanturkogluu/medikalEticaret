@@ -42,6 +42,53 @@
 @endsection
 
 @section('content')
+    <!-- Banner Section -->
+    <div class="ty-container pt-8">
+        <div class="relative rounded-2xl overflow-hidden shadow-2xl group group-hover:shadow-3xl transition-all duration-500">
+            <!-- Background Image -->
+            <img src="{{ asset('images/banners/main_banner.png') }}" class="w-full h-[450px] object-cover transition-transform duration-1000 group-hover:scale-105" alt="Medical Banner">
+            
+            <!-- Overlay Content -->
+            <div class="absolute inset-0 bg-gradient-to-r from-slate-900/90 via-slate-900/40 to-transparent flex flex-col justify-center px-12 md:px-20">
+                <div class="inline-block bg-white/10 backdrop-blur-md border border-white/20 px-3 py-1 rounded-full mb-6 w-fit animate-pulse">
+                    <span class="text-[var(--primary-color)] font-black text-[10px] uppercase tracking-[0.2em] italic">Yeni Sezon Kampanyası</span>
+                </div>
+                
+                <h2 class="text-4xl md:text-6xl font-black text-white italic tracking-tighter mb-4 leading-[0.9]">
+                    SAĞLIĞINIZ BİZİM İÇİN<br>
+                    <span class="text-[var(--primary-color)] drop-shadow-2xl">HER ŞEYDEN ÖNEMLİ</span>
+                </h2>
+                
+                <p class="text-white/80 font-medium max-w-lg mb-10 text-sm md:text-base leading-relaxed border-l-2 border-[var(--primary-color)] pl-6">
+                    En kaliteli medikal ürünler, son teknoloji cihazlar ve güvenilir sağlık ekipmanları 
+                    umutMed güvencesiyle kapınızda. Hemen keşfetmeye başlayın.
+                </p>
+                
+                <div class="flex flex-wrap gap-4">
+                    <a href="#" class="bg-[var(--primary-color)] hover:bg-orange-600 text-white px-10 py-4 rounded-xl font-black italic shadow-xl transition-all hover:translate-y-[-2px] hover:shadow-orange-900/20 uppercase tracking-tighter">
+                        ALIŞVERİŞE BAŞLA
+                    </a>
+                    <a href="#" class="bg-white/10 backdrop-blur-xl border border-white/30 hover:bg-white/20 text-white px-10 py-4 rounded-xl font-black italic transition-all hover:translate-y-[-2px] uppercase tracking-tighter flex items-center gap-3 group/btn">
+                        <span>KATALOGLARI GÖR</span>
+                        <i class="fas fa-arrow-right text-[10px] group-hover/btn:translate-x-1 transition-transform"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Floating Decorative Elements -->
+            <div class="absolute bottom-8 right-12 hidden lg:flex items-center gap-6">
+                <div class="bg-white/10 backdrop-blur-md border border-white/20 p-4 rounded-2xl text-center min-w-[100px]">
+                    <div class="text-white font-black text-2xl italic tracking-tighter">%20</div>
+                    <div class="text-white/60 font-bold text-[9px] uppercase tracking-widest">İndirim</div>
+                </div>
+                <div class="bg-white/10 backdrop-blur-md border border-white/20 p-4 rounded-2xl text-center min-w-[100px]">
+                    <div class="text-white font-black text-2xl italic tracking-tighter">7/24</div>
+                    <div class="text-white/60 font-bold text-[9px] uppercase tracking-widest">Destek</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Main Content -->
     <main class="ty-container py-8">
         <div class="flex flex-col lg:flex-row gap-8">

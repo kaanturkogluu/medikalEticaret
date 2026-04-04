@@ -116,18 +116,56 @@
         }
 
         @yield('styles')
+
+        /* Marquee Animation */
+        .marquee-wrapper {
+            overflow: hidden;
+            white-space: nowrap;
+            width: 100%;
+        }
+        .marquee-content {
+            display: inline-block;
+            animation: marquee 25s linear infinite;
+            padding-left: 100%;
+        }
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-100%); }
+        }
     </style>
 </head>
 <body x-data>
 
     <!-- Top Info Bar -->
     <div class="bg-gray-100 hidden md:block border-b border-gray-200">
-        <div class="ty-container h-8 relative flex items-center justify-end text-[11px] text-gray-500 font-medium">
-            <div class="absolute left-1/2 -translate-x-1/2 text-[var(--primary-color)] font-black text-[13px] tracking-wide uppercase">
-                Açılışa Özel %10 İndirim
+        <div class="ty-container h-8 flex items-center justify-between text-[11px] text-gray-500 font-medium">
+            <!-- Left Side: Marketplace Icons -->
+            <div class="flex items-center gap-4">
+                <span class="text-[9px] uppercase font-bold text-gray-400 mr-1">Bizi Takip Edin:</span>
+                <a href="https://www.trendyol.com" target="_blank" title="Trendyol" class="hover:opacity-75 transition-opacity">
+                    <img src="https://cdn.dsmcdn.com/web/logo/trendyol-logo.svg" class="h-3" alt="Trendyol">
+                </a>
+                <a href="https://www.n11.com" target="_blank" title="n11" class="hover:opacity-75 transition-opacity">
+                    <img src="https://n11-p-cdn.akamaized.net/static/images/n11-logo.svg" class="h-3" alt="n11">
+                </a>
+                <a href="https://www.hepsiburada.com" target="_blank" title="Hepsiburada" class="hover:opacity-75 transition-opacity">
+                    <img src="https://images.hepsiburada.net/assets/sf-assets-navigation-v2/1.0.121/content/img/logo-hepsiburada.svg" class="h-3" alt="Hepsiburada">
+                </a>
+                <a href="https://www.amazon.com.tr" target="_blank" title="Amazon" class="hover:opacity-75 transition-opacity text-slate-900">
+                    <i class="fab fa-amazon text-[14px]"></i>
+                </a>
             </div>
-            <div class="flex items-center gap-6">
-                <a href="#" class="hover:text-amber-600 transition-colors">Yardım & Destek</a>
+
+            <!-- Middle: Scrolling Text -->
+            <div class="flex-grow mx-20 marquee-wrapper">
+                <div class="marquee-content text-[var(--primary-color)] font-black text-[12px] tracking-wide uppercase">
+                    Açılışa Özel Tüm Ürünlerde %20'ye Varan İndirimler! &nbsp;&nbsp;&nbsp;&nbsp;&bullet;&nbsp;&nbsp;&nbsp;&nbsp; Saat 16:00'a Kadar Verilen Siparişlerde Aynı Gün Kargo! &nbsp;&nbsp;&nbsp;&nbsp;&bullet;&nbsp;&nbsp;&nbsp;&nbsp; Ücretsiz Kargo Fırsatını Kaçırmayın!
+                </div>
+            </div>
+
+            <!-- Right Side: Links -->
+            <div class="flex items-center gap-6 shrink-0">
+                <a href="#" class="hover:text-amber-600 transition-colors uppercase font-bold">Yardım & Destek</a>
             </div>
         </div>
     </div>
