@@ -261,7 +261,7 @@
             <!-- WhatsApp Support -->
             <div class="flex flex-col items-center gap-6">
                 <h4 class="text-xs font-black text-slate-900 uppercase italic tracking-tighter border-b-2 border-green-500 pb-2 w-fit">Hızlı Destek Hattı</h4>
-                <a href="https://wa.me/900000000000" target="_blank" class="bg-[#25D366] text-white px-10 py-5 rounded-2xl font-black italic shadow-2xl shadow-green-100 flex items-center gap-5 hover:bg-[#128C7E] transition-all transform hover:-translate-y-1 border-b-4 border-green-700 active:border-b-0 active:translate-y-1">
+                <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', \App\Models\Setting::getValue('contact_whatsapp', '905300000000')) }}" target="_blank" class="bg-[#25D366] text-white px-10 py-5 rounded-2xl font-black italic shadow-2xl shadow-green-100 flex items-center gap-5 hover:bg-[#128C7E] transition-all transform hover:-translate-y-1 border-b-4 border-green-700 active:border-b-0 active:translate-y-1">
                     <i class="fab fa-whatsapp text-4xl"></i>
                     <div class="flex flex-col leading-none text-left">
                         <span class="text-[10px] opacity-80 uppercase tracking-widest font-bold mb-1">Sorularınız İçin</span>
@@ -474,6 +474,24 @@
     </script>
 
     @yield('scripts')
+
+    <!-- Back to Top Button -->
+    <div x-data="{ showTop: false }" 
+         @scroll.window="showTop = (window.pageYOffset > 500)"
+         class="fixed bottom-8 right-8 z-[1500]">
+        <button x-show="showTop" 
+                x-cloak
+                x-transition:enter="transition ease-out duration-300"
+                x-transition:enter-start="opacity-0 translate-y-10 scale-90"
+                x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                x-transition:leave="transition ease-in duration-300"
+                x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+                x-transition:leave-end="opacity-0 translate-y-10 scale-90"
+                @click="window.scrollTo({ top: 0, behavior: 'smooth' })"
+                class="w-14 h-14 bg-slate-900/90 backdrop-blur-md text-white rounded-2xl shadow-2xl flex items-center justify-center hover:bg-[var(--primary-color)] transition-all transform hover:-translate-y-2 group border border-white/10">
+            <i class="fas fa-arrow-up text-lg group-hover:animate-bounce"></i>
+        </button>
+    </div>
 
 </body>
 </html>

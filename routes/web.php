@@ -44,6 +44,8 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
 
     Route::view('/logs', 'admin.logs')->name('admin.logs');
     Route::get('/appearance', [\App\Http\Controllers\Admin\AppearanceController::class, 'index'])->name('admin.appearance');
+    Route::get('/appearance/contact', [\App\Http\Controllers\Admin\AppearanceController::class, 'contact'])->name('admin.appearance.contact');
+    Route::post('/appearance/contact', [\App\Http\Controllers\Admin\AppearanceController::class, 'updateContact'])->name('admin.appearance.contact.update');
     Route::group(['prefix' => 'appearance/banner', 'as' => 'admin.appearance.banner.'], function () {
         Route::get('/', [\App\Http\Controllers\Admin\BannerController::class, 'index'])->name('index');
         Route::get('/create', [\App\Http\Controllers\Admin\BannerController::class, 'create'])->name('create');

@@ -3,6 +3,13 @@
 @section('title', 'İletişim')
 
 @section('content')
+@php
+    $phone = \App\Models\Setting::getValue('contact_phone', '0530 000 00 00');
+    $whatsapp = \App\Models\Setting::getValue('contact_whatsapp', '905300000000');
+    $address = \App\Models\Setting::getValue('contact_address', 'Merkez Mah. Sağlık Cad. No:123/A İskenderun / HATAY');
+    $email = \App\Models\Setting::getValue('contact_email', 'info@umutmed.com');
+    $maps = \App\Models\Setting::getValue('contact_maps_embed', 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2258.231631379967!2d36.20961572777762!3d36.82758169743837!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x152f3f7dbcdb71e9%3A0x9173dfcc5adb2a23!2sumut%20medikal!5e0!3m2!1str!2str!4v1775334764993!5m2!1str!2str');
+@endphp
 <div class="bg-gray-50/50 py-16">
     <div class="ty-container">
         <!-- Page Header -->
@@ -27,7 +34,7 @@
                     </div>
                     <h3 class="text-lg font-black text-slate-900 italic tracking-tighter mb-2">TELEFON</h3>
                     <p class="text-slate-500 text-sm font-medium mb-4">Hafta içi 09:00 - 18:00 saatleri arasında bize ulaşabilirsiniz.</p>
-                    <a href="tel:+905555555555" class="text-xl font-black text-blue-600 hover:underline">+90 555 555 55 55</a>
+                    <a href="tel:{{ preg_replace('/[^0-9+]/', '', $phone) }}" class="text-xl font-black text-blue-600 hover:underline">{{ $phone }}</a>
                 </div>
 
                 <!-- WhatsApp Card -->
@@ -37,7 +44,7 @@
                     </div>
                     <h3 class="text-lg font-black text-slate-900 italic tracking-tighter mb-2">WHATSAPP</h3>
                     <p class="text-slate-500 text-sm font-medium mb-4">7/24 mesaj yoluyla destek alabilirsiniz.</p>
-                    <a href="https://wa.me/905555555555" target="_blank" class="bg-[#25D366] text-white px-6 py-3 rounded-xl font-black italic shadow-lg shadow-green-100 inline-flex items-center gap-3 hover:bg-[#128C7E] transition-all">
+                    <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $whatsapp) }}" target="_blank" class="bg-[#25D366] text-white px-6 py-3 rounded-xl font-black italic shadow-lg shadow-green-100 inline-flex items-center gap-3 hover:bg-[#128C7E] transition-all">
                         <span>MESAJ ATIN</span>
                         <i class="fas fa-arrow-right text-xs"></i>
                     </a>
@@ -51,14 +58,12 @@
                     <div class="relative z-10">
                         <h3 class="text-lg font-black italic tracking-tighter mb-6 text-[var(--primary-color)]">ADRES BİLGİSİ</h3>
                         <p class="text-white/70 text-sm font-medium leading-relaxed mb-8">
-                            Umut Medikal Ürünler San. ve Tic. Ltd. Şti.<br>
-                            Merkez Mah. Sağlık Cad. No:123/A<br>
-                            İskenderun / HATAY
+                            {!! nl2br(e($address)) !!}
                         </p>
                         <div class="space-y-4">
                             <div class="flex items-center gap-4 text-xs font-bold uppercase tracking-widest">
                                 <i class="far fa-envelope text-[var(--primary-color)] text-lg"></i>
-                                <span>info@umutmed.com</span>
+                                <span>{{ $email }}</span>
                             </div>
                         </div>
                     </div>
@@ -69,13 +74,17 @@
             <div class="flex-grow">
                 <div class="bg-white p-4 rounded-[40px] border border-gray-100 shadow-2xl h-full min-h-[500px] relative">
                     <div class="w-full h-full rounded-[30px] overflow-hidden grayscale-[0.2] hover:grayscale-0 transition-all duration-700 ring-4 ring-gray-50">
-                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2258.231631379967!2d36.20961572777762!3d36.82758169743837!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x152f3f7dbcdb71e9%3A0x9173dfcc5adb2a23!2sumut%20medikal!5e0!3m2!1str!2str!4v1775334764993!5m2!1str!2str" 
+                        @if($maps)
+                        <iframe src="{{ $maps }}" 
                                 class="w-full h-full" 
                                 style="border:0;" 
                                 allowfullscreen="" 
                                 loading="lazy" 
                                 referrerpolicy="no-referrer-when-downgrade">
                         </iframe>
+                        @else
+                        <div class="w-full h-full flex items-center justify-center bg-slate-50 text-slate-300 italic font-bold">Harita henüz eklenmemiş.</div>
+                        @endif
                     </div>
                     
                     <!-- Floating Map Badge -->
