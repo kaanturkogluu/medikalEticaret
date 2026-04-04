@@ -136,6 +136,17 @@
 </head>
 <body x-data>
 
+    @php
+        $defaultMarketplaces = [
+            ['name' => 'TRENDYOL', 'url' => 'https://trendyol.com', 'logo' => 'https://www.google.com/s2/favicons?domain=trendyol.com&sz=128', 'color' => '#f27a1a'],
+            ['name' => 'N11', 'url' => 'https://n11.com', 'logo' => 'https://www.google.com/s2/favicons?domain=n11.com&sz=128', 'color' => '#e11e24'],
+            ['name' => 'HEPSİBURADA', 'url' => 'https://hepsiburada.com', 'logo' => 'https://www.google.com/s2/favicons?domain=hepsiburada.com&sz=128', 'color' => '#ff6000'],
+            ['name' => 'AMAZON', 'url' => 'https://amazon.com.tr', 'logo' => 'https://www.google.com/s2/favicons?domain=amazon.com.tr&sz=128', 'color' => '#000000'],
+        ];
+        $marketplaces = json_decode(\App\Models\Setting::getValue('marketplaces', json_encode($defaultMarketplaces)), true);
+        $marqueeText = \App\Models\Setting::getValue('marquee_text', "Açılışa Özel Tüm Ürünlerde %20'ye Varan İndirimler! • Saat 16:00'a Kadar Verilen Siparişlerde Aynı Gün Kargo! • Ücretsiz Kargo Fırsatını Kaçırmayın!");
+    @endphp
+
     <!-- Top Info Bar -->
     <div class="bg-gray-100 hidden md:block border-b border-gray-200">
         <div class="ty-container h-8 flex items-center justify-between text-[11px] text-gray-500 font-medium">
@@ -143,29 +154,21 @@
             <div class="flex items-center gap-8">
                 <span class="text-[9px] uppercase font-black text-gray-400 whitespace-nowrap leading-none border-r border-gray-200 pr-4 py-1.5">Bizi Takip Edin</span>
                 <div class="flex items-center gap-6">
-                    <a href="https://www.trendyol.com" target="_blank" title="Trendyol" class="hover:opacity-75 transition-opacity flex items-center gap-2">
-                        <img src="https://www.google.com/s2/favicons?domain=trendyol.com&sz=128" class="h-4 w-4 rounded-sm shadow-sm" alt="Trendyol">
-                        <span class="text-[var(--primary-color)] font-black text-[10px] tracking-tight">TRENDYOL</span>
+                    @foreach($marketplaces as $mp)
+                    <a href="{{ $mp['url'] }}" target="_blank" title="{{ $mp['name'] }}" class="hover:opacity-75 transition-opacity flex items-center gap-2">
+                        @if($mp['logo'])
+                        <img src="{{ $mp['logo'] }}" class="h-4 w-4 rounded-sm shadow-sm" alt="{{ $mp['name'] }}">
+                        @endif
+                        <span style="color: {{ $mp['color'] }};" class="font-black text-[10px] tracking-tight uppercase">{{ $mp['name'] }}</span>
                     </a>
-                    <a href="https://www.n11.com" target="_blank" title="n11" class="hover:opacity-75 transition-opacity flex items-center gap-2">
-                        <img src="https://www.google.com/s2/favicons?domain=n11.com&sz=128" class="h-4 w-4 rounded-sm shadow-sm" alt="n11">
-                        <span class="text-[#e11e24] font-black text-[10px] tracking-tight">N11</span>
-                    </a>
-                    <a href="https://www.hepsiburada.com" target="_blank" title="Hepsiburada" class="hover:opacity-75 transition-opacity flex items-center gap-2">
-                        <img src="https://www.google.com/s2/favicons?domain=hepsiburada.com&sz=128" class="h-4 w-4 rounded-sm shadow-sm" alt="Hepsiburada">
-                        <span class="text-[#ff6000] font-black text-[10px] tracking-tight">HEPSİBURADA</span>
-                    </a>
-                    <a href="https://www.amazon.com.tr" target="_blank" title="Amazon" class="hover:opacity-75 transition-opacity text-slate-900 flex items-center gap-2">
-                        <img src="https://www.google.com/s2/favicons?domain=amazon.com.tr&sz=128" class="h-4 w-4 rounded-sm shadow-sm" alt="Amazon">
-                        <span class="text-slate-900 font-black text-[10px] tracking-tight">AMAZON</span>
-                    </a>
+                    @endforeach
                 </div>
             </div>
 
             <!-- Middle: Scrolling Text -->
             <div class="flex-grow mx-20 marquee-wrapper">
                 <div class="marquee-content text-[var(--primary-color)] font-black text-[12px] tracking-wide uppercase">
-                    Açılışa Özel Tüm Ürünlerde %20'ye Varan İndirimler! &nbsp;&nbsp;&nbsp;&nbsp;&bullet;&nbsp;&nbsp;&nbsp;&nbsp; Saat 16:00'a Kadar Verilen Siparişlerde Aynı Gün Kargo! &nbsp;&nbsp;&nbsp;&nbsp;&bullet;&nbsp;&nbsp;&nbsp;&nbsp; Ücretsiz Kargo Fırsatını Kaçırmayın!
+                    {{ $marqueeText }}
                 </div>
             </div>
 
