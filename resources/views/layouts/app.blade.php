@@ -140,20 +140,26 @@
     <div class="bg-gray-100 hidden md:block border-b border-gray-200">
         <div class="ty-container h-8 flex items-center justify-between text-[11px] text-gray-500 font-medium">
             <!-- Left Side: Marketplace Icons -->
-            <div class="flex items-center gap-4">
-                <span class="text-[9px] uppercase font-bold text-gray-400 mr-1">Bizi Takip Edin:</span>
-                <a href="https://www.trendyol.com" target="_blank" title="Trendyol" class="hover:opacity-75 transition-opacity">
-                    <img src="https://cdn.dsmcdn.com/web/logo/trendyol-logo.svg" class="h-3" alt="Trendyol">
-                </a>
-                <a href="https://www.n11.com" target="_blank" title="n11" class="hover:opacity-75 transition-opacity">
-                    <img src="https://n11-p-cdn.akamaized.net/static/images/n11-logo.svg" class="h-3" alt="n11">
-                </a>
-                <a href="https://www.hepsiburada.com" target="_blank" title="Hepsiburada" class="hover:opacity-75 transition-opacity">
-                    <img src="https://images.hepsiburada.net/assets/sf-assets-navigation-v2/1.0.121/content/img/logo-hepsiburada.svg" class="h-3" alt="Hepsiburada">
-                </a>
-                <a href="https://www.amazon.com.tr" target="_blank" title="Amazon" class="hover:opacity-75 transition-opacity text-slate-900">
-                    <i class="fab fa-amazon text-[14px]"></i>
-                </a>
+            <div class="flex items-center gap-8">
+                <span class="text-[9px] uppercase font-black text-gray-400 whitespace-nowrap leading-none border-r border-gray-200 pr-4 py-1.5">Bizi Takip Edin</span>
+                <div class="flex items-center gap-6">
+                    <a href="https://www.trendyol.com" target="_blank" title="Trendyol" class="hover:opacity-75 transition-opacity flex items-center gap-2">
+                        <img src="https://www.google.com/s2/favicons?domain=trendyol.com&sz=128" class="h-4 w-4 rounded-sm shadow-sm" alt="Trendyol">
+                        <span class="text-[var(--primary-color)] font-black text-[10px] tracking-tight">TRENDYOL</span>
+                    </a>
+                    <a href="https://www.n11.com" target="_blank" title="n11" class="hover:opacity-75 transition-opacity flex items-center gap-2">
+                        <img src="https://www.google.com/s2/favicons?domain=n11.com&sz=128" class="h-4 w-4 rounded-sm shadow-sm" alt="n11">
+                        <span class="text-[#e11e24] font-black text-[10px] tracking-tight">N11</span>
+                    </a>
+                    <a href="https://www.hepsiburada.com" target="_blank" title="Hepsiburada" class="hover:opacity-75 transition-opacity flex items-center gap-2">
+                        <img src="https://www.google.com/s2/favicons?domain=hepsiburada.com&sz=128" class="h-4 w-4 rounded-sm shadow-sm" alt="Hepsiburada">
+                        <span class="text-[#ff6000] font-black text-[10px] tracking-tight">HEPSİBURADA</span>
+                    </a>
+                    <a href="https://www.amazon.com.tr" target="_blank" title="Amazon" class="hover:opacity-75 transition-opacity text-slate-900 flex items-center gap-2">
+                        <img src="https://www.google.com/s2/favicons?domain=amazon.com.tr&sz=128" class="h-4 w-4 rounded-sm shadow-sm" alt="Amazon">
+                        <span class="text-slate-900 font-black text-[10px] tracking-tight">AMAZON</span>
+                    </a>
+                </div>
             </div>
 
             <!-- Middle: Scrolling Text -->
@@ -238,8 +244,57 @@
         @yield('content')
     </main>
 
+    <!-- Pre-Footer Action Bar -->
+    <section class="bg-white border-t border-gray-50 py-16">
+        <div class="ty-container flex flex-col md:flex-row items-center justify-between gap-12">
+            <!-- Social Media -->
+            <div class="flex flex-col gap-6 w-full md:w-auto items-center md:items-start text-center md:text-left">
+                <h4 class="text-xs font-black text-slate-900 uppercase italic tracking-tighter border-b-2 md:border-b-0 md:border-l-4 border-[var(--primary-color)] md:pl-3 pb-2 md:pb-0 w-fit">Sosyal Medyada Biz</h4>
+                <div class="flex gap-4">
+                    <a href="#" class="w-12 h-12 rounded-2xl bg-slate-50 border border-gray-100 flex items-center justify-center text-slate-600 hover:bg-[#3b5998] hover:text-white transition-all transform hover:-translate-y-1 shadow-sm"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="w-12 h-12 rounded-2xl bg-slate-50 border border-gray-100 flex items-center justify-center text-slate-600 hover:bg-[#E1306C] hover:text-white transition-all transform hover:-translate-y-1 shadow-sm"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="w-12 h-12 rounded-2xl bg-slate-50 border border-gray-100 flex items-center justify-center text-slate-600 hover:bg-[#1DA1F2] hover:text-white transition-all transform hover:-translate-y-1 shadow-sm"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="w-12 h-12 rounded-2xl bg-slate-50 border border-gray-100 flex items-center justify-center text-slate-600 hover:bg-[#0077b5] hover:text-white transition-all transform hover:-translate-y-1 shadow-sm"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+
+            <!-- WhatsApp Support -->
+            <div class="flex flex-col items-center gap-6">
+                <h4 class="text-xs font-black text-slate-900 uppercase italic tracking-tighter border-b-2 border-green-500 pb-2 w-fit">Hızlı Destek Hattı</h4>
+                <a href="https://wa.me/900000000000" target="_blank" class="bg-[#25D366] text-white px-10 py-5 rounded-2xl font-black italic shadow-2xl shadow-green-100 flex items-center gap-5 hover:bg-[#128C7E] transition-all transform hover:-translate-y-1 border-b-4 border-green-700 active:border-b-0 active:translate-y-1">
+                    <i class="fab fa-whatsapp text-4xl"></i>
+                    <div class="flex flex-col leading-none text-left">
+                        <span class="text-[10px] opacity-80 uppercase tracking-widest font-bold mb-1">Sorularınız İçin</span>
+                        <span class="text-xl">WHATSAPP DESTEK</span>
+                    </div>
+                </a>
+            </div>
+
+            <!-- App Stores -->
+            <div class="flex flex-col items-center md:items-end gap-6 w-full md:w-auto text-center md:text-right">
+                <h4 class="text-xs font-black text-slate-900 uppercase italic tracking-tighter border-b-2 md:border-b-0 md:border-r-4 border-slate-900 md:pr-3 pb-2 md:pb-0 w-fit">Mobil Uygulamamız</h4>
+                <div class="flex flex-wrap gap-4 justify-center md:justify-end">
+                    <a href="#" class="bg-slate-900 text-white px-6 py-4 rounded-2xl flex items-center gap-4 hover:bg-black transition-all border border-slate-800 shadow-2xl transform hover:-translate-y-1 group">
+                        <i class="fab fa-google-play text-3xl text-white group-hover:text-green-400 transition-colors"></i>
+                        <div class="flex flex-col leading-none items-start">
+                            <span class="text-[9px] opacity-50 uppercase font-bold mb-1">Google Play'den</span>
+                            <span class="text-sm font-black font-sans tracking-tight italic">İNDİRİN</span>
+                        </div>
+                    </a>
+                    <a href="#" class="bg-slate-900 text-white px-6 py-4 rounded-2xl flex items-center gap-4 hover:bg-black transition-all border border-slate-800 shadow-2xl transform hover:-translate-y-1 group">
+                        <i class="fab fa-apple text-3xl text-white group-hover:text-amber-400 transition-colors"></i>
+                        <div class="flex flex-col leading-none items-start">
+                            <span class="text-[9px] opacity-50 uppercase font-bold mb-1">App Store'dan</span>
+                            <span class="text-sm font-black font-sans tracking-tight italic">İNDİRİN</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Footer -->
-    <footer class="bg-slate-900 text-white py-16 mt-20">
+    <footer class="bg-slate-900 text-white py-16">
         <div class="ty-container grid grid-cols-1 md:grid-cols-4 gap-12">
             <div>
                 <h4 class="text-lg font-bold mb-6">umutMed</h4>
@@ -275,13 +330,6 @@
                     <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" class="h-8" alt="Mastercard">
                     <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" class="h-4" alt="Visa">
                 </div>
-                <div class="mt-8">
-                    <h5 class="text-sm font-bold mb-4">Bizi Takip Edin</h5>
-                    <div class="flex gap-4">
-                        <a href="#" class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-[var(--primary-color)] transition-colors"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-[var(--primary-color)] transition-colors"><i class="fab fa-instagram"></i></a>
-                        <a href="#" class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-[var(--primary-color)] transition-colors"><i class="fab fa-twitter"></i></a>
-                    </div>
                 </div>
             </div>
         </div>
