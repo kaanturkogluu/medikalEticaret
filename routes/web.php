@@ -8,6 +8,10 @@ Route::get('/', [\App\Http\Controllers\HomeController::class, 'index'])->name('h
 Route::get('/product/{product}', [\App\Http\Controllers\HomeController::class, 'show'])->name('product.show');
 Route::get('/favorites', [\App\Http\Controllers\HomeController::class, 'favorites'])->name('favorites');
 
+Route::get('/iletisim', function () {
+    return view('contact');
+})->name('contact');
+
 // Authentication Routes (Guest)
 Route::middleware('guest')->group(function () {
     // User login

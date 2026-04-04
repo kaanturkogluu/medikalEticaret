@@ -171,7 +171,7 @@
 
             <!-- Right Side: Links -->
             <div class="flex items-center gap-6 shrink-0">
-                <a href="#" class="hover:text-amber-600 transition-colors uppercase font-bold">Yardım & Destek</a>
+                <a href="{{ route('contact') }}" class="hover:text-amber-600 transition-colors uppercase font-black italic tracking-tighter text-[12px]">İletişim & Konum</a>
             </div>
         </div>
     </div>
@@ -301,7 +301,7 @@
                 <ul class="space-y-3 text-sm text-gray-400 font-medium">
                     <li><a href="#" class="hover:text-white transition-colors">Hakkımızda</a></li>
                     <li><a href="#" class="hover:text-white transition-colors">Kariyer</a></li>
-                    <li><a href="#" class="hover:text-white transition-colors">İletişim</a></li>
+                    <li><a href="{{ route('contact') }}" class="hover:text-white transition-colors">İletişim</a></li>
                     <li><a href="#" class="hover:text-white transition-colors">Sürdürülebilirlik</a></li>
                 </ul>
             </div>
