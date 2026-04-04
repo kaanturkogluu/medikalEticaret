@@ -58,4 +58,36 @@ class AppearanceController extends Controller
 
         return back()->with('success', 'Pazaryeri ve kayan yazı ayarları güncellendi.');
     }
+
+    public function social()
+    {
+        $settings = [
+            'facebook' => Setting::getValue('social_facebook', '#'),
+            'instagram' => Setting::getValue('social_instagram', '#'),
+            'twitter' => Setting::getValue('social_twitter', '#'),
+            'linkedin' => Setting::getValue('social_linkedin', '#'),
+            'google_play' => Setting::getValue('app_google_play', '#'),
+            'apple_store' => Setting::getValue('app_apple_store', '#'),
+            'whatsapp_active' => Setting::getValue('whatsapp_support_active', true),
+            'social_active' => Setting::getValue('social_media_active', true),
+            'app_stores_active' => Setting::getValue('app_stores_active', true),
+        ];
+
+        return view('admin.appearance.social', compact('settings'));
+    }
+
+    public function updateSocial(Request $request)
+    {
+        Setting::setValue('social_facebook', $request->facebook);
+        Setting::setValue('social_instagram', $request->instagram);
+        Setting::setValue('social_twitter', $request->twitter);
+        Setting::setValue('social_linkedin', $request->linkedin);
+        Setting::setValue('app_google_play', $request->google_play);
+        Setting::setValue('app_apple_store', $request->apple_store);
+        Setting::setValue('whatsapp_support_active', $request->has('whatsapp_active'));
+        Setting::setValue('social_media_active', $request->has('social_active'));
+        Setting::setValue('app_stores_active', $request->has('app_stores_active'));
+
+        return back()->with('success', 'Sosyal medya ve destek ayarları güncellendi.');
+    }
 }

@@ -11,7 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
     
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -248,20 +248,37 @@
     </main>
 
     <!-- Pre-Footer Action Bar -->
+    @php
+        $socialActive = \App\Models\Setting::getValue('social_media_active', true);
+        $whatsappActive = \App\Models\Setting::getValue('whatsapp_support_active', true);
+        $appsActive = \App\Models\Setting::getValue('app_stores_active', true);
+        
+        $facebook = \App\Models\Setting::getValue('social_facebook', '#');
+        $instagram = \App\Models\Setting::getValue('social_instagram', '#');
+        $twitter = \App\Models\Setting::getValue('social_twitter', '#');
+        $linkedin = \App\Models\Setting::getValue('social_linkedin', '#');
+        
+        $googlePlay = \App\Models\Setting::getValue('app_google_play', '#');
+        $appleStore = \App\Models\Setting::getValue('app_apple_store', '#');
+    @endphp
+    @if($socialActive || $whatsappActive || $appsActive)
     <section class="bg-white border-t border-gray-50 py-16">
         <div class="ty-container flex flex-col md:flex-row items-center justify-between gap-12">
             <!-- Social Media -->
+            @if($socialActive)
             <div class="flex flex-col gap-6 w-full md:w-auto items-center md:items-start text-center md:text-left">
                 <h4 class="text-xs font-black text-slate-900 uppercase italic tracking-tighter border-b-2 md:border-b-0 md:border-l-4 border-[var(--primary-color)] md:pl-3 pb-2 md:pb-0 w-fit">Sosyal Medyada Biz</h4>
                 <div class="flex gap-4">
-                    <a href="#" class="w-12 h-12 rounded-2xl bg-slate-50 border border-gray-100 flex items-center justify-center text-slate-600 hover:bg-[#3b5998] hover:text-white transition-all transform hover:-translate-y-1 shadow-sm"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#" class="w-12 h-12 rounded-2xl bg-slate-50 border border-gray-100 flex items-center justify-center text-slate-600 hover:bg-[#E1306C] hover:text-white transition-all transform hover:-translate-y-1 shadow-sm"><i class="fab fa-instagram"></i></a>
-                    <a href="#" class="w-12 h-12 rounded-2xl bg-slate-50 border border-gray-100 flex items-center justify-center text-slate-600 hover:bg-[#1DA1F2] hover:text-white transition-all transform hover:-translate-y-1 shadow-sm"><i class="fab fa-twitter"></i></a>
-                    <a href="#" class="w-12 h-12 rounded-2xl bg-slate-50 border border-gray-100 flex items-center justify-center text-slate-600 hover:bg-[#0077b5] hover:text-white transition-all transform hover:-translate-y-1 shadow-sm"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="{{ $facebook }}" target="_blank" class="w-12 h-12 rounded-2xl bg-slate-50 border border-gray-100 flex items-center justify-center text-slate-600 hover:bg-[#3b5998] hover:text-white transition-all transform hover:-translate-y-1 shadow-sm"><i class="fab fa-facebook-f"></i></a>
+                    <a href="{{ $instagram }}" target="_blank" class="w-12 h-12 rounded-2xl bg-slate-50 border border-gray-100 flex items-center justify-center text-slate-600 hover:bg-[#E1306C] hover:text-white transition-all transform hover:-translate-y-1 shadow-sm"><i class="fab fa-instagram"></i></a>
+                    <a href="{{ $twitter }}" target="_blank" class="w-12 h-12 rounded-2xl bg-slate-50 border border-gray-100 flex items-center justify-center text-slate-600 hover:bg-black hover:text-white transition-all transform hover:-translate-y-1 shadow-sm"><i class="fa-brands fa-x-twitter text-lg"></i></a>
+                    <a href="{{ $linkedin }}" target="_blank" class="w-12 h-12 rounded-2xl bg-slate-50 border border-gray-100 flex items-center justify-center text-slate-600 hover:bg-[#0077b5] hover:text-white transition-all transform hover:-translate-y-1 shadow-sm"><i class="fab fa-linkedin-in"></i></a>
                 </div>
             </div>
+            @endif
 
             <!-- WhatsApp Support -->
+            @if($whatsappActive)
             <div class="flex flex-col items-center gap-6">
                 <h4 class="text-xs font-black text-slate-900 uppercase italic tracking-tighter border-b-2 border-green-500 pb-2 w-fit">Hızlı Destek Hattı</h4>
                 <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', \App\Models\Setting::getValue('contact_whatsapp', '905300000000')) }}" target="_blank" class="bg-[#25D366] text-white px-10 py-5 rounded-2xl font-black italic shadow-2xl shadow-green-100 flex items-center gap-5 hover:bg-[#128C7E] transition-all transform hover:-translate-y-1 border-b-4 border-green-700 active:border-b-0 active:translate-y-1">
@@ -272,19 +289,21 @@
                     </div>
                 </a>
             </div>
+            @endif
 
             <!-- App Stores -->
+            @if($appsActive)
             <div class="flex flex-col items-center md:items-end gap-6 w-full md:w-auto text-center md:text-right">
                 <h4 class="text-xs font-black text-slate-900 uppercase italic tracking-tighter border-b-2 md:border-b-0 md:border-r-4 border-slate-900 md:pr-3 pb-2 md:pb-0 w-fit">Mobil Uygulamamız</h4>
                 <div class="flex flex-wrap gap-4 justify-center md:justify-end">
-                    <a href="#" class="bg-slate-900 text-white px-6 py-4 rounded-2xl flex items-center gap-4 hover:bg-black transition-all border border-slate-800 shadow-2xl transform hover:-translate-y-1 group">
+                    <a href="{{ $googlePlay }}" target="_blank" class="bg-slate-900 text-white px-6 py-4 rounded-2xl flex items-center gap-4 hover:bg-black transition-all border border-slate-800 shadow-2xl transform hover:-translate-y-1 group">
                         <i class="fab fa-google-play text-3xl text-white group-hover:text-green-400 transition-colors"></i>
                         <div class="flex flex-col leading-none items-start">
                             <span class="text-[9px] opacity-50 uppercase font-bold mb-1">Google Play'den</span>
                             <span class="text-sm font-black font-sans tracking-tight italic">İNDİRİN</span>
                         </div>
                     </a>
-                    <a href="#" class="bg-slate-900 text-white px-6 py-4 rounded-2xl flex items-center gap-4 hover:bg-black transition-all border border-slate-800 shadow-2xl transform hover:-translate-y-1 group">
+                    <a href="{{ $appleStore }}" target="_blank" class="bg-slate-900 text-white px-6 py-4 rounded-2xl flex items-center gap-4 hover:bg-black transition-all border border-slate-800 shadow-2xl transform hover:-translate-y-1 group">
                         <i class="fab fa-apple text-3xl text-white group-hover:text-amber-400 transition-colors"></i>
                         <div class="flex flex-col leading-none items-start">
                             <span class="text-[9px] opacity-50 uppercase font-bold mb-1">App Store'dan</span>
@@ -293,8 +312,10 @@
                     </a>
                 </div>
             </div>
+            @endif
         </div>
     </section>
+    @endif
 
     <!-- Footer -->
     <footer class="bg-slate-900 text-white py-16">
