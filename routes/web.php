@@ -43,5 +43,6 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::post('/marketplaces/{channel}/test', [\App\Http\Controllers\Admin\ChannelController::class, 'test'])->name('admin.marketplaces.test');
 
     Route::view('/logs', 'admin.logs')->name('admin.logs');
+    Route::view('/appearance', 'admin.appearance.index')->name('admin.appearance');
     Route::view('/settings', 'admin.settings')->name('admin.settings');
 });
