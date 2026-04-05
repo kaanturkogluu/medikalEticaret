@@ -65,5 +65,16 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
         Route::delete('/{banner}/delete', [\App\Http\Controllers\Admin\BannerController::class, 'destroy'])->name('destroy');
         Route::post('/{banner}/toggle', [\App\Http\Controllers\Admin\BannerController::class, 'toggle'])->name('toggle');
     });
+    // Brand Management
+    Route::group(['prefix' => 'brands', 'as' => 'admin.brands.'], function () {
+        Route::get('/', [\App\Http\Controllers\Admin\BrandController::class, 'index'])->name('index');
+        Route::get('/create', [\App\Http\Controllers\Admin\BrandController::class, 'create'])->name('create');
+        Route::post('/store', [\App\Http\Controllers\Admin\BrandController::class, 'store'])->name('store');
+        Route::get('/{brand}/edit', [\App\Http\Controllers\Admin\BrandController::class, 'edit'])->name('edit');
+        Route::put('/{brand}/update', [\App\Http\Controllers\Admin\BrandController::class, 'update'])->name('update');
+        Route::delete('/{brand}/delete', [\App\Http\Controllers\Admin\BrandController::class, 'destroy'])->name('destroy');
+        Route::post('/{brand}/toggle', [\App\Http\Controllers\Admin\BrandController::class, 'toggleActive'])->name('toggle');
+    });
+
     Route::view('/settings', 'admin.settings')->name('admin.settings');
 });

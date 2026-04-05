@@ -84,6 +84,15 @@
                 <span x-show="sidebarOpen" class="font-medium text-sm">Siparişler</span>
             </a>
 
+            <div class="pt-6 pb-2">
+                <p x-show="sidebarOpen" class="px-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Sistem Ayarları</p>
+            </div>
+
+            <a href="{{ route('admin.brands.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-all group {{ Request::is('admin/brands*') ? 'sidebar-item-active' : '' }}">
+                <i class="fas fa-industry w-6 flex justify-center text-lg {{ Request::is('admin/brands*') ? 'text-white' : 'text-slate-500 group-hover:text-brand-400' }}"></i>
+                <span x-show="sidebarOpen" class="font-medium text-sm">Markalar</span>
+            </a>
+
             <a href="/admin/appearance" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-all group {{ Request::is('admin/appearance*') ? 'sidebar-item-active' : '' }}">
                 <i class="fas fa-eye w-6 flex justify-center text-lg {{ Request::is('admin/appearance*') ? 'text-white' : 'text-slate-500 group-hover:text-brand-400' }}"></i>
                 <span x-show="sidebarOpen" class="font-medium text-sm">Site Görünümü</span>
