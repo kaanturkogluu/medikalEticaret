@@ -28,6 +28,7 @@ routes/
 app/Http/Controllers/
   HomeController.php               ← Public: ana sayfa, ürün detay, favoriler
   Auth/LoginController.php         ← Giriş/çıkış
+  Auth/SocialController.php        ← Google login (Socialite)
   Admin/
     DashboardController.php
     ProductController.php          ← index, edit, update
@@ -67,6 +68,8 @@ resources/views/
     order-detail.blade.php   ← Sipariş detayı, ürünler, adres
     profile.blade.php        ← Kullanıcı bilgileri & Şifre güncelleme
     addresses.blade.php      ← Adres yönetimi (CRUD)
+  errors/
+    404.blade.php / 403.blade.php / 419.blade.php ← Özel premium hata sayfaları
 ```
 
 ---
@@ -102,6 +105,8 @@ Brand → hasMany Product, ChannelBrand
 | `/p/{slug}` | `page.show` | HomeController@page |
 | `/login` | `login` | LoginController@showLoginForm |
 | `/admin/login` | `admin.login` | LoginController@showAdminLoginForm |
+| `/auth/google` | `auth.google` | SocialController@redirectToGoogle |
+| `/auth/google/callback` | — | SocialController@handleGoogleCallback |
 
 ### Kullanıcı Paneli (`/hesabim/*`, middleware: auth)
 | URL | Route Name | Açıklama |
@@ -243,6 +248,8 @@ Altyapı
 - [x] **Sözleşmeler & Politikalar:** Admin CRUD yönetimi + dinamik public sayfa + 10 adet seeder içeriği
 - [x] **Kullanıcı Paneli (User Panel):** Trendyol tarzı hesap yönetimi, siparişlerim, adreslerim, bilgilerim
 - [x] **Yetkilendirme Altyapısı (RBAC):** Admin ve Kullanıcı rolleri, middleware koruması ve smart login redirect
+- [x] **Google OAuth (Socialite):** "Google ile Giriş Yap" özelliği (veritabanı senkronizasyonu + avatar desteği)
+- [x] **Özel Hata Sayfaları:** 404, 403 ve 419 hataları için premium tasarımlı kurumsal sayfalar
 
 ---
 
@@ -395,6 +402,36 @@ Altyapı
 
 ---
 
+## 👤 Google OAuth (Socialite) Entegrasyonu
+
+**Akış:** `/login` → Google Butonu → OAuth Onayı → Callback → User Update/Create → Login
+
+### Veritabanı Değişiklikleri
+- `users` tablosuna Google alanları eklendi:
+  - `google_id` (string, unique, nullable)
+  - `google_token` (text, nullable)
+  - `avatar` (text, nullable)
+- Migration: `2026_04_05_182550_add_google_id_to_users_table.php`
+
+### Önemli Notlar
+- Kullanıcı zaten kayıtlıysa (email çakışması), mevcut hesap `google_id` ile güncellenir ve login yapılır.
+- Şifre alanına dummy bir değer (`google-user-{id}`) atanır (non-nullable olduğu için).
+- `.env` ayarları: `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REDIRECT_URI`.
+
+---
+
+## ⚠️ Özel Hata Sayfaları (Error Pages)
+
+**Konum:** `resources/views/errors/`
+
+- **404.blade.php:** Sayfa Bulunamadı (Kayıp eşya temalı, turuncu/gri)
+- **403.blade.php:** Erişim Engellendi (Güvenlik/Dark mode temalı, kırmızı/lacivert)
+- **419.blade.php:** Oturum Süresi Doldu (Zaman aşımı temalı, indigo/mor)
+
+> Bu sayfaların tümü **umutMed** kurumsal kimliğine ve premium tasarım diline (glassmorphism, modern fontlar, animasyonlar) uygun şekilde kodlanmıştır.
+
+---
+
 ## ⚠️ Teknik Önemli Notlar
 
 1. **Sidebar duplicate link riski:** Kategoriler linki daha önce 2 kere eklenmiş olabilir → admin.blade.php kontrol et.
@@ -407,4 +444,4 @@ Altyapı
 
 ---
 
-*Son güncelleme: 2026-04-05 — Yetkilendirme ve Kullanıcı Paneli tamamlandı, UI/UX polish yapıldı.*
+*Son güncelleme: 2026-04-05 — Google Login ve Özel Hata Sayfaları tamamlandı, Sistem Dokümante Edildi.*

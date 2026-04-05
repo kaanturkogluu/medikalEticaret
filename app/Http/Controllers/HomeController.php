@@ -65,8 +65,17 @@ class HomeController extends Controller
 
         $products = $query->latest()->paginate(24)->onEachSide(1);
         
-        $categories = Category::whereHas('products')->withCount('products')->get();
-        $brands = Brand::whereHas('products')->withCount('products')->get();
+        $categories = Category::whereHas('products', function($q) {
+            $q->where('active', true)->where('stock', '>', 0);
+        })->withCount(['products' => function($q) {
+            $q->where('active', true)->where('stock', '>', 0);
+        }])->get();
+
+        $brands = Brand::whereHas('products', function($q) {
+            $q->where('active', true)->where('stock', '>', 0);
+        })->withCount(['products' => function($q) {
+            $q->where('active', true)->where('stock', '>', 0);
+        }])->get();
 
         $banners = \App\Models\Banner::where('is_active', true)->orderBy('order')->get();
 
@@ -94,7 +103,9 @@ class HomeController extends Controller
             ->take(10)
             ->get();
 
-        $categories = Category::whereHas('products')->take(10)->get();
+        $categories = Category::whereHas('products', function($q) {
+            $q->where('active', true)->where('stock', '>', 0);
+        })->take(10)->get();
 
         return view('product_detail', compact('product', 'relatedProducts', 'categories'));
     }
