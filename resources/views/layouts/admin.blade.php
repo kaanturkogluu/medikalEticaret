@@ -240,6 +240,38 @@
                 title: title
             });
         };
+
+        // Tab Title Switcher Logic (Alternating after 30s delay)
+        (function() {
+            const active = {{ \App\Models\Setting::getValue('tab_switch_active', true) ? 'true' : 'false' }};
+            if (!active) return;
+            
+            let originalTitle = document.title;
+            const awayTitle = "{{ \App\Models\Setting::getValue('tab_switch_away_title', 'Bizi Unutma! 😢') }}";
+            let switchInterval = null;
+            let startTimeout = null;
+            
+            document.addEventListener('visibilitychange', function() {
+                if (document.hidden) {
+                    originalTitle = document.title;
+                    
+                    // Start after 30 seconds
+                    startTimeout = setTimeout(() => {
+                        let showOriginal = false;
+                        switchInterval = setInterval(() => {
+                            document.title = showOriginal ? originalTitle : awayTitle;
+                            showOriginal = !showOriginal;
+                        }, 3000); // Switch every 3 seconds
+                    }, 30000); // 30 seconds delay
+                } else {
+                    // Clear both timer and interval
+                    if (startTimeout) clearTimeout(startTimeout);
+                    if (switchInterval) clearInterval(switchInterval);
+                    
+                    document.title = originalTitle;
+                }
+            });
+        })();
     </script>
 </body>
 </html>

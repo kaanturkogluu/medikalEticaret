@@ -226,7 +226,7 @@
                         <div class="product-card">
                             <div class="product-image-container relative aspect-[2/3] bg-gray-50 overflow-hidden">
                                 @php $img = $product->productImages->first()?->url ?? 'https://via.placeholder.com/400x600?text=Resim+Yok'; @endphp
-                                <a href="{{ route('product.show', $product->id) }}">
+                                <a href="{{ route('product.show', $product->id) }}" target="_blank">
                                     <img src="{{ $img }}" alt="{{ $product->name }}" class="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform">
                                 </a>
                                 <button @click="$store.fav.toggle({id: '{{ $product->id }}', name: '{{ addslashes($product->name) }}', brand: '{{ addslashes($product->brand->name ?? '') }}', price: {{ $product->price }}, image: '{{ $img }}'})" class="favorite-btn absolute top-2 right-2 w-8 h-8 bg-white border border-gray-100 rounded-full flex items-center justify-center shadow-sm" :class="$store.fav.has('{{ $product->id }}') ? 'text-red-500' : 'text-gray-400'">
@@ -243,7 +243,7 @@
                             
                             <div class="product-info p-3 flex flex-col flex-grow">
                                 <div class="brand-name font-bold text-sm">{{ $product->brand->name ?? 'Markasız' }}</div>
-                                <a href="{{ route('product.show', $product->id) }}">
+                                <a href="{{ route('product.show', $product->id) }}" target="_blank">
                                     <h3 class="product-name text-xs text-gray-500 line-clamp-2 h-8 mb-2 leading-tight">{{ $product->name }}</h3>
                                 </a>
                                 

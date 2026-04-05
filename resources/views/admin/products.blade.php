@@ -145,6 +145,9 @@
                                         <i :class="syncing === p.id + '-price' ? 'fa-spinner fa-spin' : 'fa-tag'" class="fas text-sm"></i>
                                     </button>
                                     <div class="w-px h-6 bg-slate-200 mx-1"></div>
+                                    <a :href="'/admin/products/' + p.id + '/edit'" class="p-2 bg-white border border-slate-200 rounded-lg hover:bg-brand-50 hover:border-brand-500 hover:text-brand-600 transition-all shadow-sm">
+                                        <i class="fas fa-edit text-sm"></i>
+                                    </a>
                                     <button class="p-2 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition-all shadow-sm">
                                         <i class="fas fa-ellipsis-v text-slate-400 text-sm"></i>
                                     </button>

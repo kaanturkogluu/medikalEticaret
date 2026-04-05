@@ -118,4 +118,24 @@ class AppearanceController extends Controller
 
         return back()->with('success', 'Genel görünüm ayarları güncellendi.');
     }
+
+    public function tabSwitch()
+    {
+        $settings = [
+            'active' => Setting::getValue('tab_switch_active', true),
+            'away_title' => Setting::getValue('tab_switch_away_title', 'Bizi Unutma! 😢'),
+            'back_title' => Setting::getValue('tab_switch_back_title', 'Hoş Geldin! 😍'),
+        ];
+
+        return view('admin.appearance.tab_switch', compact('settings'));
+    }
+
+    public function updateTabSwitch(Request $request)
+    {
+        Setting::setValue('tab_switch_active', $request->has('active'));
+        Setting::setValue('tab_switch_away_title', $request->away_title);
+        Setting::setValue('tab_switch_back_title', $request->back_title);
+
+        return back()->with('success', 'Sekme başlık ayarları güncellendi.');
+    }
 }

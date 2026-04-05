@@ -30,6 +30,8 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout')->midd
 Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::get('/', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('admin.dashboard');
     Route::get('/products', [\App\Http\Controllers\Admin\ProductController::class, 'index'])->name('admin.products');
+    Route::get('/products/{product}/edit', [\App\Http\Controllers\Admin\ProductController::class, 'edit'])->name('admin.products.edit');
+    Route::put('/products/{product}', [\App\Http\Controllers\Admin\ProductController::class, 'update'])->name('admin.products.update');
     Route::get('/orders', [\App\Http\Controllers\Admin\OrderController::class, 'index'])->name('admin.orders');
     Route::get('/orders/{order}', [\App\Http\Controllers\Admin\OrderController::class, 'show'])->name('admin.orders.show');
     Route::get('/test-products', [\App\Http\Controllers\Admin\OrderController::class, 'testProducts'])->name('admin.test-products');
@@ -52,6 +54,8 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::post('/appearance/social', [\App\Http\Controllers\Admin\AppearanceController::class, 'updateSocial'])->name('admin.appearance.social.update');
     Route::get('/appearance/general', [\App\Http\Controllers\Admin\AppearanceController::class, 'general'])->name('admin.appearance.general');
     Route::post('/appearance/general', [\App\Http\Controllers\Admin\AppearanceController::class, 'updateGeneral'])->name('admin.appearance.general.update');
+    Route::get('/appearance/tab-switch', [\App\Http\Controllers\Admin\AppearanceController::class, 'tabSwitch'])->name('admin.appearance.tab_switch');
+    Route::post('/appearance/tab-switch', [\App\Http\Controllers\Admin\AppearanceController::class, 'updateTabSwitch'])->name('admin.appearance.tab_switch.update');
     Route::group(['prefix' => 'appearance/banner', 'as' => 'admin.appearance.banner.'], function () {
         Route::get('/', [\App\Http\Controllers\Admin\BannerController::class, 'index'])->name('index');
         Route::get('/create', [\App\Http\Controllers\Admin\BannerController::class, 'create'])->name('create');

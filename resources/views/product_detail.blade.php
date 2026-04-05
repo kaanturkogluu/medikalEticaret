@@ -161,7 +161,7 @@
             <div class="grid grid-cols-2 md:grid-cols-5 gap-8">
                 @foreach($relatedProducts as $rp)
                     <div class="group relative bg-white border border-gray-100 p-3 rounded-2xl hover:shadow-xl hover:shadow-gray-100 transition-all">
-                        <a href="{{ route('product.show', $rp->id) }}">
+                        <a href="{{ route('product.show', $rp->id) }}" target="_blank">
                             <div class="aspect-[2/3] bg-gray-50 rounded-xl overflow-hidden mb-4 p-4">
                                 <img src="{{ $rp->productImages->first()?->url ?? 'https://via.placeholder.com/400x600' }}" alt="" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500">
                             </div>
