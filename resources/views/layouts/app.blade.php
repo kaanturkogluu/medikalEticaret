@@ -640,6 +640,63 @@
         </button>
     </div>
 
+    <!-- Cookie Consent Banner -->
+    <div x-data="{ 
+            accepted: localStorage.getItem('cookie_accepted') === 'true',
+            showDetails: false,
+            accept() {
+                localStorage.setItem('cookie_accepted', 'true');
+                this.accepted = true;
+            }
+         }" 
+         x-show="!accepted" 
+         x-transition:enter="transition ease-out duration-500"
+         x-transition:enter-start="translate-y-full opacity-0"
+         x-transition:enter-end="translate-y-0 opacity-100"
+         class="fixed bottom-0 left-0 right-0 z-[10000] p-4 md:p-6"
+         x-cloak>
+        <div class="ty-container">
+            <div class="bg-slate-900/95 backdrop-blur-xl border border-white/10 rounded-[32px] p-6 shadow-2xl flex flex-col gap-6 select-none relative overflow-hidden text-center md:text-left">
+                <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+                    <div class="flex items-center gap-6">
+                        <div class="w-12 h-12 bg-amber-500/10 rounded-2xl flex items-center justify-center text-amber-500 shrink-0">
+                            <i class="fas fa-cookie-bite text-2xl animate-pulse"></i>
+                        </div>
+                        <div class="text-left">
+                            <h4 class="text-white font-black italic tracking-tighter uppercase text-sm mb-1">Çerez Politikası</h4>
+                            <p class="text-slate-400 text-xs font-medium leading-relaxed">Size daha iyi bir deneyim sunabilmek için çerezleri kullanıyoruz.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4 w-full md:w-auto">
+                        <button @click="showDetails = !showDetails" class="flex-grow md:flex-none text-center px-6 py-3 text-white text-[10px] font-black uppercase tracking-widest hover:underline italic opacity-50 hover:opacity-100 transition-opacity">
+                            <span x-text="showDetails ? 'Kapat' : 'Detay Bilgi'"></span>
+                        </button>
+                        <button @click="accept()" class="flex-grow md:flex-none px-10 py-3 bg-[var(--primary-color)] text-white text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-[var(--primary-hover)] transition-all shadow-xl shadow-orange-500/20 active:scale-95 transform active:translate-y-1">Kabul Et</button>
+                    </div>
+                </div>
+
+                <!-- Detailed Explanation -->
+                <div x-show="showDetails" x-collapse x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 -translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" class="pt-6 border-t border-white/5">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-[11px] leading-relaxed">
+                        <div class="flex gap-4 items-start text-left">
+                            <div class="w-8 h-8 rounded-lg bg-green-500/10 flex items-center justify-center text-green-500 shrink-0"><i class="fas fa-user-shield"></i></div>
+                            <div class="text-slate-400">
+                                <strong class="text-white block mb-1 uppercase italic tracking-tighter">Kişisel Veri Güvenliği</strong>
+                                Şahsi bilgileriniz çerezler aracılığıyla asla depolanmaz veya üçüncü taraflarla paylaşılmaz.
+                            </div>
+                        </div>
+                        <div class="flex gap-4 items-start text-left">
+                            <div class="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-500 shrink-0"><i class="fas fa-magic"></i></div>
+                            <div class="text-slate-400">
+                                <strong class="text-white block mb-1 uppercase italic tracking-tighter">Kullanıcı Deneyimi</strong>
+                                Çerezler sadece son baktığınız ürünler, sepetiniz ve tercihlerinizi hatırlayarak size özel bir alışveriş deneyimi sunmak için kullanılır.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>

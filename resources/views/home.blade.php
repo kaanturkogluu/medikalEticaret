@@ -378,6 +378,50 @@
             </div>
         </div>
     </main>
+
+    <!-- Recently Viewed Section -->
+    @if($recentlyViewedProducts->count() > 0)
+    <section class="ty-container py-12 border-t border-slate-100 mt-12 bg-gray-50/50 rounded-[40px] px-8">
+        <div class="flex items-center justify-between mb-8">
+            <div class="flex items-center gap-4">
+                <div class="w-1.5 h-8 bg-slate-400 rounded-full"></div>
+                <h2 class="text-2xl font-black italic tracking-tighter text-slate-900 uppercase">Daha Önce <span class="text-slate-400">Görüntülenenler</span></h2>
+            </div>
+            <button @click="document.cookie = 'recently_viewed=; Max-Age=0; path=/'; location.reload();" class="text-[10px] font-black uppercase text-slate-400 hover:text-red-500 transition-colors italic">Geçmişi Temizle <i class="fas fa-trash-alt ml-1"></i></button>
+        </div>
+
+        <div class="flex overflow-x-auto pb-6 gap-6 custom-scrollbar scroll-smooth">
+            @foreach($recentlyViewedProducts as $product)
+                <div class="flex-shrink-0 w-[200px] product-card bg-white shadow-xl">
+                    <div class="product-image-container relative aspect-[2/3] bg-gray-50 overflow-hidden">
+                        @php $img = $product->productImages->first()?->url ?? 'https://via.placeholder.com/400x600?text=Resim+Yok'; @endphp
+                        <a href="{{ route('product.show', $product->id) }}" target="_blank">
+                            <img src="{{ $img }}" alt="{{ $product->name }}" class="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform">
+                        </a>
+                        <button @click="$store.fav.toggle({id: '{{ $product->id }}', name: '{{ addslashes($product->name) }}', brand: '{{ addslashes($product->brand->name ?? '') }}', price: {{ $product->price }}, image: '{{ $img }}'})" class="favorite-btn absolute top-2 right-2 w-8 h-8 bg-white border border-gray-100 rounded-full flex items-center justify-center shadow-sm" :class="$store.fav.has('{{ $product->id }}') ? 'text-red-500' : 'text-gray-400'">
+                            <i :class="$store.fav.has('{{ $product->id }}') ? 'fas fa-heart' : 'far fa-heart'"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="product-info p-3 flex flex-col flex-grow">
+                        <div class="brand-name font-bold text-[11px] truncate uppercase tracking-tighter text-gray-400">{{ $product->brand->name ?? 'Markasız' }}</div>
+                        <a href="{{ route('product.show', $product->id) }}" target="_blank">
+                            <h3 class="product-name text-[11px] text-gray-500 line-clamp-1 h-4 mb-2 leading-tight font-bold">{{ $product->name }}</h3>
+                        </a>
+                        
+                        <div class="mt-2">
+                            <div class="text-[var(--primary-color)] font-black text-sm">{{ number_format($product->price, 2) }} TL</div>
+                        </div>
+                        
+                        <button @click="$store.cart.add({id: '{{ $product->id }}', name: '{{ addslashes($product->name) }}', brand: '{{ addslashes($product->brand->name ?? '') }}', price: {{ $product->price }}, image: '{{ $img }}'})" class="w-full mt-3 py-1.5 bg-slate-900 text-white text-[10px] font-black rounded hover:bg-slate-800 transition-colors uppercase tracking-widest">
+                            Sepete Ekle
+                        </button>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    </section>
+    @endif
 @endsection
 
 @section('styles')

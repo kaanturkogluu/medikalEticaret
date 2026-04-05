@@ -104,7 +104,23 @@ class HomeController extends Controller
                 ->get();
         }
 
-        return view('home', compact('products', 'categories', 'brands', 'banners', 'popularProducts', 'featuredBrands'));
+        // Recently Viewed Products
+        $recentlyViewedIds = json_decode(request()->cookie('recently_viewed', '[]'), true);
+        if (!is_array($recentlyViewedIds)) $recentlyViewedIds = [];
+        
+        $recentlyViewedProducts = collect();
+        if (count($recentlyViewedIds) > 0) {
+            $recentlyViewedProducts = Product::with(['brand', 'productImages'])
+                ->whereIn('id', $recentlyViewedIds)
+                ->where('active', true)
+                ->where('stock', '>', 0)
+                ->get()
+                ->sortBy(function($p) use ($recentlyViewedIds) {
+                    return array_search($p->id, $recentlyViewedIds);
+                });
+        }
+
+        return view('home', compact('products', 'categories', 'brands', 'banners', 'popularProducts', 'featuredBrands', 'recentlyViewedProducts'));
     }
 
     public function show(Product $product, Request $request)
@@ -117,6 +133,21 @@ class HomeController extends Controller
             $product->increment('views');
             \Cache::put($cacheKey, true, now()->addDay());
         }
+
+        // Son Görüntülenenler (Cookie Bazlı)
+        $recentlyViewed = request()->cookie('recently_viewed', '[]');
+        $ids = json_decode($recentlyViewed, true);
+        if (!is_array($ids)) $ids = [];
+        
+        // Mevcut ürünü listenin başına ekle, kopyaları kaldır
+        if (($key = array_search($product->id, $ids)) !== false) {
+            unset($ids[$key]);
+        }
+        array_unshift($ids, $product->id);
+        
+        // Limit: 10 ürün
+        $ids = array_slice($ids, 0, 10);
+        \Cookie::queue('recently_viewed', json_encode($ids), 60 * 24 * 30); // 30 Gün
 
         $product->load(['brand', 'category', 'productImages', 'productAttributes']);
         
