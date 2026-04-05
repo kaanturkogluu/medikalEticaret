@@ -202,6 +202,7 @@ Altyapı
 - [x] Pazaryeri bağlantıları (Trendyol entegrasyonu altyapısı)
 - [x] **BUG FIX:** Kategori düzenleme — üst kategori dropdown sadece kök kategorileri gösteriyordu, artık tüm kategorileri gösteriyor
 - [x] **Üye Kayıt & E-posta Doğrulama:** 6 haneli kod ile doğrulama, 30dk süre, tekrar gönder
+- [x] **Sözleşmeler & Politikalar:** Admin CRUD yönetimi + dinamik public sayfa + 10 adet seeder içeriği
 
 ---
 
@@ -258,6 +259,67 @@ Altyapı
 - Mail gönderimi için `.env` SMTP ayarı gereklidir.
 - **Test için:** `MAIL_MAILER=log` bırakılırsa kodlar `storage/logs/laravel.log` dosyasına çıktı verir.
 - Login sayfasındaki "Üye Ol" linki `/register` yönlendiriyor.
+
+---
+
+## 📄 Sözleşmeler & Politikalar Sistemi
+
+**Yapı:** Veritabanında `pages` tablosu — Admin panelden CRUD — Public dinamik sayfa `/p/{slug}`
+
+### Veritabanı
+| Alan | Tip | Açıklama |
+|---|---|---|
+| `id` | bigint | Primary key |
+| `title` | string | Sayfa başlığı |
+| `slug` | string (unique) | SEO dostu URL parçası |
+| `content` | longText | HTML destekli içerik |
+| `is_active` | boolean | Yayın durumu |
+- Migration: `2026_04_05_172951_create_pages_table.php`
+
+### Seeder — Varsayılan Sayfalar
+`database/seeders/PageSeeder.php` çalıştırılarak aşağıdaki 10 sayfa DB'ye eklendi:
+1. Kullanım Koşulları (`kullanim-kosullari`)
+2. Mesafeli Satış Sözleşmesi (`mesafeli-satis-sozlesmesi`)
+3. Gizlilik Politikası (`gizlilik-politikasi`)
+4. KVKK Aydınlatma Metni (`kvkk-aydinlatma-metni`)
+5. Çerez Politikası (`cerez-politikasi`)
+6. İade & İptal Politikası (`iade-iptal-politikasi`)
+7. Tıbbi Sorumluluk Reddi (`tibbi-sorumluluk-reddi`)
+8. Teslimat Politikası (`teslimat-politikasi`)
+9. Ödeme Politikası (`odeme-politikasi`)
+10. Açık Rıza Metni (`acik-riza-metni`)
+
+> **Güncelleme:** `php artisan db:seed --class=PageSeeder` komutu `updateOrCreate` kullanır, var olan kayıtları siler/yeniden yazmadan güvenle günceller.
+
+### Yeni Dosyalar
+| Dosya | Açıklama |
+|---|---|
+| `app/Models/Page.php` | Model, slug route key |
+| `app/Http/Controllers/Admin/PageController.php` | index, create, store, edit, update, destroy, toggle |
+| `resources/views/admin/pages/index.blade.php` | Kart grid, toggle, silme |
+| `resources/views/admin/pages/edit.blade.php` | HTML içerik editörü, aktif toggle |
+| `resources/views/admin/pages/create.blade.php` | Yeni sayfa formu |
+| `resources/views/pages/show.blade.php` | Public dinamik görüntüleme, sidebar nav, yazdır |
+| `resources/views/terms.blade.php` | Statik Kullanım Koşulları (kullanıcı tarafından eklendi, sabit HTML) |
+| `database/seeders/PageSeeder.php` | 10 sayfa için zengin HTML içerikli seeder |
+
+### Rotalar
+| URL | Method | Route Name | Açıklama |
+|---|---|---|---|
+| `/p/{slug}` | GET | `page.show` | Dinamik yasal sayfa |
+| `/admin/pages` | GET | `admin.pages.index` | Sayfa listesi |
+| `/admin/pages/create` | GET | `admin.pages.create` | Yeni sayfa |
+| `/admin/pages/store` | POST | `admin.pages.store` | Sayfa kaydet |
+| `/admin/pages/{slug}/edit` | GET | `admin.pages.edit` | Düzenle |
+| `/admin/pages/{slug}/update` | PUT | `admin.pages.update` | Güncelle |
+| `/admin/pages/{slug}/delete` | DELETE | `admin.pages.destroy` | Sil |
+| `/admin/pages/{slug}/toggle` | POST | `admin.pages.toggle` | Aktif/Pasif |
+
+### Önemli Notlar
+- `PageController` slug üzerinden route model binding yapar (`getRouteKeyName() = 'slug'`).
+- Admin sidebar'da "Sistem Ayarları" altında "Sözleşmeler & Politikalar" linki eklendi.
+- Kayıt formundaki Kullanım Koşulları & Gizlilik Politikası bağlantıları dinamik `page.show` rotasını kullanır.
+- Tıbbi Sorumluluk Reddi sayfası kırmızı uyarı kutusuyla stilize edilmiştir (medikal site için kritik).
 
 ---
 
