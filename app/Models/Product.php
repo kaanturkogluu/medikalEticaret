@@ -13,6 +13,7 @@ class Product extends Model
         'brand_name', 'category_name', 'description', 'price', 'stock', 'active',
         'attributes', 'raw_marketplace_data', 'marketplace_status', 'marketplace',
         'external_id', 'platform_listing_id', 'product_content_id', 'supplier_id',
+        'views'
     ];
 
     protected $casts = [

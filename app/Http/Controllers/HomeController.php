@@ -73,13 +73,24 @@ class HomeController extends Controller
         return view('home', compact('products', 'categories', 'brands', 'banners'));
     }
 
-    public function show(Product $product)
+    public function show(Product $product, Request $request)
     {
+        // IP Bazlı Görüntülenme Arttırma (Günde 1 kez)
+        $ip = $request->ip();
+        $cacheKey = "product_viewed_{$product->id}_{$ip}";
+        
+        if (!\Cache::has($cacheKey)) {
+            $product->increment('views');
+            \Cache::put($cacheKey, true, now()->addDay());
+        }
+
         $product->load(['brand', 'category', 'productImages', 'productAttributes']);
         
         $relatedProducts = Product::with(['brand', 'productImages'])
             ->where('category_id', $product->category_id)
             ->where('id', '!=', $product->id)
+            ->where('active', true)
+            ->orderByRaw('stock > 0 DESC')
             ->take(10)
             ->get();
 

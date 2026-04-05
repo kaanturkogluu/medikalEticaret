@@ -48,6 +48,11 @@
                     <span class="text-[var(--accent-blue)] text-xs font-black cursor-pointer hover:underline">152 Değerlendirme</span>
                     <span class="text-gray-300 text-xs">|</span>
                     <span class="text-[var(--accent-blue)] text-xs font-black cursor-pointer hover:underline">43 Soru & Cevap</span>
+                    <span class="text-gray-300 text-xs">|</span>
+                    <div class="flex items-center gap-1.5 text-slate-400">
+                        <i class="far fa-eye text-xs"></i>
+                        <span class="text-xs font-bold">{{ number_format($product->views) }} Görüntülenme</span>
+                    </div>
                 </div>
 
                 <!-- Price Section -->
