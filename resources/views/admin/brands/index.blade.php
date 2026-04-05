@@ -43,6 +43,7 @@
                                 <th scope="col" class="px-3 py-5 text-left text-xs font-black uppercase tracking-widest text-slate-400 italic">Marka Adı</th>
                                 <th scope="col" class="px-3 py-5 text-left text-xs font-black uppercase tracking-widest text-slate-400 italic text-center">Ürün Sayısı</th>
                                 <th scope="col" class="px-3 py-5 text-left text-xs font-black uppercase tracking-widest text-slate-400 italic text-center">Durum</th>
+                                <th scope="col" class="px-3 py-5 text-left text-xs font-black uppercase tracking-widest text-slate-400 italic text-center">Vitrin</th>
                                 <th scope="col" class="relative py-5 pl-3 pr-8 text-right text-xs font-black uppercase tracking-widest text-slate-400 italic">İşlemler</th>
                             </tr>
                         </thead>
@@ -69,11 +70,19 @@
                                     </span>
                                 </td>
                                 <td class="whitespace-nowrap px-3 py-5 text-center">
-                                    <form action="{{ route('admin.brands.toggle', $brand->id) }}" method="POST">
+                                    <form action="{{ route('admin.brands.toggle-active', $brand->id) }}" method="POST">
                                         @csrf
                                         <button type="submit" class="inline-flex items-center px-4 py-1.5 rounded-full text-[10px] font-black italic tracking-widest uppercase transition-all {{ $brand->active ? 'bg-green-100 text-green-700 hover:bg-green-200' : 'bg-red-100 text-red-700 hover:bg-red-200' }}">
                                             <span class="w-1.5 h-1.5 rounded-full mr-2 {{ $brand->active ? 'bg-green-500 animate-pulse' : 'bg-red-500' }}"></span>
                                             {{ $brand->active ? 'Aktif' : 'Pasif' }}
+                                        </button>
+                                    </form>
+                                </td>
+                                <td class="whitespace-nowrap px-3 py-5 text-center">
+                                    <form action="{{ route('admin.brands.toggle-featured', $brand->id) }}" method="POST">
+                                        @csrf
+                                        <button type="submit" class="inline-flex items-center p-2 rounded-xl text-xs transition-all {{ $brand->is_featured ? 'bg-amber-50 text-amber-500 shadow-inner' : 'bg-slate-50 text-slate-300 hover:text-slate-400' }}" title="Vitrinde Göster">
+                                            <i class="{{ $brand->is_featured ? 'fas' : 'far' }} fa-star"></i>
                                         </button>
                                     </form>
                                 </td>

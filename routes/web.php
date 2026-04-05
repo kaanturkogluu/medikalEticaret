@@ -104,7 +104,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
         Route::get('/{brand}/edit', [\App\Http\Controllers\Admin\BrandController::class, 'edit'])->name('edit');
         Route::put('/{brand}/update', [\App\Http\Controllers\Admin\BrandController::class, 'update'])->name('update');
         Route::delete('/{brand}/delete', [\App\Http\Controllers\Admin\BrandController::class, 'destroy'])->name('destroy');
-        Route::post('/{brand}/toggle', [\App\Http\Controllers\Admin\BrandController::class, 'toggleActive'])->name('toggle');
+        Route::post('/{brand}/toggle-active', [\App\Http\Controllers\Admin\BrandController::class, 'toggleActive'])->name('toggle-active');
+        Route::post('/{brand}/toggle-featured', [\App\Http\Controllers\Admin\BrandController::class, 'toggleFeatured'])->name('toggle-featured');
     });
 
     // Category Management

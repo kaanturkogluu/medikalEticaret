@@ -60,18 +60,34 @@
                         @error('logo') <p class="mt-2 text-xs text-red-500 font-bold italic">{{ $message }}</p> @enderror
                     </div>
 
-                    <div class="flex items-center gap-6 p-6 bg-slate-50/50 rounded-3xl border border-slate-100">
-                        <div class="h-10 w-10 bg-white rounded-xl shadow-sm flex items-center justify-center text-[var(--primary-color)]">
-                            <i class="fas fa-power-off"></i>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="flex items-center gap-6 p-6 bg-slate-50/50 rounded-3xl border border-slate-100">
+                            <div class="h-10 w-10 bg-white rounded-xl shadow-sm flex items-center justify-center text-[var(--primary-color)]">
+                                <i class="fas fa-power-off"></i>
+                            </div>
+                            <div class="flex-grow">
+                                <h4 class="text-xs font-black italic tracking-widest text-slate-400 uppercase">Durum</h4>
+                                <p class="text-[10px] text-slate-400 font-bold">Aktif / Pasif</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" name="active" value="1" class="sr-only peer" checked>
+                                <div class="w-14 h-8 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-green-500 shadow-inner"></div>
+                            </label>
                         </div>
-                        <div class="flex-grow">
-                             <h4 class="text-xs font-black italic tracking-widest text-slate-400 uppercase">Durum</h4>
-                             <p class="text-[10px] text-slate-400 font-bold">Markanın sistemde aktif olup olmayacağını belirleyin.</p>
+                        
+                        <div class="flex items-center gap-6 p-6 bg-slate-50/50 rounded-3xl border border-slate-100">
+                            <div class="h-10 w-10 bg-white rounded-xl shadow-sm flex items-center justify-center text-amber-500">
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <div class="flex-grow">
+                                <h4 class="text-xs font-black italic tracking-widest text-slate-400 uppercase">Öne Çıkar</h4>
+                                <p class="text-[10px] text-slate-400 font-bold">Vitrinde Göster</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" name="is_featured" value="1" class="sr-only peer">
+                                <div class="w-14 h-8 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-amber-500 shadow-inner"></div>
+                            </label>
                         </div>
-                        <label class="relative inline-flex items-center cursor-pointer">
-                            <input type="checkbox" name="active" value="1" class="sr-only peer" checked>
-                            <div class="w-14 h-8 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-green-500 shadow-inner"></div>
-                        </label>
                     </div>
 
                     <div class="pt-6 border-t border-slate-100 flex gap-4">

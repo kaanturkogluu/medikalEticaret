@@ -32,7 +32,8 @@ class BrandController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'logo' => 'nullable|image|max:2048',
-            'active' => 'boolean'
+            'active' => 'boolean',
+            'is_featured' => 'boolean'
         ]);
 
         $data = $request->except('logo');
@@ -42,6 +43,7 @@ class BrandController extends Controller
         }
 
         $data['active'] = $request->has('active');
+        $data['is_featured'] = $request->has('is_featured');
 
         Brand::create($data);
 
@@ -58,7 +60,8 @@ class BrandController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'logo' => 'nullable|image|max:2048',
-            'active' => 'boolean'
+            'active' => 'boolean',
+            'is_featured' => 'boolean'
         ]);
 
         $data = $request->except('logo');
@@ -71,6 +74,7 @@ class BrandController extends Controller
         }
 
         $data['active'] = $request->has('active');
+        $data['is_featured'] = $request->has('is_featured');
 
         $brand->update($data);
 
@@ -96,5 +100,11 @@ class BrandController extends Controller
     {
         $brand->update(['active' => !$brand->active]);
         return back()->with('success', 'Marka durumu güncellendi.');
+    }
+
+    public function toggleFeatured(Brand $brand)
+    {
+        $brand->update(['is_featured' => !$brand->is_featured]);
+        return back()->with('success', 'Marka öne çıkarılma durumu güncellendi.');
     }
 }

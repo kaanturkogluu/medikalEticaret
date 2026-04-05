@@ -137,6 +137,31 @@
     </div>
     @endif
 
+    <!-- Featured Brands Section -->
+    @if($featuredBrands->count() > 0)
+    <div class="ty-container pt-12 pb-6">
+        <div class="flex items-center gap-4 mb-8">
+            <div class="w-1 h-6 bg-slate-900 rounded-full"></div>
+            <h3 class="text-lg font-black italic tracking-tighter text-slate-900 uppercase">Öne Çıkan <span class="text-[var(--primary-color)]">Markalar</span></h3>
+        </div>
+        <div class="flex items-center justify-between gap-4 overflow-x-auto pb-4 custom-scrollbar">
+            @foreach($featuredBrands as $brand)
+            <a href="{{ route('home', ['brand' => $brand->id]) }}" class="flex flex-col items-center gap-3 shrink-0 group">
+                <div class="w-20 h-20 md:w-28 md:h-28 rounded-full bg-white border border-slate-100 shadow-sm group-hover:shadow-xl group-hover:border-[var(--primary-color)] transition-all duration-500 p-4 flex items-center justify-center overflow-hidden relative">
+                    <div class="absolute inset-0 bg-[var(--primary-color)] opacity-0 group-hover:opacity-[0.03] transition-opacity"></div>
+                    @if($brand->logo)
+                        <img src="{{ asset('storage/' . $brand->logo) }}" alt="{{ $brand->name }}" class="w-full h-full object-contain filter grayscale group-hover:grayscale-0 transition-all duration-500 scale-90 group-hover:scale-100">
+                    @else
+                        <span class="text-xs font-black text-slate-300 italic uppercase">{{ substr($brand->name, 0, 2) }}</span>
+                    @endif
+                </div>
+                <span class="text-[10px] md:text-xs font-black italic tracking-tighter text-slate-500 group-hover:text-[var(--primary-color)] uppercase transition-colors">{{ $brand->name }}</span>
+            </a>
+            @endforeach
+        </div>
+    </div>
+    @endif
+
     <!-- Popular Products Section -->
     @php
         $popularActive = \App\Models\Setting::getValue('popular_section_active', true);

@@ -81,6 +81,9 @@ class HomeController extends Controller
 
         $banners = \App\Models\Banner::where('is_active', true)->orderBy('order')->get();
 
+        // Featured Brands
+        $featuredBrands = Brand::where('is_featured', true)->where('active', true)->orderBy('name')->get();
+
         // Popular Products Settings
         $popularActive = \App\Models\Setting::getValue('popular_section_active', true);
         $popularMax = \App\Models\Setting::getValue('popular_section_max', 10);
@@ -101,7 +104,7 @@ class HomeController extends Controller
                 ->get();
         }
 
-        return view('home', compact('products', 'categories', 'brands', 'banners', 'popularProducts'));
+        return view('home', compact('products', 'categories', 'brands', 'banners', 'popularProducts', 'featuredBrands'));
     }
 
     public function show(Product $product, Request $request)
