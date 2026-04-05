@@ -22,7 +22,16 @@ Route::middleware('guest')->group(function () {
     // Auth logic
     Route::post('/login', [LoginController::class, 'authenticate'])->name('login.authenticate');
     Route::post('/admin/login', [LoginController::class, 'authenticate']);
+
+    // Registration
+    Route::get('/register', [\App\Http\Controllers\Auth\RegisterController::class, 'showRegisterForm'])->name('register');
+    Route::post('/register', [\App\Http\Controllers\Auth\RegisterController::class, 'register']);
 });
+
+// Email verification (accessible even when logged in, before verified)
+Route::get('/verify-email', [\App\Http\Controllers\Auth\RegisterController::class, 'showVerifyForm'])->name('verify.form');
+Route::post('/verify-email', [\App\Http\Controllers\Auth\RegisterController::class, 'verify'])->name('verify.submit');
+Route::post('/verify-email/resend', [\App\Http\Controllers\Auth\RegisterController::class, 'resend'])->name('verify.resend');
 
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout')->middleware('auth');
 

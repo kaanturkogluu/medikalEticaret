@@ -80,7 +80,7 @@
             </form>
 
             <div class="mt-8 text-center">
-                <p class="text-sm text-gray-500">Hesabınız yok mu? <a href="#" class="font-bold text-[#f27a1a] hover:underline">Üye Olun</a></p>
+                <p class="text-sm text-gray-500">Hesabınız yok mu? <a href="{{ route('register') }}" class="font-bold text-[#f27a1a] hover:underline">Üye Olun</a></p>
             </div>
         </div>
     </main>
