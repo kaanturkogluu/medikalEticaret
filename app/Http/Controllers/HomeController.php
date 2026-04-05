@@ -45,14 +45,24 @@ class HomeController extends Controller
         }
         
         $products = $query->paginate(24)->onEachSide(1)->withQueryString();
-        // Category Filter
+        // Category Filter (ID or Slug)
         if ($request->filled('category')) {
-            $query->where('category_id', $request->category);
+            $categoryFilter = Category::where('id', $request->category)
+                ->orWhere('slug', $request->category)
+                ->first();
+            if ($categoryFilter) {
+                $query->where('category_id', $categoryFilter->id);
+            }
         }
 
-        // Brand Filter
+        // Brand Filter (ID or Slug)
         if ($request->filled('brand')) {
-            $query->where('brand_id', $request->brand);
+            $brandFilter = Brand::where('id', $request->brand)
+                ->orWhere('slug', $request->brand)
+                ->first();
+            if ($brandFilter) {
+                $query->where('brand_id', $brandFilter->id);
+            }
         }
 
         // Price Filter

@@ -7,7 +7,23 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Brand extends Model
 {
-    protected $fillable = ['name', 'logo', 'active', 'is_featured'];
+    protected $fillable = ['name', 'slug', 'logo', 'active', 'is_featured'];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::saving(function ($brand) {
+            if (empty($brand->slug) || $brand->isDirty('name')) {
+                $brand->slug = \Illuminate\Support\Str::slug($brand->name);
+            }
+        });
+    }
+
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
 
     protected $casts = [
         'active' => 'boolean',

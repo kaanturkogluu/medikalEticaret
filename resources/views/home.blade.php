@@ -37,7 +37,8 @@
             @endphp
 
             @foreach($displayCats as $cat)
-                <a href="{{ route('home', ['category' => $cat->id]) }}" class="category-link {{ request('category') == $cat->id ? 'text-[var(--primary-color)] border-b-2 border-[var(--primary-color)]' : '' }}">
+                @php $isActive = (request('category') == $cat->id || request('category') == $cat->slug); @endphp
+                <a href="{{ route('home', ['category' => $cat->slug]) }}" class="category-link {{ $isActive ? 'text-[var(--primary-color)] border-b-2 border-[var(--primary-color)]' : '' }}">
                     {{ str($cat->name)->upper() }}
                 </a>
             @endforeach
@@ -150,7 +151,7 @@
         </div>
         <div class="flex items-center justify-between gap-4 overflow-x-auto pb-4 custom-scrollbar">
             @foreach($featuredBrands as $brand)
-            <a href="{{ route('home', ['brand' => $brand->id]) }}" class="flex flex-col items-center gap-3 shrink-0 group">
+            <a href="{{ route('home', ['brand' => $brand->slug]) }}" class="flex flex-col items-center gap-3 shrink-0 group">
                 <div class="w-20 h-20 md:w-28 md:h-28 rounded-full bg-white border border-slate-100 shadow-sm group-hover:shadow-xl group-hover:border-[var(--primary-color)] transition-all duration-500 p-4 flex items-center justify-center overflow-hidden relative">
                     <div class="absolute inset-0 bg-[var(--primary-color)] opacity-0 group-hover:opacity-[0.03] transition-opacity"></div>
                     @if($brand->logo)
@@ -200,10 +201,10 @@
                 <div class="flex-shrink-0 w-[240px] product-card">
                     <div class="product-image-container relative aspect-[2/3] bg-gray-50 overflow-hidden">
                         @php $img = $product->productImages->first()?->url ?? 'https://via.placeholder.com/400x600?text=Resim+Yok'; @endphp
-                        <a href="{{ route('product.show', $product->id) }}" target="_blank">
+                        <a href="{{ route('product.show', $product->slug) }}" target="_blank">
                             <img src="{{ $img }}" alt="{{ $product->name }}" class="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform">
                         </a>
-                        <button @click="$store.fav.toggle({id: '{{ $product->id }}', name: '{{ addslashes($product->name) }}', brand: '{{ addslashes($product->brand->name ?? '') }}', price: {{ $product->price }}, image: '{{ $img }}'})" class="favorite-btn absolute top-2 right-2 w-8 h-8 bg-white border border-gray-100 rounded-full flex items-center justify-center shadow-sm" :class="$store.fav.has('{{ $product->id }}') ? 'text-red-500' : 'text-gray-400'">
+                        <button @click="$store.fav.toggle({id: '{{ $product->id }}', slug: '{{ $product->slug }}', name: '{{ addslashes($product->name) }}', brand: '{{ addslashes($product->brand->name ?? '') }}', price: {{ $product->price }}, image: '{{ $img }}'})" class="favorite-btn absolute top-2 right-2 w-8 h-8 bg-white border border-gray-100 rounded-full flex items-center justify-center shadow-sm" :class="$store.fav.has('{{ $product->id }}') ? 'text-red-500' : 'text-gray-400'">
                             <i :class="$store.fav.has('{{ $product->id }}') ? 'fas fa-heart' : 'far fa-heart'"></i>
                         </button>
                         
@@ -217,7 +218,7 @@
                     
                     <div class="product-info p-3 flex flex-col flex-grow">
                         <div class="brand-name font-bold text-sm">{{ $product->brand->name ?? 'Markasız' }}</div>
-                        <a href="{{ route('product.show', $product->id) }}" target="_blank">
+                        <a href="{{ route('product.show', $product->slug) }}" target="_blank">
                             <h3 class="product-name text-xs text-gray-500 line-clamp-2 h-8 mb-2 leading-tight">{{ $product->name }}</h3>
                         </a>
                         
@@ -232,7 +233,7 @@
                             <div class="text-[var(--primary-color)] font-black text-base">{{ number_format($product->price, 2) }} TL</div>
                         </div>
                         
-                        <button @click="$store.cart.add({id: '{{ $product->id }}', name: '{{ addslashes($product->name) }}', brand: '{{ addslashes($product->brand->name ?? '') }}', price: {{ $product->price }}, image: '{{ $img }}'})" class="w-full mt-3 py-2 bg-slate-900 text-white text-[11px] font-black rounded hover:bg-slate-800 transition-colors uppercase tracking-widest">
+                        <button @click="$store.cart.add({id: '{{ $product->id }}', slug: '{{ $product->slug }}', name: '{{ addslashes($product->name) }}', brand: '{{ addslashes($product->brand->name ?? '') }}', price: {{ $product->price }}, image: '{{ $img }}'})" class="w-full mt-3 py-2 bg-slate-900 text-white text-[11px] font-black rounded hover:bg-slate-800 transition-colors uppercase tracking-widest">
                             Sepete Ekle
                         </button>
                     </div>
@@ -258,9 +259,10 @@
                     </div>
                     <div class="max-h-48 overflow-y-auto pr-2 custom-scrollbar space-y-1">
                         @foreach($categories as $cat)
-                            <a href="{{ route('home', array_merge(request()->all(), ['category' => $cat->id])) }}" 
+                            @php $isActive = (request('category') == $cat->id || request('category') == $cat->slug); @endphp
+                            <a href="{{ route('home', array_merge(request()->all(), ['category' => $cat->slug])) }}" 
                                x-show="catSearch === '' || '{{ str($cat->name)->lower() }}'.includes(catSearch.toLowerCase())"
-                               class="filter-item {{ request('category') == $cat->id ? 'text-[var(--primary-color)] font-bold' : '' }}">
+                               class="filter-item {{ $isActive ? 'text-[var(--primary-color)] font-bold' : '' }}">
                                 <span class="flex-grow">{{ $cat->name }}</span>
                                 <span class="text-[10px] text-gray-400">({{ $cat->products_count }})</span>
                             </a>
@@ -277,11 +279,12 @@
                     </div>
                     <div class="max-h-64 overflow-y-auto pr-2 custom-scrollbar space-y-1">
                         @foreach($brands as $brand)
-                            <a href="{{ route('home', array_merge(request()->all(), ['brand' => $brand->id])) }}" 
+                            @php $isActive = (request('brand') == $brand->id || request('brand') == $brand->slug); @endphp
+                            <a href="{{ route('home', array_merge(request()->all(), ['brand' => $brand->slug])) }}" 
                                x-show="brandSearch === '' || '{{ str($brand->name)->lower() }}'.includes(brandSearch.toLowerCase())"
-                               class="filter-item {{ request('brand') == $brand->id ? 'text-[var(--primary-color)] font-bold' : '' }}">
+                               class="filter-item {{ $isActive ? 'text-[var(--primary-color)] font-bold' : '' }}">
                                 <span class="h-4 w-4 border border-gray-300 rounded flex items-center justify-center">
-                                    @if(request('brand') == $brand->id) <i class="fas fa-check text-[8px] text-[var(--primary-color)]"></i> @endif
+                                    @if($isActive) <i class="fas fa-check text-[8px] text-[var(--primary-color)]"></i> @endif
                                 </span>
                                 <span class="flex-grow">{{ $brand->name }}</span>
                                 <span class="text-[10px] text-gray-400">({{ $brand->products_count }})</span>
@@ -331,10 +334,10 @@
                         <div class="product-card">
                             <div class="product-image-container relative aspect-[2/3] bg-gray-50 overflow-hidden">
                                 @php $img = $product->productImages->first()?->url ?? 'https://via.placeholder.com/400x600?text=Resim+Yok'; @endphp
-                                <a href="{{ route('product.show', $product->id) }}" target="_blank">
+                                <a href="{{ route('product.show', $product->slug) }}" target="_blank">
                                     <img src="{{ $img }}" alt="{{ $product->name }}" class="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform">
                                 </a>
-                                <button @click="$store.fav.toggle({id: '{{ $product->id }}', name: '{{ addslashes($product->name) }}', brand: '{{ addslashes($product->brand->name ?? '') }}', price: {{ $product->price }}, image: '{{ $img }}'})" class="favorite-btn absolute top-2 right-2 w-8 h-8 bg-white border border-gray-100 rounded-full flex items-center justify-center shadow-sm" :class="$store.fav.has('{{ $product->id }}') ? 'text-red-500' : 'text-gray-400'">
+                                <button @click="$store.fav.toggle({id: '{{ $product->id }}', slug: '{{ $product->slug }}', name: '{{ addslashes($product->name) }}', brand: '{{ addslashes($product->brand->name ?? '') }}', price: {{ $product->price }}, image: '{{ $img }}'})" class="favorite-btn absolute top-2 right-2 w-8 h-8 bg-white border border-gray-100 rounded-full flex items-center justify-center shadow-sm" :class="$store.fav.has('{{ $product->id }}') ? 'text-red-500' : 'text-gray-400'">
                                     <i :class="$store.fav.has('{{ $product->id }}') ? 'fas fa-heart' : 'far fa-heart'"></i>
                                 </button>
                                 
@@ -348,7 +351,7 @@
                             
                             <div class="product-info p-3 flex flex-col flex-grow">
                                 <div class="brand-name font-bold text-sm">{{ $product->brand->name ?? 'Markasız' }}</div>
-                                <a href="{{ route('product.show', $product->id) }}" target="_blank">
+                                <a href="{{ route('product.show', $product->slug) }}" target="_blank">
                                     <h3 class="product-name text-xs text-gray-500 line-clamp-2 h-8 mb-2 leading-tight">{{ $product->name }}</h3>
                                 </a>
                                 
@@ -363,7 +366,7 @@
                                     <div class="text-[var(--primary-color)] font-black text-base">{{ number_format($product->price, 2) }} TL</div>
                                 </div>
                                 
-                                <button @click="$store.cart.add({id: '{{ $product->id }}', name: '{{ addslashes($product->name) }}', brand: '{{ addslashes($product->brand->name ?? '') }}', price: {{ $product->price }}, image: '{{ $img }}'})" class="w-full mt-3 py-2 bg-slate-900 text-white text-[11px] font-black rounded hover:bg-slate-800 transition-colors uppercase tracking-widest">
+                                <button @click="$store.cart.add({id: '{{ $product->id }}', slug: '{{ $product->slug }}', name: '{{ addslashes($product->name) }}', brand: '{{ addslashes($product->brand->name ?? '') }}', price: {{ $product->price }}, image: '{{ $img }}'})" class="w-full mt-3 py-2 bg-slate-900 text-white text-[11px] font-black rounded hover:bg-slate-800 transition-colors uppercase tracking-widest">
                                     Sepete Ekle
                                 </button>
                             </div>
@@ -399,17 +402,17 @@
                 <div class="flex-shrink-0 w-[200px] product-card bg-white shadow-xl">
                     <div class="product-image-container relative aspect-[2/3] bg-gray-50 overflow-hidden">
                         @php $img = $product->productImages->first()?->url ?? 'https://via.placeholder.com/400x600?text=Resim+Yok'; @endphp
-                        <a href="{{ route('product.show', $product->id) }}" target="_blank">
+                        <a href="{{ route('product.show', $product->slug) }}" target="_blank">
                             <img src="{{ $img }}" alt="{{ $product->name }}" class="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform">
                         </a>
-                        <button @click="$store.fav.toggle({id: '{{ $product->id }}', name: '{{ addslashes($product->name) }}', brand: '{{ addslashes($product->brand->name ?? '') }}', price: {{ $product->price }}, image: '{{ $img }}'})" class="favorite-btn absolute top-2 right-2 w-8 h-8 bg-white border border-gray-100 rounded-full flex items-center justify-center shadow-sm" :class="$store.fav.has('{{ $product->id }}') ? 'text-red-500' : 'text-gray-400'">
+                        <button @click="$store.fav.toggle({id: '{{ $product->id }}', slug: '{{ $product->slug }}', name: '{{ addslashes($product->name) }}', brand: '{{ addslashes($product->brand->name ?? '') }}', price: {{ $product->price }}, image: '{{ $img }}'})" class="favorite-btn absolute top-2 right-2 w-8 h-8 bg-white border border-gray-100 rounded-full flex items-center justify-center shadow-sm" :class="$store.fav.has('{{ $product->id }}') ? 'text-red-500' : 'text-gray-400'">
                             <i :class="$store.fav.has('{{ $product->id }}') ? 'fas fa-heart' : 'far fa-heart'"></i>
                         </button>
                     </div>
                     
                     <div class="product-info p-3 flex flex-col flex-grow">
                         <div class="brand-name font-bold text-[11px] truncate uppercase tracking-tighter text-gray-400">{{ $product->brand->name ?? 'Markasız' }}</div>
-                        <a href="{{ route('product.show', $product->id) }}" target="_blank">
+                        <a href="{{ route('product.show', $product->slug) }}" target="_blank">
                             <h3 class="product-name text-[11px] text-gray-500 line-clamp-1 h-4 mb-2 leading-tight font-bold">{{ $product->name }}</h3>
                         </a>
                         
@@ -417,7 +420,7 @@
                             <div class="text-[var(--primary-color)] font-black text-sm">{{ number_format($product->price, 2) }} TL</div>
                         </div>
                         
-                        <button @click="$store.cart.add({id: '{{ $product->id }}', name: '{{ addslashes($product->name) }}', brand: '{{ addslashes($product->brand->name ?? '') }}', price: {{ $product->price }}, image: '{{ $img }}'})" class="w-full mt-3 py-1.5 bg-slate-900 text-white text-[10px] font-black rounded hover:bg-slate-800 transition-colors uppercase tracking-widest">
+                        <button @click="$store.cart.add({id: '{{ $product->id }}', slug: '{{ $product->slug }}', name: '{{ addslashes($product->name) }}', brand: '{{ addslashes($product->brand->name ?? '') }}', price: {{ $product->price }}, image: '{{ $img }}'})" class="w-full mt-3 py-1.5 bg-slate-900 text-white text-[10px] font-black rounded hover:bg-slate-800 transition-colors uppercase tracking-widest">
                             Sepete Ekle
                         </button>
                     </div>

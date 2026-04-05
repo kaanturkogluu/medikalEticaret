@@ -8,7 +8,7 @@
         <nav class="breadcrumb flex gap-10 font-bold items-center py-6">
             <a href="{{ route('home') }}" class="text-xs text-gray-500 hover:underline">Ana Sayfa</a>
             <i class="fas fa-chevron-right text-[8px] text-gray-400"></i>
-            <a href="{{ route('home', ['category' => $product->category_id]) }}" class="text-xs text-gray-500 hover:underline">{{ $product->category->name ?? 'Kategori' }}</a>
+            <a href="{{ route('home', ['category' => $product->category->slug ?? $product->category_id]) }}" class="text-xs text-gray-500 hover:underline">{{ $product->category->name ?? 'Kategori' }}</a>
             <i class="fas fa-chevron-right text-[8px] text-gray-400"></i>
             <span class="text-xs text-gray-300">{{ str($product->name)->limit(40) }}</span>
         </nav>
@@ -86,11 +86,11 @@
                 <!-- Actions -->
                 <div class="flex gap-4 mb-10">
                     @php $imgArr = $product->productImages->first()?->url ?? 'https://via.placeholder.com/600x900'; @endphp
-                    <button @click="$store.cart.add({id: '{{ $product->id }}', name: '{{ addslashes($product->name) }}', brand: '{{ addslashes($product->brand->name ?? '') }}', price: {{ $product->price }}, image: '{{ $imgArr }}'})" class="flex-grow h-16 bg-[var(--primary-color)] text-white text-lg font-black rounded-xl shadow-lg shadow-orange-100 hover:bg-[var(--primary-hover)] transition-all flex items-center justify-center gap-3">
+                    <button @click="$store.cart.add({id: '{{ $product->id }}', slug: '{{ $product->slug }}', name: '{{ addslashes($product->name) }}', brand: '{{ addslashes($product->brand->name ?? '') }}', price: {{ $product->price }}, image: '{{ $imgArr }}'})" class="flex-grow h-16 bg-[var(--primary-color)] text-white text-lg font-black rounded-xl shadow-lg shadow-orange-100 hover:bg-[var(--primary-hover)] transition-all flex items-center justify-center gap-3">
                         <i class="fas fa-shopping-basket"></i>
                         <span>SEPETE EKLE</span>
                     </button>
-                    <button @click="$store.fav.toggle({id: '{{ $product->id }}', name: '{{ addslashes($product->name) }}', brand: '{{ addslashes($product->brand->name ?? '') }}', price: {{ $product->price }}, image: '{{ $imgArr }}'})" class="w-16 h-16 border-2 border-gray-100 rounded-xl flex items-center justify-center transition-all bg-white hover:border-red-100" :class="$store.fav.has('{{ $product->id }}') ? 'text-red-500 bg-red-50' : 'text-gray-300'">
+                    <button @click="$store.fav.toggle({id: '{{ $product->id }}', slug: '{{ $product->slug }}', name: '{{ addslashes($product->name) }}', brand: '{{ addslashes($product->brand->name ?? '') }}', price: {{ $product->price }}, image: '{{ $imgArr }}'})" class="w-16 h-16 border-2 border-gray-100 rounded-xl flex items-center justify-center transition-all bg-white hover:border-red-100" :class="$store.fav.has('{{ $product->id }}') ? 'text-red-500 bg-red-50' : 'text-gray-300'">
                         <i :class="$store.fav.has('{{ $product->id }}') ? 'fas fa-heart text-2xl' : 'far fa-heart text-2xl'"></i>
                     </button>
                 </div>
@@ -161,15 +161,15 @@
             <div class="grid grid-cols-2 md:grid-cols-5 gap-8">
                 @foreach($relatedProducts as $rp)
                     <div class="group relative bg-white border border-gray-100 p-3 rounded-2xl hover:shadow-xl hover:shadow-gray-100 transition-all">
-                        <a href="{{ route('product.show', $rp->id) }}" target="_blank">
-                            <div class="aspect-[2/3] bg-gray-50 rounded-xl overflow-hidden mb-4 p-4">
+                        <a href="{{ route('product.show', $rp) }}" target="_blank">
+                             <div class="aspect-[2/3] bg-gray-50 rounded-xl overflow-hidden mb-4 p-4">
                                 <img src="{{ $rp->productImages->first()?->url ?? 'https://via.placeholder.com/400x600' }}" alt="" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500">
                             </div>
                             <div class="text-[10px] font-black text-slate-900 border-b-2 border-orange-100 w-fit mb-1 uppercase tracking-widest">{{ $rp->brand->name ?? 'Markasız' }}</div>
                             <div class="text-xs text-gray-500 h-10 overflow-hidden line-clamp-2 leading-tight pr-4">{{ $rp->name }}</div>
                             <div class="text-lg font-black text-[var(--primary-color)] mt-3 tracking-tighter">{{ number_format($rp->price, 2) }} TL</div>
                         </a>
-                        <button @click="$store.cart.add({id: '{{ $rp->id }}', name: '{{ addslashes($rp->name) }}', brand: '{{ addslashes($rp->brand->name ?? '') }}', price: {{ $rp->price }}, image: '{{ $rp->productImages->first()?->url ?? '' }}'})" class="absolute bottom-4 right-4 bg-slate-900 text-white w-10 h-10 rounded-xl flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all shadow-xl hover:bg-orange-500">
+                        <button @click="$store.cart.add({id: '{{ $rp->id }}', slug: '{{ $rp->slug }}', name: '{{ addslashes($rp->name) }}', brand: '{{ addslashes($rp->brand->name ?? '') }}', price: {{ $rp->price }}, image: '{{ $rp->productImages->first()?->url ?? '' }}'})" class="absolute bottom-4 right-4 bg-slate-900 text-white w-10 h-10 rounded-xl flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all shadow-xl hover:bg-orange-500">
                             <i class="fas fa-cart-plus text-sm"></i>
                         </button>
                     </div>

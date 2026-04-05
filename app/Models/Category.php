@@ -10,6 +10,22 @@ class Category extends Model
 {
     protected $fillable = ['parent_id', 'name', 'slug', 'active', 'external_id', 'is_navbar'];
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::saving(function ($category) {
+            if (empty($category->slug) || $category->isDirty('name')) {
+                $category->slug = \Illuminate\Support\Str::slug($category->name);
+            }
+        });
+    }
+
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
+
     protected $casts = [
         'active' => 'boolean',
         'is_navbar' => 'boolean',

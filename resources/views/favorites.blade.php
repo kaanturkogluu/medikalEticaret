@@ -37,7 +37,7 @@
                         <i class="fas fa-times text-sm"></i>
                     </button>
                     
-                    <a :href="'/product/' + product.id" target="_blank">
+                    <a :href="product.slug ? '/urun/' + product.slug : '/urun/' + product.id" target="_blank">
                         <div class="aspect-[2/3] bg-gray-50 relative overflow-hidden rounded-2xl mb-4 p-4 flex items-center justify-center ring-1 ring-gray-50">
                             <img :src="product.image" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-700">
                         </div>

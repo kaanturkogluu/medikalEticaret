@@ -9,12 +9,32 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Product extends Model
 {
     protected $fillable = [
-        'parent_id', 'variant_key', 'brand_id', 'category_id', 'sku', 'barcode', 'name',
+        'parent_id', 'variant_key', 'brand_id', 'category_id', 'sku', 'barcode', 'name', 'slug',
         'brand_name', 'category_name', 'description', 'price', 'stock', 'active', 'is_popular',
         'attributes', 'raw_marketplace_data', 'marketplace_status', 'marketplace',
         'external_id', 'platform_listing_id', 'product_content_id', 'supplier_id',
         'views'
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::saving(function ($product) {
+            if (empty($product->slug) || $product->isDirty('name')) {
+                $baseSlug = \Illuminate\Support\Str::slug($product->name);
+                $skuSlug = \Illuminate\Support\Str::slug($product->sku);
+                
+                // Combine name and SKU for uniqueness and SEO
+                $product->slug = $baseSlug . '-' . $skuSlug;
+            }
+        });
+    }
+
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
 
     protected $casts = [
         'active' => 'boolean',
