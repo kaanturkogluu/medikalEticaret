@@ -10,7 +10,7 @@ class Product extends Model
 {
     protected $fillable = [
         'parent_id', 'variant_key', 'brand_id', 'category_id', 'sku', 'barcode', 'name',
-        'brand_name', 'category_name', 'description', 'price', 'stock', 'active',
+        'brand_name', 'category_name', 'description', 'price', 'stock', 'active', 'is_popular',
         'attributes', 'raw_marketplace_data', 'marketplace_status', 'marketplace',
         'external_id', 'platform_listing_id', 'product_content_id', 'supplier_id',
         'views'
@@ -18,6 +18,7 @@ class Product extends Model
 
     protected $casts = [
         'active' => 'boolean',
+        'is_popular' => 'boolean',
         'attributes' => 'array',
         'raw_marketplace_data' => 'array'
     ];

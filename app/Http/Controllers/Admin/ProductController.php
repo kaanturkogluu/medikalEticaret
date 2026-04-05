@@ -25,6 +25,7 @@ class ProductController extends Controller
                 'price' => (float)$product->price,
                 'stock' => (int)$product->stock,
                 'status' => 'synced', // simplified for now
+                'is_popular' => (bool)$product->is_popular,
                 'marketplaces' => $product->channelProducts->map(fn($cp) => $cp->channel->name)->toArray(),
                 'image' => $product->productImages->first()?->url ?? null,
             ];
@@ -35,6 +36,18 @@ class ProductController extends Controller
 
         return view('admin.products', [
             'products' => $products
+        ]);
+    }
+
+    public function togglePopular(Product $product)
+    {
+        $product->is_popular = !$product->is_popular;
+        $product->save();
+
+        return response()->json([
+            'success' => true,
+            'is_popular' => $product->is_popular,
+            'message' => $product->is_popular ? 'Ürün popüler ürünlere eklendi.' : 'Ürün popüler ürünlerden çıkarıldı.'
         ]);
     }
 

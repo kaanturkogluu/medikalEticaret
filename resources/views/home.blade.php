@@ -137,6 +137,82 @@
     </div>
     @endif
 
+    <!-- Popular Products Section -->
+    @php
+        $popularActive = \App\Models\Setting::getValue('popular_section_active', true);
+        $popularTitle = \App\Models\Setting::getValue('popular_section_title', 'Popüler Ürünler');
+        $popularSubtitle = \App\Models\Setting::getValue('popular_section_subtitle', 'En Çok Tercih Edilenler');
+    @endphp
+
+    @if($popularActive && $popularProducts->count() > 0)
+    <section class="ty-container py-12">
+        <div class="flex flex-col mb-8 gap-1">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <div class="w-1.5 h-8 bg-[var(--primary-color)] rounded-full"></div>
+                    <h2 class="text-2xl font-black italic tracking-tighter text-slate-900 uppercase">
+                        @php
+                            $titleParts = explode(' ', $popularTitle);
+                            $lastWord = array_pop($titleParts);
+                            $firstPart = implode(' ', $titleParts);
+                        @endphp
+                        {{ $firstPart }} <span class="text-[var(--primary-color)]">{{ $lastWord }}</span>
+                    </h2>
+                </div>
+                <a href="{{ route('home', ['sort' => 'newest']) }}" class="text-xs font-black uppercase italic tracking-tighter text-slate-400 hover:text-[var(--primary-color)] transition-all underline decoration-2 underline-offset-4">Tümünü İncele <i class="fas fa-chevron-right ml-1"></i></a>
+            </div>
+            @if($popularSubtitle)
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] ml-5">{{ $popularSubtitle }}</p>
+            @endif
+        </div>
+
+        <div class="flex overflow-x-auto pb-6 gap-6 custom-scrollbar scroll-smooth">
+            @foreach($popularProducts as $product)
+                <div class="flex-shrink-0 w-[240px] product-card">
+                    <div class="product-image-container relative aspect-[2/3] bg-gray-50 overflow-hidden">
+                        @php $img = $product->productImages->first()?->url ?? 'https://via.placeholder.com/400x600?text=Resim+Yok'; @endphp
+                        <a href="{{ route('product.show', $product->id) }}" target="_blank">
+                            <img src="{{ $img }}" alt="{{ $product->name }}" class="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform">
+                        </a>
+                        <button @click="$store.fav.toggle({id: '{{ $product->id }}', name: '{{ addslashes($product->name) }}', brand: '{{ addslashes($product->brand->name ?? '') }}', price: {{ $product->price }}, image: '{{ $img }}'})" class="favorite-btn absolute top-2 right-2 w-8 h-8 bg-white border border-gray-100 rounded-full flex items-center justify-center shadow-sm" :class="$store.fav.has('{{ $product->id }}') ? 'text-red-500' : 'text-gray-400'">
+                            <i :class="$store.fav.has('{{ $product->id }}') ? 'fas fa-heart' : 'far fa-heart'"></i>
+                        </button>
+                        
+                        <div class="absolute bottom-2 left-2 flex flex-col gap-1">
+                            @if($product->is_popular)
+                                <div class="bg-amber-400 text-white text-[9px] font-bold px-2 py-0.5 rounded shadow-sm border border-amber-500 w-fit">EDİTÖRÜN SEÇİMİ</div>
+                            @endif
+                            <div class="badge-free-shipping uppercase">Popüler Ürün</div>
+                        </div>
+                    </div>
+                    
+                    <div class="product-info p-3 flex flex-col flex-grow">
+                        <div class="brand-name font-bold text-sm">{{ $product->brand->name ?? 'Markasız' }}</div>
+                        <a href="{{ route('product.show', $product->id) }}" target="_blank">
+                            <h3 class="product-name text-xs text-gray-500 line-clamp-2 h-8 mb-2 leading-tight">{{ $product->name }}</h3>
+                        </a>
+                        
+                        <div class="flex items-center gap-1 mt-auto">
+                            <div class="flex text-[10px] text-amber-400">
+                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                            </div>
+                            <span class="text-[10px] text-gray-400 font-bold">({{ $product->views }})</span>
+                        </div>
+
+                        <div class="mt-2">
+                            <div class="text-[var(--primary-color)] font-black text-base">{{ number_format($product->price, 2) }} TL</div>
+                        </div>
+                        
+                        <button @click="$store.cart.add({id: '{{ $product->id }}', name: '{{ addslashes($product->name) }}', brand: '{{ addslashes($product->brand->name ?? '') }}', price: {{ $product->price }}, image: '{{ $img }}'})" class="w-full mt-3 py-2 bg-slate-900 text-white text-[11px] font-black rounded hover:bg-slate-800 transition-colors uppercase tracking-widest">
+                            Sepete Ekle
+                        </button>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    </section>
+    @endif
+
     <!-- Main Content -->
     <main class="ty-container py-8">
         <div class="flex flex-col lg:flex-row gap-8">

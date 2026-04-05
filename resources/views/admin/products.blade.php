@@ -21,6 +21,22 @@
             this.syncing = null;
             notify('success', `${type.toUpperCase()} Senkronizasyonu Başarılı!`);
         }, 1500);
+    },
+    togglePopular(product) {
+        fetch(`/admin/products/${product.id}/toggle-popular`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json'
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                product.is_popular = data.is_popular;
+                notify('success', data.message);
+            }
+        });
     }
 }">
     <!-- Header -->
@@ -76,13 +92,20 @@
                         <tr class="hover:bg-slate-50/80 transition-colors group">
                             <td class="px-6 py-4">
                                 <div class="flex items-center gap-4">
-                                    <div class="h-12 w-12 rounded-lg bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-400 group-hover:bg-white transition-colors overflow-hidden">
+                                    <div class="h-12 w-12 rounded-lg bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-400 group-hover:bg-white transition-colors overflow-hidden relative">
                                         <template x-if="p.image">
                                             <img :src="p.image" class="h-full w-full object-cover">
                                         </template>
                                         <template x-if="!p.image">
                                             <i class="fas fa-image text-xl"></i>
                                         </template>
+                                        
+                                        <!-- Popular Toggle Badge -->
+                                        <button @click="togglePopular(p)" 
+                                                class="absolute top-0 right-0 w-5 h-5 bg-white border-l border-b border-slate-100 flex items-center justify-center transition-all"
+                                                :title="p.is_popular ? 'Popüler ürünlerden çıkar' : 'Popüler ürünlere ekle'">
+                                            <i :class="p.is_popular ? 'fas fa-star text-amber-400' : 'far fa-star text-slate-300'" class="text-[10px]"></i>
+                                        </button>
                                     </div>
                                     <div>
                                         <p class="text-sm font-bold text-slate-800 tracking-tight" x-text="p.name"></p>

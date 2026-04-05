@@ -138,4 +138,26 @@ class AppearanceController extends Controller
 
         return back()->with('success', 'Sekme başlık ayarları güncellendi.');
     }
+
+    public function popular()
+    {
+        $settings = [
+            'active' => Setting::getValue('popular_section_active', true),
+            'title' => Setting::getValue('popular_section_title', 'Popüler Ürünler'),
+            'subtitle' => Setting::getValue('popular_section_subtitle', 'En Çok Tercih Edilenler'),
+            'max_items' => Setting::getValue('popular_section_max', 10),
+        ];
+
+        return view('admin.appearance.popular', compact('settings'));
+    }
+
+    public function updatePopular(Request $request)
+    {
+        Setting::setValue('popular_section_active', $request->has('active'));
+        Setting::setValue('popular_section_title', $request->title);
+        Setting::setValue('popular_section_subtitle', $request->subtitle);
+        Setting::setValue('popular_section_max', $request->max_items);
+
+        return back()->with('success', 'Popüler ürünler bölümü ayarları güncellendi.');
+    }
 }

@@ -89,7 +89,7 @@ Brand → hasMany Product, ChannelBrand
 ```
 
 ### Product Alanları (fillable)
-`parent_id, variant_key, brand_id, category_id, sku, barcode, name, brand_name, category_name, description, price, stock, active, attributes (JSON), raw_marketplace_data (JSON), marketplace_status, marketplace, external_id, platform_listing_id, product_content_id, supplier_id, views`
+`parent_id, variant_key, brand_id, category_id, sku, barcode, name, brand_name, category_name, description, price, stock, active, is_popular, attributes (JSON), raw_marketplace_data (JSON), marketplace_status, marketplace, external_id, platform_listing_id, product_content_id, supplier_id, views`
 
 ---
 
@@ -250,6 +250,7 @@ Altyapı
 - [x] **Yetkilendirme Altyapısı (RBAC):** Admin ve Kullanıcı rolleri, middleware koruması ve smart login redirect
 - [x] **Google OAuth (Socialite):** "Google ile Giriş Yap" özelliği (veritabanı senkronizasyonu + avatar desteği)
 - [x] **Özel Hata Sayfaları:** 404, 403 ve 419 hataları için premium tasarımlı kurumsal sayfalar
+- [x] **Popüler Ürünler:** Admin panelinden seçilebilir veya otomatik (en çok izlenen) vitrin alanı
 
 ---
 
@@ -444,4 +445,4 @@ Altyapı
 
 ---
 
-*Son güncelleme: 2026-04-05 — Google Login ve Özel Hata Sayfaları tamamlandı, Sistem Dokümante Edildi.*
+*Son güncelleme: 2026-04-05 — Popüler Ürünler (Vitrin) sistemi eklendi.*
