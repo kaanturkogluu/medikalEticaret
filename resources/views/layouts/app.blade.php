@@ -3,7 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', config('app.name')) - umutMed Market</title>
+    @php
+        $siteTitle = \App\Models\Setting::getValue('site_title', 'umutMed Market');
+        $primaryColor = \App\Models\Setting::getValue('site_primary_color', '#f27a1a');
+        $footerQr = \App\Models\Setting::getValue('site_footer_qr', '');
+        $defaultFooter = [
+            ["title" => "umutMed", "links" => [["text" => "Hakkımızda", "url" => "#"], ["text" => "Kariyer", "url" => "#"], ["text" => "İletişim", "url" => "/iletisim"], ["text" => "Sürdürülebilirlik", "url" => "#"]]],
+            ["title" => "Kampanyalar", "links" => [["text" => "Aktif Kampanyalar", "url" => "#"], ["text" => "Elite Üyelik", "url" => "#"], ["text" => "Hediye Fikirleri", "url" => "#"], ["text" => "umutMed Blog", "url" => "#"]]],
+            ["title" => "Yardım", "links" => [["text" => "Sıkça Sorulan Sorular", "url" => "#"], ["text" => "İade Politikası", "url" => "#"], ["text" => "Ödeme Seçenekleri", "url" => "#"], ["text" => "Kullanım Koşulları", "url" => "#"]]]
+        ];
+        $footerCols = json_decode(\App\Models\Setting::getValue('site_footer_columns', json_encode($defaultFooter)), true);
+    @endphp
+
+    <title>@yield('title', config('app.name')) - {{ $siteTitle }}</title>
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -21,14 +33,14 @@
 
     <style>
         :root {
-            --primary-color: #f27a1a;
-            --primary-hover: #e67216;
+            --primary-color: {{ $primaryColor }};
+            --primary-hover: {{ $primaryColor }}ee;
             --background-color: #f5f5f5;
             --card-bg: #ffffff;
             --text-main: #333333;
             --text-muted: #666666;
             --border-color: #e6e6e6;
-            --price-color: #f27a1a;
+            --price-color: {{ $primaryColor }};
             --accent-green: #0bc15c;
             --accent-blue: #3399ff;
         }
@@ -320,40 +332,31 @@
     <!-- Footer -->
     <footer class="bg-slate-900 text-white py-16">
         <div class="ty-container grid grid-cols-1 md:grid-cols-4 gap-12">
+            @foreach($footerCols as $col)
             <div>
-                <h4 class="text-lg font-bold mb-6">umutMed</h4>
+                <h4 class="text-sm font-black italic tracking-tighter uppercase mb-6 text-white/90">{{ $col['title'] }}</h4>
                 <ul class="space-y-3 text-sm text-gray-400 font-medium">
-                    <li><a href="#" class="hover:text-white transition-colors">Hakkımızda</a></li>
-                    <li><a href="#" class="hover:text-white transition-colors">Kariyer</a></li>
-                    <li><a href="{{ route('contact') }}" class="hover:text-white transition-colors">İletişim</a></li>
-                    <li><a href="#" class="hover:text-white transition-colors">Sürdürülebilirlik</a></li>
+                    @foreach($col['links'] as $link)
+                    <li><a href="{{ $link['url'] }}" class="hover:text-[var(--primary-color)] transition-colors">{{ $link['text'] }}</a></li>
+                    @endforeach
                 </ul>
             </div>
+            @endforeach
+            
             <div>
-                <h4 class="text-lg font-bold mb-6">Kampanyalar</h4>
-                <ul class="space-y-3 text-sm text-gray-400 font-medium">
-                    <li><a href="#" class="hover:text-white transition-colors">Aktif Kampanyalar</a></li>
-                    <li><a href="#" class="hover:text-white transition-colors">Elite Üyelik</a></li>
-                    <li><a href="#" class="hover:text-white transition-colors">Hediye Fikirleri</a></li>
-                    <li><a href="#" class="hover:text-white transition-colors">umutMed Blog</a></li>
-                </ul>
-            </div>
-            <div>
-                <h4 class="text-lg font-bold mb-6">Yardım</h4>
-                <ul class="space-y-3 text-sm text-gray-400 font-medium">
-                    <li><a href="#" class="hover:text-white transition-colors">Sıkça Sorulan Sorular</a></li>
-                    <li><a href="#" class="hover:text-white transition-colors">İade Politikası</a></li>
-                    <li><a href="#" class="hover:text-white transition-colors">Ödeme Seçenekleri</a></li>
-                    <li><a href="#" class="hover:text-white transition-colors">Kullanım Koşulları</a></li>
-                </ul>
-            </div>
-            <div>
-                <h4 class="text-lg font-bold mb-6">Güvenli Alışveriş</h4>
-                <div class="flex flex-wrap gap-4 grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all cursor-pointer">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" class="h-6" alt="Paypal">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" class="h-8" alt="Mastercard">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/d/d6/Visa_2021.svg" class="h-4" alt="Visa">
-                </div>
+                <h4 class="text-sm font-black italic tracking-tighter uppercase mb-6 text-white/90">Güvenli Alışveriş</h4>
+                <div class="flex flex-col gap-6">
+                    <div class="flex flex-wrap gap-4 grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all cursor-pointer">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" class="h-6" alt="Paypal">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" class="h-8" alt="Mastercard">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/d/d6/Visa_2021.svg" class="h-4" alt="Visa">
+                    </div>
+
+                    @if($footerQr)
+                    <div class="bg-white p-2 rounded-2xl w-fit shadow-2xl shadow-black/40 group hover:scale-105 transition-transform duration-300">
+                        <img src="{{ $footerQr }}" class="w-24 h-24 object-contain" alt="QR Kod">
+                    </div>
+                    @endif
                 </div>
             </div>
         </div>

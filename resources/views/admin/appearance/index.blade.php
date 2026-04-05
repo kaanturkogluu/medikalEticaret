@@ -71,7 +71,7 @@
             </div>
             <h3 class="text-lg font-black text-slate-900 italic tracking-tighter uppercase mb-2">Genel Görünüm</h3>
             <p class="text-xs text-slate-500 mb-6 leading-relaxed">Alt bilgi (Footer) linkleri ve genel web sitesi stil ayarlarını yapın.</p>
-            <a href="#" class="mt-auto px-6 py-2 bg-slate-900 text-white rounded-xl text-xs font-bold hover:bg-brand-600 transition-colors flex items-center gap-2">
+            <a href="{{ route('admin.appearance.general') }}" class="mt-auto px-6 py-2 bg-slate-900 text-white rounded-xl text-xs font-bold hover:bg-brand-600 transition-colors flex items-center gap-2">
                 Düzenle <i class="fas fa-chevron-right text-[10px]"></i>
             </a>
         </div>

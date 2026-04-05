@@ -90,4 +90,32 @@ class AppearanceController extends Controller
 
         return back()->with('success', 'Sosyal medya ve destek ayarları güncellendi.');
     }
+
+    public function general()
+    {
+        $defaultFooter = [
+            ["title" => "umutMed", "links" => [["text" => "Hakkımızda", "url" => "#"], ["text" => "Kariyer", "url" => "#"], ["text" => "İletişim", "url" => "/iletisim"], ["text" => "Sürdürülebilirlik", "url" => "#"]]],
+            ["title" => "Kampanyalar", "links" => [["text" => "Aktif Kampanyalar", "url" => "#"], ["text" => "Elite Üyelik", "url" => "#"], ["text" => "Hediye Fikirleri", "url" => "#"], ["text" => "umutMed Blog", "url" => "#"]]],
+            ["title" => "Yardım", "links" => [["text" => "Sıkça Sorulan Sorular", "url" => "#"], ["text" => "İade Politikası", "url" => "#"], ["text" => "Ödeme Seçenekleri", "url" => "#"], ["text" => "Kullanım Koşulları", "url" => "#"]]]
+        ];
+
+        $settings = [
+            'primary_color' => Setting::getValue('site_primary_color', '#f27a1a'),
+            'site_title' => Setting::getValue('site_title', 'umutMed Market'),
+            'footer_qr' => Setting::getValue('site_footer_qr', ''),
+            'footer_columns' => json_decode(Setting::getValue('site_footer_columns', json_encode($defaultFooter)), true)
+        ];
+
+        return view('admin.appearance.general', compact('settings'));
+    }
+
+    public function updateGeneral(Request $request)
+    {
+        Setting::setValue('site_primary_color', $request->primary_color);
+        Setting::setValue('site_title', $request->site_title);
+        Setting::setValue('site_footer_qr', $request->footer_qr);
+        Setting::setValue('site_footer_columns', json_encode($request->footer_columns));
+
+        return back()->with('success', 'Genel görünüm ayarları güncellendi.');
+    }
 }

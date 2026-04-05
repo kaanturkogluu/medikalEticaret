@@ -50,6 +50,8 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::post('/appearance/marketplaces', [\App\Http\Controllers\Admin\AppearanceController::class, 'updateMarketplaces'])->name('admin.appearance.marketplaces.update');
     Route::get('/appearance/social', [\App\Http\Controllers\Admin\AppearanceController::class, 'social'])->name('admin.appearance.social');
     Route::post('/appearance/social', [\App\Http\Controllers\Admin\AppearanceController::class, 'updateSocial'])->name('admin.appearance.social.update');
+    Route::get('/appearance/general', [\App\Http\Controllers\Admin\AppearanceController::class, 'general'])->name('admin.appearance.general');
+    Route::post('/appearance/general', [\App\Http\Controllers\Admin\AppearanceController::class, 'updateGeneral'])->name('admin.appearance.general.update');
     Route::group(['prefix' => 'appearance/banner', 'as' => 'admin.appearance.banner.'], function () {
         Route::get('/', [\App\Http\Controllers\Admin\BannerController::class, 'index'])->name('index');
         Route::get('/create', [\App\Http\Controllers\Admin\BannerController::class, 'create'])->name('create');
