@@ -28,6 +28,10 @@ Route::middleware('guest')->group(function () {
     // Registration
     Route::get('/register', [\App\Http\Controllers\Auth\RegisterController::class, 'showRegisterForm'])->name('register');
     Route::post('/register', [\App\Http\Controllers\Auth\RegisterController::class, 'register']);
+
+    // Social Auth
+    Route::get('/auth/google', [\App\Http\Controllers\Auth\SocialController::class, 'redirectToGoogle'])->name('auth.google');
+    Route::get('/auth/google/callback', [\App\Http\Controllers\Auth\SocialController::class, 'handleGoogleCallback']);
 });
 
 // Email verification (accessible even when logged in, before verified)

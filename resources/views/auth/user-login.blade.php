@@ -29,10 +29,10 @@
 
             <!-- Social Login Part (Requested: Google Button) -->
             <div class="space-y-4 mb-8">
-                <button type="button" class="w-full google-btn rounded-md py-3 px-4 flex items-center justify-center gap-3 font-medium text-gray-700">
+                <a href="{{ route('auth.google') }}" class="w-full google-btn rounded-md py-3 px-4 flex items-center justify-center gap-3 font-medium text-gray-700">
                     <img src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" alt="Google" class="w-5 h-5">
                     Google ile Giriş Yap
-                </button>
+                </a>
                 <div class="relative flex items-center py-5">
                     <div class="flex-grow border-t border-gray-100"></div>
                     <span class="flex-shrink mx-4 text-gray-300 text-xs font-bold uppercase tracking-widest">veya</span>

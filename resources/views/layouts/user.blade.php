@@ -26,7 +26,7 @@
         .nav-link i { width: 1.25rem; text-align: center; font-size: 1.1rem; }
     </style>
 </head>
-<body class="min-h-screen">
+<body class="min-h-screen flex flex-col bg-[#f8fafc]">
 
     {{-- Top Navigation --}}
     <header class="bg-white border-b border-slate-100 sticky top-0 z-50 py-4 shadow-sm">
@@ -50,7 +50,7 @@
         </div>
     </header>
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+    <div class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 py-8 w-full">
         <div class="flex gap-6">
 
             {{-- SIDEBAR --}}

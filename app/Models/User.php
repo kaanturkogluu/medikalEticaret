@@ -22,6 +22,9 @@ class User extends Authenticatable implements MustVerifyEmail
         'email_verification_code',
         'email_verification_expires_at',
         'email_verified_at',
+        'google_id',
+        'google_token',
+        'avatar',
     ];
 
     public function isAdmin(): bool
