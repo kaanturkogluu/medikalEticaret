@@ -20,8 +20,9 @@ class UserController extends Controller
             ->get();
         $orderCount  = Order::where('customer_email', $user->email)->count();
         $addressCount = UserAddress::where('user_id', $user->id)->count();
+        $commentCount = \App\Models\Comment::where('user_id', $user->id)->count();
 
-        return view('user.dashboard', compact('user', 'orders', 'orderCount', 'addressCount'));
+        return view('user.dashboard', compact('user', 'orders', 'orderCount', 'addressCount', 'commentCount'));
     }
 
     /** All Orders */
@@ -127,5 +128,16 @@ class UserController extends Controller
         $user->update(['password' => Hash::make($request->password)]);
 
         return back()->with('success', 'Şifreniz başarıyla güncellendi.');
+    }
+
+    /** User Comments */
+    public function comments()
+    {
+        $comments = \App\Models\Comment::where('user_id', Auth::id())
+            ->with('product')
+            ->latest()
+            ->paginate(10);
+            
+        return view('user.comments', compact('comments'));
     }
 }

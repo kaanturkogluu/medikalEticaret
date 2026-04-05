@@ -63,5 +63,14 @@ class SettingSeeder extends Seeder
         Setting::updateOrCreate(['key' => 'whatsapp_support_active'], ['value' => '1']);
         Setting::updateOrCreate(['key' => 'support_phone'], ['value' => '0850 123 45 67']);
         Setting::updateOrCreate(['key' => 'support_email'], ['value' => 'destek@umutmed.com']);
+
+        // Default Marketplaces
+        $marketplaces = [
+            ['name' => 'TRENDYOL', 'url' => 'https://trendyol.com', 'logo' => 'https://www.google.com/s2/favicons?domain=trendyol.com&sz=128', 'color' => '#f27a1a'],
+            ['name' => 'N11', 'url' => 'https://n11.com', 'logo' => 'https://www.google.com/s2/favicons?domain=n11.com&sz=128', 'color' => '#e11e24'],
+            ['name' => 'HEPSİBURADA', 'url' => 'https://hepsiburada.com', 'logo' => 'https://www.google.com/s2/favicons?domain=hepsiburada.com&sz=128', 'color' => '#ff6000'],
+            ['name' => 'AMAZON', 'url' => 'https://amazon.com.tr', 'logo' => 'https://www.google.com/s2/favicons?domain=amazon.com.tr&sz=128', 'color' => '#000000'],
+        ];
+        Setting::updateOrCreate(['key' => 'marketplaces'], ['value' => json_encode($marketplaces)]);
     }
 }

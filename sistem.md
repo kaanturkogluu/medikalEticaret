@@ -38,6 +38,7 @@ app/Http/Controllers/
     ChannelController.php          ← Pazaryeri bağlantıları
     AppearanceController.php       ← contact, marketplaces, social, general, tabSwitch
     BannerController.php
+    CommentController.php          ← index, approve, destroy (Moderasyon)
 
 app/Models/
   Product.php     Brand.php     Category.php     Setting.php
@@ -59,6 +60,7 @@ resources/views/
     products.blade.php / products/ (edit vb.)
     brands/    index.blade.php, create.blade.php, edit.blade.php
     categories/ index.blade.php, create.blade.php, edit.blade.php
+    comments/   index.blade.php    ← Yorum onay/silme
     orders.blade.php
     appearance/ (tab_switch, contact, social, general, marketplaces, banner...)
     marketplaces/ settings.blade.php  logs.blade.php  sync/
@@ -99,10 +101,10 @@ Brand → hasMany Product, ChannelBrand
 | URL | Route Name | Controller@Method |
 |---|---|---|
 | `/` | `home` | HomeController@index |
-| `/product/{id}` | `product.show` | HomeController@show |
+| `/urun/{product:slug}` | `product.show` | HomeController@show |
 | `/favorites` | `favorites` | HomeController@favorites |
 | `/iletisim` | `contact` | view |
-| `/p/{slug}` | `page.show` | HomeController@page |
+| `/sayfa/{slug}` | `page.show` | HomeController@page |
 | `/login` | `login` | LoginController@showLoginForm |
 | `/admin/login` | `admin.login` | LoginController@showAdminLoginForm |
 | `/auth/google` | `auth.google` | SocialController@redirectToGoogle |
@@ -143,6 +145,7 @@ Brand → hasMany Product, ChannelBrand
 | `/admin/marketplaces` | `admin.marketplaces` |
 | `/admin/logs` | `admin.logs` |
 | `/admin/settings` | `admin.settings` |
+| `/admin/comments` | `admin.comments.index` |
 
 ---
 
@@ -255,6 +258,14 @@ Altyapı
 - [x] **Son Görüntülenenler:** Ziyaretçilerin son 10 ürünü çerez (cookie) bazlı takip edilerek ana sayfada listelenmesi
 - [x] **Dinamik Navbar Menüsü:** Hangi kategorilerin üst menüde (navbar altında) görüneceğinin admin panelinden seçilebilmesi (Dünya ikonu)
 - [x] **Çerez Aydınlatma Metni:** Glassmorphism tasarımlı, detay açıklamalı ve kullanıcı onaylı çerez çubuğu
+- [x] **SEO Uyumlu URL Yapısı:** Ürün, Kategori ve Markalar için ID yerine Slug kullanımı (Route Model Binding)
+- [x] **Otomatik Slug Üretimi:** Modellerin `boot` metodunda `Str::slug` ile isim/SKU bazlı benzersiz slug üretimi
+- [x] **Admin Seeder:** Ana yönetici hesabının ve görünüm ayarlarının (footer linkleri vb.) seeder ile kurulabilmesi
+- [x] **Link Standardizasyonu:** Tüm storefront linklerinin (favoriler, benzer ürünler, breadcrumb) SEO uyumlu hale getirilmesi
+- [x] **Premium Ürün Detay Sayfası:** Sticky sidebar, güven rozetleri, "Diğer Mağazalarımız" hub ve gelişmiş galeri
+- [x] **Pazaryeri Mağaza Hub:** Admin panelinden yönetilen Trendyol, Hepsiburada, N11 vb. mağaza linklerinin ürün detayda gösterilmesi
+- [x] **Gelişmiş Yorum Sistemi:** Oturum açma zorunluluğu, admin onaylı (moderasyonlu) yorum yapma ve dinamik puanlama
+- [x] **Admin Yorum Yönetimi:** Gelen yorumları listeleme, onaylama ve silme arayüzü
 
 ---
 
@@ -437,16 +448,29 @@ Altyapı
 
 ---
 
-## ⚠️ Teknik Önemli Notlar
+## 🚀 SEO & Link Yapısı (Slug-Based System)
 
-1. **Sidebar duplicate link riski:** Kategoriler linki daha önce 2 kere eklenmiş olabilir → admin.blade.php kontrol et.
-2. **Boolean cast:** `active` alanı Product ve Brand modellerinde `bool` cast edilmiş.
-3. **Görseller:** `storage/app/public/` altında, `asset('storage/...')` ile erişilir. `php artisan storage:link` gerekli.
-4. **Ürün varyantları:** `parent_id` ile kendi kendine ilişki, `variant_key` ile tanımlanır.
-5. **Marketplace verisi:** `raw_marketplace_data` JSON alanında ham API verisi tutulur.
-6. **Alpine Store:** `cart` ve `fav` store'ları `layouts/app.blade.php` içinde tanımlanır.
-7. **Tab Switcher JS:** Hem `layouts/admin.blade.php` hem `layouts/app.blade.php` içinde bulunur.
+**Ana Prensip:** Sistem artık ID tabanlı URL'ler yerine insan tarafından okunabilir, SEO dostu `slug` yapılarını kullanır.
+
+### Teknik Uygulama
+1.  **Modeller:** `Product`, `Category` ve `Brand` modellerinde `getRouteKeyName() = 'slug'` tanımı yapıldı.
+2.  **Otomatik Üretim:** `saving` event'i (Model boot) ile isim (ürünlerde isim+SKU) değiştiğinde slug otomatik güncellenir.
+3.  **Prefixler:**
+    *   Ürün Detay: `/urun/{slug}`
+    *   Yasal Sayfalar: `/sayfa/{slug}`
+4.  **Seeder Desteği:** `BrandSeeder` ve `CategorySeeder` döngülerine slug üretim mantığı eklenerek temiz kurulumda URL'lerin dolu gelmesi sağlandı.
 
 ---
 
-*Son güncelleme: 2026-04-05 — Son Bakılanlar, Öne Çıkan Markalar ve Dinamik Navbar sistemi eklendi.*
+## 🛠 Seeder & Başlangıç Ayarları
+
+**Komut:** `php artisan db:seed`
+
+1.  **`DatabaseSeeder`:** Tüm tabloların hiyerarşik kurulumunu yönetir.
+2.  **`SettingSeeder`:** Footer linkleri, sosyal medya iconları, logo ve site başlığı gibi dinamik alanları besler.
+3.  **Admin Hesabı:** `admin@admin.com` / `admin123` bilgileriyle otomatik oluşturulur.
+4.  **PageSeeder:** 11 adet kurumsal ve yasal sayfa içeriğiyle birlikte sunulur.
+
+---
+
+*Son güncelleme: 2026-04-06 — Premium Ürün Detay, Pazaryeri Mağaza Hub ve Onaylı Yorum Sistemi eklendi.*

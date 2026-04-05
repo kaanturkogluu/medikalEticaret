@@ -1595,6 +1595,7 @@ class BrandSeeder extends Seeder
 );
 
         foreach ($data as $item) {
+            $item['slug'] = \Illuminate\Support\Str::slug($item['name']);
             Brand::create($item);
         }
 

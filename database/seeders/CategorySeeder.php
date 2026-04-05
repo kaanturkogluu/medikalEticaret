@@ -2363,7 +2363,9 @@ class CategorySeeder extends Seeder
 );
 
         foreach ($data as $item) {
-            // Remove timestamps to let database handle them or keep them if needed
+            if (empty($item['slug'])) {
+                $item['slug'] = \Illuminate\Support\Str::slug($item['name']);
+            }
             Category::create($item);
         }
 

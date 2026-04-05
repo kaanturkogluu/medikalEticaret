@@ -26,6 +26,16 @@ class DatabaseSeeder extends Seeder
                 'email_verified_at' => now(),
             ]
         );
+
+        User::updateOrCreate(
+            ['email' => 'user@user.com'],
+            [
+                'name' => 'Test User',
+                'password' => 'user123',
+                'role' => 'user',
+                'email_verified_at' => now(),
+            ]
+        );
         $this->call([
             SettingSeeder::class,
             ChannelSeeder::class,

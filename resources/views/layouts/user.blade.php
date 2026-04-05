@@ -104,6 +104,9 @@
                             <a href="{{ route('user.dashboard') }}" class="nav-link {{ Request::is('hesabim') && !Request::is('hesabim/*') ? 'active' : '' }}">
                                 <i class="fas fa-tachometer-alt text-purple-400"></i> Özet Sayfam
                             </a>
+                            <a href="{{ route('user.comments') }}" class="nav-link {{ Request::is('hesabim/yorumlarim') ? 'active' : '' }}">
+                                <i class="fas fa-comment-dots text-amber-400"></i> Yorumlarım
+                            </a>
                         </div>
                     </div>
                 </nav>

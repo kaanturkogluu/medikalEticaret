@@ -52,6 +52,7 @@ Route::middleware(['auth', 'user'])->prefix('hesabim')->name('user.')->group(fun
     Route::get('/bilgilerim', [\App\Http\Controllers\UserController::class, 'profile'])->name('profile');
     Route::post('/bilgilerim', [\App\Http\Controllers\UserController::class, 'profileUpdate'])->name('profile.update');
     Route::post('/sifre-guncelle', [\App\Http\Controllers\UserController::class, 'passwordUpdate'])->name('password.update');
+    Route::get('/yorumlarim', [\App\Http\Controllers\UserController::class, 'comments'])->name('comments');
 });
 
 // Admin Routes (Protected)
@@ -132,4 +133,17 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     });
 
     Route::view('/settings', 'admin.settings')->name('admin.settings');
+
+    // Comment Management
+    Route::group(['prefix' => 'comments', 'as' => 'admin.comments.'], function () {
+        Route::get('/', [\App\Http\Controllers\Admin\CommentController::class, 'index'])->name('index');
+        Route::post('/{comment}/approve', [\App\Http\Controllers\Admin\CommentController::class, 'approve'])->name('approve');
+        Route::post('/{comment}/reply', [\App\Http\Controllers\Admin\CommentController::class, 'reply'])->name('reply');
+        Route::delete('/{comment}/delete', [\App\Http\Controllers\Admin\CommentController::class, 'destroy'])->name('destroy');
+    });
 });
+
+// Comment submission (Protected + Throttled)
+Route::post('/urun/{product}/comment', [\App\Http\Controllers\CommentController::class, 'store'])
+    ->name('comment.store')
+    ->middleware(['auth', 'throttle:10,1']);

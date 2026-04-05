@@ -88,4 +88,14 @@ class Product extends Model
             ->withPivot(['external_id', 'price', 'stock', 'sync_status', 'sync_error', 'extra'])
             ->withTimestamps();
     }
+
+    public function comments(): HasMany
+    {
+        return $this->hasMany(Comment::class);
+    }
+
+    public function approvedComments(): HasMany
+    {
+        return $this->hasMany(Comment::class)->where('is_approved', true);
+    }
 }

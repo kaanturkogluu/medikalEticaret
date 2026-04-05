@@ -4,7 +4,7 @@
 
 @section('content')
 {{-- Stats Row --}}
-<div class="grid grid-cols-3 gap-4 mb-6">
+<div class="grid grid-cols-4 gap-4 mb-6">
     <div class="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm text-center">
         <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center mx-auto mb-3">
             <i class="fas fa-box text-orange-500 text-lg"></i>
@@ -18,6 +18,13 @@
         </div>
         <p class="text-3xl font-black text-gray-900">{{ $addressCount }}</p>
         <p class="text-xs text-gray-500 font-medium mt-1">Kayıtlı Adres</p>
+    </div>
+    <div class="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm text-center">
+        <div class="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center mx-auto mb-3">
+            <i class="fas fa-comment-dots text-amber-500 text-lg"></i>
+        </div>
+        <p class="text-3xl font-black text-gray-900">{{ $commentCount }}</p>
+        <p class="text-xs text-gray-500 font-medium mt-1">Değerlendirmem</p>
     </div>
     <div class="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm text-center">
         <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mx-auto mb-3">

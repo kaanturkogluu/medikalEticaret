@@ -84,6 +84,11 @@
                 <span x-show="sidebarOpen" class="font-medium text-sm">Siparişler</span>
             </a>
 
+            <a href="{{ route('admin.comments.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-all group {{ Request::is('admin/comments*') ? 'sidebar-item-active' : '' }}">
+                <i class="fas fa-comments w-6 flex justify-center text-lg {{ Request::is('admin/comments*') ? 'text-white' : 'text-slate-500 group-hover:text-brand-400' }}"></i>
+                <span x-show="sidebarOpen" class="font-medium text-sm">Yorumlar</span>
+            </a>
+
             <div class="pt-6 pb-2">
                 <p x-show="sidebarOpen" class="px-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Sistem Ayarları</p>
             </div>

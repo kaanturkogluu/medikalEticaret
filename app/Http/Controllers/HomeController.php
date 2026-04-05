@@ -183,11 +183,13 @@ class HomeController extends Controller
             ->take(10)
             ->get();
 
+        $marketplaces = json_decode(\App\Models\Setting::getValue('marketplaces', '[]'), true);
+
         $categories = Category::whereHas('products', function($q) {
             $q->where('active', true)->where('stock', '>', 0);
         })->take(10)->get();
 
-        return view('product_detail', compact('product', 'relatedProducts', 'categories'));
+        return view('product_detail', compact('product', 'relatedProducts', 'categories', 'marketplaces'));
     }
 
     public function favorites()
