@@ -12,6 +12,8 @@ Route::get('/iletisim', function () {
     return view('contact');
 })->name('contact');
 
+Route::get('/p/{slug}', [\App\Http\Controllers\HomeController::class, 'page'])->name('page.show');
+
 // Authentication Routes (Guest)
 Route::middleware('guest')->group(function () {
     // User login
@@ -94,6 +96,17 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
         Route::put('/{category}/update', [\App\Http\Controllers\Admin\CategoryController::class, 'update'])->name('update');
         Route::delete('/{category}/delete', [\App\Http\Controllers\Admin\CategoryController::class, 'destroy'])->name('destroy');
         Route::post('/{category}/toggle', [\App\Http\Controllers\Admin\CategoryController::class, 'toggleActive'])->name('toggle');
+    });
+
+    // Page Management (Agreements & Policies)
+    Route::group(['prefix' => 'pages', 'as' => 'admin.pages.'], function () {
+        Route::get('/', [\App\Http\Controllers\Admin\PageController::class, 'index'])->name('index');
+        Route::get('/create', [\App\Http\Controllers\Admin\PageController::class, 'create'])->name('create');
+        Route::post('/store', [\App\Http\Controllers\Admin\PageController::class, 'store'])->name('store');
+        Route::get('/{page}/edit', [\App\Http\Controllers\Admin\PageController::class, 'edit'])->name('edit');
+        Route::put('/{page}/update', [\App\Http\Controllers\Admin\PageController::class, 'update'])->name('update');
+        Route::delete('/{page}/delete', [\App\Http\Controllers\Admin\PageController::class, 'destroy'])->name('destroy');
+        Route::post('/{page}/toggle', [\App\Http\Controllers\Admin\PageController::class, 'toggle'])->name('toggle');
     });
 
     Route::view('/settings', 'admin.settings')->name('admin.settings');

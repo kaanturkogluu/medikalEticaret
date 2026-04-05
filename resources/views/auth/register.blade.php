@@ -126,8 +126,8 @@
                     <div class="flex items-start gap-3 pt-2">
                         <input type="checkbox" id="terms" name="terms" required class="mt-0.5 w-4 h-4 rounded border-gray-300 text-orange-500 focus:ring-orange-400">
                         <label for="terms" class="text-xs text-slate-500 leading-relaxed">
-                            <a href="#" class="font-bold text-orange-500 hover:underline">Kullanım Koşulları</a>'nı ve
-                            <a href="#" class="font-bold text-orange-500 hover:underline">Gizlilik Politikası</a>'nı okudum, kabul ediyorum.
+                            <a href="{{ route('page.show', 'kullanim-kosullari') }}" target="_blank" class="font-bold text-orange-500 hover:underline">Kullanım Koşulları</a>'nı ve
+                            <a href="{{ route('page.show', 'gizlilik-politikasi') }}" target="_blank" class="font-bold text-orange-500 hover:underline">Gizlilik Politikası</a>'nı okudum, kabul ediyorum.
                         </label>
                     </div>
 

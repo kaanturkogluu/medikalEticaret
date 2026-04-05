@@ -41,7 +41,7 @@ app/Http/Controllers/
 app/Models/
   Product.php     Brand.php     Category.php     Setting.php
   Banner.php      Order.php     OrderItem.php    User.php
-  Channel.php     ChannelProduct.php  ChannelBrand.php  ChannelCategory.php
+  Page.php        Channel.php   ChannelProduct.php  ChannelBrand.php  ChannelCategory.php
   ChannelCredential.php  ProductImage.php  ProductAttribute.php  CategoryAttribute.php
 
 resources/views/
@@ -92,6 +92,7 @@ Brand → hasMany Product, ChannelBrand
 | `/product/{id}` | `product.show` | HomeController@show |
 | `/favorites` | `favorites` | HomeController@favorites |
 | `/iletisim` | `contact` | view |
+| `/p/{slug}` | `page.show` | HomeController@page |
 | `/login` | `login` | LoginController@showLoginForm |
 | `/admin/login` | `admin.login` | LoginController@showAdminLoginForm |
 
@@ -108,6 +109,9 @@ Brand → hasMany Product, ChannelBrand
 | `/admin/categories` | `admin.categories.index` |
 | `/admin/categories/create` | `admin.categories.create` |
 | `/admin/categories/{id}/edit` | `admin.categories.edit` |
+| `/admin/pages` | `admin.pages.index` |
+| `/admin/pages/create` | `admin.pages.create` |
+| `/admin/pages/{slug}/edit` | `admin.pages.edit` |
 | `/admin/appearance` | `admin.appearance` |
 | `/admin/appearance/general` | `admin.appearance.general` |
 | `/admin/appearance/contact` | `admin.appearance.contact` |
@@ -197,6 +201,7 @@ Altyapı
 - [x] Public: Favoriler, ürün detay benzer ürünler yeni sekmede açılıyor
 - [x] Pazaryeri bağlantıları (Trendyol entegrasyonu altyapısı)
 - [x] **BUG FIX:** Kategori düzenleme — üst kategori dropdown sadece kök kategorileri gösteriyordu, artık tüm kategorileri gösteriyor
+- [x] **Üye Kayıt & E-posta Doğrulama:** 6 haneli kod ile doğrulama, 30dk süre, tekrar gönder
 
 ---
 
@@ -213,6 +218,46 @@ Altyapı
 **Etkilenen dosyalar:**
 - `app/Http/Controllers/Admin/CategoryController.php`
 - `resources/views/admin/categories/edit.blade.php`
+
+---
+
+## 👤 Üye Kayıt & E-posta Doğrulama Sistemi
+
+**Akış:** `/register` → Form → 6 haneli kod e-posta → `/verify-email` → Doğrula → Otomatik giriş → Ana Sayfa
+
+### Veritabanı Değişiklikleri
+- `users` tablosuna 2 yeni kolon eklendi:
+  - `email_verification_code` (varchar 6, nullable)
+  - `email_verification_expires_at` (timestamp, nullable)
+- Migration: `2026_04_05_171400_add_verification_code_to_users_table.php`
+
+### User Modeli Değişikliği
+- `implements MustVerifyEmail` eklendi
+- `fillable` güncellendi: `email_verification_code`, `email_verification_expires_at`, `email_verified_at`
+
+### Yeni Dosyalar
+| Dosya | Açıklama |
+|---|---|
+| `app/Http/Controllers/Auth/RegisterController.php` | register(), showVerifyForm(), verify(), resend() |
+| `resources/views/auth/register.blade.php` | Şifre gücü ölçer, show/hide toggle |
+| `resources/views/auth/verify-email.blade.php` | 30dk geri sayım, OTP input |
+| `resources/views/emails/verify-email.blade.php` | HTML e-posta şablonu (6 haneli kod) |
+
+### Yeni Rotalar
+| URL | Method | Route Name | Açıklama |
+|---|---|---|---|
+| `/register` | GET | `register` | Kayıt formu (guest) |
+| `/register` | POST | — | Kayıt işle (guest) |
+| `/verify-email` | GET | `verify.form` | Doğrulama formu |
+| `/verify-email` | POST | `verify.submit` | Kod doğrula |
+| `/verify-email/resend` | POST | `verify.resend` | Kodu tekrar gönder |
+
+### Önemli Notlar
+- Kod süresi: **30 dakika**
+- Doğrulama başarılı olduğunda `email_verified_at` güncellenir, kullanıcı otomatik login olur.
+- Mail gönderimi için `.env` SMTP ayarı gereklidir.
+- **Test için:** `MAIL_MAILER=log` bırakılırsa kodlar `storage/logs/laravel.log` dosyasına çıktı verir.
+- Login sayfasındaki "Üye Ol" linki `/register` yönlendiriyor.
 
 ---
 

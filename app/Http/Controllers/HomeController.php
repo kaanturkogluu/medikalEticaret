@@ -103,4 +103,13 @@ class HomeController extends Controller
     {
         return view('favorites');
     }
+
+    public function page($slug)
+    {
+        $page = \App\Models\Page::where('slug', $slug)
+            ->where('is_active', true)
+            ->firstOrFail();
+
+        return view('pages.show', compact('page'));
+    }
 }
