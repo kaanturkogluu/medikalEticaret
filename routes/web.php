@@ -12,7 +12,7 @@ Route::get('/iletisim', function () {
     return view('contact');
 })->name('contact');
 
-Route::get('/p/{slug}', [\App\Http\Controllers\HomeController::class, 'page'])->name('page.show');
+Route::get('/sayfa/{slug}', [\App\Http\Controllers\HomeController::class, 'page'])->name('page.show');
 
 // Authentication Routes (Guest)
 Route::middleware('guest')->group(function () {

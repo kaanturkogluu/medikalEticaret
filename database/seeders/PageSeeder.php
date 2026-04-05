@@ -113,6 +113,14 @@ class PageSeeder extends Seeder
                     <h3 class="text-xl font-bold mb-4 italic uppercase">Bilgilendirme ve Onay</h3>
                     <p class="mb-4 text-slate-600 leading-relaxed italic">Kişisel verilerimin KVKK kapsamında işlenmesini, pazarlama faaliyetlerinde kullanılmasını ve tarafıma ticari elektronik ileti (SMS, E-posta) gönderilmesini kabul ediyorum.</p>
                 '
+            ],
+            [
+                'title' => 'Hakkımızda',
+                'content' => '
+                    <h3 class="text-xl font-bold mb-4 italic uppercase">Biz Kimiz?</h3>
+                    <p class="mb-4 text-slate-600 leading-relaxed italic">Yılların verdiği tecrübe ile sağlık sektöründe en kaliteli ürünleri en uygun fiyatlarla sunmayı amaçlıyoruz. Müşteri memnuniyeti odaklı çalışma prensibimizle Türkiye\'nin her noktasına hızlı ve güvenilir hizmet veriyoruz.</p>
+                    <p class="text-slate-600 italic">Sağlığınız bizim için değerlidir.</p>
+                '
             ]
         ];
 
