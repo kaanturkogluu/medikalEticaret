@@ -1,84 +1,231 @@
-# Çok Kanallı Pazaryeri Ürün Yönetim Sistemi (Varyant & Özellik Mimarisi)
+# MultiSync — Sistem Teknik Özeti (AI Baz Dosyası)
 
-Bu belge, sistemin mimarisini, veri akışını ve ürün/varyant yönetim mantığını detaylandırmaktadır.
-
-## 1. Genel Mimari
-Sistem, merkezi bir ürün kataloğu (Global Catalog) ve bu kataloğu farklı satış kanallarıyla (Trendyol, Hepsiburada vb.) ilişkilendiren bir "Bridge" (Köprü) yapısı üzerine kuruludur.
-
-### Temel Prensipler:
-- **Merkezi Yönetim**: Ürün bilgileri global tablolarda tutulur.
-- **Kanal Ayrımı**: Kanala özel fiyat, stok ve eşleşme bilgileri `channel_products` tablosunda tutulur.
-- **Varyant Hiyerarşisi**: Ürünler Parent-Child (Ana Ürün-Varyant) ilişkisiyle gruplanır.
-- **Idempotency (Tekrarlanabilirlik)**: Aynı verilerle tekrar çalışan sync işlemleri veritabanında mükerrer kayıt oluşturmaz, mevcut kayıtları günceller.
+> Bu dosya Antigravity AI asistanı tarafından okunacak ve her yeni işlemde baz alınacaktır.
+> Büyük değişikliklerden sonra güncellenmesi gerekmektedir.
 
 ---
 
-## 2. Veritabanı Yapısı
-
-### Ürün Tabloları
-- **`products`**: Ana ürün verilerini tutar. 
-  - `parent_id`: Ürünün bağlı olduğu ana ürünü işaret eder. `NULL` ise ürün bir "Parent" (Ana Ürün) konumundadır.
-  - `sku`: İşletmenin benzersiz ürün kodu.
-- **`product_attributes`**: Ürüne ait teknik özellikleri tutar.
-  - `is_variant`: Bu özelliğin varyant oluşturucu olup olmadığını belirtir (Örn: Beden=Evet, Materyal=Hayır).
-  - `_variant_key`: Varyant kombinasyonunun hash değerini tutan gizli bir özelliktir.
-- **`category_attributes`**: Kategori bazlı kuralları belirler.
-  - Hangi kategoride hangi özelliğin varyant oluşturacağını (örneğin "Ayakkabı" kategorisinde "Numara"nın varyant olması) tanımlar.
-
-### Kanal (Mapping) Tabloları
-- **`channels`**: Satış kanalları (Trendyol vb.).
-- **`channel_products`**: Global ürünün kanaldaki yansıması (Fiyat, Stok, Dış ID).
-- **`channel_categories`**: Pazaryeri kategori ID'si ile sistem kategori ID'sini eşleştirir.
-- **`channel_brands`**: Pazaryeri marka ID'si ile sistem marka ID'sini eşleştirir.
+## 🛠 Teknik Altyapı
+| Bileşen | Detay |
+|---|---|
+| Framework | Laravel 10+ |
+| PHP | 8.1+ |
+| Database | MySQL (XAMPP) |
+| Dizin | `c:\xampp\htdocs\me` |
+| Admin CSS/JS | Tailwind CSS (CDN), Alpine.js (CDN), FontAwesome 6 |
+| Public CSS/JS | Tailwind CSS (CDN), Alpine.js (CDN), Splide.js |
+| State Management | Alpine.js `$store` (cart, fav) — LocalStorage'a kaydedilir |
+| Settings | `Setting` modeli — Key-Value DB tablosu |
 
 ---
 
-## 3. Servis Katmanları
+## 📁 Kritik Dosya Haritası
 
-### `AttributeService`
-- **Normalizasyon**: Attribute isimlerini lowercase yapar, baş/son boşlukları temizler. Değerlerin büyük/küçük harf yapısını korur.
-- **Filtreleme**: Kategorinin `category_attributes` tanımlarına bakarak hangi özelliklerin varyant oluşturacağını tespit eder.
-- **Performans**: Kategori kurallarını istek süresince (in-memory) cache'leyerek N+1 sorgularını önler.
+```
+routes/
+  web.php                          ← Tüm rotalar burada
 
-### `VariantService` & `VariantKeyGenerator`
-- **Grup Çözümleme**: `productMainId` (Trendyol) üzerinden otomatik olarak Parent ürün oluşturur veya mevcut olanı bulur.
-- **Key Üretimi**: Varyant özelliklerini (Renk, Beden vb.) alfabetik sıralayıp MD5 hash üreterek (`VariantKeyGenerator`), her varyant kombinasyonu için tekil ve değişmez bir kimlik oluşturur.
-- **Veri Birleştirme**: Parent ürünün ismini ve açıklamasını varyantlardan gelen verilerle (eğer ana ürün verisi boşsa) otomatik doldurur.
+app/Http/Controllers/
+  HomeController.php               ← Public: ana sayfa, ürün detay, favoriler
+  Auth/LoginController.php         ← Giriş/çıkış
+  Admin/
+    DashboardController.php
+    ProductController.php          ← index, edit, update
+    BrandController.php            ← index, create, store, edit, update, destroy, toggleActive
+    CategoryController.php         ← index, create, store, edit, update, destroy, toggleActive
+    OrderController.php
+    ChannelController.php          ← Pazaryeri bağlantıları
+    AppearanceController.php       ← contact, marketplaces, social, general, tabSwitch
+    BannerController.php
+
+app/Models/
+  Product.php     Brand.php     Category.php     Setting.php
+  Banner.php      Order.php     OrderItem.php    User.php
+  Channel.php     ChannelProduct.php  ChannelBrand.php  ChannelCategory.php
+  ChannelCredential.php  ProductImage.php  ProductAttribute.php  CategoryAttribute.php
+
+resources/views/
+  home.blade.php           ← Ana sayfa (ürün grid, banner, slider)
+  product_detail.blade.php ← Ürün detay sayfası
+  favorites.blade.php      ← Favori listesi
+  contact.blade.php
+  layouts/
+    app.blade.php           ← Public layout (cart drawer, tab switcher, Alpine stores)
+    admin.blade.php         ← Admin layout (sidebar, navbar)
+  admin/
+    dashboard.blade.php
+    products.blade.php / products/ (edit vb.)
+    brands/    index.blade.php, create.blade.php, edit.blade.php
+    categories/ index.blade.php, create.blade.php, edit.blade.php
+    orders.blade.php
+    appearance/ (tab_switch, contact, social, general, marketplaces, banner...)
+    marketplaces/ settings.blade.php  logs.blade.php  sync/
+```
 
 ---
 
-## 4. Sync Hattı (Pipeline) Akışı
+## 🗂 Model İlişkileri
 
-`php artisan sync:trendyol-products` komutu tetiklendiğinde her ürün için şu 12 adımlık süreç işletilir:
+```
+Product → belongsTo Brand, Category
+Product → hasMany ProductImage, ProductAttribute, ChannelProduct
+Product → belongsToMany Channel (pivot: channel_products)
+Product → self-referential (parent_id → variants)
 
-1.  **API Verisi Alımı**: Trendyol'dan ham JSON verisi çekilir.
-2.  **Ön Filtreleme**: Onaysız (`approved=false`) veya kara listedeki (`blacklisted=true`) ürünler atlanır.
-3.  **Kanal Eşleşmeleri**: Marka ve kategori isimleri üzerinden sistemdeki karşılıkları bulunur (`resolveChannelMappings`).
-4.  **Attribute Normalizasyonu**: İsimler küçük harf yapılır, boşluklar temizlenir (`normalizeAttributes`).
-5.  **Varyant Özellik Tespiti**: Kategorinin kurallarına bakılarak hangi özelliklerin varyant boyutunu oluşturduğu belirlenir.
-6.  **Varyant Key Üretimi**: Varyant özelliklerinden tekil bir grup anahtarı (Hash) üretilir.
-7.  **Parent Çözümleme**: `productMainId` kullanılarak ana ürün (`parent`) bulunur veya oluşturulur.
-8.  **Varyant Upsert**: Ürün `sku` üzerinden güncellenir veya oluşturulur (`upsertVariantProduct`).
-9.  **HIyerarşik Bağlantı**: Varyant ürün, Parent ürüne `parent_id` üzerinden bağlanır.
-10. **Attribute Senkronizasyonu**: Özellikler `is_variant` bayrağıyla birlikte kaydedilir.
-11. **Kanal Köprü Kaydı**: `channel_products` tablosu kanala özel fiyat ve stok ile güncellenir.
-12. **Görsel Senkronizasyonu**: Ürün görselleri `product_images` tablosuna aktarılır.
+Category → belongsTo Category (parent_id, hiyerarşik)
+Category → hasMany Product, ChannelCategory
 
----
+Brand → hasMany Product, ChannelBrand
+```
 
-## 5. Önemli Kurallar ve Güvenlik
-- **Manüel Veri Koruması**: Parent ürün üzerinde manuel yapılan isim veya açıklama değişiklikleri, sync sırasında "non-destructive" (yıkıcı olmayan) mantık sayesinde ezilmez.
-- **Hata Yönetimi**: Bir SKU'nun işlenmesi sırasında hata oluşursa, tüm batch durmaz; hata loglanır ve sistem bir sonraki ürüne geçer.
-- **Unique Constraints**: Sistem `sku` bazlı tekilliği garanti eder. Aynı SKU'lu ürün farklı kanallardan gelse bile tek bir global ürün altında birleşir.
+### Product Alanları (fillable)
+`parent_id, variant_key, brand_id, category_id, sku, barcode, name, brand_name, category_name, description, price, stock, active, attributes (JSON), raw_marketplace_data (JSON), marketplace_status, marketplace, external_id, platform_listing_id, product_content_id, supplier_id, views`
 
 ---
 
-## 6. Yeni Özellik / Varyant Tanımlama
-Sisteme yeni bir kategori eklendiğinde, hangi özelliklerin varyant oluşturacağını belirlemek için `category_attributes` tablosuna kayıt girilmelidir. 
+## 🌐 Route Haritası
 
-**Örnek:** "Tişört" kategorisinde hem "Renk" hem "Beden"in varyant oluşturmasını istiyorsanız:
-- `category_id`: Tişört Kategorisi ID
-- `name`: "renk" (veya "beden")
-- `is_variant`: 1
+### Public
+| URL | Route Name | Controller@Method |
+|---|---|---|
+| `/` | `home` | HomeController@index |
+| `/product/{id}` | `product.show` | HomeController@show |
+| `/favorites` | `favorites` | HomeController@favorites |
+| `/iletisim` | `contact` | view |
+| `/login` | `login` | LoginController@showLoginForm |
+| `/admin/login` | `admin.login` | LoginController@showAdminLoginForm |
 
-Bu tanımlama yapıldıktan sonraki ilk sync işleminde sistem bu iki özelliği kullanarak varyantları otomatik gruplayacaktır.
+### Admin (`/admin/*`, middleware: auth)
+| URL | Route Name |
+|---|---|
+| `/admin` | `admin.dashboard` |
+| `/admin/products` | `admin.products` |
+| `/admin/products/{id}/edit` | `admin.products.edit` |
+| `/admin/orders` | `admin.orders` |
+| `/admin/brands` | `admin.brands.index` |
+| `/admin/brands/create` | `admin.brands.create` |
+| `/admin/brands/{id}/edit` | `admin.brands.edit` |
+| `/admin/categories` | `admin.categories.index` |
+| `/admin/categories/create` | `admin.categories.create` |
+| `/admin/categories/{id}/edit` | `admin.categories.edit` |
+| `/admin/appearance` | `admin.appearance` |
+| `/admin/appearance/general` | `admin.appearance.general` |
+| `/admin/appearance/contact` | `admin.appearance.contact` |
+| `/admin/appearance/social` | `admin.appearance.social` |
+| `/admin/appearance/marketplaces` | `admin.appearance.marketplaces` |
+| `/admin/appearance/tab-switch` | `admin.appearance.tab_switch` |
+| `/admin/appearance/banner` | `admin.appearance.banner.index` |
+| `/admin/marketplaces` | `admin.marketplaces` |
+| `/admin/logs` | `admin.logs` |
+| `/admin/settings` | `admin.settings` |
+
+---
+
+## ⚙️ Setting Modeli Kullanımı
+
+```php
+Setting::getValue('key', $default)   // DB'den okur
+Setting::setValue('key', $value)     // DB'ye yazar (updateOrCreate)
+```
+
+### Bilinen Setting Anahtarları
+| Key | Açıklama |
+|---|---|
+| `tab_switch_active` | Tab switcher aktif mi (bool) |
+| `tab_switch_away_title` | Sekme dışındayken gösterilecek başlık |
+| `tab_switch_back_title` | Geri dönünce gösterilecek başlık |
+| `site_name` | Site adı |
+| `primary_color` | Ana renk (CSS var) |
+| `contact_*` | İletişim bilgileri |
+| `social_*` | Sosyal medya linkleri |
+| `footer_*` | Footer ayarları |
+
+---
+
+## 🎨 Tasarım Sistemi
+
+### Admin
+- Koyu sidebar (`bg-slate-900`) + açık içerik alanı
+- Glassmorphism kartlar: `bg-white/50 backdrop-blur-xl rounded-[40px] shadow-2xl`
+- Butonlar: `px-10 py-5 font-black italic uppercase tracking-tighter rounded-2xl`
+- Aktif sidebar öğesi: `.sidebar-item-active` class
+- Başlıklar: `font-black italic tracking-tighter uppercase underline decoration-[var(--primary-color)]`
+
+### Public
+- CSS değişkenleri: `var(--primary-color)`, `var(--primary-hover)`
+- Ürün kartları: `rounded-3xl hover:shadow-2xl hover:-translate-y-2`
+- Renk: `bg-slate-900` (koyu), `text-[var(--primary-color)]` (vurgu)
+
+---
+
+## 📊 Admin Sidebar Yapısı (Güncel)
+
+```
+Genel
+  ├── Dashboard
+  ├── Ürünler
+  └── Siparişler
+
+Sistem Ayarları
+  ├── Markalar
+  ├── Kategoriler
+  └── Site Görünümü
+
+Senkronizasyon
+  ├── Stok Senkronize
+  └── Fiyat Senkronize
+
+Altyapı
+  ├── Pazaryeri Bağlantıları
+  ├── Loglar & Debug
+  └── Ayarlar
+```
+
+---
+
+## ✅ Tamamlanan Özellikler
+
+- [x] Admin kimlik doğrulama (login/logout, middleware: auth)
+- [x] Dashboard
+- [x] Ürün listeleme ve düzenleme (marka güncellenebilir)
+- [x] Sipariş listeleme ve detay
+- [x] Marka Yönetimi (CRUD + logo upload + toggleActive)
+- [x] Kategori Yönetimi (CRUD + hiyerarşi + toggleActive)
+- [x] Appearance Hub (banner, iletişim, sosyal medya, genel, tab-switch)
+- [x] Tab Title Switcher (30s gecikme, 3s döngü, `visibilitychange` event)
+- [x] Public: Ürün kartları yeni sekmede açılıyor (`target="_blank"`)
+- [x] Public: Favoriler, ürün detay benzer ürünler yeni sekmede açılıyor
+- [x] Pazaryeri bağlantıları (Trendyol entegrasyonu altyapısı)
+- [x] **BUG FIX:** Kategori düzenleme — üst kategori dropdown sadece kök kategorileri gösteriyordu, artık tüm kategorileri gösteriyor
+
+---
+
+## 🐛 Bilinen Buglar ve Çözümler
+
+### ✅ Kategori Üst Kategori Dropdown Sorunu (Çözüldü — 2026-04-05)
+**Sorun:** `CategoryController@edit()` ve `@create()` metodları `whereNull('parent_id')` ile sadece kök kategorileri getiriyordu. Ara seviye kategoriler (ör: YÜZ BAKIM → VÜCUT KREMİ gibi) üst kategori olarak seçilemiyordu ve dropdown "Anakategori (Yok)" olarak görünüyordu.
+
+**Çözüm:**
+- `create()`: `Category::orderBy('name')->get()` — tüm kategoriler listelenir.
+- `edit()`: `getDescendantIds()` private metodu ile kendi ID'si ve tüm alt dalları hariç tutulur, geri kalan tüm kategoriler listelenir (döngüsel referans engeli).
+- View dropdown: Ara kategoriler `└ KATEGORİ` formatıyla gösterilir.
+
+**Etkilenen dosyalar:**
+- `app/Http/Controllers/Admin/CategoryController.php`
+- `resources/views/admin/categories/edit.blade.php`
+
+---
+
+## ⚠️ Teknik Önemli Notlar
+
+1. **Sidebar duplicate link riski:** Kategoriler linki daha önce 2 kere eklenmiş olabilir → admin.blade.php kontrol et.
+2. **Boolean cast:** `active` alanı Product ve Brand modellerinde `bool` cast edilmiş.
+3. **Görseller:** `storage/app/public/` altında, `asset('storage/...')` ile erişilir. `php artisan storage:link` gerekli.
+4. **Ürün varyantları:** `parent_id` ile kendi kendine ilişki, `variant_key` ile tanımlanır.
+5. **Marketplace verisi:** `raw_marketplace_data` JSON alanında ham API verisi tutulur.
+6. **Alpine Store:** `cart` ve `fav` store'ları `layouts/app.blade.php` içinde tanımlanır.
+7. **Tab Switcher JS:** Hem `layouts/admin.blade.php` hem `layouts/app.blade.php` içinde bulunur.
+
+---
+
+*Son güncelleme: 2026-04-05 — Marka + Kategori yönetimi eklendi, Tab Switcher tamamlandı.*

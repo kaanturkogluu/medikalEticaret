@@ -93,6 +93,11 @@
                 <span x-show="sidebarOpen" class="font-medium text-sm">Markalar</span>
             </a>
 
+            <a href="{{ route('admin.categories.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-all group {{ Request::is('admin/categories*') ? 'sidebar-item-active' : '' }}">
+                <i class="fas fa-tags w-6 flex justify-center text-lg {{ Request::is('admin/categories*') ? 'text-white' : 'text-slate-500 group-hover:text-brand-400' }}"></i>
+                <span x-show="sidebarOpen" class="font-medium text-sm">Kategoriler</span>
+            </a>
+
             <a href="/admin/appearance" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-all group {{ Request::is('admin/appearance*') ? 'sidebar-item-active' : '' }}">
                 <i class="fas fa-eye w-6 flex justify-center text-lg {{ Request::is('admin/appearance*') ? 'text-white' : 'text-slate-500 group-hover:text-brand-400' }}"></i>
                 <span x-show="sidebarOpen" class="font-medium text-sm">Site Görünümü</span>

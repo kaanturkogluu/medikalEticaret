@@ -76,5 +76,16 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
         Route::post('/{brand}/toggle', [\App\Http\Controllers\Admin\BrandController::class, 'toggleActive'])->name('toggle');
     });
 
+    // Category Management
+    Route::group(['prefix' => 'categories', 'as' => 'admin.categories.'], function () {
+        Route::get('/', [\App\Http\Controllers\Admin\CategoryController::class, 'index'])->name('index');
+        Route::get('/create', [\App\Http\Controllers\Admin\CategoryController::class, 'create'])->name('create');
+        Route::post('/store', [\App\Http\Controllers\Admin\CategoryController::class, 'store'])->name('store');
+        Route::get('/{category}/edit', [\App\Http\Controllers\Admin\CategoryController::class, 'edit'])->name('edit');
+        Route::put('/{category}/update', [\App\Http\Controllers\Admin\CategoryController::class, 'update'])->name('update');
+        Route::delete('/{category}/delete', [\App\Http\Controllers\Admin\CategoryController::class, 'destroy'])->name('destroy');
+        Route::post('/{category}/toggle', [\App\Http\Controllers\Admin\CategoryController::class, 'toggleActive'])->name('toggle');
+    });
+
     Route::view('/settings', 'admin.settings')->name('admin.settings');
 });
