@@ -390,6 +390,8 @@ Altyapı
 ### Önemli Teknik Not
 - **Sipariş Eşleşmesi:** Siparişler `user_id` yerine `customer_email` üzerinden çekilir. Bu sayede pazaryerinden (Trendyol vb.) gelen siparişler, kullanıcının kayıtlı e-postasıyla otomatik eşleşir.
 - **Login Redirect:** Başarılı giriş sonrası kullanıcı `HomeController@index` yerine `user.dashboard`'a yönlendirilir.
+- **Navbar Dinamik Etiket:** Giriş yapmış kullanıcılar için navbarda 'Hesabım', yöneticiler için 'Yönetim Paneli' metni ve ilgili linkler dinamik olarak gösterilir (Role-based).
+- **UI/UX Polishing:** Kullanıcı panelindeki sidebar çakışması (overlapping) giderildi, tasarım sistemi (renkler, fontlar, logo) ana site ile senkronize edildi.
 
 ---
 
@@ -405,4 +407,4 @@ Altyapı
 
 ---
 
-*Son güncelleme: 2026-04-05 — Yetkilendirme (Admin/User) eklendi, Kullanıcı Paneli tamamlandı.*
+*Son güncelleme: 2026-04-05 — Yetkilendirme ve Kullanıcı Paneli tamamlandı, UI/UX polish yapıldı.*
