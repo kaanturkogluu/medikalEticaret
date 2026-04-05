@@ -244,11 +244,19 @@
                 <div class="flex items-center gap-6 text-sm font-bold text-gray-700">
                     @if (Route::has('login'))
                         @auth
-                            <a href="{{ url('/admin') }}"
-                                class="flex items-center gap-2 hover:text-[var(--primary-color)] group">
-                                <i class="far fa-user text-lg text-gray-400 group-hover:text-[var(--primary-color)]"></i>
-                                <span class="hidden lg:inline">Panelim</span>
-                            </a>
+                            @if(auth()->user()->isAdmin())
+                                <a href="{{ route('admin.dashboard') }}"
+                                    class="flex items-center gap-2 hover:text-[var(--primary-color)] group">
+                                    <i class="fas fa-cog text-lg text-gray-400 group-hover:text-[var(--primary-color)]"></i>
+                                    <span class="hidden lg:inline">Yönetim Paneli</span>
+                                </a>
+                            @else
+                                <a href="{{ route('user.dashboard') }}"
+                                    class="flex items-center gap-2 hover:text-[var(--primary-color)] group">
+                                    <i class="far fa-user text-lg text-gray-400 group-hover:text-[var(--primary-color)]"></i>
+                                    <span class="hidden lg:inline">Hesabım</span>
+                                </a>
+                            @endif
                         @else
                             <a href="{{ route('login') }}"
                                 class="flex items-center gap-2 hover:text-[var(--primary-color)] group">

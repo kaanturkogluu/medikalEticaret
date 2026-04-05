@@ -41,7 +41,7 @@ app/Http/Controllers/
 app/Models/
   Product.php     Brand.php     Category.php     Setting.php
   Banner.php      Order.php     OrderItem.php    User.php
-  Page.php        Channel.php   ChannelProduct.php  ChannelBrand.php  ChannelCategory.php
+  UserAddress.php Page.php      Channel.php      ChannelProduct.php  ChannelBrand.php  ChannelCategory.php
   ChannelCredential.php  ProductImage.php  ProductAttribute.php  CategoryAttribute.php
 
 resources/views/
@@ -52,6 +52,7 @@ resources/views/
   layouts/
     app.blade.php           ← Public layout (cart drawer, tab switcher, Alpine stores)
     admin.blade.php         ← Admin layout (sidebar, navbar)
+    user.blade.php          ← Kullanıcı paneli layout (Trendyol tarzı sidebar)
   admin/
     dashboard.blade.php
     products.blade.php / products/ (edit vb.)
@@ -60,6 +61,12 @@ resources/views/
     orders.blade.php
     appearance/ (tab_switch, contact, social, general, marketplaces, banner...)
     marketplaces/ settings.blade.php  logs.blade.php  sync/
+  user/
+    dashboard.blade.php      ← Özet sayfa (stats + son siparişler)
+    orders.blade.php         ← Sipariş listesi (Trendyol tarzı filtreler)
+    order-detail.blade.php   ← Sipariş detayı, ürünler, adres
+    profile.blade.php        ← Kullanıcı bilgileri & Şifre güncelleme
+    addresses.blade.php      ← Adres yönetimi (CRUD)
 ```
 
 ---
@@ -95,6 +102,15 @@ Brand → hasMany Product, ChannelBrand
 | `/p/{slug}` | `page.show` | HomeController@page |
 | `/login` | `login` | LoginController@showLoginForm |
 | `/admin/login` | `admin.login` | LoginController@showAdminLoginForm |
+
+### Kullanıcı Paneli (`/hesabim/*`, middleware: auth)
+| URL | Route Name | Açıklama |
+|---|---|---|
+| `/hesabim` | `user.dashboard` | Dashboard (Özet) |
+| `/hesabim/siparislerim` | `user.orders` | Tüm siparişlerim |
+| `/hesabim/siparislerim/{id}` | `user.orders.show` | Sipariş detayı |
+| `/hesabim/adreslerim` | `user.addresses` | Adres yönetimi |
+| `/hesabim/bilgilerim` | `user.profile` | Profil & Şifre |
 
 ### Admin (`/admin/*`, middleware: auth)
 | URL | Route Name |
@@ -143,6 +159,28 @@ Setting::setValue('key', $value)     // DB'ye yazar (updateOrCreate)
 | `contact_*` | İletişim bilgileri |
 | `social_*` | Sosyal medya linkleri |
 | `footer_*` | Footer ayarları |
+
+---
+
+## 🔐 Yetkilendirme Sistemi (Role-Based Access Control)
+
+**Gerekli Kolon:** `users.role` (default: `user`, values: `admin`, `user`)
+
+### Middleware
+1. **`admin`**: Sadece `role === 'admin'` olanlar erişebilir. Aksi halde `/` ana sayfasına hata mesajıyla yönlendirir.
+2. **`user`**: Sadece `role === 'user'` olanlar erişebilir. Eğer `admin` erişmeye çalışırsa `/admin` paneline yönlendirilir.
+
+### Kullanılan Dosyalar
+- `database/migrations/2026_04_05_181124_add_role_to_users_table.php`
+- `app/Http/Middleware/AdminMiddleware.php`
+- `app/Http/Middleware/UserMiddleware.php`
+- `app/Models/User.php` (`isAdmin()`, `isUser()` helperları)
+- `LoginController.php`: Giriş anında rol kontrolü ve smart redirect.
+- `database/seeders/RoleSeeder.php`: Başlangıç rolleri (`kaantrrkoglu@gmail.com` → admin).
+
+### Rota Koruması
+- `/admin/*` → `middleware(['auth', 'admin'])`
+- `/hesabim/*` → `middleware(['auth', 'user'])`
 
 ---
 
@@ -203,6 +241,8 @@ Altyapı
 - [x] **BUG FIX:** Kategori düzenleme — üst kategori dropdown sadece kök kategorileri gösteriyordu, artık tüm kategorileri gösteriyor
 - [x] **Üye Kayıt & E-posta Doğrulama:** 6 haneli kod ile doğrulama, 30dk süre, tekrar gönder
 - [x] **Sözleşmeler & Politikalar:** Admin CRUD yönetimi + dinamik public sayfa + 10 adet seeder içeriği
+- [x] **Kullanıcı Paneli (User Panel):** Trendyol tarzı hesap yönetimi, siparişlerim, adreslerim, bilgilerim
+- [x] **Yetkilendirme Altyapısı (RBAC):** Admin ve Kullanıcı rolleri, middleware koruması ve smart login redirect
 
 ---
 
@@ -323,6 +363,36 @@ Altyapı
 
 ---
 
+## 👤 Kullanıcı Paneli (User Account Panel)
+
+**Yapı:** Trendyol tasarım dili — Sidebar navigasyon — Kart tabanlı içerik — `/hesabim` prefix
+
+### Veritabanı (Adresler)
+| Alan | Tip | Açıklama |
+|---|---|---|
+| `id` | bigint | Primary key |
+| `user_id` | bigint | User FK |
+| `title` | string | Adres başlığı (Ev, İş vb.) |
+| `full_name` | string | Alıcı adı |
+| `phone` | string | Telefon |
+| `city` / `district` | string | Şehir / İlçe |
+| `address` | text | Açık adres |
+| `is_default` | boolean | Varsayılan adres mi |
+- Migration: `2026_04_05_180449_create_user_addresses_table.php`
+
+### Özellikler & Akış
+1.  **Dashboard:** Toplam sipariş/adres sayısı ve son 5 sipariş özeti.
+2.  **Siparişlerim:** `customer_email` üzerinden eşleşen siparişler. Trendyol tarzı filtre hapları (Tümü, Devam Eden vb.).
+3.  **Adres Yönetimi:** Yeni adres ekleme (form kartı) ve mevcut adresleri silme.
+4.  **Profil:** İsim güncelleme ve şifre değiştirme (şifre göster/gizle özelliği dahil).
+5.  **Layout:** `layouts/user.blade.php` — Sol tarafta kullanıcı özeti ve kategorize edilmiş menü.
+
+### Önemli Teknik Not
+- **Sipariş Eşleşmesi:** Siparişler `user_id` yerine `customer_email` üzerinden çekilir. Bu sayede pazaryerinden (Trendyol vb.) gelen siparişler, kullanıcının kayıtlı e-postasıyla otomatik eşleşir.
+- **Login Redirect:** Başarılı giriş sonrası kullanıcı `HomeController@index` yerine `user.dashboard`'a yönlendirilir.
+
+---
+
 ## ⚠️ Teknik Önemli Notlar
 
 1. **Sidebar duplicate link riski:** Kategoriler linki daha önce 2 kere eklenmiş olabilir → admin.blade.php kontrol et.
@@ -335,4 +405,4 @@ Altyapı
 
 ---
 
-*Son güncelleme: 2026-04-05 — Marka + Kategori yönetimi eklendi, Tab Switcher tamamlandı.*
+*Son güncelleme: 2026-04-05 — Yetkilendirme (Admin/User) eklendi, Kullanıcı Paneli tamamlandı.*

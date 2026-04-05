@@ -37,8 +37,21 @@ Route::post('/verify-email/resend', [\App\Http\Controllers\Auth\RegisterControll
 
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout')->middleware('auth');
 
+// User Panel Routes
+Route::middleware(['auth', 'user'])->prefix('hesabim')->name('user.')->group(function () {
+    Route::get('/', [\App\Http\Controllers\UserController::class, 'dashboard'])->name('dashboard');
+    Route::get('/siparislerim', [\App\Http\Controllers\UserController::class, 'orders'])->name('orders');
+    Route::get('/siparislerim/{order}', [\App\Http\Controllers\UserController::class, 'orderShow'])->name('orders.show');
+    Route::get('/adreslerim', [\App\Http\Controllers\UserController::class, 'addresses'])->name('addresses');
+    Route::post('/adreslerim', [\App\Http\Controllers\UserController::class, 'addressStore'])->name('addresses.store');
+    Route::delete('/adreslerim/{address}', [\App\Http\Controllers\UserController::class, 'addressDestroy'])->name('addresses.destroy');
+    Route::get('/bilgilerim', [\App\Http\Controllers\UserController::class, 'profile'])->name('profile');
+    Route::post('/bilgilerim', [\App\Http\Controllers\UserController::class, 'profileUpdate'])->name('profile.update');
+    Route::post('/sifre-guncelle', [\App\Http\Controllers\UserController::class, 'passwordUpdate'])->name('password.update');
+});
+
 // Admin Routes (Protected)
-Route::middleware(['auth'])->prefix('admin')->group(function () {
+Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::get('/', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('admin.dashboard');
     Route::get('/products', [\App\Http\Controllers\Admin\ProductController::class, 'index'])->name('admin.products');
     Route::get('/products/{product}/edit', [\App\Http\Controllers\Admin\ProductController::class, 'edit'])->name('admin.products.edit');

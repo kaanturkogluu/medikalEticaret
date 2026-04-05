@@ -36,16 +36,25 @@ class LoginController extends Controller
         ]);
 
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
+            $user = Auth::user();
+
+            // Guard: If trying to log in at the admin portal but not an admin
+            if ($request->is('admin/login')) {
+                if (!$user->isAdmin()) {
+                    Auth::logout();
+                    return back()->withErrors(['email' => 'Bu portal sadece yönetici girişi içindir.']);
+                }
+            }
+
             $request->session()->regenerate();
 
-            // Redirect to admin dashboard if logged in via admin login or based on user role/route
-            // For now, if we have a destination intended, go there, else go home
-            if ($request->is('admin/*') || $request->is('admin')) {
+            // Smart redirection based on role
+            if ($user->isAdmin()) {
                 return redirect()->intended(route('admin.dashboard'));
             }
 
-            return redirect()->intended(route('home'))
-                ->with('success', 'Hoşgeldiniz, ' . Auth::user()->name);
+            return redirect()->intended(route('user.dashboard'))
+                ->with('success', 'Hoşgeldiniz, ' . $user->name . '!');
         }
 
         throw ValidationException::withMessages([
