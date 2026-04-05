@@ -32,7 +32,11 @@
                 </div>
             @endif
 
-            @foreach($categories->take(9) as $cat)
+            @php 
+                $displayCats = $navbarCategories->count() > 0 ? $navbarCategories : $categories->take(9);
+            @endphp
+
+            @foreach($displayCats as $cat)
                 <a href="{{ route('home', ['category' => $cat->id]) }}" class="category-link {{ request('category') == $cat->id ? 'text-[var(--primary-color)] border-b-2 border-[var(--primary-color)]' : '' }}">
                     {{ str($cat->name)->upper() }}
                 </a>

@@ -87,22 +87,36 @@ class HomeController extends Controller
         // Popular Products Settings
         $popularActive = \App\Models\Setting::getValue('popular_section_active', true);
         $popularMax = \App\Models\Setting::getValue('popular_section_max', 10);
+        $manualPopularIds = json_decode(\App\Models\Setting::getValue('popular_products_ids', '[]'), true);
+        if (!is_array($manualPopularIds)) $manualPopularIds = [];
 
         // Popular Products Query
         $popularProducts = collect();
         if ($popularActive) {
             $popularProducts = Product::with(['brand', 'productImages'])
+                ->whereIn('id', $manualPopularIds)
                 ->where('active', true)
-                ->where(function($q) {
-                    $q->where('is_popular', true)
-                      ->orWhere('stock', '>', 0);
-                })
-                ->orderBy('is_popular', 'desc')
-                ->orderByRaw('stock > 0 desc')
-                ->orderBy('views', 'desc')
-                ->take($popularMax)
                 ->get();
+
+            if ($popularProducts->count() < 12) {
+                $extraCount = 12 - $popularProducts->count();
+                $autoPopular = Product::with(['brand', 'productImages'])
+                    ->whereNotIn('id', $manualPopularIds)
+                    ->where('active', true)
+                    ->where('stock', '>', 0)
+                    ->orderByDesc('views')
+                    ->take($extraCount)
+                    ->get();
+                
+                $popularProducts = $popularProducts->concat($autoPopular);
+            }
         }
+
+        // Navbar Categories (Selected by Admin)
+        $navbarCategories = Category::where('is_navbar', true)
+            ->where('active', true)
+            ->orderBy('name')
+            ->get();
 
         // Recently Viewed Products
         $recentlyViewedIds = json_decode(request()->cookie('recently_viewed', '[]'), true);
@@ -120,7 +134,7 @@ class HomeController extends Controller
                 });
         }
 
-        return view('home', compact('products', 'categories', 'brands', 'banners', 'popularProducts', 'featuredBrands', 'recentlyViewedProducts'));
+        return view('home', compact('products', 'categories', 'brands', 'banners', 'popularProducts', 'featuredBrands', 'recentlyViewedProducts', 'navbarCategories'));
     }
 
     public function show(Product $product, Request $request)

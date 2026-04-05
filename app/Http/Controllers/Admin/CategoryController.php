@@ -33,7 +33,8 @@ class CategoryController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'parent_id' => 'nullable|exists:categories,id',
-            'active' => 'boolean'
+            'active' => 'boolean',
+            'is_navbar' => 'boolean'
         ]);
 
         Category::create([
@@ -41,6 +42,7 @@ class CategoryController extends Controller
             'slug' => Str::slug($request->name),
             'parent_id' => $request->parent_id,
             'active' => $request->has('active'),
+            'is_navbar' => $request->has('is_navbar'),
         ]);
 
         return redirect()->route('admin.categories.index')->with('success', 'Kategori başarıyla oluşturuldu.');
@@ -74,7 +76,8 @@ class CategoryController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'parent_id' => 'nullable|exists:categories,id',
-            'active' => 'boolean'
+            'active' => 'boolean',
+            'is_navbar' => 'boolean'
         ]);
 
         $category->update([
@@ -82,6 +85,7 @@ class CategoryController extends Controller
             'slug' => Str::slug($request->name),
             'parent_id' => $request->parent_id,
             'active' => $request->has('active'),
+            'is_navbar' => $request->has('is_navbar'),
         ]);
 
         return redirect()->route('admin.categories.index')->with('success', 'Kategori başarıyla güncellendi.');
@@ -106,5 +110,11 @@ class CategoryController extends Controller
     {
         $category->update(['active' => !$category->active]);
         return back()->with('success', 'Kategori durumu güncellendi.');
+    }
+
+    public function toggleNavbar(Category $category)
+    {
+        $category->update(['is_navbar' => !$category->is_navbar]);
+        return back()->with('success', 'Kategori menü durumu güncellendi.');
     }
 }

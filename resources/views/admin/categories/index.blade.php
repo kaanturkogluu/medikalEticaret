@@ -43,6 +43,7 @@
                                 <th scope="col" class="px-3 py-5 text-left text-xs font-black uppercase tracking-widest text-slate-400 italic">Üst Kategori</th>
                                 <th scope="col" class="px-3 py-5 text-left text-xs font-black uppercase tracking-widest text-slate-400 italic text-center">Ürün Sayısı</th>
                                 <th scope="col" class="px-3 py-5 text-left text-xs font-black uppercase tracking-widest text-slate-400 italic text-center">Durum</th>
+                                <th scope="col" class="px-3 py-5 text-left text-xs font-black uppercase tracking-widest text-slate-400 italic text-center">Menü</th>
                                 <th scope="col" class="relative py-5 pl-3 pr-8 text-right text-xs font-black uppercase tracking-widest text-slate-400 italic">İşlemler</th>
                             </tr>
                         </thead>
@@ -69,11 +70,19 @@
                                     </span>
                                 </td>
                                 <td class="whitespace-nowrap px-3 py-5 text-center">
-                                    <form action="{{ route('admin.categories.toggle', $category->id) }}" method="POST">
+                                    <form action="{{ route('admin.categories.toggle-active', $category->id) }}" method="POST">
                                         @csrf
                                         <button type="submit" class="inline-flex items-center px-4 py-1.5 rounded-full text-[10px] font-black italic tracking-widest uppercase transition-all {{ $category->active ? 'bg-green-100 text-green-700 hover:bg-green-200' : 'bg-red-100 text-red-700 hover:bg-red-200' }}">
                                             <span class="w-1.5 h-1.5 rounded-full mr-2 {{ $category->active ? 'bg-green-500 animate-pulse' : 'bg-red-500' }}"></span>
                                             {{ $category->active ? 'Aktif' : 'Pasif' }}
+                                        </button>
+                                    </form>
+                                </td>
+                                <td class="whitespace-nowrap px-3 py-5 text-center">
+                                    <form action="{{ route('admin.categories.toggle-navbar', $category->id) }}" method="POST">
+                                        @csrf
+                                        <button type="submit" class="inline-flex items-center p-2 rounded-xl text-xs transition-all {{ $category->is_navbar ? 'bg-indigo-50 text-indigo-600 shadow-inner' : 'bg-slate-50 text-slate-300 hover:text-slate-400' }}" title="Navbar'da Göster">
+                                            <i class="fas fa-globe"></i>
                                         </button>
                                     </form>
                                 </td>

@@ -116,7 +116,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
         Route::get('/{category}/edit', [\App\Http\Controllers\Admin\CategoryController::class, 'edit'])->name('edit');
         Route::put('/{category}/update', [\App\Http\Controllers\Admin\CategoryController::class, 'update'])->name('update');
         Route::delete('/{category}/delete', [\App\Http\Controllers\Admin\CategoryController::class, 'destroy'])->name('destroy');
-        Route::post('/{category}/toggle', [\App\Http\Controllers\Admin\CategoryController::class, 'toggleActive'])->name('toggle');
+        Route::post('/{category}/toggle-active', [\App\Http\Controllers\Admin\CategoryController::class, 'toggleActive'])->name('toggle-active');
+        Route::post('/{category}/toggle-navbar', [\App\Http\Controllers\Admin\CategoryController::class, 'toggleNavbar'])->name('toggle-navbar');
     });
 
     // Page Management (Agreements & Policies)
