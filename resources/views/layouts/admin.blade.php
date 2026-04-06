@@ -108,6 +108,11 @@
                 <span x-show="sidebarOpen" class="font-medium text-sm text-[11px] leading-tight flex-grow">Sözleşmeler & Politikalar</span>
             </a>
 
+            <a href="{{ route('admin.faqs.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-all group {{ Request::is('admin/faqs*') ? 'sidebar-item-active' : '' }}">
+                <i class="fas fa-question-circle w-6 flex justify-center text-lg {{ Request::is('admin/faqs*') ? 'text-white' : 'text-slate-500 group-hover:text-brand-400' }}"></i>
+                <span x-show="sidebarOpen" class="font-medium text-sm">Sıkça Sorulan Sorular</span>
+            </a>
+
             <a href="/admin/appearance" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-all group {{ Request::is('admin/appearance*') ? 'sidebar-item-active' : '' }}">
                 <i class="fas fa-eye w-6 flex justify-center text-lg {{ Request::is('admin/appearance*') ? 'text-white' : 'text-slate-500 group-hover:text-brand-400' }}"></i>
                 <span x-show="sidebarOpen" class="font-medium text-sm">Site Görünümü</span>

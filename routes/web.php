@@ -12,6 +12,8 @@ Route::get('/iletisim', function () {
     return view('contact');
 })->name('contact');
 
+Route::get('/sss', [\App\Http\Controllers\HomeController::class, 'faqs'])->name('sss');
+
 Route::get('/sayfa/{slug}', [\App\Http\Controllers\HomeController::class, 'page'])->name('page.show');
 
 // Authentication Routes (Guest)
@@ -130,6 +132,17 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
         Route::put('/{page}/update', [\App\Http\Controllers\Admin\PageController::class, 'update'])->name('update');
         Route::delete('/{page}/delete', [\App\Http\Controllers\Admin\PageController::class, 'destroy'])->name('destroy');
         Route::post('/{page}/toggle', [\App\Http\Controllers\Admin\PageController::class, 'toggle'])->name('toggle');
+    });
+
+    // FAQ Management
+    Route::group(['prefix' => 'faqs', 'as' => 'admin.faqs.'], function () {
+        Route::get('/', [\App\Http\Controllers\Admin\FaqController::class, 'index'])->name('index');
+        Route::get('/create', [\App\Http\Controllers\Admin\FaqController::class, 'create'])->name('create');
+        Route::post('/store', [\App\Http\Controllers\Admin\FaqController::class, 'store'])->name('store');
+        Route::get('/{faq}/edit', [\App\Http\Controllers\Admin\FaqController::class, 'edit'])->name('edit');
+        Route::put('/{faq}/update', [\App\Http\Controllers\Admin\FaqController::class, 'update'])->name('update');
+        Route::delete('/{faq}/delete', [\App\Http\Controllers\Admin\FaqController::class, 'destroy'])->name('destroy');
+        Route::post('/{faq}/toggle', [\App\Http\Controllers\Admin\FaqController::class, 'toggle'])->name('toggle');
     });
 
     Route::view('/settings', 'admin.settings')->name('admin.settings');

@@ -205,4 +205,13 @@ class HomeController extends Controller
 
         return view('pages.show', compact('page'));
     }
+
+    public function faqs()
+    {
+        $faqs = \App\Models\Faq::where('is_active', true)
+            ->orderBy('order_index')
+            ->get();
+            
+        return view('sss', compact('faqs'));
+    }
 }

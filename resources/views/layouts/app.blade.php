@@ -12,7 +12,7 @@
         $defaultFooter = [
             ["title" => "umutMed", "links" => [["text" => "Hakkımızda", "url" => "#"], ["text" => "Kariyer", "url" => "#"], ["text" => "İletişim", "url" => "/iletisim"], ["text" => "Sürdürülebilirlik", "url" => "#"]]],
             ["title" => "Kampanyalar", "links" => [["text" => "Aktif Kampanyalar", "url" => "#"], ["text" => "Elite Üyelik", "url" => "#"], ["text" => "Hediye Fikirleri", "url" => "#"], ["text" => "umutMed Blog", "url" => "#"]]],
-            ["title" => "Yardım", "links" => [["text" => "Sıkça Sorulan Sorular", "url" => "#"], ["text" => "İade Politikası", "url" => "#"], ["text" => "Ödeme Seçenekleri", "url" => "#"], ["text" => "Kullanım Koşulları", "url" => "#"]]]
+            ["title" => "Yardım", "links" => [["text" => "Sıkça Sorulan Sorular", "url" => route('sss')], ["text" => "İade Politikası", "url" => route('page.show', 'iade-iptal-politikasi')], ["text" => "Ödeme Seçenekleri", "url" => route('page.show', 'odeme-politikasi')], ["text" => "Kullanım Koşulları", "url" => route('page.show', 'kullanim-kosullari')]]]
         ];
         $footerCols = json_decode(\App\Models\Setting::getValue('site_footer_columns', json_encode($defaultFooter)), true);
     @endphp
