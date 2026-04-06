@@ -102,6 +102,7 @@ class AppearanceController extends Controller
         $settings = [
             'primary_color' => Setting::getValue('site_primary_color', '#f27a1a'),
             'site_title' => Setting::getValue('site_title', 'umutMed Market'),
+            'site_favicon' => Setting::getValue('site_favicon', ''),
             'footer_qr' => Setting::getValue('site_footer_qr', ''),
             'footer_columns' => json_decode(Setting::getValue('site_footer_columns', json_encode($defaultFooter)), true)
         ];
@@ -113,6 +114,7 @@ class AppearanceController extends Controller
     {
         Setting::setValue('site_primary_color', $request->primary_color);
         Setting::setValue('site_title', $request->site_title);
+        Setting::setValue('site_favicon', $request->site_favicon);
         Setting::setValue('site_footer_qr', $request->footer_qr);
         Setting::setValue('site_footer_columns', json_encode($request->footer_columns));
 

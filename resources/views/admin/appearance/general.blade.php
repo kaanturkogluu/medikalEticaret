@@ -49,6 +49,20 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 pt-8 border-t border-slate-50">
                 <div class="space-y-2">
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Site Favicon (Görsel Linki)</label>
+                    <div class="flex gap-4">
+                        <input type="text" name="site_favicon" value="{{ $settings['site_favicon'] }}" class="flex-grow bg-slate-50 border border-slate-200 rounded-2xl px-6 py-4 text-xs font-medium text-slate-600 outline-none focus:bg-white focus:ring-4 focus:ring-brand-50 focus:border-brand-500 transition-all" placeholder="Favicon görsel linkini buraya yapıştırın (.ico, .png, .svg)">
+                        <div class="w-14 h-14 bg-white border border-slate-200 rounded-2xl flex items-center justify-center overflow-hidden flex-shrink-0 shadow-sm">
+                            @if($settings['site_favicon'])
+                                <img src="{{ $settings['site_favicon'] }}" class="w-6 h-6 object-contain">
+                            @else
+                                <i class="fas fa-image text-slate-300"></i>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-2">
                     <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Footer QR Kod Linki (ETBIS vb.)</label>
                     <div class="flex gap-4">
                         <input type="text" name="footer_qr" value="{{ $settings['footer_qr'] }}" class="flex-grow bg-slate-50 border border-slate-200 rounded-2xl px-6 py-4 text-xs font-medium text-slate-600 outline-none focus:bg-white focus:ring-4 focus:ring-brand-50 focus:border-brand-500 transition-all" placeholder="QR Kod görsel linkini buraya yapıştırın">

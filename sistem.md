@@ -38,7 +38,7 @@ app/Http/Controllers/
     ChannelController.php          ← Pazaryeri bağlantıları
     AppearanceController.php       ← contact, marketplaces, social, general, tabSwitch
     BannerController.php
-    CommentController.php          ← index, approve, destroy (Moderasyon)
+    CommentController.php          ← index, approve, reply, destroy (Moderasyon + Yanıt)
 
 app/Models/
   Product.php     Brand.php     Category.php     Setting.php
@@ -70,8 +70,9 @@ resources/views/
     order-detail.blade.php   ← Sipariş detayı, ürünler, adres
     profile.blade.php        ← Kullanıcı bilgileri & Şifre güncelleme
     addresses.blade.php      ← Adres yönetimi (CRUD)
+    comments.blade.php       ← Yorumlarım (status: Onay Bekliyor / Yayında)
   errors/
-    404.blade.php / 403.blade.php / 419.blade.php ← Özel premium hata sayfaları
+    404.blade.php / 403.blade.php / 419.blade.php / 429.blade.php ← Özel premium hata sayfaları
 ```
 
 ---
@@ -118,6 +119,7 @@ Brand → hasMany Product, ChannelBrand
 | `/hesabim/siparislerim/{id}` | `user.orders.show` | Sipariş detayı |
 | `/hesabim/adreslerim` | `user.addresses` | Adres yönetimi |
 | `/hesabim/bilgilerim` | `user.profile` | Profil & Şifre |
+| `/hesabim/yorumlarim` | `user.comments` | Üye yorumları ve onay durumu |
 
 ### Admin (`/admin/*`, middleware: auth)
 | URL | Route Name |
@@ -145,7 +147,8 @@ Brand → hasMany Product, ChannelBrand
 | `/admin/marketplaces` | `admin.marketplaces` |
 | `/admin/logs` | `admin.logs` |
 | `/admin/settings` | `admin.settings` |
-| `/admin/comments` | `admin.comments.index` |
+| `/admin/comments` | `admin.comments.index` | Moderasyon + Mağaza Yanıtı |
+| `/admin/comments/{id}/reply` | `admin.comments.reply` | Yorum yanıtla (POST) |
 
 ---
 
@@ -167,6 +170,7 @@ Setting::setValue('key', $value)     // DB'ye yazar (updateOrCreate)
 | `contact_*` | İletişim bilgileri |
 | `social_*` | Sosyal medya linkleri |
 | `footer_*` | Footer ayarları |
+| `site_favicon` | Site sekme ikonu URL |
 
 ---
 
@@ -265,7 +269,12 @@ Altyapı
 - [x] **Premium Ürün Detay Sayfası:** Sticky sidebar, güven rozetleri, "Diğer Mağazalarımız" hub ve gelişmiş galeri
 - [x] **Pazaryeri Mağaza Hub:** Admin panelinden yönetilen Trendyol, Hepsiburada, N11 vb. mağaza linklerinin ürün detayda gösterilmesi
 - [x] **Gelişmiş Yorum Sistemi:** Oturum açma zorunluluğu, admin onaylı (moderasyonlu) yorum yapma ve dinamik puanlama
-- [x] **Admin Yorum Yönetimi:** Gelen yorumları listeleme, onaylama ve silme arayüzü
+- [x] **Admin Yanıt Sistemi:** Mağaza sahiplerinin gelen yorumlara admin panelinden yanıt verebilmesi (Inline Form)
+- [x] **Kullanıcı Yorum Takibi:** Üyelerin kendi panellerinden yorumlarının onay durumunu ve mağaza yanıtlarını görmesi
+- [x] **Spam Koruması (Throttling):** Dakikada 10 yorum sınırı ve mükerrer yorum engelleme mantığı
+- [x] **Site Favicon Yönetimi:** Admin panelinden dinamik ikon URL'si belirleyebilme ve anlık önizleme
+- [x] **429 Hata Sayfası:** Rate limit aşıldığında (spam girişimi) gösterilen premium, kurumsal hata sayfası
+- [x] **Admin Yorum Yönetimi:** Gelen yorumları listeleme, onaylama, yanıtlama ve silme arayüzü
 
 ---
 
@@ -443,6 +452,7 @@ Altyapı
 - **404.blade.php:** Sayfa Bulunamadı (Kayıp eşya temalı, turuncu/gri)
 - **403.blade.php:** Erişim Engellendi (Güvenlik/Dark mode temalı, kırmızı/lacivert)
 - **419.blade.php:** Oturum Süresi Doldu (Zaman aşımı temalı, indigo/mor)
+- **429.blade.php:** Çok Fazla İstek (Spam/Hız sınırı, bot koruma temalı)
 
 > Bu sayfaların tümü **umutMed** kurumsal kimliğine ve premium tasarım diline (glassmorphism, modern fontlar, animasyonlar) uygun şekilde kodlanmıştır.
 
@@ -473,4 +483,4 @@ Altyapı
 
 ---
 
-*Son güncelleme: 2026-04-06 — Premium Ürün Detay, Pazaryeri Mağaza Hub ve Onaylı Yorum Sistemi eklendi.*
+*Son güncelleme: 2026-04-06 — Mağaza Yanıt Sistemi, Müşteri Yorum Takibi, Favicon Yönetimi ve Spam Koruması (Throttle) eklendi.*

@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     @php
         $siteTitle = \App\Models\Setting::getValue('site_title', 'umutMed Market');
+        $siteFavicon = \App\Models\Setting::getValue('site_favicon', '');
         $primaryColor = \App\Models\Setting::getValue('site_primary_color', '#f27a1a');
         $footerQr = \App\Models\Setting::getValue('site_footer_qr', '');
         $defaultFooter = [
@@ -17,6 +18,10 @@
     @endphp
 
     <title>@yield('title', config('app.name')) - {{ $siteTitle }}</title>
+
+    @if($siteFavicon)
+        <link rel="icon" type="image/x-icon" href="{{ $siteFavicon }}">
+    @endif
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
