@@ -75,12 +75,7 @@ class HomeController extends Controller
 
         $products = $query->latest()->paginate(24)->onEachSide(1);
         
-        $categories = Category::whereHas('products', function($q) {
-            $q->where('active', true)->where('stock', '>', 0);
-        })->withCount(['products' => function($q) {
-            $q->where('active', true)->where('stock', '>', 0);
-        }])->get();
-
+        // categories, brands, etc.
         $brands = Brand::whereHas('products', function($q) {
             $q->where('active', true)->where('stock', '>', 0);
         })->withCount(['products' => function($q) {
@@ -122,12 +117,6 @@ class HomeController extends Controller
             }
         }
 
-        // Navbar Categories (Selected by Admin)
-        $navbarCategories = Category::where('is_navbar', true)
-            ->where('active', true)
-            ->orderBy('name')
-            ->get();
-
         // Recently Viewed Products
         $recentlyViewedIds = json_decode(request()->cookie('recently_viewed', '[]'), true);
         if (!is_array($recentlyViewedIds)) $recentlyViewedIds = [];
@@ -144,7 +133,7 @@ class HomeController extends Controller
                 });
         }
 
-        return view('home', compact('products', 'categories', 'brands', 'banners', 'popularProducts', 'featuredBrands', 'recentlyViewedProducts', 'navbarCategories'));
+        return view('home', compact('products', 'brands', 'banners', 'popularProducts', 'featuredBrands', 'recentlyViewedProducts'));
     }
 
     public function show(Product $product, Request $request)
@@ -185,11 +174,7 @@ class HomeController extends Controller
 
         $marketplaces = json_decode(\App\Models\Setting::getValue('marketplaces', '[]'), true);
 
-        $categories = Category::whereHas('products', function($q) {
-            $q->where('active', true)->where('stock', '>', 0);
-        })->take(10)->get();
-
-        return view('product_detail', compact('product', 'relatedProducts', 'categories', 'marketplaces'));
+        return view('product_detail', compact('product', 'relatedProducts', 'marketplaces'));
     }
 
     public function favorites()

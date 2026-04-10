@@ -226,83 +226,127 @@
     </div>
 
     <!-- Header -->
-    <header class="py-4 shadow-sm">
-        <div class="ty-container">
-            <div class="flex items-center gap-8">
-                <!-- Logo -->
-                <a href="{{ route('home') }}" class="flex-shrink-0">
-                    <h1 class="text-3xl font-black italic tracking-tighter text-slate-900">
-                        umut<span class="text-[var(--primary-color)]">Med</span>
-                    </h1>
-                </a>
+    <header class="shadow-sm sticky top-0 z-[1000]">
+        <div class="py-4 bg-white border-b border-gray-100">
+            <div class="ty-container">
+                <div class="flex items-center gap-8">
+                    <!-- Logo -->
+                    <a href="{{ route('home') }}" class="flex-shrink-0">
+                        <h1 class="text-3xl font-black italic tracking-tighter text-slate-900">
+                            umut<span class="text-[var(--primary-color)]">Med</span>
+                        </h1>
+                    </a>
 
-                <!-- Search -->
-                <div class="flex-grow max-w-2xl relative group">
-                    <form action="{{ route('home') }}" method="GET">
-                        <input type="text" name="q" value="{{ request('q') }}"
-                            placeholder="Aradığınız ürün, kategori veya markayı yazınız" class="search-bar">
-                        <button type="submit"
-                            class="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--primary-color)] font-bold">
-                            <i class="fas fa-search"></i>
-                        </button>
-                    </form>
-                </div>
+                    <!-- Search -->
+                    <div class="flex-grow max-w-2xl relative group">
+                        <form action="{{ route('home') }}" method="GET">
+                            <input type="text" name="q" value="{{ request('q') }}"
+                                placeholder="Aradığınız ürün, kategori veya markayı yazınız" class="search-bar">
+                            <button type="submit"
+                                class="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--primary-color)] font-bold">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </form>
+                    </div>
 
-                <!-- User Actions -->
-                <div class="flex items-center gap-6 text-sm font-bold text-gray-700">
-                    @if (Route::has('login'))
-                        @auth
-                            @if(auth()->user()->isAdmin())
-                                <a href="{{ route('admin.dashboard') }}"
-                                    class="flex items-center gap-2 hover:text-[var(--primary-color)] group">
-                                    <i class="fas fa-cog text-lg text-gray-400 group-hover:text-[var(--primary-color)]"></i>
-                                    <span class="hidden lg:inline">Yönetim Paneli</span>
-                                </a>
+                    <!-- User Actions -->
+                    <div class="flex items-center gap-6 text-sm font-bold text-gray-700">
+                        @if (Route::has('login'))
+                            @auth
+                                @if(auth()->user()->isAdmin())
+                                    <a href="{{ route('admin.dashboard') }}"
+                                        class="flex items-center gap-2 hover:text-[var(--primary-color)] group">
+                                        <i class="fas fa-cog text-lg text-gray-400 group-hover:text-[var(--primary-color)]"></i>
+                                        <span class="hidden lg:inline">Yönetim Paneli</span>
+                                    </a>
+                                @else
+                                    <a href="{{ route('user.dashboard') }}"
+                                        class="flex items-center gap-2 hover:text-[var(--primary-color)] group">
+                                        <i class="far fa-user text-lg text-gray-400 group-hover:text-[var(--primary-color)]"></i>
+                                        <span class="hidden lg:inline">Hesabım</span>
+                                    </a>
+                                @endif
                             @else
-                                <a href="{{ route('user.dashboard') }}"
+                                <a href="{{ route('login') }}"
                                     class="flex items-center gap-2 hover:text-[var(--primary-color)] group">
-                                    <i class="far fa-user text-lg text-gray-400 group-hover:text-[var(--primary-color)]"></i>
-                                    <span class="hidden lg:inline">Hesabım</span>
-                                </a>
-                            @endif
-                        @else
-                            <a href="{{ route('login') }}"
-                                class="flex items-center gap-2 hover:text-[var(--primary-color)] group">
                                 <i class="far fa-user text-lg text-gray-400 group-hover:text-[var(--primary-color)]"></i>
                                 <span class="hidden lg:inline">Giriş Yap</span>
+                                </a>
+                            @endauth
+                        @else
+                            <a href="{{ route('admin.dashboard') }}"
+                                class="flex items-center gap-2 hover:text-[var(--primary-color)] group">
+                                <i class="fas fa-cog text-lg text-gray-400 group-hover:text-[var(--primary-color)]"></i>
+                                <span class="hidden lg:inline">Yönetim Paneli</span>
                             </a>
-                        @endauth
-                    @else
-                        <a href="{{ route('admin.dashboard') }}"
+                        @endif
+
+                        <a href="{{ route('favorites') }}"
                             class="flex items-center gap-2 hover:text-[var(--primary-color)] group">
-                            <i class="fas fa-cog text-lg text-gray-400 group-hover:text-[var(--primary-color)]"></i>
-                            <span class="hidden lg:inline">Yönetim Paneli</span>
+                            <div class="relative">
+                                <i class="far fa-heart text-lg text-gray-400 group-hover:text-[var(--primary-color)]"></i>
+                                <span x-show="$store.fav.items.length" x-text="$store.fav.items.length"
+                                    class="absolute -top-2 -right-2 bg-red-500 text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center border-2 border-white"></span>
+                            </div>
+                            <span class="hidden lg:inline">Favorilerim</span>
                         </a>
-                    @endif
 
-                    <a href="{{ route('favorites') }}"
-                        class="flex items-center gap-2 hover:text-[var(--primary-color)] group">
-                        <div class="relative">
-                            <i class="far fa-heart text-lg text-gray-400 group-hover:text-[var(--primary-color)]"></i>
-                            <span x-show="$store.fav.items.length" x-text="$store.fav.items.length"
-                                class="absolute -top-2 -right-2 bg-red-500 text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center border-2 border-white"></span>
-                        </div>
-                        <span class="hidden lg:inline">Favorilerim</span>
-                    </a>
-
-                    <a href="#" @click.prevent="$store.cart.open = true"
-                        class="flex items-center gap-2 hover:text-[var(--primary-color)] group">
-                        <div class="relative">
-                            <i
-                                class="fas fa-shopping-cart text-lg text-gray-400 group-hover:text-[var(--primary-color)]"></i>
-                            <span x-show="$store.cart.items.length" x-text="$store.cart.items.length"
-                                class="absolute -top-2 -right-2 bg-[var(--primary-color)] text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center border-2 border-white"></span>
-                        </div>
-                        <span class="hidden lg:inline">Sepetim</span>
-                    </a>
+                        <a href="#" @click.prevent="$store.cart.open = true"
+                            class="flex items-center gap-2 hover:text-[var(--primary-color)] group">
+                            <div class="relative">
+                                <i
+                                    class="fas fa-shopping-cart text-lg text-gray-400 group-hover:text-[var(--primary-color)]"></i>
+                                <span x-show="$store.cart.items.length" x-text="$store.cart.items.length"
+                                    class="absolute -top-2 -right-2 bg-[var(--primary-color)] text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center border-2 border-white"></span>
+                            </div>
+                            <span class="hidden lg:inline">Sepetim</span>
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
+
+        <!-- Sub Navbar Categories -->
+        <nav class="category-nav hidden md:block bg-white shadow-sm border-b border-gray-200">
+            <div class="ty-container flex items-center justify-center">
+                @if($categories->count() > 10)
+                    <div class="category-link cursor-pointer group" x-data="{ allCatSearch: '' }">
+                        <span class="flex items-center gap-2 font-black italic">TÜM KATEGORİLER <i class="fas fa-chevron-down text-[10px]"></i></span>
+                        <div class="absolute hidden group-hover:block top-full left-0 bg-white border border-gray-100 shadow-2xl p-0 w-[1000px] z-[1001] rounded-b-xl overflow-hidden">
+                            <!-- Search Sidebar in Dropdown -->
+                            <div class="p-6 bg-gray-50/50 border-b border-gray-100">
+                                <div class="relative">
+                                    <input type="text" x-model="allCatSearch" placeholder="Kategoriler arasında hızlıca ara..." class="w-full pl-10 p-3 text-sm bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)]/20 focus:border-[var(--primary-color)] transition-all">
+                                    <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                                </div>
+                            </div>
+                            <!-- Categories Scrollable Grid -->
+                            <div class="p-8 grid grid-cols-4 gap-x-8 max-h-[450px] overflow-y-auto custom-scrollbar">
+                                @foreach($categories as $cat)
+                                    <a href="{{ route('home', ['category' => $cat->slug ?? $cat->id]) }}" 
+                                       x-show="allCatSearch === '' || '{{ str($cat->name)->lower() }}'.includes(allCatSearch.toLowerCase())"
+                                       class="py-3 text-[13px] hover:text-[var(--primary-color)] hover:translate-x-1 transition-all font-medium border-b border-gray-50 last:border-0 flex items-center justify-between group/item">
+                                        <span>{{ $cat->name }}</span>
+                                        <i class="fas fa-chevron-right text-[10px] opacity-0 group-hover/item:opacity-100 transition-opacity"></i>
+                                    </a>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                @endif
+
+                @php 
+                    $displayCats = $navbarCategories->count() > 0 ? $navbarCategories : $categories->take(9);
+                @endphp
+
+                @foreach($displayCats as $cat)
+                    @php $isActive = (request('category') == $cat->id || request('category') == $cat->slug); @endphp
+                    <a href="{{ route('home', ['category' => $cat->slug]) }}" class="category-link {{ $isActive ? 'text-[var(--primary-color)] border-b-2 border-[var(--primary-color)]' : '' }}">
+                        {{ str($cat->name)->upper() }}
+                    </a>
+                @endforeach
+            </div>
+        </nav>
     </header>
 
     @yield('sub_header')

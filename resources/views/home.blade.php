@@ -2,50 +2,6 @@
 
 @section('title', 'Market Ana Sayfası')
 
-@section('sub_header')
-    <!-- Sub Navbar Categories -->
-    <nav class="category-nav hidden md:block">
-        <div class="ty-container flex items-center justify-center">
-            @if($categories->count() > 10)
-                <div class="category-link cursor-pointer group" x-data="{ allCatSearch: '' }">
-                    <span class="flex items-center gap-2 font-black italic">TÜM KATEGORİLER <i class="fas fa-chevron-down text-[10px]"></i></span>
-                    <div class="absolute hidden group-hover:block top-full left-0 bg-white border border-gray-100 shadow-2xl p-0 w-[1000px] z-[1001] rounded-b-xl overflow-hidden">
-                        <!-- Search Sidebar in Dropdown -->
-                        <div class="p-6 bg-gray-50/50 border-b border-gray-100">
-                            <div class="relative">
-                                <input type="text" x-model="allCatSearch" placeholder="Kategoriler arasında hızlıca ara..." class="w-full pl-10 p-3 text-sm bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)]/20 focus:border-[var(--primary-color)] transition-all">
-                                <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                            </div>
-                        </div>
-                        <!-- Categories Scrollable Grid -->
-                        <div class="p-8 grid grid-cols-4 gap-x-8 max-h-[450px] overflow-y-auto custom-scrollbar">
-                            @foreach($categories as $cat)
-                                <a href="{{ route('home', ['category' => $cat->id]) }}" 
-                                   x-show="allCatSearch === '' || '{{ str($cat->name)->lower() }}'.includes(allCatSearch.toLowerCase())"
-                                   class="py-3 text-[13px] hover:text-[var(--primary-color)] hover:translate-x-1 transition-all font-medium border-b border-gray-50 last:border-0 flex items-center justify-between group/item">
-                                    <span>{{ $cat->name }}</span>
-                                    <i class="fas fa-chevron-right text-[10px] opacity-0 group-hover/item:opacity-100 transition-opacity"></i>
-                                </a>
-                            @endforeach
-                        </div>
-                    </div>
-                </div>
-            @endif
-
-            @php 
-                $displayCats = $navbarCategories->count() > 0 ? $navbarCategories : $categories->take(9);
-            @endphp
-
-            @foreach($displayCats as $cat)
-                @php $isActive = (request('category') == $cat->id || request('category') == $cat->slug); @endphp
-                <a href="{{ route('home', ['category' => $cat->slug]) }}" class="category-link {{ $isActive ? 'text-[var(--primary-color)] border-b-2 border-[var(--primary-color)]' : '' }}">
-                    {{ str($cat->name)->upper() }}
-                </a>
-            @endforeach
-        </div>
-    </nav>
-@endsection
-
 @section('content')
     @if(\App\Models\Setting::getValue('banner_active', true) && $banners->count() > 0)
     <!-- Banner Section -->
@@ -248,28 +204,9 @@
         <div class="flex flex-col lg:flex-row gap-8">
             
             <!-- Left Sidebar Filters -->
-            <aside class="w-full lg:w-64 flex-shrink-0 hidden lg:block">
+            <aside class="w-full lg:w-64 flex-shrink-0 hidden lg:block sticky top-40 h-fit self-start">
                 <h3 class="text-lg font-bold mb-4">Filtreler</h3>
                 
-                <div class="filter-section" x-data="{ catSearch: '' }">
-                    <div class="filter-title">İlgili Kategoriler</div>
-                    <div class="mb-3 relative">
-                        <input type="text" x-model="catSearch" placeholder="Kategori ara..." class="w-full pl-8 p-2 text-xs border border-gray-200 rounded focus:outline-none focus:border-[var(--primary-color)] transition-colors">
-                        <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[10px]"></i>
-                    </div>
-                    <div class="max-h-48 overflow-y-auto pr-2 custom-scrollbar space-y-1">
-                        @foreach($categories as $cat)
-                            @php $isActive = (request('category') == $cat->id || request('category') == $cat->slug); @endphp
-                            <a href="{{ route('home', array_merge(request()->all(), ['category' => $cat->slug])) }}" 
-                               x-show="catSearch === '' || '{{ str($cat->name)->lower() }}'.includes(catSearch.toLowerCase())"
-                               class="filter-item {{ $isActive ? 'text-[var(--primary-color)] font-bold' : '' }}">
-                                <span class="flex-grow">{{ $cat->name }}</span>
-                                <span class="text-[10px] text-gray-400">({{ $cat->products_count }})</span>
-                            </a>
-                        @endforeach
-                        <div x-show="$el.querySelectorAll('a[style*=\'display: none\']').length === {{ count($categories) }}" class="text-xs text-gray-400 italic py-2">Sonuç bulunamadı</div>
-                    </div>
-                </div>
 
                 <div class="filter-section" x-data="{ brandSearch: '' }">
                     <div class="filter-title">Markalar</div>
@@ -298,7 +235,6 @@
                     <div class="filter-title">Fiyat Aralığı</div>
                     <form action="{{ route('home') }}" method="GET" class="flex gap-2">
                         @if(request('q')) <input type="hidden" name="q" value="{{ request('q') }}"> @endif
-                        @if(request('category')) <input type="hidden" name="category" value="{{ request('category') }}"> @endif
                         @if(request('brand')) <input type="hidden" name="brand" value="{{ request('brand') }}"> @endif
                         
                         <input type="number" name="min_price" value="{{ request('min_price') }}" placeholder="En Az" class="w-1/2 p-2 text-xs border rounded focus:outline-none focus:border-[var(--primary-color)]">

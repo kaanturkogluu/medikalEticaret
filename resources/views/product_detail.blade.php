@@ -21,7 +21,7 @@
             
             <!-- Left: Image Gallery (Sticky) -->
             <div class="w-full lg:w-[55%]">
-                <div class="lg:sticky lg:top-28 flex gap-6">
+                <div class="lg:sticky lg:top-40 flex gap-6">
                     <!-- Thumbnails -->
                     <div class="flex flex-col gap-3 shrink-0 max-h-[600px] overflow-y-auto no-scrollbar">
                         @foreach($product->productImages as $image)
@@ -180,7 +180,7 @@
 
         <!-- Description & Details Tabs -->
         <div class="mt-24" x-data="{ tab: 'description' }">
-            <div class="flex border-b border-gray-100 items-center justify-center gap-16 sticky top-20 bg-white z-[100] py-6 bg-opacity-90 backdrop-blur-xl rounded-t-[40px]">
+            <div class="flex border-b border-gray-100 items-center justify-center gap-16 sticky top-40 bg-white z-[100] py-6 bg-opacity-90 backdrop-blur-xl rounded-t-[40px]">
                 <button @click="tab = 'description'" :class="tab == 'description' ? 'text-slate-900 border-b-4 border-orange-500' : 'text-gray-400 grayscale'" class="pb-2 text-sm font-black italic uppercase tracking-widest transition-all">Ürün Açıklaması</button>
                 <button @click="tab = 'features'" :class="tab == 'features' ? 'text-slate-900 border-b-4 border-orange-500' : 'text-gray-400 grayscale'" class="pb-2 text-sm font-black italic uppercase tracking-widest transition-all">Ürün Özellikleri</button>
                 <button @click="tab = 'comments'" :class="tab == 'comments' ? 'text-slate-900 border-b-4 border-orange-500' : 'text-gray-400 grayscale'" class="pb-2 text-sm font-black italic uppercase tracking-widest transition-all">Değerlendirmeler ({{ $product->approvedComments->count() }})</button>
@@ -244,7 +244,7 @@
                             </div>
 
                             <!-- Form Sticky -->
-                            <div class="lg:sticky lg:top-32">
+                            <div class="lg:sticky lg:top-52">
                                 @auth
                                     <div class="bg-slate-900 p-8 rounded-[40px] shadow-2xl shadow-slate-200 relative overflow-hidden group">
                                          <div class="absolute -top-10 -right-10 w-32 h-32 bg-orange-500/20 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-700"></div>
