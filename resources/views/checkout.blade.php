@@ -78,9 +78,9 @@
                                 <div class="flex items-center gap-3">
                                     <i class="fas fa-credit-card text-2xl" :class="form.payment_method === 'credit_card' ? 'text-slate-900' : 'text-gray-300 group-hover:text-gray-400'"></i>
                                     <div class="flex items-center gap-2 opacity-50 grayscale group-hover:grayscale-0 group-hover:opacity-100 transition-all">
-                                        <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" class="h-4">
-                                        <img src="https://upload.wikimedia.org/wikipedia/commons/d/d6/Visa_2021.svg" class="h-2.5">
-                                        <img src="https://upload.wikimedia.org/wikipedia/commons/d/d3/Troy_Logo_2023.svg" class="h-3.5">
+                                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS5LLCKGiA1A54u5bl67CTTP8v9eaDQWTllIw&s" class="h-4">
+                                        <img src="https://img.icons8.com/clr-gls/1200/visa.jpg" class="h-4">
+                                        <img src="https://www.troyodeme.com/Upload/CmsPageFile/Image/medias_02.webp" class="h-3.5">
                                     </div>
                                 </div>
                                 <div class="w-5 h-5 rounded-full border-2 flex items-center justify-center" :class="form.payment_method === 'credit_card' ? 'border-slate-900' : 'border-gray-200'">
@@ -125,9 +125,9 @@
                             <div class="text-center group">
                                 <p class="text-[11px] font-bold leading-relaxed opacity-70 mb-4 max-w-sm">Tüm ödemeleriniz yüksek güvenlikli şifreleme yöntemleri ile taranmaktadır. Kart bilgileriniz kesinlikle sistemimizde saklanmaz.</p>
                                 <div class="flex items-center justify-center gap-4 grayscale opacity-40 group-hover:grayscale-0 group-hover:opacity-100 transition-all">
-                                    <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" class="h-5">
-                                    <img src="https://upload.wikimedia.org/wikipedia/commons/d/d6/Visa_2021.svg" class="h-3">
-                                    <img src="https://upload.wikimedia.org/wikipedia/commons/d/d3/Troy_Logo_2023.svg" class="h-4">
+                                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS5LLCKGiA1A54u5bl67CTTP8v9eaDQWTllIw&s" class="h-5">
+                                    <img src="https://img.icons8.com/clr-gls/1200/visa.jpg" class="h-5">
+                                    <img src="https://www.troyodeme.com/Upload/CmsPageFile/Image/medias_02.webp" class="h-4">
                                 </div>
                             </div>
                         </div>

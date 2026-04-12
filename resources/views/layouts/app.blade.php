@@ -546,15 +546,15 @@
                 <div class="flex flex-col gap-6">
                     <div
                         class="flex flex-wrap items-center gap-6 grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" class="h-6"
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS5LLCKGiA1A54u5bl67CTTP8v9eaDQWTllIw&s" class="h-6"
                             alt="Mastercard">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/d/d6/Visa_2021.svg" class="h-4"
+                        <img src="https://img.icons8.com/clr-gls/1200/visa.jpg" class="h-6"
                             alt="Visa">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/d/d3/Troy_Logo_2023.svg" class="h-5"
+                        <img src="https://www.troyodeme.com/Upload/CmsPageFile/Image/medias_02.webp" class="h-5"
                             alt="Troy">
                         <div class="h-6 w-px bg-white/20 mx-2"></div>
                         <div class="flex items-center gap-3">
-                            <img src="https://upload.wikimedia.org/wikipedia/commons/a/a4/SSL_Logo.svg" class="h-6 invert opacity-50" alt="SSL">
+                            <img src="https://cdn-icons-png.flaticon.com/512/5950/5950545.png" class="h-6 invert opacity-80" alt="SSL">
                             <div class="flex flex-col leading-none">
                                 <span class="text-[8px] font-black tracking-tighter text-white">256-BIT SSL</span>
                                 <span class="text-[7px] font-bold text-slate-400">GÜVENLİ ÖDEME</span>
