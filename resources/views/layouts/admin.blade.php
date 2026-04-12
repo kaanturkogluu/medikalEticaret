@@ -176,6 +176,14 @@
             </div>
 
             <div class="flex items-center gap-3 md:gap-6">
+                <!-- View Site Button -->
+                <a href="{{ route('home') }}" target="_blank" class="hidden sm:flex items-center gap-2 px-4 py-1.5 bg-slate-900 text-white rounded-lg text-xs font-bold hover:bg-brand-600 transition-all shadow-lg hover:shadow-brand-500/20 active:scale-95 transform">
+                    <i class="fas fa-external-link-alt text-[10px] opacity-70"></i>
+                    SİTEYİ GÖRÜNTÜLE
+                </a>
+
+                <div class="w-px h-6 bg-slate-200 hidden sm:block"></div>
+
                 <!-- Marketplace Selector -->
                 <div class="relative" x-data="{ open: false }">
                     <button @click="open = !open" class="flex items-center gap-2 px-3 py-1.5 bg-slate-100 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-200 transition-colors">

@@ -56,28 +56,29 @@
     </div>
 
     <!-- Filters Bar -->
-    <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex flex-wrap items-center gap-4">
-        <div class="flex-1 min-w-[200px]">
-            <form action="{{ route('admin.products') }}" method="GET" class="relative">
+    <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100">
+        <form action="{{ route('admin.products') }}" method="GET" class="flex flex-wrap items-center gap-4" id="filterForm">
+            <div class="flex-1 min-w-[200px] relative">
                 <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
                 <input type="text" name="q" value="{{ request('q') }}" placeholder="SKU veya Ürün Adı ile ara..." class="w-full pl-10 pr-20 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all">
-                <button type="submit" class="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-1 bg-slate-900 text-white text-[10px] font-black italic rounded-md hover:bg-brand-600 transition-all">ARA</button>
-            </form>
-        </div>
-        <div class="flex items-center gap-2">
-            <select x-model="statusFilter" class="px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium text-slate-700 focus:outline-none transition-all">
-                <option value="all">Tüm Durumlar</option>
-                <option value="synced">Senkronize</option>
-                <option value="pending">Bekleyen</option>
-                <option value="error">Hatalı</option>
-            </select>
-            <select x-model="marketplaceFilter" class="px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium text-slate-700 focus:outline-none transition-all">
-                <option value="all">Tüm Pazaryerleri</option>
-                <option value="Trendyol">Trendyol</option>
-                <option value="Hepsiburada">Hepsiburada</option>
-                <option value="N11">N11</option>
-            </select>
-        </div>
+                <button type="submit" class="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-1 bg-slate-900 text-white text-[10px] font-black italic rounded-md hover:bg-brand-600 transition-all uppercase">ARA</button>
+            </div>
+            
+            <div class="flex items-center gap-3">
+                <select name="stock_status" onchange="this.form.submit()" class="px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all cursor-pointer">
+                    <option value="all">Tüm Stok Durumları</option>
+                    <option value="in_stock" {{ request('stock_status') == 'in_stock' ? 'selected' : '' }}>Stokta Var</option>
+                    <option value="out_of_stock" {{ request('stock_status') == 'out_of_stock' ? 'selected' : '' }}>Stokta Yok</option>
+                </select>
+
+                <select x-model="marketplaceFilter" class="px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-bold text-slate-700 focus:outline-none transition-all cursor-pointer">
+                    <option value="all">Tüm Pazaryerleri</option>
+                    <option value="Trendyol">Trendyol</option>
+                    <option value="Hepsiburada">Hepsiburada</option>
+                    <option value="N11">N11</option>
+                </select>
+            </div>
+        </form>
     </div>
 
     <!-- Products Table -->

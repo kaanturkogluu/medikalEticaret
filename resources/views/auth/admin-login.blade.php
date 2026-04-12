@@ -89,9 +89,12 @@
                         name="password" 
                         id="password" 
                         required 
-                        class="w-full input-glass rounded-2xl px-5 py-4 text-white placeholder-indigo-300/30 outline-none"
+                        class="w-full input-glass rounded-2xl px-5 py-4 text-white placeholder-indigo-300/30 outline-none {{ $errors->has('password') ? 'border-rose-500 ring-4 ring-rose-500/10' : '' }}"
                         placeholder="••••••••"
                     >
+                    @error('password')
+                        <p class="text-rose-400 text-xs mt-2 ml-1">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <div class="flex items-center justify-between px-1">

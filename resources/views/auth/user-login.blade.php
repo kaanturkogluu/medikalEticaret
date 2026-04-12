@@ -48,10 +48,14 @@
                         type="email" 
                         name="email" 
                         id="email" 
+                        value="{{ old('email') }}"
                         required 
-                        class="w-full border-2 border-gray-100 rounded-md px-4 py-3 focus:border-[#f27a1a] outline-none transition-colors"
+                        class="w-full border-2 {{ $errors->has('email') ? 'border-red-500' : 'border-gray-100' }} rounded-md px-4 py-3 focus:border-[#f27a1a] outline-none transition-colors"
                         placeholder="E-posta adresiniz"
                     >
+                    @error('email')
+                        <p class="text-red-500 text-xs mt-2 font-bold">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <div>
@@ -61,9 +65,12 @@
                         name="password" 
                         id="password" 
                         required 
-                        class="w-full border-2 border-gray-100 rounded-md px-4 py-3 focus:border-[#f27a1a] outline-none transition-colors"
+                        class="w-full border-2 {{ $errors->has('password') ? 'border-red-500' : 'border-gray-100' }} rounded-md px-4 py-3 focus:border-[#f27a1a] outline-none transition-colors"
                         placeholder="Şifreniz"
                     >
+                    @error('password')
+                        <p class="text-red-500 text-xs mt-2 font-bold">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <div class="flex items-center justify-between">

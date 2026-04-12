@@ -22,6 +22,14 @@ class ProductController extends Controller
             });
         }
 
+        if ($request->filled('stock_status')) {
+            if ($request->stock_status === 'in_stock') {
+                $query->where('stock', '>', 0);
+            } elseif ($request->stock_status === 'out_of_stock') {
+                $query->where('stock', '<=', 0);
+            }
+        }
+
         $products = $query->latest()->paginate(15)->withQueryString();
 
         // Map products for Alpine format
