@@ -11,8 +11,7 @@ yeni zözellikler çalışmıyr
 üründetay panelde aram calismiyor 
 ürün ekleme 
 kategoriler için sitede görünecek kısmı düzenleyeleim
-site icon
 
 Adres seçilirken sleectler sehirler ve mahlleer ekle 
-trendyoldan ürün yorumları ve değerlendirmleri çekilecek
+
 

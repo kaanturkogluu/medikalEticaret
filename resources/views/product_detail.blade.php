@@ -207,9 +207,10 @@
 
         <!-- Description & Details Tabs -->
         <div class="mt-24" x-data="{ tab: 'description' }">
-            <div class="flex border-b border-gray-100 items-center justify-center gap-16 sticky top-40 bg-white z-[100] py-6 bg-opacity-90 backdrop-blur-xl rounded-t-[40px]">
+            <div class="flex border-b border-gray-100 items-center justify-center gap-12 md:gap-16 sticky top-40 bg-white z-[100] py-6 bg-opacity-90 backdrop-blur-xl rounded-t-[40px] flex-wrap md:flex-nowrap">
                 <button @click="tab = 'description'" :class="tab == 'description' ? 'text-slate-900 border-b-4 border-orange-500' : 'text-gray-400 grayscale'" class="pb-2 text-sm font-black italic uppercase tracking-widest transition-all">Ürün Açıklaması</button>
                 <button @click="tab = 'features'" :class="tab == 'features' ? 'text-slate-900 border-b-4 border-orange-500' : 'text-gray-400 grayscale'" class="pb-2 text-sm font-black italic uppercase tracking-widest transition-all">Ürün Özellikleri</button>
+                <button @click="tab = 'returns'" :class="tab == 'returns' ? 'text-slate-900 border-b-4 border-orange-500' : 'text-gray-400 grayscale'" class="pb-2 text-sm font-black italic uppercase tracking-widest transition-all">İade Koşulları</button>
                 <button @click="tab = 'comments'" :class="tab == 'comments' ? 'text-slate-900 border-b-4 border-orange-500' : 'text-gray-400 grayscale'" class="pb-2 text-sm font-black italic uppercase tracking-widest transition-all">Değerlendirmeler ({{ $product->approvedComments->count() }})</button>
             </div>
             
@@ -226,6 +227,42 @@
                                 <div class="text-sm text-slate-800 font-bold italic">{{ $attr->value }}</div>
                             </div>
                         @endforeach
+                    </div>
+                </div>
+
+                <div x-show="tab == 'returns'" x-cloak x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" class="bg-indigo-50/50 p-12 rounded-[50px] border border-indigo-100/50">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                        <div class="space-y-6">
+                            <h4 class="text-xl font-black italic tracking-tighter text-indigo-900 uppercase">Kolay İade Süreçleri</h4>
+                            <p class="text-xs text-indigo-700 leading-relaxed font-medium">Satın aldığınız ürünleri, teslim aldığınız tarihten itibaren <strong>14 gün içerisinde</strong> herhangi bir gerekçe göstermeksizin iade edebilir veya değiştirebilirsiniz.</p>
+                            <ul class="space-y-4 text-xs text-indigo-800 font-bold">
+                                <li class="flex items-start gap-3">
+                                    <i class="fas fa-check-circle mt-1 text-indigo-400"></i>
+                                    <span>İade edilecek ürünün ambalajı hasar görmemiş, kullanılmamış ve yeniden satılabilir durumda olmalıdır.</span>
+                                </li>
+                                <li class="flex items-start gap-3">
+                                    <i class="fas fa-check-circle mt-1 text-indigo-400"></i>
+                                    <span>Sağlık ve hijyen açısından uygun olmayan ürünlerin (iç çamaşırı, maske, steril ürünler vb.) ambalajı açıldıktan sonra iadesi kabul edilememektedir.</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="bg-white p-8 rounded-[32px] shadow-xl shadow-indigo-100 border border-indigo-50">
+                            <h5 class="text-[10px] font-black text-indigo-400 uppercase tracking-[0.2em] mb-4">Nasıl İade Ederim?</h5>
+                            <ol class="space-y-6">
+                                <li class="flex gap-4">
+                                    <span class="w-6 h-6 bg-indigo-600 text-white rounded-lg flex items-center justify-center text-[10px] font-black shrink-0">1</span>
+                                    <p class="text-[11px] text-indigo-900 font-bold">Hesabım > Siparişlerim sayfasından iade talebi oluşturun.</p>
+                                </li>
+                                <li class="flex gap-4">
+                                    <span class="w-6 h-6 bg-indigo-600 text-white rounded-lg flex items-center justify-center text-[10px] font-black shrink-0">2</span>
+                                    <p class="text-[11px] text-indigo-900 font-bold">Size verilen kargo kodu ile ürünü en yakın şubeden ücretsiz gönderin.</p>
+                                </li>
+                                <li class="flex gap-4">
+                                    <span class="w-6 h-6 bg-indigo-600 text-white rounded-lg flex items-center justify-center text-[10px] font-black shrink-0">3</span>
+                                    <p class="text-[11px] text-indigo-900 font-bold">Ürün tarafımıza ulaştıktan sonra 3 iş günü içinde ücret iadeniz yapılır.</p>
+                                </li>
+                            </ol>
+                        </div>
                     </div>
                 </div>
 
