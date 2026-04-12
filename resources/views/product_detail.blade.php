@@ -129,7 +129,13 @@
                 </div>
 
                 <!-- Actions -->
-                <div class="flex gap-4 mb-12">
+                <div class="flex gap-4 mb-12 relative">
+                    @if($product->price >= 700)
+                        <div class="absolute -top-8 left-0 bg-green-500 text-white text-[10px] font-black px-4 py-1.5 rounded-full shadow-xl shadow-green-100 flex items-center gap-2 animate-bounce">
+                            <i class="fas fa-truck-fast"></i>
+                            BU ÜRÜNDE KARGO BEDAVA!
+                        </div>
+                    @endif
                     @php $imgArr = $product->productImages->first()?->url ?? 'https://via.placeholder.com/600x900'; @endphp
                     <button @click="$store.cart.add({id: '{{ $product->id }}', slug: '{{ $product->slug }}', name: '{{ addslashes($product->name) }}', brand: '{{ addslashes($product->brand->name ?? '') }}', price: {{ $product->price }}, image: '{{ $imgArr }}'})" 
                             class="flex-grow h-20 bg-slate-900 text-white text-xl font-black rounded-3xl shadow-xl shadow-slate-100 hover:bg-orange-600 hover:shadow-orange-100 transition-all flex items-center justify-center gap-4 group active:scale-95">

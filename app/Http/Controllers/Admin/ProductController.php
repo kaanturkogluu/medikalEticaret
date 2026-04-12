@@ -48,6 +48,58 @@ class ProductController extends Controller
         ]);
     }
 
+    public function create()
+    {
+        $brands = Brand::orderBy('name')->get();
+        $categories = \App\Models\Category::orderBy('name')->get();
+        
+        return view('admin.products.create', [
+            'brands' => $brands,
+            'categories' => $categories
+        ]);
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'sku' => 'nullable|string|max:100|unique:products,sku',
+            'barcode' => 'nullable|string|max:100',
+            'price' => 'required|numeric|min:0',
+            'stock' => 'required|integer|min:0',
+            'description' => 'nullable|string',
+            'active' => 'boolean',
+            'brand_id' => 'nullable|exists:brands,id',
+            'category_id' => 'nullable|exists:categories,id',
+            'marketplace_urls' => 'nullable|array',
+        ]);
+
+        if ($request->filled('brand_id')) {
+            $brand = Brand::find($request->brand_id);
+            if ($brand) {
+                $validated['brand_name'] = $brand->name;
+            }
+        }
+
+        if ($request->filled('category_id')) {
+            $cat = \App\Models\Category::find($request->category_id);
+            if ($cat) {
+                $validated['category_name'] = $cat->name;
+            }
+        }
+
+        $validated['active'] = $request->has('active');
+        
+        // Handle Marketplace URLs
+        $validated['raw_marketplace_data'] = [
+            'custom_urls' => $request->input('marketplace_urls', [])
+        ];
+
+        Product::create($validated);
+
+        return redirect()->route('admin.products')->with('success', 'Ürün başarıyla oluşturuldu.');
+    }
+
     public function togglePopular(Product $product)
     {
         $product->is_popular = !$product->is_popular;

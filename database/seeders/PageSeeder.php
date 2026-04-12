@@ -100,14 +100,15 @@ class PageSeeder extends Seeder
                 'content' => '
                     <h3 class="text-xl font-bold mb-4 italic uppercase">Hızlı Teslimat Güvencesi</h3>
                     <p class="mb-4 text-slate-600 leading-relaxed italic">Siparişleriniz, stokta olması durumunda 24 saat içinde işleme alınır. Türkiye genelinde kargo süresi ortalama 1-4 iş günüdür.</p>
-                    <p class="text-slate-600 italic">Belirli bir tutarın üzerindeki alışverişlerde kargo ücretsizdir.</p>
+                    <p class="text-slate-600 italic">Sitemiz üzerinden yapacağınız <strong>700 TL ve üzeri</strong> alışverişlerde kargo ücretsizdir.</p>
                 '
             ],
             [
                 'title' => 'Ödeme Politikası',
                 'content' => '
                     <h3 class="text-xl font-bold mb-4 italic uppercase">Güvenli Ödeme Kanalları</h3>
-                    <p class="mb-4 text-slate-600 leading-relaxed italic italic">Sitemizde SSL sertifikası (256-bit) ile yüksek güvenlikli ödeme altyapısı kullanılmaktadır. Ödemelerinizi kredi kartı, banka kartı veya havale yoluyla güvenle gerçekleştirebilirsiniz.</p>
+                    <p class="mb-4 text-slate-600 leading-relaxed italic italic">Sitemizde SSL sertifikası (256-bit) ile yüksek güvenlikli ödeme altyapısı kullanılmaktadır. Ödemelerinizi kredi kartı, banka kartı veya Havale/EFT yoluyla güvenle gerçekleştirebilirsiniz.</p>
+                    <p class="text-slate-600 italic font-bold">Havale/EFT ile yapılan ödemelerde anında %5 indirim uygulanmaktadır.</p>
                 '
             ],
             [

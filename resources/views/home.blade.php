@@ -266,10 +266,8 @@
             
             <!-- Left Sidebar Filters -->
             <aside class="w-full lg:w-64 flex-shrink-0 hidden lg:block sticky top-40 h-fit self-start">
-                <h3 class="text-lg font-bold mb-4">Filtreler</h3>
                 
-
-                <div class="filter-section" x-data="{ brandSearch: '' }">
+                <div class="filter-section border-t-0 pt-0" x-data="{ brandSearch: '' }">
                     <div class="filter-title">Markalar</div>
                     <div class="mb-3 relative">
                         <input type="text" x-model="brandSearch" @input="brandSearch = $event.target.value" placeholder="Marka ara..." class="w-full pl-8 p-2 text-xs border border-gray-200 rounded focus:outline-none focus:border-[var(--primary-color)] transition-colors">
@@ -342,7 +340,9 @@
                                     @if($product->stock > 0)
                                         <div class="badge-free-shipping">HIZLI TESLİMAT</div>
                                     @endif
-                                    <div class="bg-white text-[9px] font-bold px-2 py-0.5 rounded shadow-sm border border-gray-100 w-fit">KARGO BEDAVA</div>
+                                    @if($product->price >= 700)
+                                        <div class="bg-white text-[9px] font-bold px-2 py-0.5 rounded shadow-sm border border-gray-100 w-fit">KARGO BEDAVA</div>
+                                    @endif
                                 </div>
                             </div>
                             
@@ -360,7 +360,11 @@
                                 </div>
 
                                 <div class="mt-2">
-                                    <div class="text-[var(--primary-color)] font-black text-base">{{ number_format($product->price, 2) }} TL</div>
+                                    <div class="text-[10px] text-gray-400 line-through font-bold opacity-60">{{ number_format($product->price * 1.2, 2) }} TL</div>
+                                    <div class="flex items-center justify-between">
+                                        <div class="text-[var(--primary-color)] font-black text-base">{{ number_format($product->price, 2) }} TL</div>
+                                        <div class="text-[9px] font-black text-green-600 bg-green-50 px-1.5 py-0.5 rounded tracking-tighter uppercase italic">EFT -%5</div>
+                                    </div>
                                 </div>
                                 
                                 <button @click="$store.cart.add({id: '{{ $product->id }}', slug: '{{ $product->slug }}', name: '{{ addslashes($product->name) }}', brand: '{{ addslashes($product->brand->name ?? '') }}', price: {{ $product->price }}, image: '{{ $img }}'})" class="w-full mt-3 py-2 bg-slate-900 text-white text-[11px] font-black rounded hover:bg-slate-800 transition-colors uppercase tracking-widest">

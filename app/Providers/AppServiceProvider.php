@@ -19,6 +19,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        \Carbon\Carbon::setLocale(config('app.locale'));
+        setlocale(LC_TIME, 'tr_TR.UTF-8', 'tr_TR', 'turkish');
+        
         \Illuminate\Pagination\Paginator::useTailwind();
 
         view()->composer(['layouts.app', 'home'], function ($view) {

@@ -29,7 +29,7 @@
             <div class="flex items-center gap-8 text-xs text-gray-500 font-medium">
                 <div>
                     <span class="text-[10px] text-gray-400 font-bold uppercase tracking-widest block">Sipariş Tarihi</span>
-                    <span class="text-gray-700 font-semibold">{{ $order->created_at->format('d M Y') }}</span>
+                    <span class="text-gray-700 font-semibold">{{ $order->created_at->translatedFormat('d F Y') }}</span>
                 </div>
                 <div>
                     <span class="text-[10px] text-gray-400 font-bold uppercase tracking-widest block">Sipariş Özeti</span>

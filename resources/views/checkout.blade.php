@@ -32,7 +32,8 @@
                         </div>
                         <div class="space-y-2">
                             <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Telefon</label>
-                            <input type="tel" x-model="form.phone" class="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-sm font-bold focus:outline-none focus:ring-4 focus:ring-slate-900/5 focus:border-slate-900 transition-all">
+                            <input type="tel" x-model="form.phone" @input="formatPhone($event)" maxlength="15" placeholder="05XX XXX XX XX" class="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-sm font-bold focus:outline-none focus:ring-4 focus:ring-slate-900/5 focus:border-slate-900 transition-all">
+                            <span class="text-[9px] text-gray-400 px-1 font-medium">Lütfen 11 haneli telefon numaranızı giriniz.</span>
                         </div>
                         <div class="space-y-2">
                             <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">İl</label>
@@ -45,7 +46,17 @@
                         </div>
                         <div class="space-y-2">
                             <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">İlçe</label>
-                            <input type="text" x-model="form.district" class="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-sm font-bold focus:outline-none focus:ring-4 focus:ring-slate-900/5 focus:border-slate-900 transition-all">
+                            <template x-if="filteredDistricts.length > 0">
+                                <select x-model="form.district" class="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-sm font-bold focus:outline-none focus:ring-4 focus:ring-slate-900/5 focus:border-slate-900 transition-all appearance-none">
+                                    <option value="">İlçe Seçiniz</option>
+                                    <template x-for="dist in filteredDistricts" :key="dist">
+                                        <option :value="dist" x-text="dist"></option>
+                                    </template>
+                                </select>
+                            </template>
+                            <template x-if="filteredDistricts.length === 0">
+                                <input type="text" x-model="form.district" placeholder="İlçe adını yazınız" class="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-sm font-bold focus:outline-none focus:ring-4 focus:ring-slate-900/5 focus:border-slate-900 transition-all">
+                            </template>
                         </div>
                         <div class="md:col-span-2 space-y-2">
                             <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Açık Adres</label>
@@ -150,9 +161,16 @@
                         </div>
                     </div>
 
+                    <div class="bg-amber-50 border border-amber-100 p-4 rounded-2xl mb-8">
+                        <p class="text-[10px] text-amber-800 leading-relaxed font-bold italic">
+                            <i class="fas fa-exclamation-triangle mr-1"></i>
+                            UYARI: Girilen bilgilerin yükümlülüğü tamamen kullanıcıya aittir. Hatalı girilen bilgilerden doğabilecek aksaklıkların sorumluluğu firmaya atfedilemez.
+                        </p>
+                    </div>
+
                     <button @click="submitOrder" 
                             :disabled="loading || cart.items.length === 0"
-                            class="w-full mt-10 py-5 bg-slate-900 text-white rounded-[25px] font-black italic shadow-xl shadow-slate-900/20 hover:bg-orange-600 transition-all flex items-center justify-center gap-3 active:scale-95 disabled:opacity-50 group">
+                            class="w-full py-5 bg-slate-900 text-white rounded-[25px] font-black italic shadow-xl shadow-slate-900/20 hover:bg-orange-600 transition-all flex items-center justify-center gap-3 active:scale-95 disabled:opacity-50 group">
                         <span x-text="loading ? 'İşleniyor...' : 'SİPARİŞİ TAMAMLA'"></span>
                         <i class="fas fa-chevron-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
                     </button>
@@ -170,6 +188,17 @@ function checkoutPage() {
         cart: null,
         loading: false,
         cities: ["Adana", "Adıyaman", "Afyonkarahisar", "Ağrı", "Amasya", "Ankara", "Antalya", "Artvin", "Aydın", "Balıkesir", "Bilecik", "Bingöl", "Bitlis", "Bolu", "Burdur", "Bursa", "Çanakkale", "Çankırı", "Çorum", "Denizli", "Diyarbakır", "Edirne", "Elazığ", "Erzincan", "Erzurum", "Eskişehir", "Gaziantep", "Giresun", "Gümüşhane", "Hakkari", "Hatay", "Isparta", "Mersin", "İstanbul", "İzmir", "Kars", "Kastamonu", "Kayseri", "Kırklareli", "Kırşehir", "Kocaeli", "Konya", "Kütahya", "Malatya", "Manisa", "Kahramanmaraş", "Mardin", "Muğla", "Muş", "Nevşehir", "Niğde", "Ordu", "Rize", "Sakarya", "Samsun", "Siirt", "Sinop", "Sivas", "Tekirdağ", "Tokat", "Trabzon", "Tunceli", "Şanlıurfa", "Uşak", "Van", "Yozgat", "Zonguldak", "Aksaray", "Bayburt", "Karaman", "Kırıkkale", "Batman", "Şırnak", "Bartın", "Ardahan", "Iğdır", "Yalova", "Karabük", "Kilis", "Osmaniye", "Düzce"],
+        allDistricts: {
+            "İstanbul": ["Adalar", "Arnavutköy", "Ataşehir", "Avcılar", "Bağcılar", "Bahçelievler", "Bakırköy", "Başakşehir", "Bayrampaşa", "Beşiktaş", "Beykoz", "Beylikdüzü", "Beyoğlu", "Büyükçekmece", "Çatalca", "Çekmeköy", "Esenler", "Esenyurt", "Eyüpsultan", "Fatih", "Gaziosmanpaşa", "Güngören", "Kadıköy", "Kağıthane", "Kartal", "Küçükçekmece", "Maltepe", "Pendik", "Sancaktepe", "Sarıyer", "Silivri", "Sultanbeyli", "Sultangazi", "Şile", "Şişli", "Tuzla", "Ümraniye", "Üsküdar", "Zeytinburnu"],
+            "Ankara": ["Akyurt", "Altındağ", "Ayaş", "Bala", "Beypazarı", "Çamlıdere", "Çankaya", "Çubuk", "Elmadağ", "Etimesgut", "Evren", "Gölbaşı", "Güdül", "Haymana", "Kahramankazan", "Kalecik", "Keçiören", "Kızılcahamam", "Mamak", "Nallıhan", "Polatlı", "Pursaklar", "Sincan", "Şereflikoçhisar", "Yenimahalle"],
+            "İzmir": ["Aliağa", "Balçova", "Bayındır", "Bayraklı", "Bergama", "Beydağ", "Bornova", "Buca", "Çeşme", "Çiğli", "Dikili", "Foça", "Gaziemir", "Güzelbahçe", "Karabağlar", "Karaburun", "Karşıyaka", "Kemalpaşa", "Kınık", "Kiraz", "Konak", "Menderes", "Menemen", "Narlıdere", "Ödemiş", "Seferihisar", "Selçuk", "Tire", "Torbalı", "Urla"],
+            "Bursa": ["Büyükorhan", "Gemlik", "Gürsu", "Harmancık", "İnegöl", "İznik", "Karacabey", "Keles", "Kestel", "Mudanya", "Mustafakemalpaşa", "Nilüfer", "Orhaneli", "Orhangazi", "Osmangazi", "Yenişehir", "Yıldırım"],
+            "Antalya": ["Akseki", "Aksu", "Alanya", "Demre", "Döşemealtı", "Elmalı", "Finike", "Gazipaşa", "Gündoğmuş", "İbradı", "Kaş", "Kemer", "Kepez", "Konyaaltı", "Korkuteli", "Kumluca", "Manavgat", "Muratpaşa", "Serik"]
+            // Diğer iller için placeholder veya tam liste eklenebilir, şimdilik en büyükleri ekledim.
+        },
+        get filteredDistricts() {
+            return this.allDistricts[this.form.city] || [];
+        },
         form: {
             first_name: '{{ auth()->check() ? explode(" ", auth()->user()->name)[0] : "" }}',
             last_name: '{{ auth()->check() ? (count(explode(" ", auth()->user()->name)) > 1 ? explode(" ", auth()->user()->name)[1] : "") : "" }}',
@@ -194,9 +223,49 @@ function checkoutPage() {
             }
             return total.toFixed(2);
         },
+        formatPhone(e) {
+            let x = e.target.value.replace(/\D/g, '').match(/(\d{0,4})(\d{0,3})(\d{0,2})(\d{0,2})/);
+            if (!x[2]) {
+                e.target.value = x[1];
+            } else {
+                e.target.value = x[1] + ' ' + x[2] + (x[3] ? ' ' + x[3] : '') + (x[4] ? ' ' + x[4] : '');
+            }
+            this.form.phone = e.target.value;
+        },
         async submitOrder() {
-            if (!this.form.first_name || !this.form.last_name || !this.form.email || !this.form.address || !this.form.city) {
-                alert('Lütfen tüm zorunlu alanları doldurun.');
+            // Detailed field check
+            const labels = {
+                first_name: 'Adınız',
+                last_name: 'Soyadınız',
+                email: 'E-Posta Adresiniz',
+                phone: 'Telefon Numaranız',
+                city: 'İl',
+                district: 'İlçe',
+                address: 'Açık Adres'
+            };
+
+            for (const field in labels) {
+                if (!this.form[field]) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Eksik Bilgi',
+                        text: `Lütfen "${labels[field]}" alanını doldurun.`,
+                        confirmButtonText: 'Tamam',
+                        confirmButtonColor: '#0f172a'
+                    });
+                    return;
+                }
+            }
+
+            const phoneRegex = /^(\+90|0)?5[0-9]{9}$/;
+            if (!phoneRegex.test(this.form.phone.replace(/\s/g, ''))) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Geçersiz Numara',
+                    text: 'Lütfen geçerli bir telefon numarası giriniz.',
+                    confirmButtonText: 'Tamam',
+                    confirmButtonColor: '#0f172a'
+                });
                 return;
             }
 
@@ -210,20 +279,41 @@ function checkoutPage() {
                     },
                     body: JSON.stringify({
                         ...this.form,
+                        phone: this.form.phone.replace(/\s/g, ''),
                         cart_items: this.cart.items
                     })
                 });
 
                 const result = await response.json();
                 if (result.success) {
-                    alert(result.message);
-                    localStorage.removeItem('cart_items');
-                    window.location.href = '/hesabim/siparislerim';
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Başarılı!',
+                        text: result.message,
+                        confirmButtonText: 'Tamam',
+                        confirmButtonColor: '#0f172a'
+                    }).then(() => {
+                        this.cart.items = [];
+                        localStorage.removeItem('cart_items');
+                        window.location.href = '/hesabim/siparislerim';
+                    });
                 } else {
-                    alert(result.message);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Hata',
+                        text: result.message,
+                        confirmButtonText: 'Tamam',
+                        confirmButtonColor: '#0f172a'
+                    });
                 }
             } catch (e) {
-                alert('Sipariş gönderilirken bir hata oluştu.');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Sistemsel Hata',
+                    text: 'Sipariş gönderilirken bir hata oluştu.',
+                    confirmButtonText: 'Tamam',
+                    confirmButtonColor: '#0f172a'
+                });
                 console.error(e);
             } finally {
                 this.loading = false;

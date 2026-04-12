@@ -17,12 +17,12 @@ class FaqSeeder extends Seeder
             ],
             [
                 'question' => 'Kargo ücreti ne kadar?',
-                'answer' => "umutMed Market üzerinden yapacağınız 500 TL ve üzeri alışverişlerinizde kargo ücretsizdir. Bu tutarın altındaki siparişlerinizde standart kargo ücreti uygulanmaktadır.",
+                'answer' => "Marketimiz üzerinden yapacağınız 700 TL ve üzeri alışverişlerinizde kargo ücretsizdir. 700 TL altındaki siparişlerinizde ise 89 TL standart kargo ücreti uygulanmaktadır.",
                 'order_index' => 2
             ],
             [
                 'question' => 'İade ve değişim şartları nelerdir?',
-                'answer' => "Satın aldığınız ürünü, ambalajı açılmamış ve kullanılmamış olması şartıyla 14 gün içerisinde ücretsiz olarak iade edebilirsiniz. Hijyenik ürünlerde ambalajı açılmış ürünlerin iadesi kabul edilememektedir.",
+                'answer' => "Satın aldığınız ürünü, orijinal ambalajı açılmamış, bozulmamış ve tarafınızca kullanılmamış olması şartıyla 14 gün içerisinde iade edebilirsiniz. İade talebi oluştururken ürünün mevcut durumunu gösteren net bir fotoğrafını sisteme yüklemeniz ve orijinal faturası ile birlikte göndermeniz zorunludur. Hijyenik veya tek kullanımlık ürünlerde ambalajı açılmış ürünlerin iadesi yasal mevzuat gereği kabul edilememektedir.",
                 'order_index' => 3
             ],
             [

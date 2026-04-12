@@ -57,7 +57,7 @@
                     </span>
                 </div>
                 <p class="text-sm font-semibold text-gray-800">{{ $order->customer_name }}</p>
-                <p class="text-xs text-gray-400">{{ $order->created_at->format('d M Y') }}</p>
+                <p class="text-xs text-gray-400">{{ $order->created_at->translatedFormat('d F Y') }}</p>
             </div>
             <div class="text-right flex-shrink-0">
                 <p class="font-black text-orange-500 text-lg">{{ number_format($order->total_price, 2, ',', '.') }} TL</p>

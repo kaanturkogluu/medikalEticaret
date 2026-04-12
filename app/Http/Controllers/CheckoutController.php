@@ -22,7 +22,7 @@ class CheckoutController extends Controller
             'first_name' => 'required|string|max:50',
             'last_name' => 'required|string|max:50',
             'email' => 'required|email|max:100',
-            'phone' => 'required|string|max:20',
+            'phone' => ['required', 'string', 'regex:/^(\+90|0)?5[0-9]{9}$/'],
             'city' => 'required|string',
             'district' => 'required|string',
             'address' => 'required|string',

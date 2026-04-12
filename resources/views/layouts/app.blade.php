@@ -257,49 +257,93 @@
                                     <a href="{{ route('admin.dashboard') }}"
                                         class="flex items-center gap-2 hover:text-[var(--primary-color)] group">
                                         <i class="fas fa-cog text-lg text-gray-400 group-hover:text-[var(--primary-color)]"></i>
-                                        <span class="hidden lg:inline">Yönetim Paneli</span>
+                                        <span class="hidden lg:inline uppercase tracking-tighter italic">Yönetim</span>
                                     </a>
                                 @else
-                                    <div class="relative" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false">
+                                    <div class="relative group" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false">
                                         <a href="{{ route('user.dashboard') }}"
-                                            class="flex items-center gap-2 hover:text-[var(--primary-color)] group">
+                                            class="flex items-center gap-2 hover:text-[var(--primary-color)] transition-colors py-4">
                                             <i class="far fa-user text-lg text-gray-400 group-hover:text-[var(--primary-color)]"></i>
-                                            <span class="hidden lg:inline">Hesabım</span>
+                                            <span class="hidden lg:inline uppercase tracking-tighter italic">Hesabım</span>
+                                            <i class="fas fa-chevron-down text-[8px] opacity-30 group-hover:rotate-180 transition-transform"></i>
                                         </a>
+                                        
+                                        <!-- Dropdown Menu -->
                                         <div x-show="open" 
                                              x-transition:enter="transition ease-out duration-200"
-                                             x-transition:enter-start="opacity-0 translate-y-2"
+                                             x-transition:enter-start="opacity-0 translate-y-4"
                                              x-transition:enter-end="opacity-100 translate-y-0"
                                              x-cloak 
-                                             class="absolute top-full -left-4 w-48 bg-white shadow-2xl rounded-2xl py-3 mt-2 z-50 border border-gray-100">
-                                            <a href="{{ route('user.dashboard') }}" class="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 text-xs transition-colors">
-                                                <i class="fas fa-th-large w-4 text-gray-400"></i> Genel Bakış
+                                             class="absolute top-full -left-10 w-60 bg-white shadow-[0_20px_50px_rgba(0,0,0,0.15)] rounded-2xl py-3 transform z-[100] border border-slate-50">
+                                            
+                                            <!-- Invisible Bridge -->
+                                            <div class="absolute w-full h-6 -top-6 bg-transparent"></div>
+                                            
+                                            <div class="px-4 py-2 mb-2 border-b border-slate-50">
+                                                <p class="text-[10px] text-slate-400 font-black uppercase tracking-widest italic">Hoş Geldiniz</p>
+                                                <p class="text-xs font-black text-slate-900 truncate uppercase mt-0.5">{{ auth()->user()->name }}</p>
+                                            </div>
+
+                                            <a href="{{ route('user.dashboard') }}" class="flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 text-[11px] font-black uppercase italic tracking-tighter transition-colors group/item">
+                                                <div class="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center group-hover/item:bg-white transition-colors">
+                                                    <i class="fas fa-th-large text-gray-400 group-hover/item:text-slate-900"></i>
+                                                </div>
+                                                Hesap Özeti
                                             </a>
-                                            <a href="{{ route('user.orders') }}" class="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 text-xs transition-colors">
-                                                <i class="fas fa-box w-4 text-gray-400"></i> Siparişlerim
+                                            <a href="{{ route('user.orders') }}" class="flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 text-[11px] font-black uppercase italic tracking-tighter transition-colors group/item">
+                                                <div class="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center group-hover/item:bg-white transition-colors">
+                                                    <i class="fas fa-box text-gray-400 group-hover/item:text-slate-900"></i>
+                                                </div>
+                                                Siparişlerim
                                             </a>
-                                            <a href="{{ route('user.addresses') }}" class="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 text-xs transition-colors">
-                                                <i class="fas fa-map-marker-alt w-4 text-gray-400"></i> Adreslerim
+                                            <a href="{{ route('user.addresses') }}" class="flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 text-[11px] font-black uppercase italic tracking-tighter transition-colors group/item">
+                                                <div class="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center group-hover/item:bg-white transition-colors">
+                                                    <i class="fas fa-map-marker-alt text-gray-400 group-hover/item:text-slate-900"></i>
+                                                </div>
+                                                Adreslerim
                                             </a>
-                                            <a href="{{ route('user.comments') }}" class="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 text-xs transition-colors">
-                                                <i class="fas fa-comment w-4 text-gray-400"></i> Yorumlarım
+                                            <a href="{{ route('user.comments') }}" class="flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 text-[11px] font-black uppercase italic tracking-tighter transition-colors group/item">
+                                                <div class="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center group-hover/item:bg-white transition-colors">
+                                                    <i class="fas fa-comment text-gray-400 group-hover/item:text-slate-900"></i>
+                                                </div>
+                                                Yorumlarım
                                             </a>
-                                            <div class="my-2 border-t border-gray-50"></div>
+                                            
+                                            <div class="my-2 border-t border-slate-50"></div>
+                                            
                                             <form action="{{ route('logout') }}" method="POST">
                                                 @csrf
-                                                <button type="submit" class="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-red-50 text-xs text-red-500 transition-colors font-black">
-                                                    <i class="fas fa-sign-out-alt w-4"></i> Çıkış Yap
+                                                <button type="submit" class="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-red-50 text-[11px] font-black uppercase italic tracking-tighter text-red-500 transition-colors group/item">
+                                                    <div class="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center group-hover/item:bg-white transition-colors text-red-400">
+                                                        <i class="fas fa-sign-out-alt"></i>
+                                                    </div>
+                                                    Güvenli Çıkış
                                                 </button>
                                             </form>
                                         </div>
                                     </div>
                                 @endif
                             @else
-                                <a href="{{ route('login') }}"
-                                    class="flex items-center gap-2 hover:text-[var(--primary-color)] group">
-                                <i class="far fa-user text-lg text-gray-400 group-hover:text-[var(--primary-color)]"></i>
-                                <span class="hidden lg:inline">Giriş Yap</span>
-                                </a>
+                                <div class="relative group" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false">
+                                    <a href="{{ route('login') }}" class="flex items-center gap-2 hover:text-[var(--primary-color)] transition-colors py-4">
+                                        <i class="far fa-user text-lg text-gray-400 group-hover:text-[var(--primary-color)]"></i>
+                                        <span class="hidden lg:inline uppercase tracking-tighter italic">Giriş Yap</span>
+                                    </a>
+
+                                    <!-- Guest Dropdown -->
+                                    <div x-show="open" 
+                                         x-transition:enter="transition ease-out duration-200"
+                                         x-transition:enter-start="opacity-0 translate-y-4"
+                                         x-transition:enter-end="opacity-100 translate-y-0"
+                                         x-cloak 
+                                         class="absolute top-full -left-10 w-48 bg-white shadow-[0_20px_50px_rgba(0,0,0,0.15)] rounded-2xl p-4 transform z-[100] border border-slate-50">
+                                        
+                                        <div class="absolute w-full h-6 -top-6 bg-transparent"></div>
+
+                                        <a href="{{ route('login') }}" class="block w-full text-center py-2.5 bg-slate-900 text-white rounded-xl text-[11px] font-black uppercase italic tracking-tighter hover:bg-orange-600 transition-all mb-2">Giriş Yap</a>
+                                        <a href="{{ route('register') }}" class="block w-full text-center py-2.5 bg-slate-50 text-slate-900 rounded-xl text-[11px] font-black uppercase italic tracking-tighter border border-slate-100 hover:bg-slate-100 transition-all">Üye Ol</a>
+                                    </div>
+                                </div>
                             @endauth
                         @else
                             <a href="{{ route('admin.dashboard') }}"
