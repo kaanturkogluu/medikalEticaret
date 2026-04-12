@@ -7,6 +7,13 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+    <!-- Select2 -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
     <style>
         body { font-family: 'Inter', sans-serif; background: #f8fafc; }
         .sidebar-card { background: white; border: 1px solid #f1f5f9; border-radius: 1.5rem; box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1); }
@@ -25,6 +32,7 @@
         .nav-link.active { background-color: #fff7ed; color: #f27a1a; font-weight: 700; }
         .nav-link i { width: 1.25rem; text-align: center; font-size: 1.1rem; }
     </style>
+    @yield('styles')
 </head>
 <body class="min-h-screen flex flex-col bg-[#f8fafc]">
 

@@ -53,22 +53,33 @@ class UserController extends Controller
     public function addresses()
     {
         $addresses = UserAddress::where('user_id', Auth::id())->get();
-        return view('user.addresses', compact('addresses'));
+        $provinces = \App\Models\Province::orderBy('name')->get();
+        return view('user.addresses', compact('addresses', 'provinces'));
     }
 
     public function addressStore(Request $request)
     {
         $request->validate([
-            'title'     => 'required|string|max:100',
-            'full_name' => 'required|string|max:255',
-            'phone'     => 'required|string|max:20',
-            'city'      => 'required|string|max:100',
-            'district'  => 'required|string|max:100',
-            'address'   => 'required|string',
+            'title'             => 'required|string|max:100',
+            'full_name'         => 'required|string|max:255',
+            'phone'             => 'required|string|max:20',
+            'city_name'         => 'required|string|max:100',
+            'district_name'     => 'required|string|max:100',
+            'neighborhood_name' => 'required|string|max:100',
+            'address'           => 'required|string',
         ]);
 
-        $data = $request->only(['title', 'full_name', 'phone', 'city', 'district', 'address', 'zip_code']);
-        $data['user_id'] = Auth::id();
+        $data = [
+            'user_id'      => Auth::id(),
+            'title'        => $request->title,
+            'full_name'    => $request->full_name,
+            'phone'        => $request->phone,
+            'city'         => $request->city_name,
+            'district'     => $request->district_name,
+            'neighborhood' => $request->neighborhood_name,
+            'address'      => $request->address,
+            'zip_code'     => $request->zip_code,
+        ];
 
         if ($request->boolean('is_default')) {
             UserAddress::where('user_id', Auth::id())->update(['is_default' => false]);

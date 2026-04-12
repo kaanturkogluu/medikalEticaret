@@ -7,6 +7,8 @@ use App\Http\Controllers\Auth\LoginController;
 Route::get('/', [\App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::get('/urun/{product}', [\App\Http\Controllers\HomeController::class, 'show'])->name('product.show');
 Route::get('/favorites', [\App\Http\Controllers\HomeController::class, 'favorites'])->name('favorites');
+Route::get('/location/districts/{province}', [\App\Http\Controllers\LocationController::class, 'getDistricts'])->name('location.districts');
+Route::get('/location/neighborhoods/{district}', [\App\Http\Controllers\LocationController::class, 'getNeighborhoods'])->name('location.neighborhoods');
 
 // Checkout
 Route::get('/odeme', [\App\Http\Controllers\CheckoutController::class, 'index'])->name('checkout');

@@ -27,7 +27,7 @@
                 </div>
             </div>
             <p class="text-sm text-gray-600 leading-relaxed">{{ $address->address }}</p>
-            <p class="text-sm text-gray-500 mt-1 font-medium">{{ $address->district }} / {{ $address->city }}</p>
+            <p class="text-sm text-gray-500 mt-1 font-medium">{{ $address->neighborhood }} {{ $address->district }} / {{ $address->city }}</p>
             <p class="text-sm text-gray-400">{{ $address->phone }}</p>
 
             <form action="{{ route('user.addresses.destroy', $address->id) }}" method="POST" class="mt-4">
@@ -71,21 +71,27 @@
                     </div>
                     <div>
                         <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">İl</label>
-                        <select name="city" required
-                            class="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-xs font-medium focus:outline-none focus:border-orange-400 transition-all bg-white">
+                        <select name="city" id="city_select" required
+                            class="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-xs font-medium focus:outline-none focus:border-orange-400 transition-all bg-white select2">
                             <option value="">Seçiniz</option>
-                            @php
-                                $cities = ["Adana", "Adıyaman", "Afyonkarahisar", "Ağrı", "Amasya", "Ankara", "Antalya", "Artvin", "Aydın", "Balıkesir", "Bilecik", "Bingöl", "Bitlis", "Bolu", "Burdur", "Bursa", "Çanakkale", "Çankırı", "Çorum", "Denizli", "Diyarbakır", "Edirne", "Elazığ", "Erzincan", "Erzurum", "Eskişehir", "Gaziantep", "Giresun", "Gümüşhane", "Hakkari", "Hatay", "Isparta", "Mersin", "İstanbul", "İzmir", "Kars", "Kastamonu", "Kayseri", "Kırklareli", "Kırşehir", "Kocaeli", "Konya", "Kütahya", "Malatya", "Manisa", "Kahramanmaraş", "Mardin", "Muğla", "Muş", "Nevşehir", "Niğde", "Ordu", "Rize", "Sakarya", "Samsun", "Siirt", "Sinop", "Sivas", "Tekirdağ", "Tokat", "Trabzon", "Tunceli", "Şanlıurfa", "Uşak", "Van", "Yozgat", "Zonguldak", "Aksaray", "Bayburt", "Karaman", "Kırıkkale", "Batman", "Şırnak", "Bartın", "Ardahan", "Iğdır", "Yalova", "Karabük", "Kilis", "Osmaniye", "Düzce"];
-                            @endphp
-                            @foreach($cities as $city)
-                                <option value="{{ $city }}" {{ old('city') == $city ? 'selected' : '' }}>{{ $city }}</option>
+                            @foreach($provinces as $province)
+                                <option value="{{ $province->id }}" data-name="{{ $province->name }}" {{ old('city') == $province->name ? 'selected' : '' }}>{{ $province->name }}</option>
                             @endforeach
                         </select>
                     </div>
                     <div>
                         <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">İlçe</label>
-                        <input type="text" name="district" value="{{ old('district') }}" required
-                            class="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-xs font-medium focus:outline-none focus:border-orange-400 transition-all">
+                        <select name="district" id="district_select" required disabled
+                            class="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-xs font-medium focus:outline-none focus:border-orange-400 transition-all bg-white select2">
+                            <option value="">Önce İl Seçiniz</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Mahalle</label>
+                        <select name="neighborhood" id="neighborhood_select" required disabled
+                            class="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-xs font-medium focus:outline-none focus:border-orange-400 transition-all bg-white select2">
+                            <option value="">Önce İlçe Seçiniz</option>
+                        </select>
                     </div>
                     <div>
                         <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Posta Kodu</label>
@@ -102,6 +108,11 @@
                     <input type="checkbox" name="is_default" value="1" class="w-4 h-4 text-orange-500 rounded focus:ring-orange-400">
                     <span class="text-xs font-medium text-gray-600">Varsayılan adres olarak belirle</span>
                 </label>
+                {{-- Hidden fields for names as we store names in user_addresses --}}
+                <input type="hidden" name="city_name" id="city_name">
+                <input type="hidden" name="district_name" id="district_name">
+                <input type="hidden" name="neighborhood_name" id="neighborhood_name">
+
                 <button type="submit" class="w-full py-3 bg-orange-500 text-white text-xs font-black rounded-xl hover:bg-orange-600 transition-all">
                     <i class="fas fa-plus mr-2"></i> Adresi Kaydet
                 </button>
@@ -109,4 +120,77 @@
         </div>
     </div>
 </div>
+
 @endsection
+
+@section('scripts')
+<script>
+$(document).ready(function() {
+    $('.select2').select2({
+        width: '100%',
+        language: {
+            noResults: function() {
+                return "Sonuç bulunamadı";
+            }
+        }
+    });
+
+    $('#city_select').on('change', function() {
+        const provinceId = $(this).val();
+        const provinceName = $(this).find(':selected').data('name');
+        $('#city_name').val(provinceName);
+        
+        $('#district_select').prop('disabled', true).html('<option value="">Yükleniyor...</option>');
+        $('#neighborhood_select').prop('disabled', true).html('<option value="">Önce İlçe Seçiniz</option>');
+        
+        if (provinceId) {
+            $.get(`/location/districts/${provinceId}`, function(data) {
+                let options = '<option value="">İlçe Seçiniz</option>';
+                data.forEach(function(district) {
+                    options += `<option value="${district.id}" data-name="${district.name}">${district.name}</option>`;
+                });
+                $('#district_select').html(options).prop('disabled', false).trigger('change');
+            });
+        } else {
+            $('#district_select').html('<option value="">Önce İl Seçiniz</option>').prop('disabled', true);
+        }
+    });
+
+    $('#district_select').on('change', function() {
+        const districtId = $(this).val();
+        const districtName = $(this).find(':selected').data('name');
+        $('#district_name').val(districtName);
+
+        $('#neighborhood_select').prop('disabled', true).html('<option value="">Yükleniyor...</option>');
+        
+        if (districtId) {
+            $.get(`/location/neighborhoods/${districtId}`, function(data) {
+                let options = '<option value="">Mahalle Seçiniz</option>';
+                data.forEach(function(neighborhood) {
+                    options += `<option value="${neighborhood.id}" data-name="${neighborhood.name}">${neighborhood.name}</option>`;
+                });
+                $('#neighborhood_select').html(options).prop('disabled', false);
+            });
+        } else {
+            $('#neighborhood_select').html('<option value="">Önce İlçe Seçiniz</option>').prop('disabled', true);
+        }
+    });
+
+    $('#neighborhood_select').on('change', function() {
+        const neighborhoodName = $(this).find(':selected').data('name');
+        $('#neighborhood_name').val(neighborhoodName);
+    });
+});
+</script>
+<style>
+.select2-container--default .select2-selection--single {
+    border: 1px solid #e5e7eb;
+    border-radius: 0.75rem;
+    height: 42px;
+    padding: 6px 4px;
+    font-size: 12px;
+}
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 40px;
+}
+</style>

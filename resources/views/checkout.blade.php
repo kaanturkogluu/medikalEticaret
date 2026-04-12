@@ -37,26 +37,24 @@
                         </div>
                         <div class="space-y-2">
                             <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">İl</label>
-                            <select x-model="form.city" class="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-sm font-bold focus:outline-none focus:ring-4 focus:ring-slate-900/5 focus:border-slate-900 transition-all appearance-none">
+                            <select id="checkout_city" x-model="form.city" class="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-sm font-bold focus:outline-none focus:ring-4 focus:ring-slate-900/5 focus:border-slate-900 transition-all appearance-none select2">
                                 <option value="">İl Seçiniz</option>
-                                <template x-for="city in cities" :key="city">
-                                    <option :value="city" x-text="city"></option>
-                                </template>
+                                @foreach($provinces as $province)
+                                    <option value="{{ $province->id }}" data-name="{{ $province->name }}">{{ $province->name }}</option>
+                                @endforeach
                             </select>
                         </div>
                         <div class="space-y-2">
                             <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">İlçe</label>
-                            <template x-if="filteredDistricts.length > 0">
-                                <select x-model="form.district" class="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-sm font-bold focus:outline-none focus:ring-4 focus:ring-slate-900/5 focus:border-slate-900 transition-all appearance-none">
-                                    <option value="">İlçe Seçiniz</option>
-                                    <template x-for="dist in filteredDistricts" :key="dist">
-                                        <option :value="dist" x-text="dist"></option>
-                                    </template>
-                                </select>
-                            </template>
-                            <template x-if="filteredDistricts.length === 0">
-                                <input type="text" x-model="form.district" placeholder="İlçe adını yazınız" class="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-sm font-bold focus:outline-none focus:ring-4 focus:ring-slate-900/5 focus:border-slate-900 transition-all">
-                            </template>
+                            <select id="checkout_district" x-model="form.district" disabled class="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-sm font-bold focus:outline-none focus:ring-4 focus:ring-slate-900/5 focus:border-slate-900 transition-all appearance-none select2">
+                                <option value="">İlçe Seçiniz</option>
+                            </select>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Mahalle</label>
+                            <select id="checkout_neighborhood" x-model="form.neighborhood" disabled class="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-sm font-bold focus:outline-none focus:ring-4 focus:ring-slate-900/5 focus:border-slate-900 transition-all appearance-none select2">
+                                <option value="">Mahalle Seçiniz</option>
+                            </select>
                         </div>
                         <div class="md:col-span-2 space-y-2">
                             <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Açık Adres</label>
@@ -187,18 +185,6 @@ function checkoutPage() {
     return {
         cart: null,
         loading: false,
-        cities: ["Adana", "Adıyaman", "Afyonkarahisar", "Ağrı", "Amasya", "Ankara", "Antalya", "Artvin", "Aydın", "Balıkesir", "Bilecik", "Bingöl", "Bitlis", "Bolu", "Burdur", "Bursa", "Çanakkale", "Çankırı", "Çorum", "Denizli", "Diyarbakır", "Edirne", "Elazığ", "Erzincan", "Erzurum", "Eskişehir", "Gaziantep", "Giresun", "Gümüşhane", "Hakkari", "Hatay", "Isparta", "Mersin", "İstanbul", "İzmir", "Kars", "Kastamonu", "Kayseri", "Kırklareli", "Kırşehir", "Kocaeli", "Konya", "Kütahya", "Malatya", "Manisa", "Kahramanmaraş", "Mardin", "Muğla", "Muş", "Nevşehir", "Niğde", "Ordu", "Rize", "Sakarya", "Samsun", "Siirt", "Sinop", "Sivas", "Tekirdağ", "Tokat", "Trabzon", "Tunceli", "Şanlıurfa", "Uşak", "Van", "Yozgat", "Zonguldak", "Aksaray", "Bayburt", "Karaman", "Kırıkkale", "Batman", "Şırnak", "Bartın", "Ardahan", "Iğdır", "Yalova", "Karabük", "Kilis", "Osmaniye", "Düzce"],
-        allDistricts: {
-            "İstanbul": ["Adalar", "Arnavutköy", "Ataşehir", "Avcılar", "Bağcılar", "Bahçelievler", "Bakırköy", "Başakşehir", "Bayrampaşa", "Beşiktaş", "Beykoz", "Beylikdüzü", "Beyoğlu", "Büyükçekmece", "Çatalca", "Çekmeköy", "Esenler", "Esenyurt", "Eyüpsultan", "Fatih", "Gaziosmanpaşa", "Güngören", "Kadıköy", "Kağıthane", "Kartal", "Küçükçekmece", "Maltepe", "Pendik", "Sancaktepe", "Sarıyer", "Silivri", "Sultanbeyli", "Sultangazi", "Şile", "Şişli", "Tuzla", "Ümraniye", "Üsküdar", "Zeytinburnu"],
-            "Ankara": ["Akyurt", "Altındağ", "Ayaş", "Bala", "Beypazarı", "Çamlıdere", "Çankaya", "Çubuk", "Elmadağ", "Etimesgut", "Evren", "Gölbaşı", "Güdül", "Haymana", "Kahramankazan", "Kalecik", "Keçiören", "Kızılcahamam", "Mamak", "Nallıhan", "Polatlı", "Pursaklar", "Sincan", "Şereflikoçhisar", "Yenimahalle"],
-            "İzmir": ["Aliağa", "Balçova", "Bayındır", "Bayraklı", "Bergama", "Beydağ", "Bornova", "Buca", "Çeşme", "Çiğli", "Dikili", "Foça", "Gaziemir", "Güzelbahçe", "Karabağlar", "Karaburun", "Karşıyaka", "Kemalpaşa", "Kınık", "Kiraz", "Konak", "Menderes", "Menemen", "Narlıdere", "Ödemiş", "Seferihisar", "Selçuk", "Tire", "Torbalı", "Urla"],
-            "Bursa": ["Büyükorhan", "Gemlik", "Gürsu", "Harmancık", "İnegöl", "İznik", "Karacabey", "Keles", "Kestel", "Mudanya", "Mustafakemalpaşa", "Nilüfer", "Orhaneli", "Orhangazi", "Osmangazi", "Yenişehir", "Yıldırım"],
-            "Antalya": ["Akseki", "Aksu", "Alanya", "Demre", "Döşemealtı", "Elmalı", "Finike", "Gazipaşa", "Gündoğmuş", "İbradı", "Kaş", "Kemer", "Kepez", "Konyaaltı", "Korkuteli", "Kumluca", "Manavgat", "Muratpaşa", "Serik"]
-            // Diğer iller için placeholder veya tam liste eklenebilir, şimdilik en büyükleri ekledim.
-        },
-        get filteredDistricts() {
-            return this.allDistricts[this.form.city] || [];
-        },
         form: {
             first_name: '{{ auth()->check() ? explode(" ", auth()->user()->name)[0] : "" }}',
             last_name: '{{ auth()->check() ? (count(explode(" ", auth()->user()->name)) > 1 ? explode(" ", auth()->user()->name)[1] : "") : "" }}',
@@ -206,10 +192,12 @@ function checkoutPage() {
             phone: '',
             city: '',
             district: '',
+            neighborhood: '',
             address: '',
             payment_method: 'credit_card'
         },
         init() {
+            window.checkoutData = this;
             this.cart = Alpine.store('cart');
             if (this.cart.items.length === 0) {
                 // window.location.href = '/';
@@ -241,6 +229,7 @@ function checkoutPage() {
                 phone: 'Telefon Numaranız',
                 city: 'İl',
                 district: 'İlçe',
+                neighborhood: 'Mahalle',
                 address: 'Açık Adres'
             };
 
@@ -321,5 +310,91 @@ function checkoutPage() {
         }
     }
 }
+
+$(document).ready(function() {
+    $('.select2').select2({
+        width: '100%',
+        language: {
+            noResults: function() {
+                return "Sonuç bulunamadı";
+            }
+        }
+    });
+
+    // Use the global reference we set in Alpine's init()
+    const getAlpineData = () => {
+        return window.checkoutData;
+    };
+
+    $('#checkout_city').on('change', function() {
+        const provinceId = $(this).val();
+        const provinceName = $(this).find(':selected').data('name');
+        const data = getAlpineData();
+        if (!data) return;
+        
+        data.form.city = provinceName;
+        data.form.district = '';
+        data.form.neighborhood = '';
+        
+        $('#checkout_district').prop('disabled', true).html('<option value="">Yükleniyor...</option>').trigger('change');
+        $('#checkout_neighborhood').prop('disabled', true).html('<option value="">Önce İlçe Seçiniz</option>').trigger('change');
+        
+        if (provinceId) {
+            $.get(`/location/districts/${provinceId}`, function(res) {
+                let options = '<option value="">İlçe Seçiniz</option>';
+                res.forEach(function(district) {
+                    options += `<option value="${district.id}" data-name="${district.name}">${district.name}</option>`;
+                });
+                $('#checkout_district').html(options).prop('disabled', false).trigger('change');
+            });
+        }
+    });
+
+    $('#checkout_district').on('change', function() {
+        const districtId = $(this).val();
+        const districtName = $(this).find(':selected').data('name');
+        const data = getAlpineData();
+        if (!data) return;
+        
+        data.form.district = districtName;
+        data.form.neighborhood = '';
+
+        $('#checkout_neighborhood').prop('disabled', true).html('<option value="">Yükleniyor...</option>').trigger('change');
+        
+        if (districtId) {
+            $.get(`/location/neighborhoods/${districtId}`, function(res) {
+                let options = '<option value="">Mahalle Seçiniz</option>';
+                res.forEach(function(neighborhood) {
+                    options += `<option value="${neighborhood.id}" data-name="${neighborhood.name}">${neighborhood.name}</option>`;
+                });
+                $('#checkout_neighborhood').html(options).prop('disabled', false).trigger('change');
+            });
+        }
+    });
+
+    $('#checkout_neighborhood').on('change', function() {
+        const neighborhoodName = $(this).find(':selected').data('name');
+        const data = getAlpineData();
+        if (!data) return;
+        data.form.neighborhood = neighborhoodName;
+    });
+});
 </script>
+<style>
+.select2-container--default .select2-selection--single {
+    border: 1px solid #f3f4f6;
+    background-color: #f9fafb;
+    border-radius: 1rem;
+    height: 58px;
+    padding: 14px 12px;
+    font-size: 0.875rem;
+    font-weight: 700;
+}
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 56px;
+}
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    color: #111827;
+}
+</style>
 @endsection

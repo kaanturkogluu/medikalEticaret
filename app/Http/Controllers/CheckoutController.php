@@ -13,7 +13,8 @@ class CheckoutController extends Controller
 {
     public function index()
     {
-        return view('checkout');
+        $provinces = \App\Models\Province::orderBy('name')->get();
+        return view('checkout', compact('provinces'));
     }
 
     public function store(Request $request)
@@ -25,6 +26,7 @@ class CheckoutController extends Controller
             'phone' => ['required', 'string', 'regex:/^(\+90|0)?5[0-9]{9}$/'],
             'city' => 'required|string',
             'district' => 'required|string',
+            'neighborhood' => 'required|string',
             'address' => 'required|string',
             'payment_method' => 'required|in:credit_card,eft',
             'cart_items' => 'required|array',
@@ -74,6 +76,7 @@ class CheckoutController extends Controller
                     'address_info' => [
                         'city' => $validated['city'],
                         'district' => $validated['district'],
+                        'neighborhood' => $validated['neighborhood'],
                         'address' => $validated['address']
                     ],
                     'payment_method' => $validated['payment_method'],
