@@ -114,7 +114,16 @@ class AppearanceController extends Controller
     {
         Setting::setValue('site_primary_color', $request->primary_color);
         Setting::setValue('site_title', $request->site_title);
-        Setting::setValue('site_favicon', $request->site_favicon);
+        
+        if ($request->hasFile('site_favicon_file')) {
+            $file = $request->file('site_favicon_file');
+            $fileName = 'favicon.' . $file->getClientOriginalExtension();
+            $file->move(public_path('uploads'), $fileName);
+            Setting::setValue('site_favicon', '/uploads/' . $fileName);
+        } else {
+            Setting::setValue('site_favicon', $request->site_favicon);
+        }
+
         Setting::setValue('site_footer_qr', $request->footer_qr);
         Setting::setValue('site_footer_columns', json_encode($request->footer_columns));
 

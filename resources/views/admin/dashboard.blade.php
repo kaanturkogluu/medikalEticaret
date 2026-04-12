@@ -175,7 +175,7 @@
                                 <span class="text-xs font-bold text-slate-800">#{{ $ro->external_order_id }}</span>
                             </td>
                             <td class="py-4 px-2">
-                                <span class="px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 text-[9px] font-bold uppercase">{{ $ro->channel->name }}</span>
+                                <span class="px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 text-[9px] font-bold uppercase">{{ $ro->channel->name ?? 'Web Sitesi' }}</span>
                             </td>
                             <td class="py-4 px-2 text-xs text-slate-600 font-medium">{{ $ro->customer_name }}</td>
                             <td class="py-4 px-2 text-xs font-black text-slate-900 text-right tabular-nums">{{ number_format($ro->total_price, 2) }} ₺</td>
