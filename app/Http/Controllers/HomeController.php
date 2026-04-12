@@ -78,13 +78,34 @@ class HomeController extends Controller
         $products = $query->paginate(24)->onEachSide(1)->withQueryString();
         
         // categories, brands, etc.
-        $brands = Brand::whereHas('products', function($q) {
+        // Dynamic Sidebar Brands: Filter brands by currently active category/search
+        $brandsQuery = Brand::whereHas('products', function($q) use ($request) {
             $q->where('active', true)->where('stock', '>', 0);
-        })->withCount(['products' => function($q) {
-            $q->where('active', true)->where('stock', '>', 0);
-        }])->get();
+            
+            if ($request->filled('category')) {
+                $categoryFilter = Category::where('id', $request->category)->orWhere('slug', $request->category)->first();
+                if ($categoryFilter) {
+                    $q->where('category_id', $categoryFilter->id);
+                }
+            }
 
-        $banners = \App\Models\Banner::where('is_active', true)->orderBy('order')->get();
+            if ($request->filled('q')) {
+                $q->where(function($sub) use ($request) {
+                    $sub->where('name', 'like', "%{$request->q}%")
+                        ->orWhere('sku', 'like', "%{$request->q}%");
+                });
+            }
+        });
+
+        $brands = $brandsQuery->withCount(['products' => function($q) use ($request) {
+            $q->where('active', true)->where('stock', '>', 0);
+            if ($request->filled('category')) {
+                $categoryFilter = Category::where('id', $request->category)->orWhere('slug', $request->category)->first();
+                if ($categoryFilter) {
+                    $q->where('category_id', $categoryFilter->id);
+                }
+            }
+        }])->get();
 
         $banners = \App\Models\Banner::where('is_active', true)->orderBy('order')->get();
 

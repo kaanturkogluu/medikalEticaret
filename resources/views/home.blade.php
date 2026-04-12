@@ -3,7 +3,11 @@
 @section('title', 'Market Ana Sayfası')
 
 @section('content')
-    @if(\App\Models\Setting::getValue('banner_active', true) && $banners->count() > 0)
+    @php 
+        $isFiltered = request()->hasAny(['category', 'brand', 'q', 'min_price', 'max_price']); 
+    @endphp
+
+    @if(!$isFiltered && \App\Models\Setting::getValue('banner_active', true) && $banners->count() > 0)
     <!-- Banner Section -->
     <div class="ty-container pt-8" 
          x-data="{ 
@@ -99,7 +103,7 @@
     @endif
 
     <!-- Featured Brands Section -->
-    @if($featuredBrands->count() > 0)
+    @if(!$isFiltered && $featuredBrands->count() > 0)
     <div class="ty-container pt-12 pb-6">
         <div class="flex items-center gap-4 mb-8">
             <div class="w-1 h-6 bg-slate-900 rounded-full"></div>
@@ -130,7 +134,7 @@
         $popularSubtitle = \App\Models\Setting::getValue('popular_section_subtitle', 'En Çok Tercih Edilenler');
     @endphp
 
-    @if($popularActive && $popularProducts->count() > 0)
+    @if(!$isFiltered && $popularActive && $popularProducts->count() > 0)
     <section class="ty-container py-12">
         <div class="flex flex-col mb-8 gap-1">
             <div class="flex items-center justify-between">
@@ -199,6 +203,63 @@
     </section>
     @endif
 
+    <!-- Breadcrumb & Title for Filtered View -->
+    @if($isFiltered)
+    <div class="ty-container pt-8">
+        <nav class="flex items-center gap-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4">
+            <a href="{{ route('home') }}" class="hover:text-slate-900 transition-colors">Ana Sayfa</a>
+            <i class="fas fa-chevron-right text-[8px]"></i>
+            @if(request('category'))
+                @php $cat = \App\Models\Category::where('slug', request('category'))->orWhere('id', request('category'))->first(); @endphp
+                <span class="text-slate-900">{{ $cat->name ?? request('category') }}</span>
+            @elseif(request('brand'))
+                <span class="text-slate-900">Marka: {{ request('brand') }}</span>
+            @elseif(request('q'))
+                <span class="text-slate-900">Arama: {{ request('q') }}</span>
+            @endif
+        </nav>
+        
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-gray-100 pb-6">
+            <div>
+                <h1 class="text-3xl font-black italic tracking-tighter text-slate-900 uppercase">
+                    @if(request('category'))
+                        {{ $cat->name ?? 'Kategori' }}
+                    @elseif(request('brand'))
+                        {{ strtoupper(request('brand')) }} ÜRÜNLERİ
+                    @elseif(request('q'))
+                        "{{ request('q') }}" ARAMA SONUÇLARI
+                    @else
+                        TÜM ÜRÜNLER
+                    @endif
+                </h1>
+                <p class="text-xs font-bold text-slate-400 mt-1 uppercase tracking-widest">Toplam {{ $products->total() }} ürün bulundu</p>
+            </div>
+            
+            <!-- Active Filter Tags -->
+            <div class="flex flex-wrap gap-2">
+                @if(request('category'))
+                    <a href="{{ route('home', request()->except('category', 'page')) }}" class="bg-gray-100 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase text-gray-600 hover:bg-red-50 hover:text-red-500 transition-all flex items-center gap-2 group">
+                        Kategori: {{ $cat->name ?? request('category') }} <i class="fas fa-times text-[8px] opacity-40 group-hover:opacity-100"></i>
+                    </a>
+                @endif
+                @if(request('brand'))
+                    <a href="{{ route('home', request()->except('brand', 'page')) }}" class="bg-gray-100 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase text-gray-600 hover:bg-red-50 hover:text-red-500 transition-all flex items-center gap-2 group">
+                        Marka: {{ request('brand') }} <i class="fas fa-times text-[8px] opacity-40 group-hover:opacity-100"></i>
+                    </a>
+                @endif
+                @if(request('min_price') || request('max_price'))
+                    <a href="{{ route('home', request()->except('min_price', 'max_price', 'page')) }}" class="bg-gray-100 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase text-gray-600 hover:bg-red-50 hover:text-red-500 transition-all flex items-center gap-2 group">
+                        Fiyat: {{ request('min_price') ?? '0' }} - {{ request('max_price') ?? '∞' }} TL <i class="fas fa-times text-[8px] opacity-40 group-hover:opacity-100"></i>
+                    </a>
+                @endif
+                @if($isFiltered)
+                    <a href="{{ route('home') }}" class="text-[10px] font-black uppercase text-red-500 hover:underline flex items-center gap-1 ml-2">TÜMÜNÜ TEMİZLE</a>
+                @endif
+            </div>
+        </div>
+    </div>
+    @endif
+
     <!-- Main Content -->
     <main class="ty-container py-8">
         <div class="flex flex-col lg:flex-row gap-8">
@@ -217,14 +278,14 @@
                     <div class="max-h-64 overflow-y-auto pr-2 custom-scrollbar space-y-1">
                         @foreach($brands as $brand)
                             @php $isActive = (request('brand') == $brand->id || request('brand') == $brand->slug); @endphp
-                            <a href="{{ route('home', array_merge(request()->all(), ['brand' => $brand->slug])) }}" 
+                            <a href="{{ route('home', array_merge(request()->except('page'), ['brand' => $brand->slug])) }}" 
                                x-show="brandSearch === '' || '{{ str($brand->name)->lower() }}'.includes(brandSearch.toLowerCase())"
-                               class="filter-item {{ $isActive ? 'text-[var(--primary-color)] font-bold' : '' }}">
-                                <span class="h-4 w-4 border border-gray-300 rounded flex items-center justify-center">
-                                    @if($isActive) <i class="fas fa-check text-[8px] text-[var(--primary-color)]"></i> @endif
+                               class="filter-item {{ $isActive ? 'text-slate-900 font-black bg-slate-50 rounded-xl' : '' }} px-2 py-2 group/item transition-all">
+                                <span class="h-4 w-4 border-2 rounded-md flex items-center justify-center transition-all" :class="'{{ $isActive }}' ? 'border-slate-900 bg-slate-900' : 'border-gray-200 group-hover/item:border-gray-400'">
+                                    @if($isActive) <i class="fas fa-check text-[8px] text-white"></i> @endif
                                 </span>
                                 <span class="flex-grow">{{ $brand->name }}</span>
-                                <span class="text-[10px] text-gray-400">({{ $brand->products_count }})</span>
+                                <span class="text-[10px] text-gray-400 font-bold">({{ $brand->products_count }})</span>
                             </a>
                         @endforeach
                         <div x-show="$el.querySelectorAll('a[style*=\'display: none\']').length === {{ count($brands) }}" class="text-xs text-gray-400 italic py-2 text-center">Sonuç bulunamadı</div>
@@ -246,16 +307,16 @@
 
             <!-- Results Section -->
             <div class="flex-grow">
-                <div class="bg-white p-4 rounded-lg border border-gray-200 mb-6 flex items-center justify-between shadow-sm">
-                    <div class="text-sm">
+                <div class="bg-white p-4 rounded-3xl border border-gray-100 mb-6 flex items-center justify-between shadow-sm">
+                    <div class="text-xs font-bold text-gray-500 uppercase tracking-widest italic">
                         @if(request('q'))
-                            "<span class="font-bold">{{ request('q') }}</span>" araması için <span class="font-bold">{{ $products->total() }}</span> sonuç listeleniyor.
+                            "<span class="text-slate-900 font-black">{{ request('q') }}</span>" sonuçları
                         @else
-                            Toplam <span class="font-bold">{{ $products->total() }}</span> ürün listeleniyor.
+                            {{ $products->total() }} Ürün Sergileniyor
                         @endif
                     </div>
                     <div class="flex items-center gap-4">
-                        <select onchange="let url = '{{ route('home', request()->except('sort', 'page')) }}'; let sep = url.includes('?') ? '&' : '?'; location.href = this.value ? url + sep + 'sort=' + this.value : url;" class="text-sm bg-white border border-gray-200 p-2 rounded focus:outline-none cursor-pointer">
+                        <select onchange="let url = '{{ route('home', request()->except('sort', 'page')) }}'; let sep = url.includes('?') ? '&' : '?'; location.href = this.value ? url + sep + 'sort=' + this.value : url;" class="text-[11px] font-black uppercase italic bg-gray-50 border border-gray-100 px-4 py-2.5 rounded-xl focus:outline-none cursor-pointer hover:bg-gray-100 transition-all outline-none">
                             <option value="" {{ request('sort') == '' ? 'selected' : '' }}>Önerilen Sıralama</option>
                             <option value="price_low" {{ request('sort') == 'price_low' ? 'selected' : '' }}>En Düşük Fiyat</option>
                             <option value="price_high" {{ request('sort') == 'price_high' ? 'selected' : '' }}>En Yüksek Fiyat</option>
