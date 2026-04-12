@@ -11,9 +11,18 @@ class ProductController extends Controller
 {
     public function index(Request $request)
     {
-        $products = Product::with(['channelProducts.channel', 'brand', 'category', 'productImages'])
-            ->latest()
-            ->paginate(15);
+        $query = Product::with(['channelProducts.channel', 'brand', 'category', 'productImages']);
+
+        if ($request->filled('q')) {
+            $q = $request->q;
+            $query->where(function($sub) use ($q) {
+                $sub->where('name', 'like', "%{$q}%")
+                    ->orWhere('sku', 'like', "%{$q}%")
+                    ->orWhere('barcode', 'like', "%{$q}%");
+            });
+        }
+
+        $products = $query->latest()->paginate(15)->withQueryString();
 
         // Map products for Alpine format
         $mappedProducts = $products->getCollection()->map(function ($product) {
@@ -73,6 +82,7 @@ class ProductController extends Controller
             'description' => 'nullable|string',
             'active' => 'boolean',
             'brand_id' => 'nullable|exists:brands,id',
+            'marketplace_urls' => 'nullable|array',
         ]);
 
         if ($request->filled('brand_id')) {
@@ -83,6 +93,11 @@ class ProductController extends Controller
         }
 
         $validated['active'] = $request->has('active');
+
+        // Handle Marketplace URLs
+        $raw = $product->raw_marketplace_data ?? [];
+        $raw['custom_urls'] = $request->input('marketplace_urls', []);
+        $product->raw_marketplace_data = $raw;
 
         $product->update($validated);
 

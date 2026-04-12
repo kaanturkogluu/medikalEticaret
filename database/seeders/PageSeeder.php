@@ -79,7 +79,10 @@ class PageSeeder extends Seeder
                     <p class="mb-4 text-slate-600 leading-relaxed italic border-b border-brand-500 pb-2 inline-block">Online alışverişlerinizde, ürünü teslim aldığınız tarihten itibaren 14 gün içinde hiçbir gerekçe göstermeksizin iade edebilirsiniz.</p>
                     
                     <h3 class="text-xl font-bold mb-4 italic uppercase">İade Şartları</h3>
-                    <p class="mb-4 text-slate-600 leading-relaxed italic">İade edilecek ürünün orijinal ambalajında, hasarsız ve tekrar satılabilir olması gerekmektedir. Hijyenik ürünlerde (açılmış paket vb.) iade kabul edilememektedir.</p>
+                    <p class="mb-4 text-slate-600 leading-relaxed italic">İade edilecek ürünün <strong>açılmamış ambalajında</strong>, hasarsız ve tekrar satılabilir olması gerekmektedir. Hijyenik ürünlerde ambalajı veya koruma bandı açılmış ürünlerin iadesi kabul edilmemektedir.</p>
+
+                    <h3 class="text-xl font-bold mb-4 italic uppercase">Görüntü Şartı</h3>
+                    <p class="mb-4 text-slate-600 leading-relaxed italic">İade talebi oluştururken <strong>ürün resminin (hasarlı veya hatalı durumun net görüntüsü) ibraz edilmesi şarttır</strong>. Resimsiz iade talepleri değerlendirmeye alınmayacaktır.</p>
                 '
             ],
             [

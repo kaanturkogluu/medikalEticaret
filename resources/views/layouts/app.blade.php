@@ -260,11 +260,39 @@
                                         <span class="hidden lg:inline">Yönetim Paneli</span>
                                     </a>
                                 @else
-                                    <a href="{{ route('user.dashboard') }}"
-                                        class="flex items-center gap-2 hover:text-[var(--primary-color)] group">
-                                        <i class="far fa-user text-lg text-gray-400 group-hover:text-[var(--primary-color)]"></i>
-                                        <span class="hidden lg:inline">Hesabım</span>
-                                    </a>
+                                    <div class="relative" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false">
+                                        <a href="{{ route('user.dashboard') }}"
+                                            class="flex items-center gap-2 hover:text-[var(--primary-color)] group">
+                                            <i class="far fa-user text-lg text-gray-400 group-hover:text-[var(--primary-color)]"></i>
+                                            <span class="hidden lg:inline">Hesabım</span>
+                                        </a>
+                                        <div x-show="open" 
+                                             x-transition:enter="transition ease-out duration-200"
+                                             x-transition:enter-start="opacity-0 translate-y-2"
+                                             x-transition:enter-end="opacity-100 translate-y-0"
+                                             x-cloak 
+                                             class="absolute top-full -left-4 w-48 bg-white shadow-2xl rounded-2xl py-3 mt-2 z-50 border border-gray-100">
+                                            <a href="{{ route('user.dashboard') }}" class="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 text-xs transition-colors">
+                                                <i class="fas fa-th-large w-4 text-gray-400"></i> Genel Bakış
+                                            </a>
+                                            <a href="{{ route('user.orders') }}" class="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 text-xs transition-colors">
+                                                <i class="fas fa-box w-4 text-gray-400"></i> Siparişlerim
+                                            </a>
+                                            <a href="{{ route('user.addresses') }}" class="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 text-xs transition-colors">
+                                                <i class="fas fa-map-marker-alt w-4 text-gray-400"></i> Adreslerim
+                                            </a>
+                                            <a href="{{ route('user.comments') }}" class="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 text-xs transition-colors">
+                                                <i class="fas fa-comment w-4 text-gray-400"></i> Yorumlarım
+                                            </a>
+                                            <div class="my-2 border-t border-gray-50"></div>
+                                            <form action="{{ route('logout') }}" method="POST">
+                                                @csrf
+                                                <button type="submit" class="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-red-50 text-xs text-red-500 transition-colors font-black">
+                                                    <i class="fas fa-sign-out-alt w-4"></i> Çıkış Yap
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
                                 @endif
                             @else
                                 <a href="{{ route('login') }}"
@@ -551,14 +579,27 @@
                             </div>
                         </div>
                     </div>
-                    <div x-show="$store.cart.items.length > 0" class="border-t border-gray-200 px-4 py-6 sm:px-6">
-                        <div class="flex justify-between text-base font-bold text-gray-900">
+                    <div x-show="$store.cart.items.length > 0" class="border-t border-gray-200 px-4 py-6 sm:px-6 bg-gray-50/50">
+                        <div class="space-y-2 mb-6">
+                            <div class="flex justify-between text-sm font-medium text-gray-600">
+                                <p>Ara Toplam</p>
+                                <p x-text="$store.cart.subtotal().toFixed(2) + ' TL'"></p>
+                            </div>
+                            <div class="flex justify-between text-sm font-medium text-gray-600">
+                                <p>Kargo Ücreti</p>
+                                <p x-text="$store.cart.shipping() === 0 ? 'Ücretsiz' : $store.cart.shipping().toFixed(2) + ' TL'" :class="$store.cart.shipping() === 0 ? 'text-green-600' : ''"></p>
+                            </div>
+                            <div x-show="$store.cart.shipping() > 0" class="bg-orange-50 p-2 rounded-lg text-[10px] text-orange-700 font-bold border border-orange-100">
+                                <i class="fas fa-info-circle mr-1"></i> <span x-text="(700 - $store.cart.subtotal()).toFixed(2) + ' TL'"></span> daha ürün ekleyin, kargo bedavaya gelsin!
+                            </div>
+                        </div>
+                        <div class="flex justify-between text-xl font-black text-gray-900 border-t border-gray-100 pt-4">
                             <p>Toplam</p>
                             <p x-text="$store.cart.total() + ' TL'"></p>
                         </div>
-                        <div class="mt-6">
-                            <a href="#"
-                                class="flex items-center justify-center rounded-md border border-transparent bg-[var(--primary-color)] px-6 py-3 text-base font-black text-white shadow-sm hover:bg-[var(--primary-hover)]">Ödemeye
+                        <div class="mt-8">
+                            <a href="{{ route('checkout') }}"
+                                class="flex items-center justify-center rounded-2xl border border-transparent bg-slate-900 px-6 py-4 text-base font-black text-white shadow-xl hover:bg-orange-600 transition-all active:scale-95">Ödemeye
                                 Geç</a>
                         </div>
                     </div>
@@ -609,8 +650,14 @@
                         this.items = this.items.filter(i => i.id !== id);
                         this.save();
                     },
+                    subtotal() {
+                        return this.items.reduce((total, item) => total + (item.price * item.qty), 0);
+                    },
+                    shipping() {
+                        return this.subtotal() >= 700 ? 0 : (this.items.length > 0 ? 89 : 0);
+                    },
                     total() {
-                        return this.items.reduce((total, item) => total + (item.price * item.qty), 0).toFixed(2);
+                        return (this.subtotal() + this.shipping()).toFixed(2);
                     },
                     save() {
                         localStorage.setItem('cart_items', JSON.stringify(this.items));

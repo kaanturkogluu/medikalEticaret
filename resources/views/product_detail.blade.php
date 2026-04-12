@@ -12,8 +12,10 @@
         <nav class="breadcrumb flex gap-4 font-bold items-center py-6">
             <a href="{{ route('home') }}" class="text-[11px] text-gray-400 hover:text-slate-900 transition-colors uppercase tracking-widest">Ana Sayfa</a>
             <i class="fas fa-chevron-right text-[8px] text-gray-300"></i>
-            <a href="{{ route('home', ['category' => $product->category->slug ?? $product->category_id]) }}" class="text-[11px] text-gray-400 hover:text-slate-900 transition-colors uppercase tracking-widest">{{ $product->category->name ?? 'Kategori' }}</a>
-            <i class="fas fa-chevron-right text-[8px] text-gray-300"></i>
+            @if($product->category)
+                <a href="{{ route('home', ['category' => $product->category->slug ?? $product->category_id]) }}" class="text-[11px] text-gray-400 hover:text-slate-900 transition-colors uppercase tracking-widest">{{ $product->category->name }}</a>
+                <i class="fas fa-chevron-right text-[8px] text-gray-300"></i>
+            @endif
             <span class="text-[11px] text-gray-300 uppercase tracking-widest truncate max-w-[200px]">{{ $product->name }}</span>
         </nav>
 
@@ -33,13 +35,25 @@
                         @endforeach
                     </div>
                     
-                    <!-- Main Image -->
-                    <div class="flex-grow aspect-[4/5] bg-white rounded-[40px] border border-gray-100 shadow-sm overflow-hidden flex items-center justify-center p-12 relative group">
-                        <div class="absolute inset-0 bg-gradient-to-tr from-gray-50/50 to-transparent pointer-events-none"></div>
-                        <img :src="activeImage" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-700" alt="{{ $product->name }}">
+                    <!-- Main Image with Zoom -->
+                    <div class="flex-grow aspect-[4/5] bg-white rounded-[40px] border border-gray-100 shadow-sm overflow-hidden flex items-center justify-center p-12 relative group cursor-zoom-in"
+                         @mousemove="zoom = true; handleZoom($event)" @mouseleave="zoom = false"
+                         x-data="{ 
+                            zoom: false, zoomX: 0, zoomY: 0,
+                            handleZoom(e) {
+                                const rect = e.currentTarget.getBoundingClientRect();
+                                this.zoomX = ((e.clientX - rect.left) / rect.width) * 100;
+                                this.zoomY = ((e.clientY - rect.top) / rect.height) * 100;
+                            }
+                         }">
+                        <div class="absolute inset-0 bg-gradient-to-tr from-gray-50/50 to-transparent pointer-events-none z-10"></div>
+                        <img :src="activeImage" 
+                             :style="zoom ? `transform: scale(2.5); transform-origin: ${zoomX}% ${zoomY}%;` : ''"
+                             class="w-full h-full object-contain transition-transform duration-150" 
+                             alt="{{ $product->name }}">
                         
                         <!-- Zoom Hint -->
-                        <div class="absolute bottom-6 right-6 w-12 h-12 bg-white/80 backdrop-blur rounded-full flex items-center justify-center text-slate-400 shadow-xl opacity-0 group-hover:opacity-100 transition-all scale-75 group-hover:scale-100">
+                        <div x-show="!zoom" class="absolute bottom-6 right-6 w-12 h-12 bg-white/80 backdrop-blur rounded-full flex items-center justify-center text-slate-400 shadow-xl opacity-0 group-hover:opacity-100 transition-all scale-75 group-hover:scale-100 z-20">
                             <i class="fas fa-search-plus"></i>
                         </div>
                     </div>
@@ -87,7 +101,10 @@
                             <div class="text-gray-400 text-sm font-bold line-through mb-1 opacity-60 italic">{{ number_format($product->price * 1.2, 2) }} TL</div>
                             <div class="flex items-center gap-4">
                                 <span class="text-5xl font-black text-white tracking-tighter">{{ number_format($product->price, 2) }} <span class="text-2xl font-light opacity-80">TL</span></span>
-                                <div class="bg-orange-500 text-white text-xs font-black px-3 py-1.5 rounded-xl animate-pulse">-%20 İNDİRİM</div>
+                                <div class="flex flex-col gap-1">
+                                    <div class="bg-orange-500 text-white text-[9px] font-black px-3 py-1 rounded-lg animate-pulse uppercase">-%20 İNDİRİM</div>
+                                    <div class="bg-green-500 text-white text-[9px] font-black px-3 py-1 rounded-lg uppercase whitespace-nowrap">EFT İLE %5 EK İNDİRİM</div>
+                                </div>
                             </div>
                         </div>
                         <div class="flex flex-col gap-2">
@@ -140,7 +157,11 @@
                             
                             <div class="flex flex-wrap gap-4">
                                 @foreach($marketplaces as $mt)
-                                    <a href="{{ $mt['url'] }}" target="_blank" class="flex-grow md:flex-grow-0 flex items-center justify-center gap-3 bg-white px-6 py-4 rounded-2xl border-2 border-white shadow-sm hover:shadow-xl hover:border-slate-900 transition-all group/mt relative overflow-hidden">
+                                    @php
+                                        $customUrls = $product->raw_marketplace_data['custom_urls'] ?? [];
+                                        $targetUrl = !empty($customUrls[$mt['name']]) ? $customUrls[$mt['name']] : $mt['url'];
+                                    @endphp
+                                    <a href="{{ $targetUrl }}" target="_blank" class="flex-grow md:flex-grow-0 flex items-center justify-center gap-3 bg-white px-6 py-4 rounded-2xl border-2 border-white shadow-sm hover:shadow-xl hover:border-slate-900 transition-all group/mt relative overflow-hidden">
                                         <div class="absolute inset-0 bg-slate-900 translate-y-full group-hover/mt:translate-y-0 transition-transform duration-300"></div>
                                         <div class="w-8 h-8 flex items-center justify-center overflow-hidden rounded-lg shrink-0 relative z-10 transition-transform group-hover/mt:scale-110">
                                             <img src="{{ $mt['logo'] }}" alt="{{ $mt['name'] }}" class="w-full h-full object-contain">

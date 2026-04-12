@@ -8,6 +8,10 @@ Route::get('/', [\App\Http\Controllers\HomeController::class, 'index'])->name('h
 Route::get('/urun/{product}', [\App\Http\Controllers\HomeController::class, 'show'])->name('product.show');
 Route::get('/favorites', [\App\Http\Controllers\HomeController::class, 'favorites'])->name('favorites');
 
+// Checkout
+Route::get('/odeme', [\App\Http\Controllers\CheckoutController::class, 'index'])->name('checkout');
+Route::post('/odeme-tamamla', [\App\Http\Controllers\CheckoutController::class, 'store'])->name('checkout.store');
+
 Route::get('/iletisim', function () {
     return view('contact');
 })->name('contact');

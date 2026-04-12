@@ -20,31 +20,13 @@ class HomeController extends Controller
             $q = $request->q;
             $query->where(function($sub) use ($q) {
                 $sub->where('name', 'like', "%{$q}%")
-                    ->orWhere('sku', 'like', "%{$q}%");
+                    ->orWhere('sku', 'like', "%{$q}%")
+                    ->orWhere('brand_name', 'like', "%{$q}%")
+                    ->orWhere('category_name', 'like', "%{$q}%")
+                    ->orWhere('description', 'like', "%{$q}%");
             });
         }
 
-        // Sorting
-        if ($request->filled('sort')) {
-            switch ($request->sort) {
-                case 'price_low':
-                    $query->orderBy('price', 'asc');
-                    break;
-                case 'price_high':
-                    $query->orderBy('price', 'desc');
-                    break;
-                case 'newest':
-                    $query->latest();
-                    break;
-                default:
-                    $query->latest();
-                    break;
-            }
-        } else {
-            $query->latest();
-        }
-        
-        $products = $query->paginate(24)->onEachSide(1)->withQueryString();
         // Category Filter (ID or Slug)
         if ($request->filled('category')) {
             $categoryFilter = Category::where('id', $request->category)
@@ -73,7 +55,27 @@ class HomeController extends Controller
             $query->where('price', '<=', $request->max_price);
         }
 
-        $products = $query->latest()->paginate(24)->onEachSide(1);
+        // Sorting
+        if ($request->filled('sort')) {
+            switch ($request->sort) {
+                case 'price_low':
+                    $query->orderBy('price', 'asc');
+                    break;
+                case 'price_high':
+                    $query->orderBy('price', 'desc');
+                    break;
+                case 'newest':
+                    $query->latest();
+                    break;
+                default:
+                    $query->latest();
+                    break;
+            }
+        } else {
+            $query->latest();
+        }
+        
+        $products = $query->paginate(24)->onEachSide(1)->withQueryString();
         
         // categories, brands, etc.
         $brands = Brand::whereHas('products', function($q) {

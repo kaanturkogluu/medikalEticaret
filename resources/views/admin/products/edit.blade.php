@@ -168,6 +168,24 @@
                         </div>
 
                         <div class="space-y-4">
+                            @php
+                                $siteMarketplaces = json_decode(\App\Models\Setting::getValue('marketplaces', '[]'), true);
+                                $customUrls = $product->raw_marketplace_data['custom_urls'] ?? [];
+                            @endphp
+
+                            <div class="mb-8 p-6 bg-brand-50 rounded-3xl border border-brand-100">
+                                <h4 class="text-sm font-black text-brand-800 uppercase tracking-widest mb-4 italic">Ürün Bazlı Yönlendirme Linkleri</h4>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    @foreach($siteMarketplaces as $sm)
+                                        <div class="space-y-1">
+                                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-1">{{ $sm['name'] }} Ürün Linki</label>
+                                            <input type="url" name="marketplace_urls[{{ $sm['name'] }}]" value="{{ $customUrls[$sm['name']] ?? '' }}" placeholder="https://..." class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs focus:ring-4 focus:ring-brand-500/10 focus:border-brand-500 transition-all">
+                                        </div>
+                                    @endforeach
+                                </div>
+                                <p class="text-[10px] text-slate-400 mt-4 italic">* Buraya girilen linkler, ürün detay sayfasındaki mağaza logolarına tıklandığında doğrudan bu ürüne gitmesini sağlar. Boş bırakılırsa genel mağaza linkine gider.</p>
+                            </div>
+
                             @forelse($product->channelProducts as $cp)
                             <div class="p-6 bg-white border border-slate-200 rounded-3xl hover:border-brand-500/50 transition-all group">
                                 <div class="flex items-center justify-between">
