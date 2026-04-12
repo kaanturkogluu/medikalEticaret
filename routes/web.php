@@ -75,6 +75,14 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::get('/test-products', [\App\Http\Controllers\Admin\OrderController::class, 'testProducts'])->name('admin.test-products');
     Route::view('/sync/stock', 'admin.sync.stock')->name('admin.sync.stock');
     Route::view('/sync/price', 'admin.sync.price')->name('admin.sync.price');
+
+    // Return Templates
+    Route::get('/return-templates', [\App\Http\Controllers\Admin\ReturnTemplateController::class, 'index'])->name('admin.return-templates.index');
+    Route::get('/return-templates/create', [\App\Http\Controllers\Admin\ReturnTemplateController::class, 'create'])->name('admin.return-templates.create');
+    Route::post('/return-templates', [\App\Http\Controllers\Admin\ReturnTemplateController::class, 'store'])->name('admin.return-templates.store');
+    Route::get('/return-templates/{return_template}/edit', [\App\Http\Controllers\Admin\ReturnTemplateController::class, 'edit'])->name('admin.return-templates.edit');
+    Route::put('/return-templates/{return_template}', [\App\Http\Controllers\Admin\ReturnTemplateController::class, 'update'])->name('admin.return-templates.update');
+    Route::delete('/return-templates/{return_template}', [\App\Http\Controllers\Admin\ReturnTemplateController::class, 'destroy'])->name('admin.return-templates.destroy');
     
     // Marketplace Management
     Route::get('/marketplaces', [\App\Http\Controllers\Admin\ChannelController::class, 'index'])->name('admin.marketplaces');

@@ -52,10 +52,12 @@ class ProductController extends Controller
     {
         $brands = Brand::orderBy('name')->get();
         $categories = \App\Models\Category::orderBy('name')->get();
+        $returnTemplates = \App\Models\ReturnTemplate::orderBy('name')->get();
         
         return view('admin.products.create', [
             'brands' => $brands,
-            'categories' => $categories
+            'categories' => $categories,
+            'returnTemplates' => $returnTemplates
         ]);
     }
 
@@ -71,6 +73,7 @@ class ProductController extends Controller
             'active' => 'boolean',
             'brand_id' => 'nullable|exists:brands,id',
             'category_id' => 'nullable|exists:categories,id',
+            'return_template_id' => 'nullable|exists:return_templates,id',
             'marketplace_urls' => 'nullable|array',
         ]);
 
@@ -116,10 +119,12 @@ class ProductController extends Controller
     {
         $product->load(['brand', 'category', 'productImages', 'productAttributes', 'channelProducts.channel']);
         $brands = Brand::orderBy('name')->get();
+        $returnTemplates = \App\Models\ReturnTemplate::orderBy('name')->get();
         
         return view('admin.products.edit', [
             'product' => $product,
-            'brands' => $brands
+            'brands' => $brands,
+            'returnTemplates' => $returnTemplates
         ]);
     }
 
@@ -134,6 +139,7 @@ class ProductController extends Controller
             'description' => 'nullable|string',
             'active' => 'boolean',
             'brand_id' => 'nullable|exists:brands,id',
+            'return_template_id' => 'nullable|exists:return_templates,id',
             'marketplace_urls' => 'nullable|array',
         ]);
 

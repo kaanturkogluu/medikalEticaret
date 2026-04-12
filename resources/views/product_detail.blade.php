@@ -233,18 +233,34 @@
                 <div x-show="tab == 'returns'" x-cloak x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" class="bg-indigo-50/50 p-12 rounded-[50px] border border-indigo-100/50">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
                         <div class="space-y-6">
-                            <h4 class="text-xl font-black italic tracking-tighter text-indigo-900 uppercase">Kolay İade Süreçleri</h4>
-                            <p class="text-xs text-indigo-700 leading-relaxed font-medium">Satın aldığınız ürünleri, teslim aldığınız tarihten itibaren <strong>14 gün içerisinde</strong> herhangi bir gerekçe göstermeksizin iade edebilir veya değiştirebilirsiniz.</p>
-                            <ul class="space-y-4 text-xs text-indigo-800 font-bold">
-                                <li class="flex items-start gap-3">
-                                    <i class="fas fa-check-circle mt-1 text-indigo-400"></i>
-                                    <span>İade edilecek ürünün ambalajı hasar görmemiş, kullanılmamış ve yeniden satılabilir durumda olmalıdır.</span>
-                                </li>
-                                <li class="flex items-start gap-3">
-                                    <i class="fas fa-check-circle mt-1 text-indigo-400"></i>
-                                    <span>Sağlık ve hijyen açısından uygun olmayan ürünlerin (iç çamaşırı, maske, steril ürünler vb.) ambalajı açıldıktan sonra iadesi kabul edilememektedir.</span>
-                                </li>
-                            </ul>
+                            <h4 class="text-xl font-black italic tracking-tighter text-indigo-900 uppercase">
+                                {{ $product->returnTemplate ? $product->returnTemplate->name . ' İade Koşulları' : 'Kolay İade Süreçleri' }}
+                            </h4>
+                            
+                            @if($product->returnTemplate)
+                                <div class="space-y-4">
+                                    @foreach(explode("\n", $product->returnTemplate->content) as $line)
+                                        @if(trim($line))
+                                            <div class="flex items-start gap-4 bg-white/50 p-4 rounded-2xl border border-white">
+                                                <i class="fas fa-check-circle mt-1 text-indigo-400"></i>
+                                                <span class="text-xs text-indigo-800 font-bold leading-relaxed">{{ trim($line) }}</span>
+                                            </div>
+                                        @endif
+                                    @endforeach
+                                </div>
+                            @else
+                                <p class="text-xs text-indigo-700 leading-relaxed font-medium">Satın aldığınız ürünleri, teslim aldığınız tarihten itibaren <strong>14 gün içerisinde</strong> herhangi bir gerekçe göstermeksizin iade edebilir veya değiştirebilirsiniz.</p>
+                                <ul class="space-y-4 text-xs text-indigo-800 font-bold">
+                                    <li class="flex items-start gap-3">
+                                        <i class="fas fa-check-circle mt-1 text-indigo-400"></i>
+                                        <span>İade edilecek ürünün ambalajı hasar görmemiş, kullanılmamış ve yeniden satılabilir durumda olmalıdır.</span>
+                                    </li>
+                                    <li class="flex items-start gap-3">
+                                        <i class="fas fa-check-circle mt-1 text-indigo-400"></i>
+                                        <span>Sağlık ve hijyen açısından uygun olmayan ürünlerin (iç çamaşırı, maske, steril ürünler vb.) ambalajı açıldıktan sonra iadesi kabul edilememektedir.</span>
+                                    </li>
+                                </ul>
+                            @endif
                         </div>
                         <div class="bg-white p-8 rounded-[32px] shadow-xl shadow-indigo-100 border border-indigo-50">
                             <h5 class="text-[10px] font-black text-indigo-400 uppercase tracking-[0.2em] mb-4">Nasıl İade Ederim?</h5>
