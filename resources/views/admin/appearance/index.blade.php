@@ -99,6 +99,18 @@
                 Düzenle <i class="fas fa-chevron-right text-[10px]"></i>
             </a>
         </div>
+
+        <!-- Return Templates -->
+        <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm hover:shadow-xl transition-all group flex flex-col items-center text-center">
+            <div class="w-16 h-16 bg-indigo-50 text-indigo-500 rounded-2xl flex items-center justify-center mb-6 ring-8 ring-indigo-50/50 group-hover:scale-110 transition-transform">
+                <i class="fas fa-undo-alt text-2xl"></i>
+            </div>
+            <h3 class="text-lg font-black text-slate-900 italic tracking-tighter uppercase mb-2">İade Koşulları</h3>
+            <p class="text-xs text-slate-500 mb-6 leading-relaxed">Ürün gruplarına özel farklı iade kuralları ve şablonları oluşturun.</p>
+            <a href="{{ route('admin.return-templates.index') }}" class="mt-auto px-6 py-2 bg-slate-900 text-white rounded-xl text-xs font-bold hover:bg-brand-600 transition-colors flex items-center gap-2">
+                Düzenle <i class="fas fa-chevron-right text-[10px]"></i>
+            </a>
+        </div>
     </div>
 
     <!-- Tip Section -->
