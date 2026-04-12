@@ -75,13 +75,20 @@
                              :class="form.payment_method === 'credit_card' ? 'border-slate-900 bg-slate-50' : 'border-gray-100 hover:border-gray-200'"
                              class="cursor-pointer p-6 border-2 rounded-[30px] transition-all group">
                             <div class="flex items-center justify-between mb-4">
-                                <i class="fas fa-credit-card text-2xl" :class="form.payment_method === 'credit_card' ? 'text-slate-900' : 'text-gray-300 group-hover:text-gray-400'"></i>
+                                <div class="flex items-center gap-3">
+                                    <i class="fas fa-credit-card text-2xl" :class="form.payment_method === 'credit_card' ? 'text-slate-900' : 'text-gray-300 group-hover:text-gray-400'"></i>
+                                    <div class="flex items-center gap-2 opacity-50 grayscale group-hover:grayscale-0 group-hover:opacity-100 transition-all">
+                                        <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" class="h-4">
+                                        <img src="https://upload.wikimedia.org/wikipedia/commons/d/d6/Visa_2021.svg" class="h-2.5">
+                                        <img src="https://upload.wikimedia.org/wikipedia/commons/d/d3/Troy_Logo_2023.svg" class="h-3.5">
+                                    </div>
+                                </div>
                                 <div class="w-5 h-5 rounded-full border-2 flex items-center justify-center" :class="form.payment_method === 'credit_card' ? 'border-slate-900' : 'border-gray-200'">
                                     <div x-show="form.payment_method === 'credit_card'" class="w-2.5 h-2.5 bg-slate-900 rounded-full"></div>
                                 </div>
                             </div>
                             <p class="font-black text-sm uppercase italic">Kredi / Banka Kartı</p>
-                            <p class="text-xs text-gray-500 mt-1">PayTR ile güvenli ödeme</p>
+                            <p class="text-xs text-gray-500 mt-1">Güvenli ödeme altyapısı</p>
                         </div>
 
                         <div @click="form.payment_method = 'eft'"
@@ -100,10 +107,29 @@
                     </div>
 
                     {{-- Credit Card Form placeholder --}}
-                    <div x-show="form.payment_method === 'credit_card'" x-collapse class="mt-8 p-8 bg-slate-900 rounded-[30px] text-white">
-                        <div class="flex flex-col items-center justify-center py-6 gap-4">
-                            <i class="fas fa-shield-alt text-4xl text-brand-400"></i>
-                            <p class="text-center text-xs font-bold leading-relaxed opacity-70">PayTR altyapısı ile şifrelenmiş güvenli ödeme ekranına siparişi tamamladıktan sonra yönlendirileceksiniz.</p>
+                    <div x-show="form.payment_method === 'credit_card'" x-collapse class="mt-8 p-8 bg-slate-900 rounded-[30px] text-white overflow-hidden relative">
+                        <div class="absolute -right-4 -bottom-4 opacity-5 pointer-events-none">
+                            <i class="fas fa-shield-alt text-[120px]"></i>
+                        </div>
+                        <div class="flex flex-col items-center justify-center py-4 gap-6 relative z-10">
+                            <div class="flex items-center gap-4">
+                                <div class="flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-lg border border-white/10">
+                                    <i class="fas fa-lock text-[10px] text-green-400"></i>
+                                    <span class="text-[10px] font-black italic tracking-tighter">256-BIT SSL</span>
+                                </div>
+                                <div class="flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-lg border border-white/10">
+                                    <i class="fas fa-shield-alt text-[10px] text-blue-400"></i>
+                                    <span class="text-[10px] font-black italic tracking-tighter">3D SECURE</span>
+                                </div>
+                            </div>
+                            <div class="text-center group">
+                                <p class="text-[11px] font-bold leading-relaxed opacity-70 mb-4 max-w-sm">Tüm ödemeleriniz yüksek güvenlikli şifreleme yöntemleri ile taranmaktadır. Kart bilgileriniz kesinlikle sistemimizde saklanmaz.</p>
+                                <div class="flex items-center justify-center gap-4 grayscale opacity-40 group-hover:grayscale-0 group-hover:opacity-100 transition-all">
+                                    <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" class="h-5">
+                                    <img src="https://upload.wikimedia.org/wikipedia/commons/d/d6/Visa_2021.svg" class="h-3">
+                                    <img src="https://upload.wikimedia.org/wikipedia/commons/d/d3/Troy_Logo_2023.svg" class="h-4">
+                                </div>
+                            </div>
                         </div>
                     </div>
 

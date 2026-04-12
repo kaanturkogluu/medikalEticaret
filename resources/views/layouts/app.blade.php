@@ -12,7 +12,7 @@
         $defaultFooter = [
             ["title" => "umutMed", "links" => [["text" => "Hakkımızda", "url" => "#"], ["text" => "Kariyer", "url" => "#"], ["text" => "İletişim", "url" => "/iletisim"], ["text" => "Sürdürülebilirlik", "url" => "#"]]],
             ["title" => "Kampanyalar", "links" => [["text" => "Aktif Kampanyalar", "url" => "#"], ["text" => "Elite Üyelik", "url" => "#"], ["text" => "Hediye Fikirleri", "url" => "#"], ["text" => "umutMed Blog", "url" => "#"]]],
-            ["title" => "Yardım", "links" => [["text" => "Sıkça Sorulan Sorular", "url" => route('sss')], ["text" => "İade Politikası", "url" => route('page.show', 'iade-iptal-politikasi')], ["text" => "Ödeme Seçenekleri", "url" => route('page.show', 'odeme-politikasi')], ["text" => "Kullanım Koşulları", "url" => route('page.show', 'kullanim-kosullari')]]]
+            ["title" => "Yardım", "links" => [["text" => "Sıkça Sorulan Sorular", "url" => route('sss')], ["text" => "İade Politikası", "url" => route('page.show', 'iade-iptal-politikasi')], ["text" => "Mesafeli Satış Sözleşmesi", "url" => route('page.show', 'mesafeli-satis-sozlesmesi')], ["text" => "Ödeme Seçenekleri", "url" => route('page.show', 'odeme-politikasi')], ["text" => "Kullanım Koşulları", "url" => route('page.show', 'kullanim-kosullari')]]]
         ];
         $footerCols = json_decode(\App\Models\Setting::getValue('site_footer_columns', json_encode($defaultFooter)), true);
     @endphp
@@ -545,13 +545,25 @@
                 </h4>
                 <div class="flex flex-col gap-6">
                     <div
-                        class="flex flex-wrap gap-4 grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all cursor-pointer">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" class="h-6"
-                            alt="Paypal">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" class="h-8"
+                        class="flex flex-wrap items-center gap-6 grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" class="h-6"
                             alt="Mastercard">
                         <img src="https://upload.wikimedia.org/wikipedia/commons/d/d6/Visa_2021.svg" class="h-4"
                             alt="Visa">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/d/d3/Troy_Logo_2023.svg" class="h-5"
+                            alt="Troy">
+                        <div class="h-6 w-px bg-white/20 mx-2"></div>
+                        <div class="flex items-center gap-3">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/a/a4/SSL_Logo.svg" class="h-6 invert opacity-50" alt="SSL">
+                            <div class="flex flex-col leading-none">
+                                <span class="text-[8px] font-black tracking-tighter text-white">256-BIT SSL</span>
+                                <span class="text-[7px] font-bold text-slate-400">GÜVENLİ ÖDEME</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-1.5 border border-white/20 rounded-md px-2 py-1">
+                            <i class="fas fa-shield-alt text-[10px] text-green-400"></i>
+                            <span class="text-[9px] font-black italic tracking-tighter">3D SECURE</span>
+                        </div>
                     </div>
 
                     @if($footerQr)
