@@ -135,11 +135,33 @@
 
                     {{-- EFT Info --}}
                     <div x-show="form.payment_method === 'eft'" x-collapse class="mt-8 p-8 bg-green-50 border border-green-100 rounded-[30px]">
-                        <div class="flex items-start gap-4">
+                        <div class="flex items-start gap-4 mb-6">
                             <i class="fas fa-info-circle text-green-600 mt-1"></i>
                             <div>
-                                <h4 class="font-black text-sm text-green-800 uppercase italic mb-2 tracking-tighter">Havale/EFT Bilgileri</h4>
+                                <h4 class="font-black text-sm text-green-800 uppercase italic mb-2 tracking-tighter">İndirimli Ödeme (Havale/EFT)</h4>
                                 <p class="text-xs text-green-700 leading-relaxed font-medium">Siparişi tamamladıktan sonra belirtilen IBAN numarasına ödemeyi yapmanız gerekmektedir. Ödeme açıklama kısmına <strong>Sipariş No</strong> yazmayı unutmayınız.</p>
+                            </div>
+                        </div>
+
+                        <div class="space-y-4 bg-white/50 p-6 rounded-2xl border border-green-200/50">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <p class="text-[10px] font-bold text-gray-400 uppercase mb-1">Banka Adı</p>
+                                    <p class="text-xs font-black text-slate-900">{{ $bankDetails['bank_name'] }}</p>
+                                </div>
+                                <div>
+                                    <p class="text-[10px] font-bold text-gray-400 uppercase mb-1">Hesap Sahibi</p>
+                                    <p class="text-xs font-black text-slate-900">{{ $bankDetails['bank_account_holder'] }}</p>
+                                </div>
+                                <div class="md:col-span-2">
+                                    <p class="text-[10px] font-bold text-gray-400 uppercase mb-1">IBAN</p>
+                                    <div class="flex items-center justify-between gap-4 bg-white px-4 py-3 rounded-xl border border-gray-100">
+                                        <p class="text-xs font-black text-slate-900 tracking-wider">{{ $bankDetails['bank_iban'] }}</p>
+                                        <button @click="copyToClipboard('{{ $bankDetails['bank_iban'] }}')" class="text-green-600 hover:text-green-700 transition-colors">
+                                            <i class="far fa-copy"></i>
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -290,6 +312,7 @@ function checkoutPage() {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
+                        'Accept': 'application/json',
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
                     },
                     body: JSON.stringify({
@@ -298,6 +321,17 @@ function checkoutPage() {
                         cart_items: this.cart.items
                     })
                 });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('Server Error Response:', errorText);
+                    try {
+                        const errorJson = JSON.parse(errorText);
+                        throw new Error(errorJson.message || 'Bir hata oluştu');
+                    } catch(e) {
+                        throw new Error('Sunucu hatası oluştu. Lütfen daha sonra tekrar deneyin.');
+                    }
+                }
 
                 const result = await response.json();
                 if (result.success) {
@@ -308,9 +342,8 @@ function checkoutPage() {
                         confirmButtonText: 'Tamam',
                         confirmButtonColor: '#0f172a'
                     }).then(() => {
-                        this.cart.items = [];
-                        localStorage.removeItem('cart_items');
-                        window.location.href = '/hesabim/siparislerim';
+                        this.cart.clear();
+                        window.location.href = result.redirect_url;
                     });
                 } else {
                     Swal.fire({
@@ -333,6 +366,19 @@ function checkoutPage() {
             } finally {
                 this.loading = false;
             }
+        },
+        copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'success',
+                    title: 'Panoya kopyalandı',
+                    showConfirmButton: false,
+                    timer: 1500,
+                    timerProgressBar: true
+                });
+            });
         }
     }
 }

@@ -4,7 +4,7 @@ iade için politika ve açılmamıs ürnlerde iade
 iade için ürün resmi şart
 
 
-yeni zözellikler çalışmıyr
+
 
 
 
@@ -12,6 +12,6 @@ yeni zözellikler çalışmıyr
 ürün ekleme 
 kategoriler için sitede görünecek kısmı düzenleyeleim
 
-Adres seçilirken sleectler sehirler ve mahlleer ekle 
+ 
 
 

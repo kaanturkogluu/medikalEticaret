@@ -17,10 +17,20 @@ class OrderController extends Controller
     public function index(): View
     {
         $orders = Order::with('channel')
-            ->oldest()
+            ->latest()
             ->paginate(15);
 
         return view('admin.orders', compact('orders'));
+    }
+
+    /**
+     * Approve an order (e.g. EFT paid)
+     */
+    public function approve(Order $order)
+    {
+        $order->update(['order_status' => 'Created']);
+        
+        return back()->with('success', 'Sipariş başarıyla onaylandı.');
     }
 
     /**

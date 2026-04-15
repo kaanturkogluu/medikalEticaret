@@ -45,8 +45,15 @@ class UserController extends Controller
         if ($order->customer_email !== Auth::user()->email) {
             abort(403);
         }
-        $order->load('items');
-        return view('user.order-detail', compact('order'));
+        $order->load('items.product');
+
+        $bankDetails = [
+            'bank_name' => \App\Models\Setting::getValue('bank_name', 'Ziraat Bankası'),
+            'bank_iban' => \App\Models\Setting::getValue('bank_iban', 'TR00 0000 0000 0000 0000 0000 00'),
+            'bank_account_holder' => \App\Models\Setting::getValue('bank_account_holder', 'ABC Medikal LTD. ŞTİ.'),
+        ];
+
+        return view('user.order-detail', compact('order', 'bankDetails'));
     }
 
     /** Addresses */

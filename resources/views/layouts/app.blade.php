@@ -722,6 +722,10 @@
                     total() {
                         return (this.subtotal() + this.shipping()).toFixed(2);
                     },
+                    clear() {
+                        this.items = [];
+                        this.save();
+                    },
                     save() {
                         localStorage.setItem('cart_items', JSON.stringify(this.items));
                     }

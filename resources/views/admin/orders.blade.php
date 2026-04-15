@@ -6,6 +6,8 @@
     statusMap: {
         'Awaiting': { label: 'Onay Bekliyor', color: 'bg-indigo-100 text-indigo-700' },
         'Created': { label: 'Hazırlanıyor', color: 'bg-blue-100 text-blue-700' },
+        'pending_payment': { label: 'Ödeme Bekleniyor', color: 'bg-amber-100 text-amber-700' },
+        'pending': { label: 'Beklemede', color: 'bg-slate-100 text-slate-700' },
         'Picking': { label: 'Toplanıyor', color: 'bg-amber-100 text-amber-700' },
         'Invoiced': { label: 'Faturalandı', color: 'bg-cyan-100 text-cyan-700' },
         'Shipped': { label: 'Kargoya Verildi', color: 'bg-orange-100 text-orange-700' },
@@ -30,8 +32,8 @@
     <!-- Header -->
     <div class="flex items-center justify-between">
         <div>
-            <h2 class="text-2xl font-bold text-slate-800 tracking-tight">Sipariş Yönetimi</h2>
-            <p class="text-sm text-slate-500 mt-1">Trendyol ve diğer mecralardan gelen siparişlerin detaylarını inceleyin.</p>
+            <h2 class="text-2xl font-bold text-slate-800 tracking-tight">Sipariş Yönetimi (Tüm Siparişler)</h2>
+            <p class="text-sm text-slate-500 mt-1">Trendyol, Hepsiburada ve Web Sitenizden gelen tüm siparişleri buradan yönetebilirsiniz.</p>
         </div>
         <div class="flex items-center gap-2">
             <form action="{{ route('admin.orders') }}" method="GET">
@@ -60,9 +62,9 @@
                 <tr class="hover:bg-slate-50/50 transition-colors group">
                     <td class="px-6 py-4">
                         <div class="flex flex-col">
-                            <span class="text-xs font-black text-slate-800 tracking-tighter">#{{ $o->external_order_id }}</span>
+                            <span class="text-xs font-black text-slate-800 tracking-tighter">#{{ $o->external_order_id ?? $o->id }}</span>
                             <span class="text-[9px] font-bold text-brand-600 uppercase tracking-tighter opacity-70">
-                                {{ $o->raw_marketplace_data['shipmentNumber'] ?? 'Paket No Yok' }}
+                                {{ $o->raw_marketplace_data['shipmentNumber'] ?? ( $o->channel_id ? 'Paket No Yok' : 'WEB SİPARİŞİ' ) }}
                             </span>
                         </div>
                     </td>
@@ -79,9 +81,12 @@
                         <span :class="getStatus('{{ $o->order_status }}').color" class="px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-wider" x-text="getStatus('{{ $o->order_status }}').label"></span>
                     </td>
                     <td class="px-6 py-4">
-                        <span class="text-[10px] font-bold text-slate-500" x-text="formatDate({{ $o->raw_marketplace_data['orderDate'] ?? 'null' }})"></span>
+                        <span class="text-[10px] font-bold text-slate-500">
+                            {{ $o->created_at->format('d.m.Y H:i') }}
+                        </span>
                     </td>
                     <td class="px-6 py-4 text-right">
+                        @php $o->load(['items.product', 'channel']); @endphp
                         <button @click="selectedOrder = {{ json_encode($o) }}" class="p-2 bg-white border border-slate-200 rounded-lg shadow-sm hover:border-brand-500 hover:text-brand-600 transition-all opacity-0 group-hover:opacity-100">
                             <i class="fas fa-eye text-sm"></i>
                         </button>
@@ -105,9 +110,9 @@
                         <i class="fas fa-box"></i>
                     </div>
                     <div>
-                        <h3 class="text-xl font-bold text-slate-800" x-text="'Sipariş Details: #' + (selectedOrder?.external_order_id)"></h3>
+                        <h3 class="text-xl font-bold text-slate-800" x-text="'Sipariş Detayı: #' + (selectedOrder?.external_order_id || selectedOrder?.id)"></h3>
                         <div class="flex items-center gap-3 mt-1">
-                            <span class="text-xs font-bold text-slate-400 uppercase tracking-widest" x-text="selectedOrder?.channel?.name"></span>
+                            <span class="text-xs font-bold text-slate-400 uppercase tracking-widest" x-text="selectedOrder?.channel?.name || 'WEB SİTE'"></span>
                             <span class="w-1 h-1 rounded-full bg-slate-200"></span>
                             <span :class="getStatus(selectedOrder?.order_status).color" class="px-2 py-0.5 rounded-lg text-[9px] font-black uppercase tracking-widest" x-text="getStatus(selectedOrder?.order_status).label"></span>
                         </div>
@@ -131,15 +136,15 @@
                         <div class="space-y-4">
                             <div>
                                 <p class="text-[10px] font-bold text-slate-400 uppercase">Sipariş Tarihi</p>
-                                <p class="text-xs font-bold text-slate-800" x-text="formatDate(selectedOrder?.raw_marketplace_data?.orderDate)"></p>
+                                <p class="text-xs font-bold text-slate-800" x-text="selectedOrder?.raw_marketplace_data?.orderDate ? formatDate(selectedOrder.raw_marketplace_data.orderDate) : formatDate(new Date(selectedOrder?.created_at).getTime())"></p>
                             </div>
                             <div>
-                                <p class="text-[10px] font-bold text-slate-400 uppercase">Paket No / Shipment ID</p>
-                                <p class="text-xs font-black text-brand-600 tracking-tighter" x-text="selectedOrder?.raw_marketplace_data?.shipmentNumber || '-'"></p>
+                                <p class="text-[10px] font-bold text-slate-400 uppercase">Ödeme Yöntemi</p>
+                                <p class="text-xs font-black text-brand-600 uppercase tracking-tighter" x-text="selectedOrder?.payment_method || (selectedOrder?.channel_id ? 'Pazaryeri' : '-')"></p>
                             </div>
                             <div>
-                                <p class="text-[10px] font-bold text-slate-400 uppercase">TC Kimlik / Vergi No</p>
-                                <p class="text-xs font-bold text-slate-800" x-text="selectedOrder?.raw_marketplace_data?.identityNumber || '-'"></p>
+                                <p class="text-[10px] font-bold text-slate-400 uppercase">Müşteri E-Posta</p>
+                                <p class="text-xs font-bold text-slate-800" x-text="selectedOrder?.customer_email || '-'"></p>
                             </div>
                         </div>
                     </div>
@@ -170,14 +175,13 @@
                         </div>
                     </div>
 
-                    <!-- Address Summary -->
                     <div class="p-6 bg-slate-50 rounded-3xl border border-slate-100 space-y-4">
                         <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
                             <i class="fas fa-map-marker-alt text-brand-500"></i> Teslimat Adresi
                         </h4>
                         <div class="space-y-3">
-                            <p class="text-xs font-bold text-slate-800 leading-relaxed" x-text="selectedOrder?.raw_marketplace_data?.shipmentAddress?.fullAddress"></p>
-                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-tighter" x-text="selectedOrder?.raw_marketplace_data?.shipmentAddress?.district + ' / ' + selectedOrder?.raw_marketplace_data?.shipmentAddress?.city"></p>
+                            <p class="text-xs font-bold text-slate-800 leading-relaxed" x-text="selectedOrder?.address_info?.address || selectedOrder?.raw_marketplace_data?.shipmentAddress?.fullAddress"></p>
+                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-tighter" x-text="(selectedOrder?.address_info?.district || selectedOrder?.raw_marketplace_data?.shipmentAddress?.district) + ' / ' + (selectedOrder?.address_info?.city || selectedOrder?.raw_marketplace_data?.shipmentAddress?.city)"></p>
                         </div>
                     </div>
                 </div>
@@ -186,7 +190,7 @@
                 <div class="bg-white rounded-3xl border border-slate-100 overflow-hidden shadow-sm">
                     <div class="px-6 py-4 bg-slate-50 border-b border-slate-100 flex justify-between items-center">
                         <h4 class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Sipariş İçeriği (Lines)</h4>
-                        <span class="text-[10px] font-extrabold text-brand-600 bg-brand-50 px-2 py-0.5 rounded-lg" x-text="(selectedOrder?.raw_marketplace_data?.lines?.length || 0) + ' Kalem Ürün'"></span>
+                        <span class="text-[10px] font-extrabold text-brand-600 bg-brand-50 px-2 py-0.5 rounded-lg" x-text="(selectedOrder?.raw_marketplace_data?.lines?.length || selectedOrder?.items?.length || 0) + ' Kalem Ürün'"></span>
                     </div>
                     <table class="w-full text-left">
                         <thead>
@@ -200,23 +204,46 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-50">
-                            <template x-for="item in selectedOrder?.raw_marketplace_data?.lines" :key="item.id">
-                                <tr class="hover:bg-slate-50/50 transition-colors">
-                                    <td class="px-6 py-4">
-                                        <div class="flex flex-col">
-                                            <span class="text-xs font-bold text-slate-800 tracking-tight" x-text="item.productName"></span>
-                                            <div class="flex items-center gap-2 mt-1">
-                                                <span class="text-[10px] px-1.5 py-0.5 bg-slate-100 text-slate-500 rounded font-black tracking-tighter" x-text="item.sku"></span>
-                                                <span class="text-[9px] text-slate-400" x-text="'Barkod: ' + item.barcode"></span>
+                            <!-- Marketplace Lines -->
+                            <template x-if="selectedOrder?.raw_marketplace_data?.lines">
+                                <template x-for="item in selectedOrder?.raw_marketplace_data?.lines" :key="item.id">
+                                    <tr class="hover:bg-slate-50/50 transition-colors">
+                                        <td class="px-6 py-4">
+                                            <div class="flex flex-col">
+                                                <span class="text-xs font-bold text-slate-800 tracking-tight" x-text="item.productName"></span>
+                                                <div class="flex items-center gap-2 mt-1">
+                                                    <span class="text-[10px] px-1.5 py-0.5 bg-slate-100 text-slate-500 rounded font-black tracking-tighter" x-text="item.sku"></span>
+                                                    <span class="text-[9px] text-slate-400" x-text="'Barkod: ' + item.barcode"></span>
+                                                </div>
                                             </div>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4 text-center font-black text-slate-900 tabular-nums" x-text="item.quantity"></td>
-                                    <td class="px-6 py-4 text-right text-xs font-bold text-slate-700 tabular-nums" x-text="item.price.toFixed(2) + ' ₺'"></td>
-                                    <td class="px-6 py-4 text-right text-xs font-bold text-red-500 tabular-nums" x-text="item.discount.toFixed(2) + ' ₺'"></td>
-                                    <td class="px-6 py-4 text-right text-[10px] font-bold text-slate-400" x-text="'%' + item.vatRate"></td>
-                                    <td class="px-6 py-4 text-right text-sm font-black text-slate-900 tabular-nums" x-text="((item.price * item.quantity) - item.discount).toFixed(2) + ' ₺'"></td>
-                                </tr>
+                                        </td>
+                                        <td class="px-6 py-4 text-center font-black text-slate-900 tabular-nums" x-text="item.quantity"></td>
+                                        <td class="px-6 py-4 text-right text-xs font-bold text-slate-700 tabular-nums" x-text="item.price.toFixed(2) + ' ₺'"></td>
+                                        <td class="px-6 py-4 text-right text-xs font-bold text-red-500 tabular-nums" x-text="(item.discount || 0).toFixed(2) + ' ₺'"></td>
+                                        <td class="px-6 py-4 text-right text-[10px] font-bold text-slate-400" x-text="'%' + (item.vatRate || 0)"></td>
+                                        <td class="px-6 py-4 text-right text-sm font-black text-slate-900 tabular-nums" x-text="((item.price * item.quantity) - (item.discount || 0)).toFixed(2) + ' ₺'"></td>
+                                    </tr>
+                                </template>
+                            </template>
+                            <!-- Website Lines -->
+                            <template x-if="!selectedOrder?.raw_marketplace_data?.lines && selectedOrder?.items">
+                                <template x-for="item in selectedOrder?.items" :key="item.id">
+                                    <tr class="hover:bg-slate-50/50 transition-colors">
+                                        <td class="px-6 py-4">
+                                            <div class="flex flex-col">
+                                                <span class="text-xs font-bold text-slate-800 tracking-tight" x-text="item.product?.name || 'Ürün'"></span>
+                                                <div class="flex items-center gap-2 mt-1">
+                                                    <span class="text-[10px] px-1.5 py-0.5 bg-slate-100 text-slate-500 rounded font-black tracking-tighter" x-text="item.product?.sku || '-'"></span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 text-center font-black text-slate-900 tabular-nums" x-text="item.quantity"></td>
+                                        <td class="px-6 py-4 text-right text-xs font-bold text-slate-700 tabular-nums" x-text="(item.price * 1).toFixed(2) + ' ₺'"></td>
+                                        <td class="px-6 py-4 text-right text-xs font-bold text-red-500 tabular-nums" x-text="selectedOrder?.payment_method === 'eft' ? (item.price * item.quantity * 0.05).toFixed(2) + ' ₺' : '0.00 ₺'"></td>
+                                        <td class="px-6 py-4 text-right text-[10px] font-bold text-slate-400">-</td>
+                                        <td class="px-6 py-4 text-right text-sm font-black text-slate-900 tabular-nums" x-text="(selectedOrder?.payment_method === 'eft' ? (item.price * item.quantity * 0.95) : (item.price * item.quantity)).toFixed(2) + ' ₺'"></td>
+                                    </tr>
+                                </template>
                             </template>
                         </tbody>
                     </table>
@@ -249,20 +276,28 @@
                 <div class="flex items-center gap-8">
                     <div>
                         <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Toplam Brüt</p>
-                        <p class="text-xl font-black text-slate-800 tabular-nums" x-text="(selectedOrder?.raw_marketplace_data?.grossAmount || 0).toFixed(2) + ' ₺'"></p>
+                        <p class="text-xl font-black text-slate-800 tabular-nums" x-text="((selectedOrder?.raw_marketplace_data?.grossAmount * 1 || (selectedOrder?.total_price * 1 + selectedOrder?.discount_amount * 1) || 0)).toFixed(2) + ' ₺'"></p>
                     </div>
                     <div class="h-10 w-px bg-slate-200"></div>
                     <div>
                         <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Toplam İndirim</p>
-                        <p class="text-xl font-black text-red-500 tabular-nums" x-text="'- ' + (selectedOrder?.raw_marketplace_data?.totalDiscount || 0).toFixed(2) + ' ₺'"></p>
+                        <p class="text-xl font-black text-red-500 tabular-nums" x-text="'- ' + (selectedOrder?.raw_marketplace_data?.totalDiscount || selectedOrder?.discount_amount || 0).toFixed(2) + ' ₺'"></p>
                     </div>
                     <div class="h-10 w-px bg-slate-200"></div>
                     <div>
                         <p class="text-[10px] font-black text-brand-600 uppercase tracking-widest mb-1">Genel Toplam (NET)</p>
-                        <p class="text-2xl font-black text-brand-600 tabular-nums" x-text="(selectedOrder?.total_price || 0).toLocaleString('tr-TR', { minimumFractionDigits: 2 }) + ' ₺'"></p>
+                        <p class="text-2xl font-black text-brand-600 tabular-nums" x-text="(selectedOrder?.total_price * 1 || 0).toLocaleString('tr-TR', { minimumFractionDigits: 2 }) + ' ₺'"></p>
                     </div>
                 </div>
                 <div class="flex gap-3">
+                    <template x-if="selectedOrder?.order_status === 'Awaiting' || selectedOrder?.order_status === 'pending_payment'">
+                        <form :action="'{{ route('admin.orders.approve', ':id') }}'.replace(':id', selectedOrder.id)" method="POST">
+                            @csrf
+                            <button type="submit" class="px-6 py-3 bg-emerald-600 text-white rounded-2xl text-xs font-black hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-500/30 uppercase tracking-widest">
+                                Siparişi Onayla
+                            </button>
+                        </form>
+                    </template>
                     <button class="px-6 py-3 bg-white border border-slate-200 rounded-2xl text-xs font-black text-slate-600 hover:bg-slate-100 transition-all uppercase tracking-widest">
                         Yazdır
                     </button>

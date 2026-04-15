@@ -33,6 +33,46 @@
         </div>
     </div>
 
+    @if(strtolower($order->order_status) === 'awaiting' && $order->payment_method === 'eft')
+    <div class="bg-amber-50 rounded-2xl border border-amber-100 p-8 shadow-sm">
+        <div class="flex items-center gap-4 mb-6">
+            <div class="w-12 h-12 bg-amber-500 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-amber-200">
+                <i class="fas fa-university text-xl"></i>
+            </div>
+            <div>
+                <h3 class="font-black text-xl text-amber-900 uppercase italic tracking-tighter">Ödeme Bekleniyor (Havale/EFT)</h3>
+                <p class="text-xs font-bold text-amber-800 opacity-70">Lütfen aşağıdaki bilgileri kullanarak ödemenizi gerçekleştiriniz.</p>
+            </div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-white/60 p-5 rounded-2xl border border-amber-200">
+                <p class="text-[10px] font-black text-amber-800/40 uppercase tracking-widest mb-1">Banka & Alıcı</p>
+                <p class="text-sm font-black text-slate-900">{{ $bankDetails['bank_name'] }}</p>
+                <p class="text-xs font-bold text-slate-500">{{ $bankDetails['bank_account_holder'] }}</p>
+            </div>
+            <div class="bg-white/60 p-5 rounded-2xl border border-amber-200">
+                <p class="text-[10px] font-black text-amber-800/40 uppercase tracking-widest mb-1">IBAN Numarası</p>
+                <div class="flex items-center justify-between">
+                    <p class="text-sm font-black text-slate-900 tracking-wider">{{ $bankDetails['bank_iban'] }}</p>
+                    <button onclick="navigator.clipboard.writeText('{{ $bankDetails['bank_iban'] }}'); Swal.fire({toast:true, position:'top-end', icon:'success', title:'IBAN Kopyalandı', showConfirmButton:false, timer:1500})" class="text-amber-600 hover:text-amber-700">
+                        <i class="far fa-copy"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="bg-slate-900 p-5 rounded-2xl shadow-xl">
+                <p class="text-[10px] font-black text-white/40 uppercase tracking-widest mb-1">Açıklama (Kritik)</p>
+                <div class="flex items-center justify-between">
+                    <p class="text-sm font-black text-orange-400 italic">Sipariş No: {{ $order->id }}</p>
+                    <button onclick="navigator.clipboard.writeText('Sipariş No: {{ $order->id }}'); Swal.fire({toast:true, position:'top-end', icon:'success', title:'Açıklama Kopyalandı', showConfirmButton:false, timer:1500})" class="text-white/40 hover:text-white">
+                        <i class="far fa-copy text-xs"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
+
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {{-- Order Items --}}
         <div class="lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
@@ -45,8 +85,8 @@
                     <i class="fas fa-box text-gray-300 text-xl"></i>
                 </div>
                 <div class="flex-1 min-w-0">
-                    <p class="font-semibold text-sm text-gray-900 truncate">{{ $item->product_name ?? 'Ürün' }}</p>
-                    <p class="text-xs text-gray-400">SKU: {{ $item->sku ?? '—' }}</p>
+                    <p class="font-semibold text-sm text-gray-900 truncate">{{ $item->product->name ?? 'Ürün' }}</p>
+                    <p class="text-xs text-gray-400">SKU: {{ $item->product->sku ?? '—' }}</p>
                     <p class="text-xs text-gray-400">Adet: {{ $item->quantity ?? 1 }}</p>
                 </div>
                 <div class="text-right flex-shrink-0">
@@ -61,6 +101,8 @@
             @endforelse
         </div>
 
+        </div>
+
         {{-- Right Column: Summary + Address --}}
         <div class="space-y-4">
             {{-- Price Summary --}}
@@ -68,9 +110,15 @@
                 <h2 class="font-bold text-gray-900 mb-4">Ödeme Özeti</h2>
                 <div class="space-y-2 text-sm">
                     <div class="flex justify-between text-gray-600">
-                        <span>Ürünler Toplamı</span>
-                        <span class="font-semibold">{{ number_format($order->total_price, 2, ',', '.') }} TL</span>
+                        <span>Ara Toplam</span>
+                        <span class="font-semibold">{{ number_format($order->total_price + $order->discount_amount, 2, ',', '.') }} TL</span>
                     </div>
+                    @if($order->discount_amount > 0)
+                    <div class="flex justify-between text-gray-600">
+                        <span>%5 EFT İndirimi</span>
+                        <span class="font-semibold text-red-500">- {{ number_format($order->discount_amount, 2, ',', '.') }} TL</span>
+                    </div>
+                    @endif
                     <div class="flex justify-between text-gray-600">
                         <span>Kargo</span>
                         <span class="font-semibold text-green-600">Ücretsiz</span>

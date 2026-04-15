@@ -11,7 +11,7 @@ class Order extends Model
     protected $fillable = [
         'channel_id', 'external_order_id', 'customer_name', 'customer_email', 'customer_phone',
         'total_price', 'currency', 'order_status', 'address_info', 'raw_marketplace_data', 'synced',
-        'payment_method', 'shipping_price'
+        'payment_method', 'shipping_price', 'discount_amount'
     ];
 
     protected $casts = [

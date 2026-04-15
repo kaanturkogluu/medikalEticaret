@@ -7,6 +7,8 @@ use App\Models\OrderItem;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\OrderPlaced;
 use Illuminate\Support\Str;
 
 class CheckoutController extends Controller
@@ -14,7 +16,27 @@ class CheckoutController extends Controller
     public function index()
     {
         $provinces = \App\Models\Province::orderBy('name')->get();
-        return view('checkout', compact('provinces'));
+        
+        // Get bank details from settings
+        $bankDetails = [
+            'bank_name' => \App\Models\Setting::getValue('bank_name', 'Ziraat Bankası'),
+            'bank_iban' => \App\Models\Setting::getValue('bank_iban', 'TR00 0000 0000 0000 0000 0000 00'),
+            'bank_account_holder' => \App\Models\Setting::getValue('bank_account_holder', 'ABC Medikal LTD. ŞTİ.'),
+        ];
+
+        return view('checkout', compact('provinces', 'bankDetails'));
+    }
+
+    public function success(Order $order)
+    {
+        // Get bank details from settings
+        $bankDetails = [
+            'bank_name' => \App\Models\Setting::getValue('bank_name', 'Ziraat Bankası'),
+            'bank_iban' => \App\Models\Setting::getValue('bank_iban', 'TR00 0000 0000 0000 0000 0000 00'),
+            'bank_account_holder' => \App\Models\Setting::getValue('bank_account_holder', 'ABC Medikal LTD. ŞTİ.'),
+        ];
+
+        return view('order-success', compact('order', 'bankDetails'));
     }
 
     public function store(Request $request)
@@ -28,7 +50,7 @@ class CheckoutController extends Controller
             'district' => 'required|string',
             'neighborhood' => 'required|string',
             'address' => 'required|string',
-            'payment_method' => 'required|in:credit_card,eft',
+            'payment_method' => 'required|in:credit_card,eft,cash_on_delivery',
             'cart_items' => 'required|array',
             'cart_items.*.id' => 'required|exists:products,id',
             'cart_items.*.qty' => 'required|integer|min:1',
@@ -66,13 +88,22 @@ class CheckoutController extends Controller
                     $total -= $discount;
                 }
 
+                // Determine Order Status (Mapping to Admin statusMap)
+                $status = 'Awaiting'; // Default: Onay Bekliyor
+                if ($validated['payment_method'] === 'credit_card') {
+                    $status = 'Created'; // Hazırlanıyor
+                }
+
+                $websiteChannel = \App\Models\Channel::where('slug', 'website')->first();
+
                 $order = Order::create([
+                    'channel_id' => $websiteChannel?->id,
                     'customer_name' => $validated['first_name'] . ' ' . $validated['last_name'],
                     'customer_email' => $validated['email'],
                     'customer_phone' => $validated['phone'],
                     'total_price' => $total,
                     'shipping_price' => $shipping,
-                    'order_status' => 'pending',
+                    'order_status' => $status,
                     'address_info' => [
                         'city' => $validated['city'],
                         'district' => $validated['district'],
@@ -80,7 +111,7 @@ class CheckoutController extends Controller
                         'address' => $validated['address']
                     ],
                     'payment_method' => $validated['payment_method'],
-                    'channel_id' => null, // Local order
+                    'discount_amount' => $discount,
                     'synced' => false,
                     'currency' => 'TL'
                 ]);
@@ -94,10 +125,24 @@ class CheckoutController extends Controller
                     ]);
                 }
 
+                // Send Order Confirmation Email (Asynchronous)
+                try {
+                    Mail::to($order->customer_email)->send(new OrderPlaced($order));
+                } catch (\Exception $e) {
+                    \Illuminate\Support\Facades\Log::error('Order Email Error: ' . $e->getMessage());
+                }
+
+                $message = 'Siparişiniz başarıyla alındı.';
+                if ($validated['payment_method'] === 'eft') {
+                    $message = 'Siparişiniz oluşturuldu. Lütfen banka transferini gerçekleştirin.';
+                }
+
                 return response()->json([
                     'success' => true,
                     'order_id' => $order->id,
-                    'message' => 'Siparişiniz başarıyla alındı.'
+                    'redirect_url' => route('checkout.success', $order->id),
+                    'payment_method' => $validated['payment_method'],
+                    'message' => $message
                 ]);
             });
         } catch (\Exception $e) {
