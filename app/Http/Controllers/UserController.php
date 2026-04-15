@@ -48,9 +48,9 @@ class UserController extends Controller
         $order->load('items.product');
 
         $bankDetails = [
-            'bank_name' => \App\Models\Setting::getValue('bank_name', 'Ziraat Bankası'),
-            'bank_iban' => \App\Models\Setting::getValue('bank_iban', 'TR 1500 0100 0758 5367 4214 5004'),
-            'bank_account_holder' => \App\Models\Setting::getValue('bank_account_holder', 'Turgay Vural'),
+            'bank_name' => 'Ziraat Bankası',
+            'bank_iban' => 'TR 1500 0100 0758 5367 4214 5004',
+            'bank_account_holder' => 'Turgay Vural',
         ];
 
         return view('user.order-detail', compact('order', 'bankDetails'));
