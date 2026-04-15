@@ -20,7 +20,7 @@ class CheckoutController extends Controller
         // Get bank details from settings
         $bankDetails = [
             'bank_name' => \App\Models\Setting::getValue('bank_name', 'Ziraat Bankası'),
-            'bank_iban' => \App\Models\Setting::getValue('bank_iban', 'TR15 0001 0007 5853 6742 1450 04'),
+            'bank_iban' => \App\Models\Setting::getValue('bank_iban', 'TR 1500 0100 0758 5367 4214 5004'),
             'bank_account_holder' => \App\Models\Setting::getValue('bank_account_holder', 'Turgay Vural'),
         ];
 
@@ -32,7 +32,7 @@ class CheckoutController extends Controller
         // Get bank details from settings
         $bankDetails = [
             'bank_name' => \App\Models\Setting::getValue('bank_name', 'Ziraat Bankası'),
-            'bank_iban' => \App\Models\Setting::getValue('bank_iban', 'TR15 0001 0007 5853 6742 1450 04'),
+            'bank_iban' => \App\Models\Setting::getValue('bank_iban', 'TR 1500 0100 0758 5367 4214 5004'),
             'bank_account_holder' => \App\Models\Setting::getValue('bank_account_holder', 'Turgay Vural'),
         ];
 
