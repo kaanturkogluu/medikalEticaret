@@ -28,8 +28,8 @@ class OrderPlaced extends Mailable implements ShouldQueue
         if ($order->payment_method === 'eft') {
             $this->bankDetails = [
                 'bank_name' => Setting::getValue('bank_name', 'Ziraat Bankası'),
-                'bank_iban' => Setting::getValue('bank_iban', 'TR00 0000 0000 0000 0000 0000 00'),
-                'bank_account_holder' => Setting::getValue('bank_account_holder', 'ABC Medikal LTD. ŞTİ.'),
+                'bank_iban' => Setting::getValue('bank_iban', 'TR15 0001 0007 5853 6742 1450 04'),
+                'bank_account_holder' => Setting::getValue('bank_account_holder', 'Turgay Vural'),
             ];
         }
     }

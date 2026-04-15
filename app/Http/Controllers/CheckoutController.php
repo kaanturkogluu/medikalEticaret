@@ -20,8 +20,8 @@ class CheckoutController extends Controller
         // Get bank details from settings
         $bankDetails = [
             'bank_name' => \App\Models\Setting::getValue('bank_name', 'Ziraat Bankası'),
-            'bank_iban' => \App\Models\Setting::getValue('bank_iban', 'TR00 0000 0000 0000 0000 0000 00'),
-            'bank_account_holder' => \App\Models\Setting::getValue('bank_account_holder', 'ABC Medikal LTD. ŞTİ.'),
+            'bank_iban' => \App\Models\Setting::getValue('bank_iban', 'TR15 0001 0007 5853 6742 1450 04'),
+            'bank_account_holder' => \App\Models\Setting::getValue('bank_account_holder', 'Turgay Vural'),
         ];
 
         return view('checkout', compact('provinces', 'bankDetails'));
@@ -32,8 +32,8 @@ class CheckoutController extends Controller
         // Get bank details from settings
         $bankDetails = [
             'bank_name' => \App\Models\Setting::getValue('bank_name', 'Ziraat Bankası'),
-            'bank_iban' => \App\Models\Setting::getValue('bank_iban', 'TR00 0000 0000 0000 0000 0000 00'),
-            'bank_account_holder' => \App\Models\Setting::getValue('bank_account_holder', 'ABC Medikal LTD. ŞTİ.'),
+            'bank_iban' => \App\Models\Setting::getValue('bank_iban', 'TR15 0001 0007 5853 6742 1450 04'),
+            'bank_account_holder' => \App\Models\Setting::getValue('bank_account_holder', 'Turgay Vural'),
         ];
 
         return view('order-success', compact('order', 'bankDetails'));
