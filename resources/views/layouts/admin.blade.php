@@ -19,6 +19,8 @@
         if (file_exists(public_path($siteFavicon))) {
             $faviconUrl .= '?v=' . filemtime(public_path($siteFavicon));
         }
+
+        $primaryColor = \App\Models\Setting::getValue('site_primary_color', '#f27a1a');
     @endphp
     <link rel="icon" type="{{ $faviconType }}" href="{{ $faviconUrl }}">
     <title>MultiSync | Pazaryeri Entegrasyon Paneli</title>
@@ -60,6 +62,10 @@
     </script>
     
     <style>
+        :root {
+            --primary-color: {{ $primaryColor }};
+            --primary-hover: {{ $primaryColor }}ee;
+        }
         [x-cloak] { display: none !important; }
         .glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); }
         .sidebar-item-active { background: #0ea5e9; color: white; border-right: 4px solid white; }

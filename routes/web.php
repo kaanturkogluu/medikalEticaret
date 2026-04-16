@@ -122,11 +122,11 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
         Route::get('/', [\App\Http\Controllers\Admin\BrandController::class, 'index'])->name('index');
         Route::get('/create', [\App\Http\Controllers\Admin\BrandController::class, 'create'])->name('create');
         Route::post('/store', [\App\Http\Controllers\Admin\BrandController::class, 'store'])->name('store');
-        Route::get('/{brand}/edit', [\App\Http\Controllers\Admin\BrandController::class, 'edit'])->name('edit');
-        Route::put('/{brand}/update', [\App\Http\Controllers\Admin\BrandController::class, 'update'])->name('update');
-        Route::delete('/{brand}/delete', [\App\Http\Controllers\Admin\BrandController::class, 'destroy'])->name('destroy');
-        Route::post('/{brand}/toggle-active', [\App\Http\Controllers\Admin\BrandController::class, 'toggleActive'])->name('toggle-active');
-        Route::post('/{brand}/toggle-featured', [\App\Http\Controllers\Admin\BrandController::class, 'toggleFeatured'])->name('toggle-featured');
+        Route::get('/{brand:id}/edit', [\App\Http\Controllers\Admin\BrandController::class, 'edit'])->name('edit');
+        Route::put('/{brand:id}/update', [\App\Http\Controllers\Admin\BrandController::class, 'update'])->name('update');
+        Route::delete('/{brand:id}/delete', [\App\Http\Controllers\Admin\BrandController::class, 'destroy'])->name('destroy');
+        Route::post('/{brand:id}/toggle-active', [\App\Http\Controllers\Admin\BrandController::class, 'toggleActive'])->name('toggle-active');
+        Route::post('/{brand:id}/toggle-featured', [\App\Http\Controllers\Admin\BrandController::class, 'toggleFeatured'])->name('toggle-featured');
     });
 
     // Category Management
@@ -134,11 +134,11 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
         Route::get('/', [\App\Http\Controllers\Admin\CategoryController::class, 'index'])->name('index');
         Route::get('/create', [\App\Http\Controllers\Admin\CategoryController::class, 'create'])->name('create');
         Route::post('/store', [\App\Http\Controllers\Admin\CategoryController::class, 'store'])->name('store');
-        Route::get('/{category}/edit', [\App\Http\Controllers\Admin\CategoryController::class, 'edit'])->name('edit');
-        Route::put('/{category}/update', [\App\Http\Controllers\Admin\CategoryController::class, 'update'])->name('update');
-        Route::delete('/{category}/delete', [\App\Http\Controllers\Admin\CategoryController::class, 'destroy'])->name('destroy');
-        Route::post('/{category}/toggle-active', [\App\Http\Controllers\Admin\CategoryController::class, 'toggleActive'])->name('toggle-active');
-        Route::post('/{category}/toggle-navbar', [\App\Http\Controllers\Admin\CategoryController::class, 'toggleNavbar'])->name('toggle-navbar');
+        Route::get('/{category:id}/edit', [\App\Http\Controllers\Admin\CategoryController::class, 'edit'])->name('edit');
+        Route::put('/{category:id}/update', [\App\Http\Controllers\Admin\CategoryController::class, 'update'])->name('update');
+        Route::delete('/{category:id}/delete', [\App\Http\Controllers\Admin\CategoryController::class, 'destroy'])->name('destroy');
+        Route::post('/{category:id}/toggle-active', [\App\Http\Controllers\Admin\CategoryController::class, 'toggleActive'])->name('toggle-active');
+        Route::post('/{category:id}/toggle-navbar', [\App\Http\Controllers\Admin\CategoryController::class, 'toggleNavbar'])->name('toggle-navbar');
     });
 
     // Page Management (Agreements & Policies)
@@ -146,10 +146,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
         Route::get('/', [\App\Http\Controllers\Admin\PageController::class, 'index'])->name('index');
         Route::get('/create', [\App\Http\Controllers\Admin\PageController::class, 'create'])->name('create');
         Route::post('/store', [\App\Http\Controllers\Admin\PageController::class, 'store'])->name('store');
-        Route::get('/{page}/edit', [\App\Http\Controllers\Admin\PageController::class, 'edit'])->name('edit');
-        Route::put('/{page}/update', [\App\Http\Controllers\Admin\PageController::class, 'update'])->name('update');
-        Route::delete('/{page}/delete', [\App\Http\Controllers\Admin\PageController::class, 'destroy'])->name('destroy');
-        Route::post('/{page}/toggle', [\App\Http\Controllers\Admin\PageController::class, 'toggle'])->name('toggle');
+        Route::get('/{page:id}/edit', [\App\Http\Controllers\Admin\PageController::class, 'edit'])->name('edit');
+        Route::put('/{page:id}/update', [\App\Http\Controllers\Admin\PageController::class, 'update'])->name('update');
+        Route::delete('/{page:id}/delete', [\App\Http\Controllers\Admin\PageController::class, 'destroy'])->name('destroy');
+        Route::post('/{page:id}/toggle', [\App\Http\Controllers\Admin\PageController::class, 'toggle'])->name('toggle');
     });
 
     // FAQ Management
@@ -157,10 +157,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
         Route::get('/', [\App\Http\Controllers\Admin\FaqController::class, 'index'])->name('index');
         Route::get('/create', [\App\Http\Controllers\Admin\FaqController::class, 'create'])->name('create');
         Route::post('/store', [\App\Http\Controllers\Admin\FaqController::class, 'store'])->name('store');
-        Route::get('/{faq}/edit', [\App\Http\Controllers\Admin\FaqController::class, 'edit'])->name('edit');
-        Route::put('/{faq}/update', [\App\Http\Controllers\Admin\FaqController::class, 'update'])->name('update');
-        Route::delete('/{faq}/delete', [\App\Http\Controllers\Admin\FaqController::class, 'destroy'])->name('destroy');
-        Route::post('/{faq}/toggle', [\App\Http\Controllers\Admin\FaqController::class, 'toggle'])->name('toggle');
+        Route::get('/{faq:id}/edit', [\App\Http\Controllers\Admin\FaqController::class, 'edit'])->name('edit');
+        Route::put('/{faq:id}/update', [\App\Http\Controllers\Admin\FaqController::class, 'update'])->name('update');
+        Route::delete('/{faq:id}/delete', [\App\Http\Controllers\Admin\FaqController::class, 'destroy'])->name('destroy');
+        Route::post('/{faq:id}/toggle', [\App\Http\Controllers\Admin\FaqController::class, 'toggle'])->name('toggle');
     });
 
     Route::view('/settings', 'admin.settings')->name('admin.settings');
