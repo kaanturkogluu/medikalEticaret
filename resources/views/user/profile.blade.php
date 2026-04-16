@@ -2,7 +2,7 @@
 
 @section('title', 'Kullanıcı Bilgilerim')
 
-@section('content')
+@section('user_content')
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
     {{-- Profile Info --}}

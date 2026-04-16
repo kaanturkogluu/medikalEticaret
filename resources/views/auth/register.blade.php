@@ -3,9 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    @php
+        $siteFavicon = \App\Models\Setting::getValue('site_favicon', asset('favicon.svg'));
+    @endphp
+    <link rel="icon" type="image/x-icon" href="{{ $siteFavicon }}">
+    <link rel="shortcut icon" href="{{ $siteFavicon }}" type="image/x-icon">
     <title>Üye Ol | {{ config('app.name') }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <style>
         body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); }
         .btn-primary { background: #f27a1a; transition: all 0.2s; }
@@ -15,7 +22,34 @@
         .strength-bar div { transition: width 0.3s ease; }
     </style>
 </head>
-<body class="flex flex-col min-h-screen">
+<body class="flex flex-col min-h-screen" x-data="{ 
+    modal: {
+        show: false,
+        title: '',
+        content: '',
+        loading: false,
+        async open(slug) {
+            this.show = true;
+            this.loading = true;
+            this.title = 'Yükleniyor...';
+            this.content = '<div class=\'flex justify-center p-20\'><i class=\'fas fa-circle-notch fa-spin text-4xl text-orange-500\'></i></div>';
+            
+            try {
+                const res = await fetch(`/sayfa/${slug}`, {
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                });
+                const data = await res.json();
+                this.title = data.title;
+                this.content = data.content;
+            } catch (e) {
+                this.title = 'Hata';
+                this.content = 'İçerik yüklenirken bir hata oluştu.';
+            } finally {
+                this.loading = false;
+            }
+        }
+    }
+}">
     <header class="py-5 border-b bg-white/80 backdrop-blur-sm flex justify-center sticky top-0 z-10">
         <a href="/" class="text-2xl font-black italic tracking-tighter text-slate-900 uppercase">
             {{ config('app.name') }}
@@ -56,6 +90,11 @@
             <div class="bg-white rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100 p-8">
                 <form action="{{ route('register') }}" method="POST" class="space-y-5" id="registerForm">
                     @csrf
+                    
+                    <!-- Honeypot field for spam prevention -->
+                    <div class="hidden" aria-hidden="true">
+                        <input type="text" name="website_url" tabindex="-1" autocomplete="off">
+                    </div>
 
                     <div>
                         <label class="block text-xs font-bold text-slate-600 mb-2 uppercase tracking-widest" for="name">Ad Soyad</label>
@@ -126,8 +165,8 @@
                     <div class="flex items-start gap-3 pt-2">
                         <input type="checkbox" id="terms" name="terms" required class="mt-0.5 w-4 h-4 rounded border-gray-300 text-orange-500 focus:ring-orange-400">
                         <label for="terms" class="text-xs text-slate-500 leading-relaxed">
-                            <a href="{{ route('page.show', 'kullanim-kosullari') }}" target="_blank" class="font-bold text-orange-500 hover:underline">Kullanım Koşulları</a>'nı ve
-                            <a href="{{ route('page.show', 'gizlilik-politikasi') }}" target="_blank" class="font-bold text-orange-500 hover:underline">Gizlilik Politikası</a>'nı okudum, kabul ediyorum.
+                            <a href="javascript:void(0)" @click="modal.open('kullanim-kosullari')" class="font-bold text-orange-500 hover:underline">Kullanım Koşulları</a>'nı ve
+                            <a href="javascript:void(0)" @click="modal.open('gizlilik-politikasi')" class="font-bold text-orange-500 hover:underline">Gizlilik Politikası</a>'nı okudum, kabul ediyorum.
                         </label>
                     </div>
 
@@ -182,5 +221,61 @@
             text.textContent = levels[score].label;
         }
     </script>
+    <!-- Modal Component -->
+    <div x-show="modal.show" 
+         x-cloak
+         class="fixed inset-0 z-[100] overflow-y-auto" 
+         aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <!-- Background overlay -->
+            <div x-show="modal.show" 
+                 x-transition:enter="ease-out duration-300" 
+                 x-transition:enter-start="opacity-0" 
+                 x-transition:enter-end="opacity-100" 
+                 x-transition:leave="ease-in duration-200" 
+                 x-transition:leave-start="opacity-100" 
+                 x-transition:leave-end="opacity-0" 
+                 class="fixed inset-0 bg-slate-900 bg-opacity-75 transition-opacity" 
+                 @click="modal.show = false"
+                 aria-hidden="true"></div>
+
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+            <div x-show="modal.show" 
+                 x-transition:enter="ease-out duration-300" 
+                 x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" 
+                 x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" 
+                 x-transition:leave="ease-in duration-200" 
+                 x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" 
+                 x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" 
+                 class="inline-block align-bottom bg-white rounded-[32px] text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full border border-slate-100">
+                
+                <div class="bg-white px-8 pt-8 pb-6 border-b border-slate-50 flex justify-between items-center sticky top-0 bg-white/80 backdrop-blur-md z-10">
+                    <h3 class="text-xl font-black italic tracking-tighter text-slate-900 uppercase" x-text="modal.title"></h3>
+                    <button @click="modal.show = false" class="text-slate-400 hover:text-slate-600 focus:outline-none bg-slate-50 w-10 h-10 rounded-xl flex items-center justify-center transition-colors">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <div class="bg-white px-8 py-8 max-h-[60vh] overflow-y-auto custom-scrollbar">
+                    <div class="prose prose-slate max-w-none text-slate-600 text-sm leading-relaxed" x-html="modal.content"></div>
+                </div>
+
+                <div class="bg-slate-50 px-8 py-6 flex justify-end">
+                    <button @click="modal.show = false" class="px-8 py-3 bg-slate-900 text-white rounded-xl text-xs font-black uppercase italic tracking-tighter hover:bg-orange-600 transition-all shadow-lg active:scale-95">
+                        Kapat
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        [x-cloak] { display: none !important; }
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #f27a1a; }
+    </style>
 </body>
 </html>

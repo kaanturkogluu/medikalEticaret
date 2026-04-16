@@ -2,7 +2,7 @@
 
 @section('title', 'Siparişlerim')
 
-@section('content')
+@section('user_content')
 <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
     {{-- Header with filters --}}
     <div class="px-6 py-5 border-b border-gray-100">
@@ -56,11 +56,11 @@
                 @php
                     $status = strtolower($order->order_status ?? '');
                     $isDelivered = str_contains($status, 'teslim') || str_contains($status, 'delivered');
-                    $isCancelled = str_contains($status, 'iptal') || str_contains($status, 'cancel');
+                    $isCancelled = str_contains($status, 'iptal') || str_contains($status, 'cancel') || str_contains($status, 'return');
                 @endphp
                 <span class="inline-flex items-center gap-2 text-sm font-bold {{ $isDelivered ? 'text-green-600' : ($isCancelled ? 'text-red-500' : 'text-orange-500') }}">
                     <i class="fas fa-{{ $isDelivered ? 'check-circle' : ($isCancelled ? 'times-circle' : 'clock') }} text-base"></i>
-                    {{ $order->order_status ?? 'İşleniyor' }}
+                    {{ $order->status_label }}
                 </span>
             </div>
         </div>

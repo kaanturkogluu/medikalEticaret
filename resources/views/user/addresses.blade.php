@@ -2,7 +2,7 @@
 
 @section('title', 'Adreslerim')
 
-@section('content')
+@section('user_content')
 <div class="space-y-5">
 
     {{-- Page Header --}}

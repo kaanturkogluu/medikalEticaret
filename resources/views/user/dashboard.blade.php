@@ -2,7 +2,7 @@
 
 @section('title', 'Özet Sayfam')
 
-@section('content')
+@section('user_content')
 {{-- Stats Row --}}
 <div class="grid grid-cols-4 gap-4 mb-6">
     <div class="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm text-center">
@@ -50,14 +50,14 @@
             <div class="flex-1 min-w-0">
                 <div class="flex items-center gap-3 mb-1">
                     <span class="text-xs font-bold text-gray-400">#{{ $order->external_order_id ?? $order->id }}</span>
-                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold
-                        {{ str_contains(strtolower($order->order_status ?? ''), 'delivered') || str_contains(strtolower($order->order_status ?? ''), 'teslim') ? 'bg-green-50 text-green-600' : 'bg-orange-50 text-orange-600' }}">
-                        <i class="fas fa-{{ str_contains(strtolower($order->order_status ?? ''), 'teslim') ? 'check-circle' : 'clock' }} mr-1"></i>
-                        {{ $order->order_status ?? 'İşleniyor' }}
+                    <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-[10px] font-black uppercase italic tracking-tighter
+                        {{ in_array($order->order_status, ['Delivered', 'Shipped']) ? 'bg-green-50 text-green-600 border border-green-100' : 'bg-orange-50 text-orange-600 border border-orange-100' }}">
+                        <i class="fas fa-{{ $order->order_status === 'Delivered' ? 'check-double' : ($order->order_status === 'Shipped' ? 'truck' : 'clock') }} mr-1.5 opacity-70"></i>
+                        {{ $order->status_label }}
                     </span>
                 </div>
-                <p class="text-sm font-semibold text-gray-800">{{ $order->customer_name }}</p>
-                <p class="text-xs text-gray-400">{{ $order->created_at->translatedFormat('d F Y') }}</p>
+                <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-1 opacity-50">{{ $order->customer_name }}</p>
+                <p class="text-[10px] text-slate-400 font-medium">{{ $order->created_at->translatedFormat('d F Y') }}</p>
             </div>
             <div class="text-right flex-shrink-0">
                 <p class="font-black text-orange-500 text-lg">{{ number_format($order->total_price, 2, ',', '.') }} TL</p>

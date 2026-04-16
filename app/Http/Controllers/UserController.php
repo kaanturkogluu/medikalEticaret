@@ -32,7 +32,20 @@ class UserController extends Controller
         $query = Order::where('customer_email', $user->email)->latest();
 
         if ($request->filled('status') && $request->status !== 'all') {
-            $query->where('order_status', $request->status);
+            switch ($request->status) {
+                case 'ongoing':
+                    $query->whereIn('order_status', ['Awaiting', 'Created', 'Shipped']);
+                    break;
+                case 'cancelled':
+                    $query->where('order_status', 'Cancelled');
+                    break;
+                case 'returned':
+                    $query->whereIn('order_status', ['Returned', 'UnDelivered']);
+                    break;
+                default:
+                    $query->where('order_status', $request->status);
+                    break;
+            }
         }
 
         $orders = $query->paginate(10);

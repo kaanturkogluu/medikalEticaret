@@ -433,6 +433,7 @@
 @endsection
 
 @section('styles')
+<style>
     .product-card {
         background: var(--card-bg);
         border-radius: 8px;
@@ -478,4 +479,5 @@
         font-weight: 700;
         width: fit-content;
     }
+</style>
 @endsection

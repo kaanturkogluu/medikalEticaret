@@ -2,7 +2,7 @@
 
 @section('title', 'Sipariş #' . ($order->external_order_id ?? $order->id))
 
-@section('content')
+@section('user_content')
 <div class="space-y-4">
 
     {{-- Back --}}
@@ -22,12 +22,12 @@
                 @php
                     $status = strtolower($order->order_status ?? '');
                     $isDelivered = str_contains($status, 'teslim') || str_contains($status, 'delivered');
-                    $isCancelled = str_contains($status, 'iptal') || str_contains($status, 'cancel');
+                    $isCancelled = str_contains($status, 'iptal') || str_contains($status, 'cancel') || str_contains($status, 'return');
                 @endphp
                 <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold
                     {{ $isDelivered ? 'bg-green-50 text-green-600' : ($isCancelled ? 'bg-red-50 text-red-600' : 'bg-orange-50 text-orange-600') }}">
                     <i class="fas fa-{{ $isDelivered ? 'check-circle' : ($isCancelled ? 'times-circle' : 'clock') }}"></i>
-                    {{ $order->order_status ?? 'İşleniyor' }}
+                    {{ $order->status_label }}
                 </span>
             </div>
         </div>

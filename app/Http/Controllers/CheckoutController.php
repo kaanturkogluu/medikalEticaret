@@ -24,7 +24,8 @@ class CheckoutController extends Controller
             'bank_account_holder' => 'Turgay Vural',
         ];
 
-        return view('checkout', compact('provinces', 'bankDetails'));
+        $agreement = \App\Models\Page::where('slug', 'mesafeli-satis-sozlesmesi')->first();
+        return view('checkout', compact('provinces', 'bankDetails', 'agreement'));
     }
 
     public function success(Order $order)

@@ -205,11 +205,18 @@ class HomeController extends Controller
         return view('favorites');
     }
 
-    public function page($slug)
+    public function page($slug, Request $request)
     {
         $page = \App\Models\Page::where('slug', $slug)
             ->where('is_active', true)
             ->firstOrFail();
+
+        if ($request->ajax()) {
+            return response()->json([
+                'title' => $page->title,
+                'content' => $page->content
+            ]);
+        }
 
         return view('pages.show', compact('page'));
     }

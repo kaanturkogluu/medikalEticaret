@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     @php
         $siteTitle = \App\Models\Setting::getValue('site_title', 'umutMed Market');
-        $siteFavicon = \App\Models\Setting::getValue('site_favicon', '');
+        $siteFavicon = \App\Models\Setting::getValue('site_favicon', asset('favicon.svg'));
         $primaryColor = \App\Models\Setting::getValue('site_primary_color', '#f27a1a');
         $footerQr = \App\Models\Setting::getValue('site_footer_qr', '');
         $defaultFooter = [
@@ -19,9 +19,8 @@
 
     <title>@yield('title', config('app.name')) - {{ $siteTitle }}</title>
 
-    @if($siteFavicon)
-        <link rel="icon" type="image/x-icon" href="{{ $siteFavicon }}">
-    @endif
+    <link rel="icon" type="image/x-icon" href="{{ $siteFavicon }}">
+    <link rel="shortcut icon" href="{{ $siteFavicon }}" type="image/x-icon">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -154,8 +153,6 @@
             background: var(--primary-color);
         }
 
-        @yield('styles')
-
         /* Marquee Animation */
         .marquee-wrapper {
             overflow: hidden;
@@ -179,6 +176,7 @@
             }
         }
     </style>
+    @yield('styles')
 </head>
 
 <body x-data>

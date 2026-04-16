@@ -29,4 +29,26 @@ class Order extends Model
     {
         return $this->hasMany(OrderItem::class);
     }
+
+    /**
+     * Get the translated status label.
+     */
+    public function getStatusLabelAttribute(): string
+    {
+        $status = strtolower($this->order_status ?? '');
+        
+        $map = [
+            'created'         => 'Onaylandı',
+            'awaiting'        => 'Onay Bekliyor',
+            'pending_payment' => 'Ödeme Bekliyor',
+            'preparing'       => 'Hazırlanıyor',
+            'shipped'         => 'Kargoya Verildi',
+            'delivered'       => 'Teslim Edildi',
+            'cancelled'       => 'İptal Edildi',
+            'returned'        => 'İade Edildi',
+            'unpaid'          => 'Ödenmedi',
+        ];
+
+        return $map[$status] ?? ($this->order_status ?? 'İşleniyor');
+    }
 }

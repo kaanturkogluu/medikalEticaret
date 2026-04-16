@@ -50,6 +50,32 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 pt-8 border-t border-slate-50">
                 <div class="space-y-4">
                     <div class="flex items-center justify-between px-2">
+                        <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Site Logo (E-posta & Web)</label>
+                        <span class="text-[9px] text-brand-500 font-bold italic uppercase tracking-tighter">Dosya Yükle veya Link Gir</span>
+                    </div>
+                    <div class="flex items-center gap-6">
+                        <div class="relative group w-20 h-20 flex-shrink-0">
+                            <div class="w-full h-full bg-white border-2 border-dashed border-slate-200 rounded-3xl flex items-center justify-center overflow-hidden transition-all group-hover:border-brand-500 shadow-sm relative">
+                                @if($settings['site_logo'])
+                                    <img src="{{ $settings['site_logo'] }}" class="w-full h-full object-contain p-2">
+                                @else
+                                    <i class="fas fa-image text-slate-300 text-2xl"></i>
+                                @endif
+                                <input type="file" name="site_logo_file" class="absolute inset-0 opacity-0 cursor-pointer z-10">
+                            </div>
+                            <div class="absolute -bottom-2 -right-2 w-8 h-8 bg-slate-900 text-white rounded-xl flex items-center justify-center text-[10px] shadow-lg border-2 border-white pointer-events-none group-hover:bg-brand-600 transition-colors">
+                                <i class="fas fa-camera"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow space-y-2">
+                            <input type="text" name="site_logo" value="{{ $settings['site_logo'] }}" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-[11px] font-medium text-slate-400 outline-none focus:bg-white focus:border-brand-500 transition-all" placeholder="Görsel URL (veya dosya seçin)">
+                            <p class="text-[9px] text-slate-400 font-medium leading-relaxed italic">* Önerilen: Şeffaf arka planlı, yatay logo.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between px-2">
                         <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Site Favicon</label>
                         <span class="text-[9px] text-brand-500 font-bold italic uppercase tracking-tighter">Dosya Yükle veya Link Gir</span>
                     </div>
@@ -73,7 +99,9 @@
                         </div>
                     </div>
                 </div>
+            </div>
 
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 pt-8 border-t border-slate-50">
                 <div class="space-y-2">
                     <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Footer QR Kod Linki (ETBIS vb.)</label>
                     <div class="flex gap-4">

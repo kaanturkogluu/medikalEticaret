@@ -221,8 +221,56 @@
                         <i class="fas fa-chevron-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
                     </button>
 
-                    <p class="text-[10px] text-center text-gray-400 mt-6 font-medium leading-relaxed">Siparişi tamamlayarak <a href="/sayfa/mesafeli-satis-sozlesmesi" class="underline hover:text-slate-900">Mesafeli Satış Sözleşmesi</a>'ni kabul etmiş sayılırsınız.</p>
+                    <p class="text-[10px] text-center text-gray-400 mt-6 font-medium leading-relaxed">Siparişi tamamlayarak <a href="javascript:void(0)" @click="showAgreement = true" class="underline hover:text-slate-900">Mesafeli Satış Sözleşmesi</a>'ni kabul etmiş sayılırsınız.</p>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- Agreement Modal --}}
+    <div x-show="showAgreement" 
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="fixed inset-0 z-[999] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm"
+         style="display: none;">
+        
+        <div @click.away="showAgreement = false"
+             x-show="showAgreement"
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0 scale-95 translate-y-4"
+             x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+             x-transition:leave="transition ease-in duration-200"
+             x-transition:leave-start="opacity-100 scale-100 translate-y-0"
+             x-transition:leave-end="opacity-0 scale-95 translate-y-4"
+             class="bg-white w-full max-w-4xl max-h-[85vh] rounded-[40px] shadow-2xl flex flex-col relative overflow-hidden">
+            
+            <!-- Modal Header -->
+            <div class="px-8 py-6 border-b border-gray-100 flex items-center justify-between bg-white sticky top-0 z-10">
+                <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 bg-slate-900 text-white rounded-xl flex items-center justify-center">
+                        <i class="fas fa-file-contract"></i>
+                    </div>
+                    <h3 class="text-xl font-black text-slate-900 uppercase italic tracking-tighter">{{ $agreement->title ?? 'Mesafeli Satış Sözleşmesi' }}</h3>
+                </div>
+                <button @click="showAgreement = false" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400 hover:text-red-500 transition-all">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <!-- Modal Content -->
+            <div class="p-8 md:p-12 overflow-y-auto custom-scrollbar flex-grow">
+                <div class="prose prose-slate max-w-none prose-headings:font-black prose-headings:italic prose-headings:uppercase prose-headings:tracking-tighter prose-p:text-sm prose-p:font-medium prose-p:leading-relaxed text-slate-700">
+                    {!! $agreement->content ?? 'Sözleşme içeriği bulunamadı.' !!}
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="px-8 py-6 border-t border-gray-100 bg-gray-50 flex justify-end">
+                <button @click="showAgreement = false" class="px-10 py-4 bg-slate-900 text-white rounded-2xl font-black italic shadow-lg hover:bg-orange-600 transition-all active:scale-95 uppercase tracking-tighter">ANLADIM</button>
             </div>
         </div>
     </div>
@@ -244,6 +292,7 @@ function checkoutPage() {
             address: '',
             payment_method: 'credit_card'
         },
+        showAgreement: false,
         init() {
             window.checkoutData = this;
             this.cart = Alpine.store('cart');
