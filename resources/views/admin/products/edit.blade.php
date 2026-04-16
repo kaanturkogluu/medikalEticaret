@@ -3,7 +3,56 @@
 @section('content')
 <div class="space-y-6" x-data="{ 
     saving: false,
-    tab: 'general'
+    tab: 'general',
+    deletedImages: [],
+    newImages: [],
+    isReadingFiles: false,
+    handleImageSelect(e) {
+        if (!this.$refs.imageInput._rawFiles) this.$refs.imageInput._rawFiles = [];
+        
+        const files = Array.from(e.target.files);
+        if (files.length === 0) return;
+        
+        this.isReadingFiles = true;
+        let loadedCount = 0;
+        
+        files.forEach(file => {
+            file._ui_id = Date.now() + Math.random();
+            this.$refs.imageInput._rawFiles.push(file);
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                this.newImages.push({
+                    id: file._ui_id,
+                    url: e.target.result,
+                    name: file.name
+                });
+                loadedCount++;
+                if (loadedCount === files.length) {
+                    this.isReadingFiles = false;
+                    this.updateFileInput();
+                }
+            };
+            reader.readAsDataURL(file);
+        });
+    },
+    removeNewImage(id) {
+        const index = this.newImages.findIndex(i => i.id === id);
+        if (index > -1) this.newImages.splice(index, 1);
+        
+        if (this.$refs.imageInput._rawFiles) {
+            const rIndex = this.$refs.imageInput._rawFiles.findIndex(f => f._ui_id === id);
+            if (rIndex > -1) this.$refs.imageInput._rawFiles.splice(rIndex, 1);
+        }
+        this.updateFileInput();
+    },
+    updateFileInput() {
+        if (!this.$refs.imageInput._rawFiles) return;
+        const dt = new DataTransfer();
+        this.$refs.imageInput._rawFiles.forEach(f => {
+            dt.items.add(f);
+        });
+        this.$refs.imageInput.files = dt.files;
+    }
 }">
     <!-- Header -->
     <div class="flex items-center justify-between">
@@ -17,14 +66,14 @@
             </div>
         </div>
         <div class="flex items-center gap-2">
-            <button @click="$refs.editForm.submit(); saving = true" :disabled="saving" class="px-6 py-2.5 bg-brand-600 text-white rounded-xl text-sm font-bold hover:bg-brand-700 transition-all flex items-center gap-2 shadow-lg shadow-brand-500/20 disabled:opacity-50">
-                <i class="fas" :class="saving ? 'fa-spinner fa-spin' : 'fa-save'"></i>
-                <span x-text="saving ? 'Kaydediliyor...' : 'Değişiklikleri Kaydet'"></span>
+            <button type="submit" form="editProductForm" :disabled="saving || isReadingFiles" class="px-6 py-2.5 bg-brand-600 text-white rounded-xl text-sm font-bold hover:bg-brand-700 transition-all flex items-center gap-2 shadow-lg shadow-brand-500/20 disabled:opacity-50 disabled:cursor-not-allowed">
+                <i class="fas" :class="(saving || isReadingFiles) ? 'fa-spinner fa-spin' : 'fa-save'"></i>
+                <span x-text="saving ? 'Yükleniyor...' : (isReadingFiles ? 'Okunuyor...' : 'Değişiklikleri Kaydet')"></span>
             </button>
         </div>
     </div>
 
-    <form action="{{ route('admin.products.update', $product->id) }}" method="POST" x-ref="editForm">
+    <form id="editProductForm" action="{{ route('admin.products.update', $product->id) }}" method="POST" x-ref="editForm" enctype="multipart/form-data" @submit="if(isReadingFiles) { $event.preventDefault(); return false; } saving = true;">
         @csrf
         @method('PUT')
         
@@ -140,7 +189,7 @@
                                     <div class="flex items-center gap-4">
                                         <div class="h-10 w-10 rounded-lg bg-white border border-slate-200 flex items-center justify-center overflow-hidden">
                                             @if($variant->productImages->first())
-                                                <img src="{{ $variant->productImages->first()->url }}" class="h-full w-full object-cover">
+                                                <img src="{{ asset($variant->productImages->first()->url) }}" class="h-full w-full object-cover">
                                             @else
                                                 <i class="fas fa-image text-slate-300"></i>
                                             @endif
@@ -259,19 +308,45 @@
                     
                     <div class="grid grid-cols-3 gap-2">
                         @foreach($product->productImages as $image)
-                        <div class="aspect-square rounded-2xl bg-slate-50 border border-slate-100 relative group overflow-hidden">
-                            <img src="{{ $image->url }}" class="h-full w-full object-cover group-hover:scale-110 transition-transform duration-500">
+                        <div class="aspect-square rounded-2xl bg-slate-50 border border-slate-100 relative group overflow-hidden" x-show="!deletedImages.includes({{ $image->id }})">
+                            <img src="{{ asset($image->url) }}" class="h-full w-full object-cover group-hover:scale-110 transition-transform duration-500">
                             <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
                                 <button type="button" class="h-8 w-8 rounded-lg bg-white/20 backdrop-blur-md text-white text-xs hover:bg-white/40 transition-colors">
                                     <i class="fas fa-expand"></i>
                                 </button>
-                                <button type="button" class="h-8 w-8 rounded-lg bg-white/20 backdrop-blur-md text-white text-xs hover:bg-white/40 transition-colors">
+                                <button type="button" @click="deletedImages.push({{ $image->id }})" class="h-8 w-8 rounded-lg bg-white/20 backdrop-blur-md text-white text-xs hover:bg-white/40 transition-colors">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </div>
                         </div>
                         @endforeach
-                        <button type="button" class="aspect-square rounded-2xl border-2 border-dashed border-slate-100 flex flex-col items-center justify-center gap-1 text-slate-400 hover:border-brand-400 hover:text-brand-500 hover:bg-brand-50 transition-all">
+                        
+                        <template x-for="id in deletedImages">
+                            <input type="hidden" name="deleted_images[]" :value="id">
+                        </template>
+
+                        <!-- Local Image Previews -->
+                        <template x-for="image in newImages" :key="image.id">
+                            <div class="aspect-square rounded-2xl bg-white border border-brand-200 relative group overflow-hidden opacity-80">
+                                <img :src="image.url" class="h-full w-full object-cover group-hover:scale-110 transition-transform duration-500">
+                                <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                                    <button type="button" @click.stop="removeNewImage(image.id)" class="h-8 w-8 rounded-lg bg-red-500/80 backdrop-blur-md text-white text-xs hover:bg-red-600 transition-colors">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                                <div class="absolute top-2 left-2 px-2 py-0.5 bg-brand-500 text-white text-[9px] font-bold rounded-lg uppercase tracking-widest shadow-sm">
+                                    YENİ
+                                </div>
+                            </div>
+                        </template>
+
+                        <input type="file" name="images[]" multiple class="hidden" x-ref="imageInput" @change="handleImageSelect" accept="image/*">
+                        
+                        <button type="button" @click="$refs.imageInput.click()" class="aspect-square rounded-2xl border-2 border-dashed border-slate-100 flex flex-col items-center justify-center gap-1 text-slate-400 hover:border-brand-400 hover:text-brand-500 hover:bg-brand-50 transition-all relative overflow-hidden">
+                            <div x-show="isReadingFiles" class="absolute inset-0 flex flex-col items-center justify-center bg-slate-50/90 z-10 backdrop-blur-sm">
+                                <i class="fas fa-spinner fa-spin text-brand-500 text-lg mb-1"></i>
+                                <span class="text-[9px] font-bold uppercase text-brand-600">Okunuyor...</span>
+                            </div>
                             <i class="fas fa-plus text-xs"></i>
                             <span class="text-[9px] font-bold uppercase">YÜKLE</span>
                         </button>

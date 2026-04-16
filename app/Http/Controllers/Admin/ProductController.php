@@ -44,7 +44,7 @@ class ProductController extends Controller
                 'status' => 'synced', // simplified for now
                 'is_popular' => (bool)$product->is_popular,
                 'marketplaces' => $product->channelProducts->map(fn($cp) => $cp->channel->name)->toArray(),
-                'image' => $product->productImages->first()?->url ?? null,
+                'image' => $product->productImages->first() ? asset($product->productImages->first()->url) : null,
             ];
         });
 
@@ -166,6 +166,34 @@ class ProductController extends Controller
         $product->raw_marketplace_data = $raw;
 
         $product->update($validated);
+
+        // Handle image deletions
+        if ($request->has('deleted_images')) {
+            foreach ($request->deleted_images as $imageId) {
+                $image = \App\Models\ProductImage::find($imageId);
+                if ($image && $image->product_id == $product->id) {
+                    // If it's a local file, delete it
+                    if (str_contains($image->url, '/storage/')) {
+                        $path = explode('/storage/', $image->url)[1] ?? null;
+                        if ($path) {
+                            \Illuminate\Support\Facades\Storage::disk('public')->delete($path);
+                        }
+                    }
+                    $image->delete();
+                }
+            }
+        }
+
+        // Handle new image uploads
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $file) {
+                $path = $file->store('products', 'public');
+                $product->productImages()->create([
+                    'url' => \Illuminate\Support\Facades\Storage::url($path),
+                    'order' => ($product->productImages()->max('order') ?? 0) + 1
+                ]);
+            }
+        }
 
         return redirect()->route('admin.products')->with('success', 'Ürün başarıyla güncellendi.');
     }
