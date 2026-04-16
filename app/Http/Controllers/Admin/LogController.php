@@ -16,57 +16,59 @@ class LogController extends Controller
         if (File::exists($logPath)) {
             $content = File::get($logPath);
             
-            // Laravel log pattern
-            // Pattern 1: [2026-04-16 22:04:53] local.INFO: message
-            // Pattern 2: [2026-04-16 22:04:53] local.ERROR: message {"exception":"..."}
+            // Split by log entry start [YYYY-MM-DD HH:MM:SS]
+            // We capture the timestamp as well
+            $parts = preg_split('/^\[(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})\]/m', $content, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
             
-            $pattern = '/\[(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})\] (\w+)\.(\w+): (.*?)(?=\s*\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\]|\s*$)/s';
-            
-            preg_match_all($pattern, $content, $matches, PREG_SET_ORDER);
-
+            // Expected parts: [timestamp, message, timestamp, message, ...]
             $id = 1;
-            foreach (array_reverse($matches) as $match) {
-                $rawTime = $match[1];
-                $level = strtoupper($match[3]);
-                $message = $match[4];
-
-                $type = 'info';
-                if (in_array($level, ['ERROR', 'CRITICAL', 'ALERT', 'EMERGENCY'])) {
-                    $type = 'error';
-                } elseif (in_array($level, ['SUCCESS'])) {
-                    $type = 'success';
-                }
-
-                // Try to find JSON in message for request/response style logging
-                $payload = '-';
-                $response = '-';
+            // Iterate backwards to get latest logs first
+            for ($i = count($parts) - 2; $i >= 0; $i -= 2) {
+                $rawTime = $parts[$i];
+                $rawMessage = $parts[$i+1] ?? '';
                 
-                if (preg_match('/Payload: (\{.*?\})/s', $message, $pMatch)) {
-                    $payload = $pMatch[1];
-                }
-                if (preg_match('/Response: (\{.*?\})/s', $message, $rMatch)) {
-                    $response = $rMatch[1];
-                }
-                
-                // Clean message for display
-                $displayMessage = trim(preg_replace('/(Payload|Response): \{.*?\}/s', '', $message));
-                if (strlen($displayMessage) > 100) {
-                    $displayMessage = substr($displayMessage, 0, 97) . '...';
+                // Parse: " local.INFO: Message content"
+                if (preg_match('/^\s*(\w+)\.(\w+):\s*(.*)/s', $rawMessage, $m)) {
+                    $level = strtoupper($m[2]);
+                    $message = trim($m[3]);
+
+                    $type = 'info';
+                    if (in_array($level, ['ERROR', 'CRITICAL', 'ALERT', 'EMERGENCY'])) {
+                        $type = 'error';
+                    } elseif ($level === 'SUCCESS') {
+                        $type = 'success';
+                    }
+
+                    // Extract Payload/Response if present
+                    $payload = '-';
+                    $response = '-';
+                    if (preg_match('/Payload:\s*(\{.*?\})/s', $message, $pMatch)) {
+                        $payload = $pMatch[1];
+                    }
+                    if (preg_match('/Response:\s*(\{.*?\})/s', $message, $rMatch)) {
+                        $response = $rMatch[1];
+                    }
+
+                    // Clean message for summary
+                    $displayMessage = trim(preg_replace('/(Payload|Response):\s*\{.*?\}/s', '', $message));
+                    if (strlen($displayMessage) > 120) {
+                        $displayMessage = mb_substr($displayMessage, 0, 117) . '...';
+                    }
+
+                    $logs[] = [
+                        'id' => $id++,
+                        'type' => $type,
+                        'time' => date('H:i:s', strtotime($rawTime)),
+                        'date' => date('d.m.Y', strtotime($rawTime)),
+                        'endpoint' => $displayMessage ?: $level,
+                        'method' => '-',
+                        'status' => '-',
+                        'payload' => $payload !== '-' ? $payload : $message,
+                        'response' => $response !== '-' ? $response : 'Bkz: laravel.log',
+                    ];
                 }
 
-                $logs[] = [
-                    'id' => $id++,
-                    'type' => $type,
-                    'time' => date('H:i:s', strtotime($rawTime)),
-                    'date' => date('d.m.Y', strtotime($rawTime)),
-                    'endpoint' => $displayMessage ?: $level,
-                    'method' => '-',
-                    'status' => '-',
-                    'payload' => $payload !== '-' ? $payload : $message,
-                    'response' => $response !== '-' ? $response : 'Detailed info in laravel.log',
-                ];
-
-                if ($id > 50) break;
+                if ($id > 100) break; // Limit to 100 entries
             }
         }
 

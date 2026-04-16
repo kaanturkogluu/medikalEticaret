@@ -94,6 +94,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::put('/marketplaces/{channel}', [\App\Http\Controllers\Admin\ChannelController::class, 'update'])->name('admin.marketplaces.update');
     Route::post('/marketplaces/{channel}/test', [\App\Http\Controllers\Admin\ChannelController::class, 'test'])->name('admin.marketplaces.test');
 
+    Route::get('/api/notifications', [\App\Http\Controllers\Admin\NotificationController::class, 'getUpdates'])->name('admin.api.notifications');
     Route::get('/logs', [\App\Http\Controllers\Admin\LogController::class, 'index'])->name('admin.logs');
     Route::post('/logs/clear', [\App\Http\Controllers\Admin\LogController::class, 'clear'])->name('admin.logs.clear');
     Route::get('/appearance', [\App\Http\Controllers\Admin\AppearanceController::class, 'index'])->name('admin.appearance');

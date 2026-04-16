@@ -13,5 +13,6 @@ iade için ürün resmi şart
 kategoriler için sitede görünecek kısmı düzenleyeleim
 
  
+diğer mağazların linklerini bağla
 
 

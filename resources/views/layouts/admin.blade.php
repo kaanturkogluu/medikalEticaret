@@ -231,10 +231,73 @@
                 <div class="w-px h-6 bg-slate-200 hidden sm:block"></div>
 
                 <!-- Notifications -->
-                <button class="relative text-slate-500 hover:text-brand-600 transition-colors">
-                    <i class="far fa-bell text-xl"></i>
-                    <span class="absolute -top-1 -right-1 h-4 w-4 bg-red-500 text-[10px] text-white flex items-center justify-center rounded-full border-2 border-white">3</span>
-                </button>
+                <div class="relative" x-data="{ 
+                    count: 0,
+                    notifications: [],
+                    latestId: 0,
+                    open: false,
+                    sound: new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3'),
+                    init() {
+                        this.fetchUpdates();
+                        setInterval(() => this.fetchUpdates(), 10000);
+                    },
+                    fetchUpdates() {
+                        fetch('/admin/api/notifications')
+                            .then(res => res.json())
+                            .then(data => {
+                                if (data.latest_id > this.latestId && this.latestId !== 0) {
+                                    this.sound.play().catch(e => console.log('Audio play failed', e));
+                                    notify('info', 'Yeni bir siparişiniz var!');
+                                }
+                                this.count = data.count;
+                                this.notifications = data.notifications;
+                                this.latestId = data.latest_id;
+                            });
+                    }
+                }">
+                    <button @click="open = !open" class="relative text-slate-500 hover:text-brand-600 transition-colors">
+                        <i class="far fa-bell text-xl"></i>
+                        <template x-if="count > 0">
+                            <span class="absolute -top-1 -right-1 h-4 w-4 bg-red-500 text-[10px] text-white flex items-center justify-center rounded-full border-2 border-white" x-text="count"></span>
+                        </template>
+                    </button>
+
+                    <!-- Notifications Dropdown -->
+                    <div x-show="open" @click.away="open = false" x-cloak 
+                        x-transition:enter="transition ease-out duration-100"
+                        x-transition:enter-start="transform opacity-0 scale-95"
+                        x-transition:enter-end="transform opacity-100 scale-100"
+                        class="absolute right-0 mt-3 w-80 bg-white rounded-2xl shadow-2xl border border-slate-100 py-2 z-50 overflow-hidden">
+                        <div class="px-4 py-2 border-b border-slate-50 flex items-center justify-between">
+                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">BİLDİRİMLER</p>
+                            <span class="text-[9px] px-1.5 py-0.5 bg-brand-50 text-brand-600 rounded font-black" x-text="count + ' YENİ'"></span>
+                        </div>
+                        <div class="max-h-96 overflow-y-auto custom-scrollbar">
+                            <template x-for="n in notifications" :key="n.id">
+                                <a :href="n.url" class="px-4 py-3 hover:bg-slate-50 flex items-start gap-3 border-b border-slate-50 last:border-0 transition-colors">
+                                    <div class="h-8 w-8 rounded-full bg-brand-100 text-brand-600 flex items-center justify-center shrink-0">
+                                        <i class="fas fa-shopping-bag text-xs"></i>
+                                    </div>
+                                    <div class="min-w-0 flex-1">
+                                        <p class="text-xs font-bold text-slate-800" x-text="n.title"></p>
+                                        <p class="text-[11px] text-slate-500 truncate" x-text="n.message"></p>
+                                        <div class="flex items-center gap-2 mt-1">
+                                            <span class="text-[9px] font-black uppercase text-brand-500" x-text="n.channel"></span>
+                                            <span class="text-[9px] text-slate-400" x-text="n.time"></span>
+                                        </div>
+                                    </div>
+                                </a>
+                            </template>
+                            <template x-if="notifications.length === 0">
+                                <div class="px-4 py-10 text-center">
+                                    <i class="far fa-bell-slash text-2xl text-slate-200 mb-2"></i>
+                                    <p class="text-xs text-slate-400 font-medium">Yeni bildirim bulunmuyor.</p>
+                                </div>
+                            </template>
+                        </div>
+                        <a href="/admin/orders" class="block py-2 text-center text-[10px] font-bold text-slate-400 hover:text-brand-600 uppercase tracking-widest border-t border-slate-50 mt-1">Tümünü Gör</a>
+                    </div>
+                </div>
 
                 <!-- Profile -->
                 <div class="relative" x-data="{ open: false }">
