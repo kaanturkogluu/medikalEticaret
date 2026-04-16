@@ -1,109 +1,89 @@
-<!DOCTYPE html>
-<html lang="tr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    @php
-        $siteFavicon = \App\Models\Setting::getValue('site_favicon', asset('favicon.svg'));
-    @endphp
-    <link rel="icon" type="image/x-icon" href="{{ $siteFavicon }}">
-    <link rel="shortcut icon" href="{{ $siteFavicon }}" type="image/x-icon">
-    <title>Giriş Yap | umutMed</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Roboto', sans-serif; background-color: #fafafa; }
-        .btn-trendyol { background-color: #f27a1a; transition: all 0.2s; }
-        .btn-trendyol:hover { background-color: #e67216; }
-        .google-btn { border: 1px solid #e6e6e6; transition: all 0.2s; }
-        .google-btn:hover { background-color: #f1f1f1; }
-    </style>
-</head>
-<body class="flex flex-col min-h-screen">
-    <!-- Mini Header -->
-    <header class="py-6 border-b bg-white flex justify-center">
-        <a href="/" class="text-3xl font-black italic tracking-tighter text-slate-900 uppercase">
-            umut<span class="text-[#f27a1a]">Med</span>
-        </a>
-    </header>
+@extends('layouts.app')
 
-    <main class="flex-grow flex items-center justify-center p-6">
-        <div class="w-full max-w-[450px] bg-white rounded-lg shadow-sm border p-8 md:p-12">
-            <h1 class="text-2xl font-bold text-gray-800 text-center mb-2">Giriş Yap</h1>
-            <p class="text-gray-500 text-center text-sm mb-10">Kişisel hesabınıza erişmek için bilgilerinizi girin.</p>
+@section('title', 'Giriş Yap')
 
-            <!-- Social Login Part (Requested: Google Button) -->
-            <div class="space-y-4 mb-8">
-                <a href="{{ route('auth.google') }}" class="w-full google-btn rounded-md py-3 px-4 flex items-center justify-center gap-3 font-medium text-gray-700">
-                    <img src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" alt="Google" class="w-5 h-5">
-                    Google ile Giriş Yap
-                </a>
-                <div class="relative flex items-center py-5">
-                    <div class="flex-grow border-t border-gray-100"></div>
-                    <span class="flex-shrink mx-4 text-gray-300 text-xs font-bold uppercase tracking-widest">veya</span>
-                    <div class="flex-grow border-t border-gray-100"></div>
-                </div>
+@section('styles')
+<style>
+    .btn-trendyol { background-color: #f27a1a; transition: all 0.2s; }
+    .btn-trendyol:hover { background-color: #e67216; }
+    .google-btn { border: 1px solid #e6e6e6; transition: all 0.2s; }
+    .google-btn:hover { background-color: #f1f1f1; }
+</style>
+@endsection
+
+@section('content')
+<main class="flex-grow flex items-center justify-center p-6 py-20 bg-gray-50/50">
+    <div class="w-full max-w-[450px] bg-white rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100 p-8 md:p-12">
+        <div class="text-center mb-10">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-orange-100 rounded-2xl mb-4">
+                <i class="fas fa-user-lock text-orange-500 text-2xl"></i>
             </div>
+            <h1 class="text-3xl font-black tracking-tight text-slate-900 italic uppercase italic tracking-tighter">Giriş Yap</h1>
+            <p class="text-slate-500 mt-2 text-sm font-medium">Hesabınıza güvenli bir şekilde erişin.</p>
+        </div>
 
-            <form action="{{ route('login.authenticate') }}" method="POST" class="space-y-5">
-                @csrf
-                <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-2" for="email">E-Posta</label>
-                    <input 
-                        type="email" 
-                        name="email" 
-                        id="email" 
-                        value="{{ old('email') }}"
-                        required 
-                        class="w-full border-2 {{ $errors->has('email') ? 'border-red-500' : 'border-gray-100' }} rounded-md px-4 py-3 focus:border-[#f27a1a] outline-none transition-colors"
-                        placeholder="E-posta adresiniz"
-                    >
-                    @error('email')
-                        <p class="text-red-500 text-xs mt-2 font-bold">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-2" for="password">Şifre</label>
-                    <input 
-                        type="password" 
-                        name="password" 
-                        id="password" 
-                        required 
-                        class="w-full border-2 {{ $errors->has('password') ? 'border-red-500' : 'border-gray-100' }} rounded-md px-4 py-3 focus:border-[#f27a1a] outline-none transition-colors"
-                        placeholder="Şifreniz"
-                    >
-                    @error('password')
-                        <p class="text-red-500 text-xs mt-2 font-bold">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                <div class="flex items-center justify-between">
-                    <label class="flex items-center cursor-pointer">
-                        <input type="checkbox" name="remember" class="w-4 h-4 rounded border-gray-300 text-[#f27a1a] focus:ring-[#f27a1a]">
-                        <span class="ml-2 text-sm text-gray-500">Beni Hatırla</span>
-                    </label>
-                    <a href="#" class="text-xs font-bold text-[#f27a1a] hover:underline">Şifremi Unuttum</a>
-                </div>
-
-                <button type="submit" class="w-full btn-trendyol py-4 rounded-md text-white font-bold text-lg shadow-sm">
-                    Giriş Yap
-                </button>
-            </form>
-
-            <div class="mt-8 text-center">
-                <p class="text-sm text-gray-500">Hesabınız yok mu? <a href="{{ route('register') }}" class="font-bold text-[#f27a1a] hover:underline">Üye Olun</a></p>
+        <!-- Social Login Part -->
+        <div class="space-y-4 mb-8">
+            <a href="{{ route('auth.google') }}" class="w-full google-btn rounded-xl py-4 px-4 flex items-center justify-center gap-3 font-bold text-slate-700 text-sm italic tracking-tighter uppercase">
+                <img src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" alt="Google" class="w-5 h-5">
+                Google ile Giriş Yap
+            </a>
+            <div class="relative flex items-center py-5">
+                <div class="flex-grow border-t border-slate-100"></div>
+                <span class="flex-shrink mx-4 text-slate-300 text-[10px] font-black uppercase tracking-[0.2em]">veya</span>
+                <div class="flex-grow border-t border-slate-100"></div>
             </div>
         </div>
-    </main>
 
-    <footer class="py-8 bg-gray-50 border-t flex flex-col items-center gap-4 text-xs text-gray-400 font-medium">
-        <div class="flex gap-8">
-            <a href="#" class="hover:underline">Yardım & Destek</a>
-            <a href="#" class="hover:underline">Gizlilik Politikası</a>
-            <a href="#" class="hover:underline">Çerez Ayarları</a>
+        <form action="{{ route('login.authenticate') }}" method="POST" class="space-y-6">
+            @csrf
+            <div>
+                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 px-1" for="email">E-POSTA ADRESİ</label>
+                <input 
+                    type="email" 
+                    name="email" 
+                    id="email" 
+                    value="{{ old('email') }}"
+                    required 
+                    class="w-full border-2 {{ $errors->has('email') ? 'border-red-500' : 'border-slate-100' }} rounded-xl px-4 py-4 focus:border-orange-500 outline-none transition-all text-sm font-bold bg-slate-50/50"
+                    placeholder="ornek@email.com"
+                >
+                @error('email')
+                    <p class="text-red-500 text-[10px] mt-2 font-black uppercase tracking-widest">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <div>
+                <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 px-1" for="password">ŞİFRE</label>
+                <input 
+                    type="password" 
+                    name="password" 
+                    id="password" 
+                    required 
+                    class="w-full border-2 {{ $errors->has('password') ? 'border-red-500' : 'border-slate-100' }} rounded-xl px-4 py-4 focus:border-orange-500 outline-none transition-all text-sm font-bold bg-slate-50/50"
+                    placeholder="••••••••"
+                >
+                @error('password')
+                    <p class="text-red-500 text-[10px] mt-2 font-black uppercase tracking-widest">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <div class="flex items-center justify-between px-1">
+                <label class="flex items-center cursor-pointer group">
+                    <input type="checkbox" name="remember" class="w-4 h-4 rounded border-slate-300 text-orange-500 focus:ring-orange-500 transition-all">
+                    <span class="ml-2 text-[11px] font-bold text-slate-500 group-hover:text-slate-700 transition-colors">Beni Hatırla</span>
+                </label>
+                <a href="#" class="text-[11px] font-black text-orange-500 hover:text-orange-600 transition-colors uppercase italic tracking-tighter">Şifremi Unuttum</a>
+            </div>
+
+            <button type="submit" class="w-full btn-trendyol py-4 rounded-2xl text-white font-black text-sm uppercase italic tracking-widest shadow-lg shadow-orange-500/20 active:scale-[0.98] transition-transform">
+                Giriş Yap
+            </button>
+        </form>
+
+        <div class="mt-10 text-center">
+            <p class="text-xs text-slate-500 font-medium">Hesabınız yok mu? <a href="{{ route('register') }}" class="font-black text-orange-500 hover:text-orange-600 transition-colors uppercase italic tracking-tighter">Hemen Üye Olun</a></p>
         </div>
-        <p>&copy; 2026 umutMed</p>
-    </footer>
-</body>
-</html>
+    </div>
+</main>
+@endsection

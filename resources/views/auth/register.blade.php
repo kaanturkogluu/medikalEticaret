@@ -1,28 +1,24 @@
-<!DOCTYPE html>
-<html lang="tr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    @php
-        $siteFavicon = \App\Models\Setting::getValue('site_favicon', asset('favicon.svg'));
-    @endphp
-    <link rel="icon" type="image/x-icon" href="{{ $siteFavicon }}">
-    <link rel="shortcut icon" href="{{ $siteFavicon }}" type="image/x-icon">
-    <title>Üye Ol | {{ config('app.name') }}</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <style>
-        body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); }
-        .btn-primary { background: #f27a1a; transition: all 0.2s; }
-        .btn-primary:hover { background: #e67216; transform: translateY(-1px); box-shadow: 0 8px 20px rgba(242,122,26,0.3); }
-        .input-field { transition: all 0.2s; }
-        .input-field:focus { border-color: #f27a1a; box-shadow: 0 0 0 4px rgba(242,122,26,0.1); }
-        .strength-bar div { transition: width 0.3s ease; }
-    </style>
-</head>
-<body class="flex flex-col min-h-screen" x-data="{ 
+@extends('layouts.app')
+
+@section('title', 'Üye Ol')
+
+@section('styles')
+<style>
+    .btn-primary { background: #f27a1a; transition: all 0.2s; }
+    .btn-primary:hover { background: #e67216; transform: translateY(-1px); box-shadow: 0 8px 20px rgba(242,122,26,0.3); }
+    .input-field { transition: all 0.2s; }
+    .input-field:focus { border-color: #f27a1a; box-shadow: 0 0 0 4px rgba(242,122,26,0.1); }
+    .strength-bar div { transition: width 0.3s ease; }
+    [x-cloak] { display: none !important; }
+    .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #f27a1a; }
+</style>
+@endsection
+
+@section('content')
+<div x-data="{ 
     modal: {
         show: false,
         title: '',
@@ -50,184 +46,153 @@
         }
     }
 }">
-    <header class="py-5 border-b bg-white/80 backdrop-blur-sm flex justify-center sticky top-0 z-10">
-        <a href="/" class="text-2xl font-black italic tracking-tighter text-slate-900 uppercase">
-            {{ config('app.name') }}
-        </a>
-    </header>
-
-    <main class="flex-grow flex items-center justify-center p-6 py-12">
+    <main class="flex-grow flex items-center justify-center p-6 py-20 bg-gray-50/50">
         <div class="w-full max-w-[480px]">
 
             <!-- Header -->
-            <div class="text-center mb-8">
-                <div class="inline-flex items-center justify-center w-16 h-16 bg-orange-100 rounded-2xl mb-4">
-                    <svg class="w-8 h-8 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                    </svg>
+            <div class="text-center mb-10">
+                <div class="inline-flex items-center justify-center w-20 h-20 bg-orange-100 rounded-[2rem] mb-6 shadow-lg shadow-orange-500/10">
+                    <i class="fas fa-user-plus text-orange-500 text-3xl"></i>
                 </div>
-                <h1 class="text-3xl font-black tracking-tight text-slate-900">Üye Ol</h1>
-                <p class="text-slate-500 mt-2 text-sm">Hızlıca hesap oluşturun ve alışverişe başlayın.</p>
+                <h1 class="text-4xl font-black tracking-tight text-slate-900 italic uppercase italic tracking-tighter">Üye Ol</h1>
+                <p class="text-slate-500 mt-2 text-sm font-medium">umutMed dünyasına hoş geldiniz.</p>
             </div>
 
             <!-- Alert Messages -->
             @if(session('success'))
-                <div class="mb-6 p-4 bg-green-50 border border-green-200 rounded-2xl text-sm font-semibold text-green-700 flex items-center gap-3">
-                    <svg class="w-5 h-5 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                <div class="mb-6 p-4 bg-green-50 border border-green-200 rounded-2xl text-sm font-bold text-green-700 flex items-center gap-3">
+                    <i class="fas fa-check-circle text-lg"></i>
                     {{ session('success') }}
                 </div>
             @endif
 
             @if($errors->any())
-                <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-2xl text-sm font-semibold text-red-700">
+                <div class="mb-6 p-5 bg-red-50 border border-red-100 rounded-3xl text-[11px] font-bold text-red-600 space-y-1">
                     @foreach($errors->all() as $error)
-                        <p>{{ $error }}</p>
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <p>{{ $error }}</p>
+                        </div>
                     @endforeach
                 </div>
             @endif
 
             <!-- Form Card -->
-            <div class="bg-white rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100 p-8">
-                <form action="{{ route('register') }}" method="POST" class="space-y-5" id="registerForm">
+            <div class="bg-white rounded-[2.5rem] shadow-2xl shadow-slate-200/60 border border-slate-100 p-8 md:p-12">
+                <form action="{{ route('register') }}" method="POST" class="space-y-6" id="registerForm">
                     @csrf
                     
-                    <!-- Honeypot field for spam prevention -->
+                    <!-- Honeypot -->
                     <div class="hidden" aria-hidden="true">
                         <input type="text" name="website_url" tabindex="-1" autocomplete="off">
                     </div>
 
-                    <div>
-                        <label class="block text-xs font-bold text-slate-600 mb-2 uppercase tracking-widest" for="name">Ad Soyad</label>
+                    <div class="space-y-2">
+                        <label class="block text-[10px] font-black text-slate-400 mb-1 uppercase tracking-widest px-1" for="name">Ad Soyad</label>
                         <input
                             type="text"
                             name="name"
                             id="name"
                             required
                             value="{{ old('name') }}"
-                            class="input-field w-full border-2 border-slate-100 rounded-xl px-4 py-3.5 text-sm font-medium text-slate-900 outline-none focus:border-orange-400 bg-slate-50/50"
-                            placeholder="Adınız ve soyadınız"
+                            class="input-field w-full border-2 border-slate-100 rounded-2xl px-5 py-4 text-sm font-bold text-slate-900 outline-none focus:border-orange-500 bg-slate-50/50 transition-all"
+                            placeholder="Adınız Soyadınız"
                         >
                     </div>
 
-                    <div>
-                        <label class="block text-xs font-bold text-slate-600 mb-2 uppercase tracking-widest" for="email">E-posta Adresi</label>
+                    <div class="space-y-2">
+                        <label class="block text-[10px] font-black text-slate-400 mb-1 uppercase tracking-widest px-1" for="email">E-posta Adresi</label>
                         <input
                             type="email"
                             name="email"
                             id="email"
                             required
                             value="{{ old('email') }}"
-                            class="input-field w-full border-2 border-slate-100 rounded-xl px-4 py-3.5 text-sm font-medium text-slate-900 outline-none focus:border-orange-400 bg-slate-50/50"
+                            class="input-field w-full border-2 border-slate-100 rounded-2xl px-5 py-4 text-sm font-bold text-slate-900 outline-none focus:border-orange-500 bg-slate-50/50 transition-all"
                             placeholder="ornek@email.com"
                         >
                     </div>
 
-                    <div>
-                        <label class="block text-xs font-bold text-slate-600 mb-2 uppercase tracking-widest" for="password">Şifre</label>
+                    <div class="space-y-2">
+                        <label class="block text-[10px] font-black text-slate-400 mb-1 uppercase tracking-widest px-1" for="password">Şifre</label>
                         <div class="relative">
                             <input
                                 type="password"
                                 name="password"
                                 id="password"
                                 required
-                                class="input-field w-full border-2 border-slate-100 rounded-xl px-4 py-3.5 pr-12 text-sm font-medium text-slate-900 outline-none focus:border-orange-400 bg-slate-50/50"
-                                placeholder="En az 8 karakter"
+                                class="input-field w-full border-2 border-slate-100 rounded-2xl px-5 py-4 pr-14 text-sm font-bold text-slate-900 outline-none focus:border-orange-500 bg-slate-50/50 transition-all"
+                                placeholder="••••••••"
                                 oninput="checkStrength(this.value)"
                             >
-                            <button type="button" onclick="togglePassword('password')" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                            <button type="button" onclick="togglePassword('password')" class="absolute right-5 top-1/2 -translate-y-1/2 text-slate-300 hover:text-slate-500 transition-colors">
+                                <i class="fas fa-eye text-lg"></i>
                             </button>
                         </div>
-                        <!-- Password strength bar -->
-                        <div class="strength-bar h-1.5 rounded-full bg-slate-100 mt-2 overflow-hidden">
+                        <!-- Strength bar -->
+                        <div class="strength-bar h-1.5 rounded-full bg-slate-100 mt-3 overflow-hidden">
                             <div id="strengthBar" class="h-full rounded-full bg-slate-200" style="width:0%"></div>
                         </div>
-                        <p id="strengthText" class="text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-widest"></p>
+                        <p id="strengthText" class="text-[9px] font-black text-slate-400 mt-1.5 uppercase tracking-widest text-right"></p>
                     </div>
 
-                    <div>
-                        <label class="block text-xs font-bold text-slate-600 mb-2 uppercase tracking-widest" for="password_confirmation">Şifre Tekrar</label>
+                    <div class="space-y-2">
+                        <label class="block text-[10px] font-black text-slate-400 mb-1 uppercase tracking-widest px-1" for="password_confirmation">Şifre Tekrar</label>
                         <div class="relative">
                             <input
                                 type="password"
                                 name="password_confirmation"
                                 id="password_confirmation"
                                 required
-                                class="input-field w-full border-2 border-slate-100 rounded-xl px-4 py-3.5 pr-12 text-sm font-medium text-slate-900 outline-none focus:border-orange-400 bg-slate-50/50"
-                                placeholder="Şifrenizi tekrar girin"
+                                class="input-field w-full border-2 border-slate-100 rounded-2xl px-5 py-4 pr-14 text-sm font-bold text-slate-900 outline-none focus:border-orange-500 bg-slate-50/50 transition-all"
+                                placeholder="••••••••"
                             >
-                            <button type="button" onclick="togglePassword('password_confirmation')" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                            <button type="button" onclick="togglePassword('password_confirmation')" class="absolute right-5 top-1/2 -translate-y-1/2 text-slate-300 hover:text-slate-500 transition-colors">
+                                <i class="fas fa-eye text-lg"></i>
                             </button>
                         </div>
                     </div>
 
-                    <div class="flex items-start gap-3 pt-2">
-                        <input type="checkbox" id="terms" name="terms" required class="mt-0.5 w-4 h-4 rounded border-gray-300 text-orange-500 focus:ring-orange-400">
-                        <label for="terms" class="text-xs text-slate-500 leading-relaxed">
-                            <a href="javascript:void(0)" @click="modal.open('kullanim-kosullari')" class="font-bold text-orange-500 hover:underline">Kullanım Koşulları</a>'nı ve
-                            <a href="javascript:void(0)" @click="modal.open('gizlilik-politikasi')" class="font-bold text-orange-500 hover:underline">Gizlilik Politikası</a>'nı okudum, kabul ediyorum.
+                    <div class="flex items-start gap-3 pt-2 group">
+                        <input type="checkbox" id="terms" name="terms" required class="mt-1 w-5 h-5 rounded-lg border-slate-200 text-orange-500 focus:ring-orange-500 transition-all">
+                        <label for="terms" class="text-[11px] font-bold text-slate-500 leading-relaxed group-hover:text-slate-700 transition-colors">
+                            <a href="javascript:void(0)" @click="modal.open('kullanim-kosullari')" class="font-black text-orange-500 hover:underline">Kullanım Koşulları</a> ve 
+                            <a href="javascript:void(0)" @click="modal.open('gizlilik-politikasi')" class="font-black text-orange-500 hover:underline">Gizlilik Politikası</a> metinlerini okudum, onaylıyorum.
                         </label>
                     </div>
 
-                    <button type="submit" class="btn-primary w-full py-4 rounded-xl text-white font-black text-sm uppercase tracking-widest shadow-lg">
-                        Üye Ol — Kodu E-postama Gönder
+                    <button type="submit" class="btn-primary w-full py-4.5 rounded-2xl text-white font-black text-sm uppercase italic tracking-widest shadow-xl shadow-orange-500/20 active:scale-[0.98] transition-all">
+                        Üye Ol & Devam Et
                     </button>
                 </form>
 
-                <div class="mt-6 text-center">
-                    <p class="text-sm text-slate-500">Zaten hesabınız var mı?
-                        <a href="{{ route('login') }}" class="font-bold text-orange-500 hover:underline">Giriş Yapın</a>
+                <div class="mt-10 text-center">
+                    <p class="text-xs text-slate-500 font-medium">Zaten bir hesabınız var mı?
+                        <a href="{{ route('login') }}" class="font-black text-orange-500 hover:text-orange-600 uppercase italic tracking-tighter">Giriş Yapın</a>
                     </p>
                 </div>
             </div>
 
-            <!-- Security note -->
-            <p class="text-center text-xs text-slate-400 mt-6 leading-relaxed">
-                🔒 Bilgileriniz SSL ile şifrelenerek güvende tutulur.
-            </p>
+            <!-- Security info -->
+            <div class="mt-10 flex items-center justify-center gap-6 opacity-40 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-700">
+                <div class="flex items-center gap-2">
+                    <i class="fas fa-shield-halved text-slate-900"></i>
+                    <span class="text-[10px] font-black uppercase tracking-widest">SSL Secure</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <i class="fas fa-lock text-slate-900"></i>
+                    <span class="text-[10px] font-black uppercase tracking-widest">Safe Payment</span>
+                </div>
+            </div>
         </div>
     </main>
 
-    <footer class="py-6 bg-white border-t text-center text-xs text-slate-400">
-        <p>&copy; {{ date('Y') }} {{ config('app.name') }}</p>
-    </footer>
-
-    <script>
-        function togglePassword(id) {
-            const input = document.getElementById(id);
-            input.type = input.type === 'password' ? 'text' : 'password';
-        }
-
-        function checkStrength(password) {
-            const bar = document.getElementById('strengthBar');
-            const text = document.getElementById('strengthText');
-            let score = 0;
-            if (password.length >= 8) score++;
-            if (password.match(/[A-Z]/)) score++;
-            if (password.match(/[0-9]/)) score++;
-            if (password.match(/[^a-zA-Z0-9]/)) score++;
-
-            const levels = [
-                { width: '0%', color: 'bg-slate-200', label: '' },
-                { width: '25%', color: 'bg-red-400', label: 'Çok Zayıf' },
-                { width: '50%', color: 'bg-yellow-400', label: 'Zayıf' },
-                { width: '75%', color: 'bg-blue-400', label: 'İyi' },
-                { width: '100%', color: 'bg-green-500', label: 'Güçlü' },
-            ];
-
-            bar.style.width = levels[score].width;
-            bar.className = `h-full rounded-full ${levels[score].color}`;
-            text.textContent = levels[score].label;
-        }
-    </script>
     <!-- Modal Component -->
     <div x-show="modal.show" 
          x-cloak
-         class="fixed inset-0 z-[100] overflow-y-auto" 
-         aria-labelledby="modal-title" role="dialog" aria-modal="true">
-        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <!-- Background overlay -->
+         class="fixed inset-0 z-[2000] overflow-y-auto" 
+         role="dialog" aria-modal="true">
+        <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
             <div x-show="modal.show" 
                  x-transition:enter="ease-out duration-300" 
                  x-transition:enter-start="opacity-0" 
@@ -235,9 +200,8 @@
                  x-transition:leave="ease-in duration-200" 
                  x-transition:leave-start="opacity-100" 
                  x-transition:leave-end="opacity-0" 
-                 class="fixed inset-0 bg-slate-900 bg-opacity-75 transition-opacity" 
-                 @click="modal.show = false"
-                 aria-hidden="true"></div>
+                 class="fixed inset-0 bg-slate-900/90 backdrop-blur-sm transition-opacity" 
+                 @click="modal.show = false"></div>
 
             <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
 
@@ -245,37 +209,56 @@
                  x-transition:enter="ease-out duration-300" 
                  x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" 
                  x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" 
-                 x-transition:leave="ease-in duration-200" 
-                 x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" 
-                 x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" 
-                 class="inline-block align-bottom bg-white rounded-[32px] text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full border border-slate-100">
+                 class="inline-block align-bottom bg-white rounded-[2.5rem] text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full border border-slate-100">
                 
-                <div class="bg-white px-8 pt-8 pb-6 border-b border-slate-50 flex justify-between items-center sticky top-0 bg-white/80 backdrop-blur-md z-10">
-                    <h3 class="text-xl font-black italic tracking-tighter text-slate-900 uppercase" x-text="modal.title"></h3>
-                    <button @click="modal.show = false" class="text-slate-400 hover:text-slate-600 focus:outline-none bg-slate-50 w-10 h-10 rounded-xl flex items-center justify-center transition-colors">
-                        <i class="fas fa-times"></i>
+                <div class="bg-white px-10 pt-10 pb-6 flex justify-between items-center sticky top-0 z-10">
+                    <h3 class="text-2xl font-black italic tracking-tighter text-slate-900 uppercase" x-text="modal.title"></h3>
+                    <button @click="modal.show = false" class="text-slate-400 hover:text-orange-500 w-12 h-12 rounded-2xl flex items-center justify-center transition-all bg-slate-50 hover:bg-orange-50">
+                        <i class="fas fa-times text-xl"></i>
                     </button>
                 </div>
                 
-                <div class="bg-white px-8 py-8 max-h-[60vh] overflow-y-auto custom-scrollbar">
-                    <div class="prose prose-slate max-w-none text-slate-600 text-sm leading-relaxed" x-html="modal.content"></div>
+                <div class="px-10 py-10 max-h-[60vh] overflow-y-auto custom-scrollbar">
+                    <div class="prose prose-slate max-w-none text-slate-600 text-sm font-medium leading-relaxed italic" x-html="modal.content"></div>
                 </div>
 
-                <div class="bg-slate-50 px-8 py-6 flex justify-end">
-                    <button @click="modal.show = false" class="px-8 py-3 bg-slate-900 text-white rounded-xl text-xs font-black uppercase italic tracking-tighter hover:bg-orange-600 transition-all shadow-lg active:scale-95">
+                <div class="bg-slate-50 px-10 py-8 flex justify-end">
+                    <button @click="modal.show = false" class="px-10 py-4 bg-slate-900 text-white rounded-2xl text-xs font-black uppercase italic tracking-tighter hover:bg-orange-600 transition-all shadow-xl active:scale-95">
                         Kapat
                     </button>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
-    <style>
-        [x-cloak] { display: none !important; }
-        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #f27a1a; }
-    </style>
-</body>
-</html>
+<script>
+    function togglePassword(id) {
+        const input = document.getElementById(id);
+        input.type = input.type === 'password' ? 'text' : 'password';
+    }
+
+    function checkStrength(password) {
+        const bar = document.getElementById('strengthBar');
+        const text = document.getElementById('strengthText');
+        let score = 0;
+        if (password.length >= 8) score++;
+        if (password.match(/[A-Z]/)) score++;
+        if (password.match(/[0-9]/)) score++;
+        if (password.match(/[^a-zA-Z0-9]/)) score++;
+
+        const levels = [
+            { width: '5%', color: 'bg-slate-200', label: 'Geçersiz' },
+            { width: '25%', color: 'bg-red-400', label: 'Çok Zayıf' },
+            { width: '50%', color: 'bg-yellow-400', label: 'Zayıf' },
+            { width: '75%', color: 'bg-blue-400', label: 'İyi' },
+            { width: '100%', color: 'bg-green-500', label: 'Güçlü' },
+        ];
+
+        bar.style.width = levels[score].width;
+        bar.className = `h-full rounded-full ${levels[score].color} transition-all duration-500`;
+        text.textContent = levels[score].label;
+    }
+</script>
+@endsection
+
