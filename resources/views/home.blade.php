@@ -158,17 +158,52 @@
 
         <div class="flex overflow-x-auto pb-6 gap-6 custom-scrollbar scroll-smooth">
             @foreach($popularProducts as $product)
-                <div class="flex-shrink-0 w-[240px] product-card">
-                    <div class="product-image-container relative aspect-[2/3] bg-gray-50 overflow-hidden">
+                <div class="flex-shrink-0 w-[240px] product-card group" 
+                     x-data="{ 
+                        activeImage: 0, 
+                        images: {{ $product->productImages->pluck('url')->toJson() }} 
+                     }">
+                    <div class="product-image-container relative aspect-[2/3] bg-gray-50 overflow-hidden"
+                         @mouseleave="activeImage = 0">
                         @php $img = $product->productImages->first()?->url ?? 'https://via.placeholder.com/400x600?text=Resim+Yok'; @endphp
-                        <a href="{{ route('product.show', $product->slug) }}" target="_blank">
-                            <img src="{{ $img }}" alt="{{ $product->name }}" class="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform">
+                        
+                        <!-- Main Image Display & Link -->
+                        <a href="{{ route('product.show', $product->slug) }}" target="_blank" class="block w-full h-full relative z-10">
+                            <!-- All images (only active one shows) -->
+                            <template x-for="(image, index) in images.slice(0, 5)" :key="index">
+                                <img :src="image" 
+                                     x-show="activeImage === index"
+                                     x-transition:enter="transition opacity duration-300"
+                                     x-transition:enter-start="opacity-0"
+                                     x-transition:enter-end="opacity-100"
+                                     class="absolute inset-0 w-full h-full object-contain p-2"
+                                     :alt="'{{ addslashes($product->name) }}'"
+                                     style="display: none;">
+                            </template>
+                            <img x-show="images.length === 0" src="{{ $img }}" alt="{{ $product->name }}" class="w-full h-full object-contain p-2">
+
+                            <!-- Invisible Hover Switcher Regions (Inside the link to keep it clickable) -->
+                            <div class="absolute inset-0 flex">
+                                <template x-for="(image, index) in images.slice(0, 5)" :key="index">
+                                    <div class="flex-1 h-full" @mouseenter="activeImage = index"></div>
+                                </template>
+                            </div>
                         </a>
-                        <button @click="$store.fav.toggle({id: '{{ $product->id }}', slug: '{{ $product->slug }}', name: '{{ addslashes($product->name) }}', brand: '{{ addslashes($product->brand->name ?? '') }}', price: {{ $product->price }}, image: '{{ $img }}'})" class="favorite-btn absolute top-2 right-2 w-8 h-8 bg-white border border-gray-100 rounded-full flex items-center justify-center shadow-sm" :class="$store.fav.has('{{ $product->id }}') ? 'text-red-500' : 'text-gray-400'">
+
+                        <!-- Dot Indicators -->
+                        <div class="absolute bottom-3 left-0 right-0 flex justify-center gap-1.5 z-20 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity"
+                             x-show="images.length > 1">
+                            <template x-for="(image, index) in images.slice(0, 5)" :key="index">
+                                <div class="h-1 rounded-full transition-all duration-300 bg-white shadow-sm"
+                                     :class="activeImage === index ? 'w-4 bg-slate-900 border border-white' : 'w-1 bg-slate-400/50'"></div>
+                            </template>
+                        </div>
+
+                        <button @click="$store.fav.toggle({id: '{{ $product->id }}', slug: '{{ $product->slug }}', name: '{{ addslashes($product->name) }}', brand: '{{ addslashes($product->brand->name ?? '') }}', price: {{ $product->price }}, image: '{{ $img }}'})" class="favorite-btn absolute top-2 right-2 w-8 h-8 bg-white border border-gray-100 rounded-full flex items-center justify-center shadow-sm z-30" :class="$store.fav.has('{{ $product->id }}') ? 'text-red-500' : 'text-gray-400'">
                             <i :class="$store.fav.has('{{ $product->id }}') ? 'fas fa-heart' : 'far fa-heart'"></i>
                         </button>
                         
-                        <div class="absolute bottom-2 left-2 flex flex-col gap-1">
+                        <div class="absolute bottom-2 left-2 flex flex-col gap-1 z-30">
                             @if($product->is_popular)
                                 <div class="bg-amber-400 text-white text-[9px] font-bold px-2 py-0.5 rounded shadow-sm border border-amber-500 w-fit">EDİTÖRÜN SEÇİMİ</div>
                             @endif
@@ -326,17 +361,50 @@
                 <!-- Product Grid -->
                 <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
                     @forelse($products as $product)
-                        <div class="product-card">
-                            <div class="product-image-container relative aspect-[2/3] bg-gray-50 overflow-hidden">
+                        <div class="product-card group"
+                             x-data="{ 
+                                activeImage: 0, 
+                                images: {{ $product->productImages->pluck('url')->toJson() }} 
+                             }">
+                            <div class="product-image-container relative aspect-[2/3] bg-gray-50 overflow-hidden"
+                                 @mouseleave="activeImage = 0">
                                 @php $img = $product->productImages->first()?->url ?? 'https://via.placeholder.com/400x600?text=Resim+Yok'; @endphp
-                                <a href="{{ route('product.show', $product->slug) }}" target="_blank">
-                                    <img src="{{ $img }}" alt="{{ $product->name }}" class="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform">
+                                
+                                <a href="{{ route('product.show', $product->slug) }}" target="_blank" class="block w-full h-full relative z-10">
+                                    <template x-for="(image, index) in images.slice(0, 5)" :key="index">
+                                        <img :src="image" 
+                                             x-show="activeImage === index"
+                                             x-transition:enter="transition opacity duration-300"
+                                             x-transition:enter-start="opacity-0"
+                                             x-transition:enter-end="opacity-100"
+                                             class="absolute inset-0 w-full h-full object-contain p-2"
+                                             :alt="'{{ addslashes($product->name) }}'"
+                                             style="display: none;">
+                                    </template>
+                                    <img x-show="images.length === 0" src="{{ $img }}" alt="{{ $product->name }}" class="w-full h-full object-contain p-2">
+
+                                    <!-- Hover Segments inside link -->
+                                    <div class="absolute inset-0 flex">
+                                        <template x-for="(image, index) in images.slice(0, 5)" :key="index">
+                                            <div class="flex-1 h-full" @mouseenter="activeImage = index"></div>
+                                        </template>
+                                    </div>
                                 </a>
-                                <button @click="$store.fav.toggle({id: '{{ $product->id }}', slug: '{{ $product->slug }}', name: '{{ addslashes($product->name) }}', brand: '{{ addslashes($product->brand->name ?? '') }}', price: {{ $product->price }}, image: '{{ $img }}'})" class="favorite-btn absolute top-2 right-2 w-8 h-8 bg-white border border-gray-100 rounded-full flex items-center justify-center shadow-sm" :class="$store.fav.has('{{ $product->id }}') ? 'text-red-500' : 'text-gray-400'">
+
+                                <!-- Dots -->
+                                <div class="absolute bottom-3 left-0 right-0 flex justify-center gap-1.5 z-20 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity"
+                                     x-show="images.length > 1">
+                                    <template x-for="(image, index) in images.slice(0, 5)" :key="index">
+                                        <div class="h-1 rounded-full transition-all duration-300 bg-white shadow-sm"
+                                             :class="activeImage === index ? 'w-4 bg-slate-900 border border-white' : 'w-1 bg-slate-400/50'"></div>
+                                    </template>
+                                </div>
+
+                                <button @click="$store.fav.toggle({id: '{{ $product->id }}', slug: '{{ $product->slug }}', name: '{{ addslashes($product->name) }}', brand: '{{ addslashes($product->brand->name ?? '') }}', price: {{ $product->price }}, image: '{{ $img }}'})" class="favorite-btn absolute top-2 right-2 w-8 h-8 bg-white border border-gray-100 rounded-full flex items-center justify-center shadow-sm z-30" :class="$store.fav.has('{{ $product->id }}') ? 'text-red-500' : 'text-gray-400'">
                                     <i :class="$store.fav.has('{{ $product->id }}') ? 'fas fa-heart' : 'far fa-heart'"></i>
                                 </button>
                                 
-                                <div class="absolute bottom-2 left-2 flex flex-col gap-1">
+                                <div class="absolute bottom-2 left-2 flex flex-col gap-1 z-30">
                                     @if($product->stock > 0)
                                         <div class="badge-free-shipping">HIZLI TESLİMAT</div>
                                     @endif
@@ -400,13 +468,46 @@
 
         <div class="flex overflow-x-auto pb-6 gap-6 custom-scrollbar scroll-smooth">
             @foreach($recentlyViewedProducts as $product)
-                <div class="flex-shrink-0 w-[200px] product-card bg-white shadow-xl">
-                    <div class="product-image-container relative aspect-[2/3] bg-gray-50 overflow-hidden">
+                <div class="flex-shrink-0 w-[200px] product-card group bg-white shadow-xl"
+                     x-data="{ 
+                        activeImage: 0, 
+                        images: {{ $product->productImages->pluck('url')->toJson() }} 
+                     }">
+                    <div class="product-image-container relative aspect-[2/3] bg-gray-50 overflow-hidden"
+                         @mouseleave="activeImage = 0">
                         @php $img = $product->productImages->first()?->url ?? 'https://via.placeholder.com/400x600?text=Resim+Yok'; @endphp
-                        <a href="{{ route('product.show', $product->slug) }}" target="_blank">
-                            <img src="{{ $img }}" alt="{{ $product->name }}" class="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform">
+                        
+                        <a href="{{ route('product.show', $product->slug) }}" target="_blank" class="block w-full h-full relative z-10">
+                            <template x-for="(image, index) in images.slice(0, 5)" :key="index">
+                                <img :src="image" 
+                                     x-show="activeImage === index"
+                                     x-transition:enter="transition opacity duration-300"
+                                     x-transition:enter-start="opacity-0"
+                                     x-transition:enter-end="opacity-100"
+                                     class="absolute inset-0 w-full h-full object-contain p-2"
+                                     :alt="'{{ addslashes($product->name) }}'"
+                                     style="display: none;">
+                            </template>
+                            <img x-show="images.length === 0" src="{{ $img }}" alt="{{ $product->name }}" class="w-full h-full object-contain p-2">
+
+                            <!-- Hover Segments inside link -->
+                            <div class="absolute inset-0 flex">
+                                <template x-for="(image, index) in images.slice(0, 5)" :key="index">
+                                    <div class="flex-1 h-full" @mouseenter="activeImage = index"></div>
+                                </template>
+                            </div>
                         </a>
-                        <button @click="$store.fav.toggle({id: '{{ $product->id }}', slug: '{{ $product->slug }}', name: '{{ addslashes($product->name) }}', brand: '{{ addslashes($product->brand->name ?? '') }}', price: {{ $product->price }}, image: '{{ $img }}'})" class="favorite-btn absolute top-2 right-2 w-8 h-8 bg-white border border-gray-100 rounded-full flex items-center justify-center shadow-sm" :class="$store.fav.has('{{ $product->id }}') ? 'text-red-500' : 'text-gray-400'">
+
+                        <!-- Dots -->
+                        <div class="absolute bottom-3 left-0 right-0 flex justify-center gap-1.5 z-20 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity"
+                             x-show="images.length > 1">
+                            <template x-for="(image, index) in images.slice(0, 5)" :key="index">
+                                <div class="h-1 rounded-full transition-all duration-300 bg-white shadow-sm"
+                                     :class="activeImage === index ? 'w-4 bg-slate-900 border border-white' : 'w-1 bg-slate-400/50'"></div>
+                            </template>
+                        </div>
+
+                        <button @click="$store.fav.toggle({id: '{{ $product->id }}', slug: '{{ $product->slug }}', name: '{{ addslashes($product->name) }}', brand: '{{ addslashes($product->brand->name ?? '') }}', price: {{ $product->price }}, image: '{{ $img }}'})" class="favorite-btn absolute top-2 right-2 w-8 h-8 bg-white border border-gray-100 rounded-full flex items-center justify-center shadow-sm z-30" :class="$store.fav.has('{{ $product->id }}') ? 'text-red-500' : 'text-gray-400'">
                             <i :class="$store.fav.has('{{ $product->id }}') ? 'fas fa-heart' : 'far fa-heart'"></i>
                         </button>
                     </div>

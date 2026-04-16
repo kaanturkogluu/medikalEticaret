@@ -24,14 +24,14 @@
         </div>
     </div>
 
-    <!-- Main Grid -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <form action="{{ route('admin.products.store') }}" method="POST" x-ref="createForm">
+        @csrf
         
-        <!-- Left Column -->
-        <div class="lg:col-span-2 space-y-6">
-            <form action="{{ route('admin.products.store') }}" method="POST" x-ref="createForm">
-                @csrf
-                
+        <!-- Main Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <!-- Left Column -->
+            <div class="lg:col-span-2 space-y-6">
                 <div class="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm space-y-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="space-y-2">
@@ -117,30 +117,30 @@
                         </div>
                     </div>
                 </div>
-            </form>
-        </div>
+            </div>
 
-        <!-- Right Column -->
-        <div class="space-y-6">
-            <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm space-y-6">
-                <div>
-                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4">Ürün Durumu</p>
-                    <div class="flex items-center justify-between p-4 bg-emerald-50 text-emerald-600 rounded-2xl border border-emerald-100">
-                        <div class="flex items-center gap-3">
-                            <span class="h-2.5 w-2.5 rounded-full bg-emerald-500"></span>
-                            <p class="text-xs font-bold uppercase tracking-widest">AKTİF</p>
+            <!-- Right Column -->
+            <div class="space-y-6">
+                <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm space-y-6">
+                    <div>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4">Ürün Durumu</p>
+                        <div class="flex items-center justify-between p-4 bg-emerald-50 text-emerald-600 rounded-2xl border border-emerald-100">
+                            <div class="flex items-center gap-3">
+                                <span class="h-2.5 w-2.5 rounded-full bg-emerald-500"></span>
+                                <p class="text-xs font-bold uppercase tracking-widest">AKTİF</p>
+                            </div>
+                            <input type="checkbox" name="active" value="1" checked class="h-5 w-5 rounded-md border-emerald-300 text-emerald-600 focus:ring-emerald-500 cursor-pointer">
                         </div>
-                        <input type="checkbox" name="active" value="1" checked class="h-5 w-5 rounded-md border-emerald-300 text-emerald-600 focus:ring-emerald-500">
                     </div>
-                </div>
 
-                <div class="p-4 bg-amber-50 rounded-2xl border border-amber-100">
-                    <p class="text-[10px] text-amber-700 font-bold uppercase tracking-widest mb-1">Not</p>
-                    <p class="text-[10px] text-amber-600 leading-relaxed font-medium">Yeni eklenen ürünler otomatik olarak yayına alınır. Görsel eklemek için ürünü önce kaydediniz.</p>
+                    <div class="p-4 bg-amber-50 rounded-2xl border border-amber-100">
+                        <p class="text-[10px] text-amber-700 font-bold uppercase tracking-widest mb-1">Not</p>
+                        <p class="text-[10px] text-amber-600 leading-relaxed font-medium">Yeni eklenen ürünler otomatik olarak yayına alınır. Görsel eklemek için ürünü önce kaydediniz.</p>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    </form>
 </div>
 
 <style>

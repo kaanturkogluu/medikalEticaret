@@ -432,17 +432,52 @@
 
             <div class="grid grid-cols-2 lg:grid-cols-5 gap-10">
                 @foreach($relatedProducts as $rp)
-                    <div class="group relative bg-white border border-gray-100 p-5 rounded-[40px] hover:shadow-2xl hover:shadow-gray-100 hover:border-orange-500 hover:-translate-y-2 transition-all duration-500 overflow-hidden">
-                        <a href="{{ route('product.show', $rp) }}" target="_blank">
-                             <div class="aspect-[3/4] bg-gray-50 rounded-[30px] overflow-hidden mb-6 p-6 relative flex items-center justify-center">
-                                <img src="{{ $rp->productImages->first()?->url ?? 'https://via.placeholder.com/400x600' }}" alt="" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-700">
-                                
-                                <!-- Brand Overlays -->
-                                <div class="absolute top-4 left-4 bg-white/80 backdrop-blur px-3 py-1 rounded-full border border-white shadow-sm opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0">
-                                    <span class="text-[9px] font-black text-slate-900 uppercase italic tracking-tighter">{{ $rp->brand->name ?? 'Marka' }}</span>
+                    <div class="group relative bg-white border border-gray-100 p-5 rounded-[40px] hover:shadow-2xl transition-all duration-500 overflow-hidden"
+                         x-data="{ 
+                            activeImage: 0, 
+                            images: {{ $rp->productImages->pluck('url')->toJson() }} 
+                         }">
+                        <div class="aspect-[3/4] bg-gray-50 rounded-[30px] overflow-hidden mb-6 relative flex items-center justify-center"
+                             @mouseleave="activeImage = 0">
+                            
+                            <!-- Images & Link -->
+                            <a href="{{ route('product.show', $rp) }}" target="_blank" class="block w-full h-full relative z-10">
+                                <template x-for="(image, index) in images.slice(0, 5)" :key="index">
+                                    <img :src="image" 
+                                         x-show="activeImage === index"
+                                         x-transition:enter="transition opacity duration-300"
+                                         x-transition:enter-start="opacity-0"
+                                         x-transition:enter-end="opacity-100"
+                                         class="absolute inset-0 w-full h-full object-contain p-6"
+                                         :alt="'{{ addslashes($rp->name) }}'"
+                                         style="display: none;">
+                                </template>
+                                <img x-show="images.length === 0" src="{{ $rp->productImages->first()?->url ?? 'https://via.placeholder.com/400x600' }}" alt="" class="w-full h-full object-contain p-6">
+
+                                <!-- Hover Segments inside link to maintain clickability -->
+                                <div class="absolute inset-0 flex">
+                                    <template x-for="(image, index) in images.slice(0, 5)" :key="index">
+                                        <div class="flex-1 h-full" @mouseenter="activeImage = index"></div>
+                                    </template>
                                 </div>
+                            </a>
+
+                            <!-- Dots -->
+                            <div class="absolute bottom-4 left-0 right-0 flex justify-center gap-1.5 z-20 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity"
+                                 x-show="images.length > 1">
+                                <template x-for="(image, index) in images.slice(0, 5)" :key="index">
+                                    <div class="h-1 rounded-full transition-all duration-300 bg-white shadow-sm"
+                                         :class="activeImage === index ? 'w-4 bg-slate-900 border border-white' : 'w-1 bg-slate-400/50'"></div>
+                                </template>
                             </div>
                             
+                            <!-- Brand Overlays -->
+                            <div class="absolute top-4 left-4 bg-white/80 backdrop-blur px-3 py-1 rounded-full border border-white shadow-sm opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0 z-30">
+                                <span class="text-[9px] font-black text-slate-900 uppercase italic tracking-tighter">{{ $rp->brand->name ?? 'Marka' }}</span>
+                            </div>
+                        </div>
+                        
+                        <a href="{{ route('product.show', $rp) }}" target="_blank">
                             <h4 class="text-xs text-gray-500 h-10 overflow-hidden line-clamp-2 leading-tight px-2 font-medium group-hover:text-slate-900 transition-colors">{{ $rp->name }}</h4>
                             <div class="mt-6 flex items-center justify-between px-2">
                                 <div class="text-xl font-black text-slate-900 tracking-tighter group-hover:text-[var(--primary-color)] transition-colors">{{ number_format($rp->price, 2) }} TL</div>
@@ -452,7 +487,7 @@
                         
                         <!-- Quick Add -->
                         <button @click="$store.cart.add({id: '{{ $rp->id }}', slug: '{{ $rp->slug }}', name: '{{ addslashes($rp->name) }}', brand: '{{ addslashes($rp->brand->name ?? '') }}', price: {{ $rp->price }}, image: '{{ $rp->productImages->first()?->url ?? '' }}'})" 
-                                class="absolute top-4 right-4 bg-slate-900 text-white w-12 h-12 rounded-2xl flex items-center justify-center opacity-0 translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all shadow-xl hover:bg-orange-500 hover:scale-110 active:scale-95">
+                                class="absolute top-4 right-4 bg-slate-900 text-white w-12 h-12 rounded-2xl flex items-center justify-center opacity-0 translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all shadow-xl hover:bg-orange-500 hover:scale-110 active:scale-95 z-30">
                             <i class="fas fa-cart-plus text-lg"></i>
                         </button>
                     </div>

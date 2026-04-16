@@ -24,28 +24,28 @@
         </div>
     </div>
 
-    <!-- Main Grid -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <form action="{{ route('admin.products.update', $product->id) }}" method="POST" x-ref="editForm">
+        @csrf
+        @method('PUT')
         
-        <!-- Left Column: Tabs and Main Info -->
-        <div class="lg:col-span-2 space-y-6">
+        <!-- Main Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             
-            <!-- Navigation Tabs -->
-            <div class="flex items-center gap-1 bg-white p-1.5 rounded-2xl border border-slate-100 shadow-sm overflow-x-auto no-scrollbar">
-                <button @click="tab = 'general'" :class="tab === 'general' ? 'bg-brand-50 text-brand-600' : 'text-slate-500 hover:bg-slate-50'" class="px-6 py-2.5 rounded-xl text-sm font-bold transition-all flex items-center gap-2 shrink-0">
-                    <i class="fas fa-info-circle text-xs"></i> Genel Bilgiler
-                </button>
-                <button @click="tab = 'variants'" :class="tab === 'variants' ? 'bg-brand-50 text-brand-600' : 'text-slate-500 hover:bg-slate-50'" class="px-6 py-2.5 rounded-xl text-sm font-bold transition-all flex items-center gap-2 shrink-0">
-                    <i class="fas fa-layer-group text-xs"></i> Varyantlar & Özellikler
-                </button>
-                <button @click="tab = 'marketplaces'" :class="tab === 'marketplaces' ? 'bg-brand-50 text-brand-600' : 'text-slate-500 hover:bg-slate-50'" class="px-6 py-2.5 rounded-xl text-sm font-bold transition-all flex items-center gap-2 shrink-0">
-                    <i class="fas fa-store text-xs"></i> Pazaryeri Verileri
-                </button>
-            </div>
-
-            <form action="{{ route('admin.products.update', $product->id) }}" method="POST" x-ref="editForm">
-                @csrf
-                @method('PUT')
+            <!-- Left Column: Tabs and Main Info -->
+            <div class="lg:col-span-2 space-y-6">
+                
+                <!-- Navigation Tabs -->
+                <div class="flex items-center gap-1 bg-white p-1.5 rounded-2xl border border-slate-100 shadow-sm overflow-x-auto no-scrollbar">
+                    <button type="button" @click="tab = 'general'" :class="tab === 'general' ? 'bg-brand-50 text-brand-600' : 'text-slate-500 hover:bg-slate-50'" class="px-6 py-2.5 rounded-xl text-sm font-bold transition-all flex items-center gap-2 shrink-0">
+                        <i class="fas fa-info-circle text-xs"></i> Genel Bilgiler
+                    </button>
+                    <button type="button" @click="tab = 'variants'" :class="tab === 'variants' ? 'bg-brand-50 text-brand-600' : 'text-slate-500 hover:bg-slate-50'" class="px-6 py-2.5 rounded-xl text-sm font-bold transition-all flex items-center gap-2 shrink-0">
+                        <i class="fas fa-layer-group text-xs"></i> Varyantlar & Özellikler
+                    </button>
+                    <button type="button" @click="tab = 'marketplaces'" :class="tab === 'marketplaces' ? 'bg-brand-50 text-brand-600' : 'text-slate-500 hover:bg-slate-50'" class="px-6 py-2.5 rounded-xl text-sm font-bold transition-all flex items-center gap-2 shrink-0">
+                        <i class="fas fa-store text-xs"></i> Pazaryeri Verileri
+                    </button>
+                </div>
                 
                 <!-- General Tab Content -->
                 <div x-show="tab === 'general'" class="space-y-6 transition-all" x-transition:enter="duration-300 ease-out" x-transition:enter-start="opacity-0 translate-y-2">
@@ -245,94 +245,94 @@
                         </div>
                     </div>
                 </div>
-            </form>
-        </div>
+            </div>
 
-        <!-- Right Column: Sidebar -->
-        <div class="space-y-6">
-            
-            <!-- Product Images -->
-            <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
-                <div class="flex items-center justify-between mb-6">
-                    <h3 class="text-sm font-black text-slate-800 uppercase tracking-widest">Ürün Görselleri</h3>
-                    <button class="text-brand-600 text-[10px] font-bold uppercase tracking-widest hover:text-brand-700">Yönet</button>
-                </div>
+            <!-- Right Column: Sidebar -->
+            <div class="space-y-6">
                 
-                <div class="grid grid-cols-3 gap-2">
-                    @foreach($product->productImages as $image)
-                    <div class="aspect-square rounded-2xl bg-slate-50 border border-slate-100 relative group overflow-hidden">
-                        <img src="{{ $image->url }}" class="h-full w-full object-cover group-hover:scale-110 transition-transform duration-500">
-                        <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                            <button class="h-8 w-8 rounded-lg bg-white/20 backdrop-blur-md text-white text-xs hover:bg-white/40 transition-colors">
-                                <i class="fas fa-expand"></i>
-                            </button>
-                            <button class="h-8 w-8 rounded-lg bg-white/20 backdrop-blur-md text-white text-xs hover:bg-white/40 transition-colors">
-                                <i class="fas fa-trash"></i>
-                            </button>
+                <!-- Product Images -->
+                <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-sm font-black text-slate-800 uppercase tracking-widest">Ürün Görselleri</h3>
+                        <button type="button" class="text-brand-600 text-[10px] font-bold uppercase tracking-widest hover:text-brand-700">Yönet</button>
+                    </div>
+                    
+                    <div class="grid grid-cols-3 gap-2">
+                        @foreach($product->productImages as $image)
+                        <div class="aspect-square rounded-2xl bg-slate-50 border border-slate-100 relative group overflow-hidden">
+                            <img src="{{ $image->url }}" class="h-full w-full object-cover group-hover:scale-110 transition-transform duration-500">
+                            <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                                <button type="button" class="h-8 w-8 rounded-lg bg-white/20 backdrop-blur-md text-white text-xs hover:bg-white/40 transition-colors">
+                                    <i class="fas fa-expand"></i>
+                                </button>
+                                <button type="button" class="h-8 w-8 rounded-lg bg-white/20 backdrop-blur-md text-white text-xs hover:bg-white/40 transition-colors">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        @endforeach
+                        <button type="button" class="aspect-square rounded-2xl border-2 border-dashed border-slate-100 flex flex-col items-center justify-center gap-1 text-slate-400 hover:border-brand-400 hover:text-brand-500 hover:bg-brand-50 transition-all">
+                            <i class="fas fa-plus text-xs"></i>
+                            <span class="text-[9px] font-bold uppercase">YÜKLE</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Basic Stats & Meta -->
+                <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm space-y-6">
+                    <div>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4">Ürün Durumu</p>
+                        <div class="flex items-center justify-between p-4 bg-emerald-50 text-emerald-600 rounded-2xl border border-emerald-100">
+                            <div class="flex items-center gap-3">
+                                <span class="h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                                <p class="text-xs font-bold uppercase tracking-widest">SATIŞA AÇIK</p>
+                            </div>
+                            <input type="checkbox" name="active" value="1" {{ $product->active ? 'checked' : '' }} class="h-5 w-5 rounded-md border-emerald-300 text-emerald-600 focus:ring-emerald-500 cursor-pointer">
                         </div>
                     </div>
-                    @endforeach
-                    <button class="aspect-square rounded-2xl border-2 border-dashed border-slate-100 flex flex-col items-center justify-center gap-1 text-slate-400 hover:border-brand-400 hover:text-brand-500 hover:bg-brand-50 transition-all">
-                        <i class="fas fa-plus text-xs"></i>
-                        <span class="text-[9px] font-bold uppercase">YÜKLE</span>
-                    </button>
-                </div>
-            </div>
 
-            <!-- Basic Stats & Meta -->
-            <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm space-y-6">
-                <div>
-                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4">Ürün Durumu</p>
-                    <div class="flex items-center justify-between p-4 bg-emerald-50 text-emerald-600 rounded-2xl border border-emerald-100">
-                        <div class="flex items-center gap-3">
-                            <span class="h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                            <p class="text-xs font-bold uppercase tracking-widest">SATIŞA AÇIK</p>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center text-xs">
+                            <span class="font-bold text-slate-400 uppercase tracking-widest">KATEGORİ</span>
+                            <span class="font-bold text-slate-800 text-right">{{ $product->category->name ?? 'Belirtilmedi' }}</span>
                         </div>
-                        <input type="checkbox" name="active" value="1" {{ $product->active ? 'checked' : '' }} class="h-5 w-5 rounded-md border-emerald-300 text-emerald-600 focus:ring-emerald-500">
+                        <div class="flex justify-between items-center text-xs">
+                            <span class="font-bold text-slate-400 uppercase tracking-widest">MARKA</span>
+                            <span class="font-bold text-slate-800 text-right">{{ $product->brand_name ?? 'Belirtilmedi' }}</span>
+                        </div>
+                        <div class="h-px bg-slate-50 my-2"></div>
+                        <div class="flex justify-between items-center text-xs text-slate-400">
+                            <span>Oluşturulma</span>
+                            <span class="font-medium">{{ $product->created_at->format('d/m/Y H:i') }}</span>
+                        </div>
+                        <div class="flex justify-between items-center text-xs text-slate-400">
+                            <span>Son Güncelleme</span>
+                            <span class="font-medium tabular-nums">{{ $product->updated_at->diffForHumans() }}</span>
+                        </div>
                     </div>
                 </div>
 
-                <div class="space-y-3">
-                    <div class="flex justify-between items-center text-xs">
-                        <span class="font-bold text-slate-400 uppercase tracking-widest">KATEGORİ</span>
-                        <span class="font-bold text-slate-800 text-right">{{ $product->category->name ?? 'Belirtilmedi' }}</span>
+                <!-- Quick Actions -->
+                <div class="bg-corporate p-6 rounded-3xl text-white shadow-xl shadow-corporate/20 relative overflow-hidden">
+                    <div class="absolute -right-8 -bottom-8 h-32 w-32 bg-brand-500 rounded-full blur-[60px] opacity-20"></div>
+                    
+                    <h3 class="text-sm font-black uppercase tracking-widest mb-6 relative z-10">Hızli İşlemler</h3>
+                    
+                    <div class="grid grid-cols-1 gap-2 relative z-10">
+                        <button type="button" @click="notify('info', 'Fiyat tüm kanallarda güncelleniyor...')" class="w-full py-3 bg-white/10 hover:bg-white/20 rounded-2xl flex items-center gap-3 px-4 transition-all text-xs font-bold">
+                            <i class="fas fa-tag text-brand-400"></i> Tüm Kanallarda Fiyatı Eşitle
+                        </button>
+                        <button type="button" @click="notify('info', 'Stok tüm kanallarda güncelleniyor...')" class="w-full py-3 bg-white/10 hover:bg-white/20 rounded-2xl flex items-center gap-3 px-4 transition-all text-xs font-bold">
+                            <i class="fas fa-cubes text-emerald-400"></i> Tüm Kanallarda Stoğu Eşitle
+                        </button>
+                        <button type="button" @click="notify('warning', 'Ürün pazaryeri silme henüz aktif değil')" class="w-full py-3 bg-rose-500/20 hover:bg-rose-500/30 text-rose-400 rounded-2xl flex items-center gap-3 px-4 transition-all text-xs font-bold">
+                            <i class="fas fa-trash-alt"></i> Ürünü Tüm Kanallardan Sil
+                        </button>
                     </div>
-                    <div class="flex justify-between items-center text-xs">
-                        <span class="font-bold text-slate-400 uppercase tracking-widest">MARKA</span>
-                        <span class="font-bold text-slate-800 text-right">{{ $product->brand_name ?? 'Belirtilmedi' }}</span>
-                    </div>
-                    <div class="h-px bg-slate-50 my-2"></div>
-                    <div class="flex justify-between items-center text-xs text-slate-400">
-                        <span>Oluşturulma</span>
-                        <span class="font-medium">{{ $product->created_at->format('d/m/Y H:i') }}</span>
-                    </div>
-                    <div class="flex justify-between items-center text-xs text-slate-400">
-                        <span>Son Güncelleme</span>
-                        <span class="font-medium tabular-nums">{{ $product->updated_at->diffForHumans() }}</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Quick Actions -->
-            <div class="bg-corporate p-6 rounded-3xl text-white shadow-xl shadow-corporate/20 relative overflow-hidden">
-                <div class="absolute -right-8 -bottom-8 h-32 w-32 bg-brand-500 rounded-full blur-[60px] opacity-20"></div>
-                
-                <h3 class="text-sm font-black uppercase tracking-widest mb-6 relative z-10">Hızli İşlemler</h3>
-                
-                <div class="grid grid-cols-1 gap-2 relative z-10">
-                    <button @click="notify('info', 'Fiyat tüm kanallarda güncelleniyor...')" class="w-full py-3 bg-white/10 hover:bg-white/20 rounded-2xl flex items-center gap-3 px-4 transition-all text-xs font-bold">
-                        <i class="fas fa-tag text-brand-400"></i> Tüm Kanallarda Fiyatı Eşitle
-                    </button>
-                    <button @click="notify('info', 'Stok tüm kanallarda güncelleniyor...')" class="w-full py-3 bg-white/10 hover:bg-white/20 rounded-2xl flex items-center gap-3 px-4 transition-all text-xs font-bold">
-                        <i class="fas fa-cubes text-emerald-400"></i> Tüm Kanallarda Stoğu Eşitle
-                    </button>
-                    <button @click="notify('warning', 'Ürün pazaryeri silme henüz aktif değil')" class="w-full py-3 bg-rose-500/20 hover:bg-rose-500/30 text-rose-400 rounded-2xl flex items-center gap-3 px-4 transition-all text-xs font-bold">
-                        <i class="fas fa-trash-alt"></i> Ürünü Tüm Kanallardan Sil
-                    </button>
                 </div>
             </div>
         </div>
-    </div>
+    </form>
 </div>
 
 <style>
