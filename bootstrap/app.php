@@ -26,6 +26,10 @@ return Application::configure(basePath: dirname(__DIR__))
             'user'  => \App\Http\Middleware\UserMiddleware::class,
         ]);
     })
+    ->withSchedule(function (\Illuminate\Console\Scheduling\Schedule $schedule) {
+        $schedule->command('sync:trendyol-products')->everyThreeMinutes();
+        $schedule->command('sync:orders')->everyThreeMinutes();
+    })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
     })->create();
