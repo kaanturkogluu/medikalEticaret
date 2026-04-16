@@ -25,7 +25,13 @@ class CheckoutController extends Controller
         ];
 
         $agreement = \App\Models\Page::where('slug', 'mesafeli-satis-sozlesmesi')->first();
-        return view('checkout', compact('provinces', 'bankDetails', 'agreement'));
+        
+        $savedAddresses = [];
+        if (auth()->check()) {
+            $savedAddresses = \App\Models\UserAddress::where('user_id', auth()->id())->get();
+        }
+
+        return view('checkout', compact('provinces', 'bankDetails', 'agreement', 'savedAddresses'));
     }
 
     public function success(Order $order)

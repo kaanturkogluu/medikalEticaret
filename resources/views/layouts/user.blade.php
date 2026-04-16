@@ -26,6 +26,7 @@
         padding: 2rem;
     }
 </style>
+@yield('user_styles')
 @endsection
 
 @section('content')

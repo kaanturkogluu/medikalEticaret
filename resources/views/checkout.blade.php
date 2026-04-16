@@ -17,6 +17,46 @@
                         <h2 class="text-2xl font-black text-gray-900 uppercase italic tracking-tighter">Teslimat Bilgileri</h2>
                     </div>
 
+@if(count($savedAddresses) > 0)
+                    <div class="mb-10">
+                        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1 mb-4">Kayıtlı Adreslerim</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            @foreach($savedAddresses as $addr)
+                            <div @click="selectAddress({
+                                    first_name: '{{ explode(' ', $addr->full_name)[0] }}',
+                                    last_name: '{{ count(explode(' ', $addr->full_name)) > 1 ? str_replace(explode(' ', $addr->full_name)[0] . ' ', '', $addr->full_name) : '' }}',
+                                    phone: '{{ $addr->phone }}',
+                                    city: '{{ $addr->city }}',
+                                    district: '{{ $addr->district }}',
+                                    neighborhood: '{{ $addr->neighborhood }}',
+                                    address: '{{ $addr->address }}',
+                                    id: {{ $addr->id }}
+                                 })"
+                                 class="p-5 border-2 border-gray-100 rounded-[30px] cursor-pointer hover:border-orange-500 hover:bg-orange-50/30 transition-all relative group"
+                                 :class="form.selected_address_id === {{ $addr->id }} ? 'border-orange-500 bg-orange-50' : ''">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <div class="w-8 h-8 bg-slate-100 rounded-xl flex items-center justify-center text-slate-500 group-hover:bg-orange-100 group-hover:text-orange-500 transition-colors">
+                                        <i class="fas fa-{{ $addr->title === 'iş' ? 'building' : 'home' }}"></i>
+                                    </div>
+                                    <p class="font-black text-xs uppercase italic tracking-tighter text-slate-900">{{ $addr->title }}</p>
+                                </div>
+                                <p class="text-[11px] font-bold text-slate-700 mb-1">{{ $addr->full_name }}</p>
+                                <p class="text-[10px] text-slate-500 line-clamp-2 leading-relaxed">{{ $addr->address }}</p>
+                                <div class="mt-2 pt-2 border-t border-gray-100/50 flex items-center justify-between">
+                                    <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{{ $addr->district }} / {{ $addr->city }}</p>
+                                    <div class="w-4 h-4 rounded-full border-2 border-gray-200 flex items-center justify-center" :class="form.selected_address_id === {{ $addr->id }} ? 'border-orange-500' : ''">
+                                        <div x-show="form.selected_address_id === {{ $addr->id }}" class="w-2 h-2 bg-orange-500 rounded-full"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+                    </div>
+                    <div class="relative flex items-center justify-center py-4 mb-10">
+                        <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-gray-100"></div></div>
+                        <span class="relative px-6 bg-white text-[9px] font-black text-gray-300 uppercase italic tracking-widest">veya yeni adres girin</span>
+                    </div>
+@endif
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="space-y-2">
                             <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Adınız</label>
@@ -290,7 +330,69 @@ function checkoutPage() {
             district: '',
             neighborhood: '',
             address: '',
-            payment_method: 'credit_card'
+            payment_method: 'credit_card',
+            selected_address_id: null
+        },
+        selectAddress(addr) {
+            this.form.selected_address_id = addr.id;
+            this.form.first_name = addr.first_name;
+            this.form.last_name = addr.last_name;
+            this.form.phone = addr.phone;
+            this.form.address = addr.address;
+            
+            // For City/District/Neighborhood selects (which use IDs and Select2)
+            // We set the Alpine data first
+            this.form.city = addr.city;
+            this.form.district = addr.district;
+            this.form.neighborhood = addr.neighborhood;
+
+            // To update visuals of Select2 and load sub-options:
+            // 1. Find the option in #checkout_city that has data-name === addr.city
+            // 2. Set its value to the select and trigger change
+            const cityOption = $('#checkout_city option').filter(function() {
+                return $(this).data('name') === addr.city;
+            });
+
+            if (cityOption.length) {
+                const cityId = cityOption.val();
+                $('#checkout_city').val(cityId).trigger('change');
+                
+                // Since city change starts an AJAX call for districts, 
+                // we need to wait for it before setting district.
+                // However, we can also just manually append the options if they are just strings we have.
+                // But it's better to let the existing logic work.
+                
+                // We'll use a small interval or just set the names.
+                setTimeout(() => {
+                    const distOption = $('#checkout_district option').filter(function() {
+                        return $(this).data('name') === addr.district;
+                    });
+                    if (distOption.length) {
+                        $('#checkout_district').val(distOption.val()).trigger('change');
+                        
+                        setTimeout(() => {
+                            const neighOption = $('#checkout_neighborhood option').filter(function() {
+                                return $(this).data('name') === addr.neighborhood;
+                            });
+                            if (neighOption.length) {
+                                $('#checkout_neighborhood').val(neighOption.val()).trigger('change');
+                            }
+                        }, 500);
+                    } else {
+                        // If option doesn't exist yet (AJAX still loading or name mismatch), 
+                        // we manually add it to allow the form to have it.
+                        let opt = new Option(addr.district, '99999', true, true);
+                        $(opt).data('name', addr.district);
+                        $('#checkout_district').append(opt).trigger('change').prop('disabled', false);
+
+                        setTimeout(() => {
+                            let nOpt = new Option(addr.neighborhood, '88888', true, true);
+                            $(nOpt).data('name', addr.neighborhood);
+                            $('#checkout_neighborhood').append(nOpt).trigger('change').prop('disabled', false);
+                        }, 300);
+                    }
+                }, 500);
+            }
         },
         showAgreement: false,
         init() {
@@ -343,12 +445,13 @@ function checkoutPage() {
                 }
             }
 
+            const cleanPhone = this.form.phone.replace(/[^\d+]/g, '');
             const phoneRegex = /^(\+90|0)?5[0-9]{9}$/;
-            if (!phoneRegex.test(this.form.phone.replace(/\s/g, ''))) {
+            if (!phoneRegex.test(cleanPhone)) {
                 Swal.fire({
                     icon: 'warning',
                     title: 'Geçersiz Numara',
-                    text: 'Lütfen geçerli bir telefon numarası giriniz.',
+                    text: 'Lütfen geçerli bir telefon numarası giriniz (Örn: 05xx xxx xx xx).',
                     confirmButtonText: 'Tamam',
                     confirmButtonColor: '#0f172a'
                 });
@@ -366,7 +469,7 @@ function checkoutPage() {
                     },
                     body: JSON.stringify({
                         ...this.form,
-                        phone: this.form.phone.replace(/\s/g, ''),
+                        phone: cleanPhone,
                         cart_items: this.cart.items
                     })
                 });

@@ -28,9 +28,9 @@ Siparişinizin onaylanması için lütfen aşağıdaki hesaba ödemenizi gerçek
 | Ürün | Adet | Fiyat |
 | :--- | :---: | :--- |
 @foreach($order->items as $item)
-| {{ $item->product_name ?? 'Ürün' }} | {{ $item->quantity }} | {{ number_format($item->price, 2) }} TL |
+| {{ $item->product->name ?? 'Ürün' }} | {{ $item->quantity }} | {{ number_format($item->price, 2, ',', '.') }} TL |
 @endforeach
-| **Toplam** | | **{{ number_format($order->total_price, 2) }} TL** |
+| **Toplam** | | **{{ number_format($order->total_price, 2, ',', '.') }} TL** |
 </x-mail::table>
 
 ## 📍 Teslimat Adresi

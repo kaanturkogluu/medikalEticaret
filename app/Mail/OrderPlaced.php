@@ -23,7 +23,7 @@ class OrderPlaced extends Mailable implements ShouldQueue
      */
     public function __construct(Order $order)
     {
-        $this->order = $order->load('items');
+        $this->order = $order->load('items.product');
         
         if ($order->payment_method === 'eft') {
             $this->bankDetails = [

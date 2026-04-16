@@ -182,6 +182,9 @@ $(document).ready(function() {
     });
 });
 </script>
+@endsection
+
+@section('user_styles')
 <style>
 .select2-container--default .select2-selection--single {
     border: 1px solid #e5e7eb;
@@ -194,3 +197,4 @@ $(document).ready(function() {
     height: 40px;
 }
 </style>
+@endsection
