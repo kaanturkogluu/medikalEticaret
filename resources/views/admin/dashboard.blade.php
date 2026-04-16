@@ -2,8 +2,9 @@
 
 @section('content')
 <div class="space-y-8" x-data="{ 
-    syncStats: { success: 85, failed: 12, pending: 3 },
-    ordersOverTime: [12, 19, 3, 5, 2, 3, 10]
+    syncStats: @json($syncStats),
+    chartData: @json($chartData),
+    chartLabels: @json($chartLabels)
 }">
     <!-- Header -->
     <div class="flex items-center justify-between">
@@ -69,7 +70,7 @@
         <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-between hover:shadow-md transition-shadow relative overflow-hidden group border-l-4 border-l-red-500">
             <div class="z-10">
                 <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Hata Kayıtları</p>
-                <h3 class="text-3xl font-extrabold text-slate-900 tabular-nums">0</h3>
+                <h3 class="text-3xl font-extrabold text-slate-900 tabular-nums">{{ $stats['error_count'] }}</h3>
                 <p class="text-xs text-red-500 mt-3 font-semibold flex items-center gap-1">
                     <i class="fas fa-exclamation-triangle"></i> Kritik hatalar
                 </p>
@@ -104,7 +105,7 @@
             <div class="flex-1 flex items-center justify-center relative">
                 <canvas id="syncChart" class="max-h-[250px]"></canvas>
                 <div class="absolute flex flex-col items-center">
-                    <span class="text-2xl font-bold text-slate-800">%92</span>
+                    <span class="text-2xl font-bold text-slate-800">%{{ $successRate }}</span>
                     <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Başarı</span>
                 </div>
             </div>
@@ -114,21 +115,21 @@
                         <span class="h-2 w-2 rounded-full bg-emerald-500"></span>
                         <span class="text-slate-600 font-medium tracking-tight">Başarılı</span>
                     </div>
-                    <span class="font-bold text-slate-800">850 Adet</span>
+                    <span class="font-bold text-slate-800">{{ $syncStats['success'] }} Adet</span>
                 </div>
                 <div class="flex items-center justify-between text-xs">
                     <div class="flex items-center gap-2">
                         <span class="h-2 w-2 rounded-full bg-red-500"></span>
                         <span class="text-slate-600 font-medium tracking-tight">Hatalı</span>
                     </div>
-                    <span class="font-bold text-slate-800">120 Adet</span>
+                    <span class="font-bold text-slate-800">{{ $syncStats['failed'] }} Adet</span>
                 </div>
                 <div class="flex items-center justify-between text-xs">
                     <div class="flex items-center gap-2">
                         <span class="h-2 w-2 rounded-full bg-amber-500"></span>
                         <span class="text-slate-600 font-medium tracking-tight">Bekleyen</span>
                     </div>
-                    <span class="font-bold text-slate-800">30 Adet</span>
+                    <span class="font-bold text-slate-800">{{ $syncStats['pending'] }} Adet</span>
                 </div>
             </div>
         </div>
@@ -201,7 +202,7 @@
             data: {
                 labels: ['Başarılı', 'Hatalı', 'Bekleyen'],
                 datasets: [{
-                    data: [85, 12, 3],
+                    data: [{{ $syncStats['success'] }}, {{ $syncStats['failed'] }}, {{ $syncStats['pending'] }}],
                     backgroundColor: ['#10b981', '#ef4444', '#f59e0b'],
                     borderWidth: 0,
                     hoverOffset: 10
@@ -221,10 +222,10 @@
         const ordersChart = new Chart(ctxOrders, {
             type: 'line',
             data: {
-                labels: ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'],
+                labels: @json($chartLabels),
                 datasets: [{
                     label: 'Siparişler',
-                    data: [12, 19, 3, 5, 2, 3, 10],
+                    data: @json($chartData),
                     borderColor: '#0ea5e9',
                     backgroundColor: 'rgba(14, 165, 233, 0.1)',
                     borderWidth: 3,
@@ -243,7 +244,10 @@
                     x: { grid: { display: false } },
                     y: { 
                         grid: { borderDash: [5, 5] },
-                        beginAtZero: true
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
                     }
                 },
                 responsive: true,

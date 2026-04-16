@@ -3,13 +3,7 @@
 @section('content')
 <div class="space-y-6 h-full flex flex-col" x-data="{ 
     filter: 'all', 
-    logs: [
-        { id: 1, type: 'error', time: '12:45:01', endpoint: 'POST /v2/products', method: 'POST', status: 400, payload: '{ sku: TR-001, stock: 12 }', response: '{ error: Invalid Category ID }' },
-        { id: 2, type: 'success', time: '12:44:50', endpoint: 'GET /orders', method: 'GET', status: 200, payload: '{}', response: '{ dataCount: 45 }' },
-        { id: 3, type: 'info', time: '12:44:30', endpoint: 'Job Queue: StockSync', status: 'N/A', payload: 'worker_id: 4', response: 'Completed' },
-        { id: 4, type: 'success', time: '12:43:00', endpoint: 'POST /price-inventory', method: 'POST', status: 200, payload: '{ barcode: 868000, price: 299 }', response: '{ batchRequestId: 12921 }' },
-        { id: 5, type: 'error', time: '12:42:01', endpoint: 'POST /v2/products', method: 'POST', status: 401, payload: '{ sku: TR-999 }', response: '{ error: Unauthorized }' }
-    ],
+    logs: @json($logs),
     filteredLogs() {
         return this.logs.filter(l => this.filter === 'all' || l.type === this.filter);
     },
@@ -19,15 +13,18 @@
     <div class="flex items-center justify-between shrink-0">
         <div>
             <h2 class="text-2xl font-bold text-slate-800 tracking-tight">Sistem Logları & Debug</h2>
-            <p class="text-sm text-slate-500 mt-1">API isteklerini, yanıtlarını ve kuyruk durumlarını anlık izleyin.</p>
+            <p class="text-sm text-slate-500 mt-1">Sistemdeki hata ve işlem kayıtlarını anlık izleyin.</p>
         </div>
         <div class="flex items-center gap-2">
-            <button @click="logs = []" class="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-semibold text-red-500 hover:bg-red-50 transition-colors flex items-center gap-2">
-                <i class="fas fa-trash-alt text-[10px]"></i> Temizle
-            </button>
-            <button @click="notify('success', 'Canlı Akış Aktif!')" class="px-4 py-2 bg-brand-600 text-white rounded-lg text-sm font-semibold hover:bg-brand-700 transition-colors flex items-center gap-2">
-                <i class="fas fa-play text-[10px]"></i> Canlı İzle
-            </button>
+            <form action="{{ route('admin.logs.clear') }}" method="POST" onsubmit="return confirm('Tüm log geçmişini silmek istediğinize emin misiniz?')">
+                @csrf
+                <button type="submit" class="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-semibold text-red-500 hover:bg-red-50 transition-colors flex items-center gap-2">
+                    <i class="fas fa-trash-alt text-[10px]"></i> Temizle
+                </button>
+            </form>
+            <a href="{{ route('admin.logs') }}" class="px-4 py-2 bg-brand-600 text-white rounded-lg text-sm font-semibold hover:bg-brand-700 transition-colors flex items-center gap-2">
+                <i class="fas fa-sync-alt text-[10px]"></i> Yenile
+            </a>
         </div>
     </div>
 
@@ -62,12 +59,12 @@
                                     'bg-blue-500/10 text-blue-400 border-blue-500/50': log.type === 'info'
                                 }" class="text-[9px] px-2 py-0.5 rounded border-2 font-black uppercase tracking-widest" x-text="log.type"></span>
                                 <span class="text-slate-200 font-black text-xs tracking-tight" x-text="log.endpoint"></span>
-                                <span x-show="log.status !== 'N/A'" :class="log.status >= 400 ? 'text-red-500' : 'text-emerald-500'" class="text-[10px] font-black" x-text="'[' + log.status + ']'"></span>
+                                <span x-show="log.status !== 'N/A' && log.status !== '-'" :class="log.status >= 400 ? 'text-red-500' : 'text-emerald-500'" class="text-[10px] font-black" x-text="'[' + log.status + ']'"></span>
                             </div>
                             <div class="flex items-center gap-4 truncate">
-                                <p class="text-[11px] text-slate-500 truncate" x-text="'Payload: ' + log.payload"></p>
+                                <p class="text-[11px] text-slate-500 truncate" x-text="'Kayıt: ' + log.payload"></p>
                                 <span class="text-slate-700">|</span>
-                                <p class="text-[11px] text-slate-500 truncate" x-text="'Response: ' + log.response"></p>
+                                <p class="text-[11px] text-slate-500 truncate" x-text="'Detay: ' + log.response"></p>
                             </div>
                         </div>
 
@@ -76,23 +73,31 @@
 
                     <!-- Expandable Details -->
                     <div x-show="expanded === log.id" x-collapse x-cloak class="mt-2 space-y-4">
-                        <div class="grid grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div class="p-5 bg-slate-800 rounded-2xl border border-slate-700">
                                 <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3 flex items-center justify-between">
-                                    Request Payload
-                                    <button @click.stop="notify('info', 'Payload Kopyalandı')" class="hover:text-white transition-colors"><i class="far fa-copy"></i></button>
+                                    Log Mesajı / Payload
+                                    <button @click.stop="notify('info', 'Kopyalandı')" class="hover:text-white transition-colors"><i class="far fa-copy"></i></button>
                                 </p>
                                 <pre x-text="log.payload" class="text-xs text-brand-400 whitespace-pre-wrap font-mono"></pre>
                             </div>
                             <div class="p-5 bg-slate-800 rounded-2xl border border-slate-700">
                                 <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3 flex items-center justify-between">
-                                    Response Data
-                                    <button @click.stop="notify('info', 'Response Kopyalandı')" class="hover:text-white transition-colors"><i class="far fa-copy"></i></button>
+                                    Ek Bilgiler / Response
+                                    <button @click.stop="notify('info', 'Kopyalandı')" class="hover:text-white transition-colors"><i class="far fa-copy"></i></button>
                                 </p>
                                 <pre x-text="log.response" class="text-xs text-emerald-400 whitespace-pre-wrap font-mono"></pre>
                             </div>
                         </div>
                     </div>
+                </div>
+            </template>
+
+            <template x-if="filteredLogs().length === 0">
+                <div class="flex flex-col items-center justify-center py-20 text-slate-500">
+                    <i class="fas fa-terminal text-4xl mb-4 opacity-20"></i>
+                    <p class="text-sm font-bold uppercase tracking-widest">Henüz bir kayıt bulunmuyor</p>
+                    <p class="text-[10px] mt-1 opacity-60">Sistem işlemleri burada görüntülenecektir.</p>
                 </div>
             </template>
         </div>
