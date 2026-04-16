@@ -6,7 +6,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     @php
         $siteTitle = \App\Models\Setting::getValue('site_title', 'umutMed Market');
-        $siteFavicon = \App\Models\Setting::getValue('site_favicon', asset('favicon.svg'));
+        $siteFavicon = \App\Models\Setting::getValue('site_favicon', '/favicon.svg');
+        $faviconUrl = $siteFavicon;
+        
+        // Dynamic Favicon Type
+        $faviconType = 'image/x-icon';
+        if (str_ends_with($siteFavicon, '.svg')) {
+            $faviconType = 'image/svg+xml';
+        } elseif (str_ends_with($siteFavicon, '.png')) {
+            $faviconType = 'image/png';
+        }
+
+        // Cache busting using filemtime if local
+        if (file_exists(public_path($siteFavicon))) {
+            $faviconUrl .= '?v=' . filemtime(public_path($siteFavicon));
+        }
+        
         $primaryColor = \App\Models\Setting::getValue('site_primary_color', '#f27a1a');
         $footerQr = \App\Models\Setting::getValue('site_footer_qr', '');
         $defaultFooter = [
@@ -19,8 +34,7 @@
 
     <title>@yield('title', config('app.name')) - {{ $siteTitle }}</title>
 
-    <link rel="icon" type="image/x-icon" href="{{ $siteFavicon }}">
-    <link rel="shortcut icon" href="{{ $siteFavicon }}" type="image/x-icon">
+    <link rel="icon" type="{{ $faviconType }}" href="{{ $faviconUrl }}">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">

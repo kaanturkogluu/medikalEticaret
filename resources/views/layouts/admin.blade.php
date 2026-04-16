@@ -4,10 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     @php
-        $siteFavicon = \App\Models\Setting::getValue('site_favicon', asset('favicon.svg'));
+        $siteFavicon = \App\Models\Setting::getValue('site_favicon', '/favicon.svg');
+        $faviconUrl = $siteFavicon;
+        
+        // Dynamic Favicon Type
+        $faviconType = 'image/x-icon';
+        if (str_ends_with($siteFavicon, '.svg')) {
+            $faviconType = 'image/svg+xml';
+        } elseif (str_ends_with($siteFavicon, '.png')) {
+            $faviconType = 'image/png';
+        }
+
+        // Cache busting using filemtime if local
+        if (file_exists(public_path($siteFavicon))) {
+            $faviconUrl .= '?v=' . filemtime(public_path($siteFavicon));
+        }
     @endphp
-    <link rel="icon" type="image/x-icon" href="{{ $siteFavicon }}">
-    <link rel="shortcut icon" href="{{ $siteFavicon }}" type="image/x-icon">
+    <link rel="icon" type="{{ $faviconType }}" href="{{ $faviconUrl }}">
     <title>MultiSync | Pazaryeri Entegrasyon Paneli</title>
     
     <!-- Fonts & Icons -->
