@@ -206,20 +206,20 @@
         </div>
 
         <!-- Description & Details Tabs -->
-        <div class="mt-24" x-data="{ tab: 'description' }">
+        <div class="mt-24" x-data="{ tab: 'features' }">
             <div class="flex border-b border-gray-100 items-center justify-center gap-12 md:gap-16 sticky top-40 bg-white z-[100] py-6 bg-opacity-90 backdrop-blur-xl rounded-t-[40px] flex-wrap md:flex-nowrap">
-                <button @click="tab = 'description'" :class="tab == 'description' ? 'text-slate-900 border-b-4 border-orange-500' : 'text-gray-400 grayscale'" class="pb-2 text-sm font-black italic uppercase tracking-widest transition-all">Ürün Açıklaması</button>
                 <button @click="tab = 'features'" :class="tab == 'features' ? 'text-slate-900 border-b-4 border-orange-500' : 'text-gray-400 grayscale'" class="pb-2 text-sm font-black italic uppercase tracking-widest transition-all">Ürün Özellikleri</button>
                 <button @click="tab = 'returns'" :class="tab == 'returns' ? 'text-slate-900 border-b-4 border-orange-500' : 'text-gray-400 grayscale'" class="pb-2 text-sm font-black italic uppercase tracking-widest transition-all">İade Koşulları</button>
                 <button @click="tab = 'comments'" :class="tab == 'comments' ? 'text-slate-900 border-b-4 border-orange-500' : 'text-gray-400 grayscale'" class="pb-2 text-sm font-black italic uppercase tracking-widest transition-all">Değerlendirmeler ({{ $product->approvedComments->count() }})</button>
             </div>
             
             <div class="py-16 max-w-5xl mx-auto min-h-[400px]">
-                <div x-show="tab == 'description'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" class="text-slate-600 leading-relaxed text-sm space-y-8 bg-gray-50/50 p-12 rounded-[50px] italic">
-                    {!! nl2br(e($product->description)) !!}
-                </div>
                 
-                <div x-show="tab == 'features'" x-cloak x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0">
+                <div x-show="tab == 'features'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0">
+                    <div class="text-slate-600 leading-relaxed text-sm space-y-8 bg-gray-50/50 p-12 rounded-[50px] border border-gray-100 italic mb-10">
+                        {!! nl2br(e($product->description)) !!}
+                    </div>
+                    
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-2">
                         @foreach($product->productAttributes as $attr)
                             <div class="flex items-center justify-between py-5 border-b border-gray-50 group hover:bg-slate-50 px-8 rounded-2xl transition-all">
