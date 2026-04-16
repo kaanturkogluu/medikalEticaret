@@ -239,7 +239,7 @@
                     sound: new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3'),
                     init() {
                         this.fetchUpdates();
-                        setInterval(() => this.fetchUpdates(), 10000);
+                        setInterval(() => this.fetchUpdates(), 60000);
                     },
                     fetchUpdates() {
                         fetch('/admin/api/notifications')
