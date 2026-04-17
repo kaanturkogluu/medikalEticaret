@@ -23,7 +23,11 @@ return Application::configure(basePath: dirname(__DIR__))
         );
         $middleware->alias([
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
-            'user' => \App\Http\Middleware\UserMiddleware::class,
+            'user'  => \App\Http\Middleware\UserMiddleware::class,
+        ]);
+        // CSP başlıklarını tüm web isteklerine uygula (spatie/laravel-csp)
+        $middleware->web(append: [
+            \Spatie\Csp\AddCspHeaders::class,
         ]);
     })
     ->withSchedule(function (\Illuminate\Console\Scheduling\Schedule $schedule) {
