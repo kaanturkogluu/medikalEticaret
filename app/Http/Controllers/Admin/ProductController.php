@@ -106,7 +106,30 @@ class ProductController extends Controller
             'custom_urls' => $request->input('marketplace_urls', [])
         ];
 
-        Product::create($validated);
+        $product = Product::create($validated);
+
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $file) {
+                $path = $file->store('products', 'public');
+                $product->productImages()->create([
+                    'url' => \Illuminate\Support\Facades\Storage::url($path),
+                    'order' => ($product->productImages()->max('order') ?? 0) + 1
+                ]);
+            }
+        }
+
+        if ($request->has('attribute_names') && $request->has('attribute_values')) {
+            $names = $request->input('attribute_names');
+            $values = $request->input('attribute_values');
+            foreach ($names as $index => $name) {
+                if (!empty($name) && !empty($values[$index])) {
+                    $product->productAttributes()->create([
+                        'attribute_name' => $name,
+                        'attribute_value' => $values[$index]
+                    ]);
+                }
+            }
+        }
 
         return redirect()->route('admin.products')->with('success', 'Ürün başarıyla oluşturuldu.');
     }
