@@ -25,11 +25,17 @@ class AppServiceProvider extends ServiceProvider
         \Illuminate\Pagination\Paginator::useTailwind();
 
         view()->composer(['layouts.app', 'home'], function ($view) {
-            $categories = \App\Models\Category::whereHas('products', function($q) {
-                $q->where('active', true)->where('stock', '>', 0);
-            })->withCount(['products' => function($q) {
-                $q->where('active', true)->where('stock', '>', 0);
-            }])->get();
+            // Sadece leaf (alt kategorisi olmayan) kategorilerden, aktif & stoklu ürünü olanları getir
+            $categories = \App\Models\Category::whereDoesntHave('children')
+                ->whereHas('products', function ($q) {
+                    $q->where('active', true)->where('stock', '>', 0);
+                })
+                ->withCount(['products' => function ($q) {
+                    $q->where('active', true)->where('stock', '>', 0);
+                }])
+                ->with('parent')
+                ->orderBy('name')
+                ->get();
 
             $navbarCategories = \App\Models\Category::where('is_navbar', true)
                 ->where('active', true)

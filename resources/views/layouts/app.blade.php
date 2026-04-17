@@ -414,10 +414,16 @@
                             <!-- Categories Scrollable Grid -->
                             <div class="p-8 grid grid-cols-4 gap-x-8 max-h-[450px] overflow-y-auto custom-scrollbar">
                                 @foreach($categories as $cat)
+                                    @php $searchText = strtolower(($cat->parent ? $cat->parent->name . ' ' : '') . $cat->name); @endphp
                                     <a href="{{ route('home', ['category' => $cat->slug ?? $cat->id]) }}" 
-                                       x-show="allCatSearch === '' || '{{ str($cat->name)->lower() }}'.includes(allCatSearch.toLowerCase())"
+                                       x-show="allCatSearch === '' || '{{ $searchText }}'.includes(allCatSearch.toLowerCase())"
                                        class="py-3 text-[13px] hover:text-[var(--primary-color)] hover:translate-x-1 transition-all font-medium border-b border-gray-50 last:border-0 flex items-center justify-between group/item">
-                                        <span>{{ $cat->name }}</span>
+                                        <span class="flex flex-col leading-tight">
+                                            @if($cat->parent)
+                                                <span class="text-[10px] text-gray-400 font-normal">{{ $cat->parent->name }}</span>
+                                            @endif
+                                            <span>{{ $cat->name }}</span>
+                                        </span>
                                         <i class="fas fa-chevron-right text-[10px] opacity-0 group-hover/item:opacity-100 transition-opacity"></i>
                                     </a>
                                 @endforeach
