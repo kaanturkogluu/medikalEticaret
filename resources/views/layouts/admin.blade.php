@@ -253,9 +253,22 @@
                                 this.notifications = data.notifications;
                                 this.latestId = data.latest_id;
                             });
+                    },
+                    markAsRead() {
+                        if (this.count > 0) {
+                            this.count = 0;
+                            this.notifications = this.notifications.map(n => ({...n, is_new: false}));
+                            fetch('/admin/api/notifications/read', {
+                                method: 'POST',
+                                headers: {
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                    'Content-Type': 'application/json'
+                                }
+                            });
+                        }
                     }
                 }">
-                    <button @click="open = !open" class="relative text-slate-500 hover:text-brand-600 transition-colors">
+                    <button @click="open = !open; if(open) markAsRead();" class="relative text-slate-500 hover:text-brand-600 transition-colors">
                         <i class="far fa-bell text-xl"></i>
                         <template x-if="count > 0">
                             <span class="absolute -top-1 -right-1 h-4 w-4 bg-red-500 text-[10px] text-white flex items-center justify-center rounded-full border-2 border-white" x-text="count"></span>
@@ -274,7 +287,7 @@
                         </div>
                         <div class="max-h-96 overflow-y-auto custom-scrollbar">
                             <template x-for="n in notifications" :key="n.id">
-                                <a :href="n.url" class="px-4 py-3 hover:bg-slate-50 flex items-start gap-3 border-b border-slate-50 last:border-0 transition-colors">
+                                <a :href="n.url" class="px-4 py-3 hover:bg-slate-50 flex items-start gap-3 border-b border-slate-50 last:border-0 transition-colors" :class="n.is_new ? 'bg-emerald-50/50' : ''">
                                     <div class="h-8 w-8 rounded-full bg-brand-100 text-brand-600 flex items-center justify-center shrink-0">
                                         <i class="fas fa-shopping-bag text-xs"></i>
                                     </div>
