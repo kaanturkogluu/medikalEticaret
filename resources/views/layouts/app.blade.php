@@ -439,7 +439,7 @@
                 @foreach($displayCats as $cat)
                     @php 
                         $isActive = (request('category') == $cat->id || request('category') == $cat->slug); 
-                        $categoryBrands = \App\Models\Brand::whereHas('products', function($q) use ($cat) {
+                        $categoryBrands = \App\Models\Brand::where('active', true)->whereHas('products', function($q) use ($cat) {
                             $q->where('category_id', $cat->id);
                         })->take(12)->get();
                     @endphp

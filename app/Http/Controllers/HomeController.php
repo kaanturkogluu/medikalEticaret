@@ -79,7 +79,7 @@ class HomeController extends Controller
         
         // categories, brands, etc.
         // Dynamic Sidebar Brands: Filter brands by currently active category/search
-        $brandsQuery = Brand::whereHas('products', function($q) use ($request) {
+        $brandsQuery = Brand::where('active', true)->whereHas('products', function($q) use ($request) {
             $q->where('active', true)->where('stock', '>', 0);
             
             if ($request->filled('category')) {
