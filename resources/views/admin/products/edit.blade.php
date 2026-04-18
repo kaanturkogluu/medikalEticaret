@@ -143,17 +143,30 @@
                         </div>
                     </div>
 
-                    <div class="space-y-2">
-                        <label class="text-xs font-bold text-slate-400 uppercase tracking-widest px-1">Özel İade Şablonu (Opsiyonel)</label>
-                        <select name="return_template_id" class="w-full px-5 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-slate-800 font-medium focus:outline-none focus:ring-4 focus:ring-brand-500/10 focus:border-brand-500 transition-all appearance-none cursor-pointer">
-                            <option value="">Varsayılan İade Koşulları</option>
-                            @foreach($returnTemplates as $tmpl)
-                                <option value="{{ $tmpl->id }}" {{ old('return_template_id', $product->return_template_id) == $tmpl->id ? 'selected' : '' }}>
-                                    {{ $tmpl->name }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label class="text-xs font-bold text-slate-400 uppercase tracking-widest px-1">Kategori</label>
+                                <select name="category_id" class="w-full px-5 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-slate-800 font-medium focus:outline-none focus:ring-4 focus:ring-brand-500/10 focus:border-brand-500 transition-all appearance-none cursor-pointer">
+                                    <option value="">Kategori Seçin</option>
+                                    @foreach($categories as $category)
+                                        <option value="{{ $category->id }}" {{ old('category_id', $product->category_id) == $category->id ? 'selected' : '' }}>
+                                            {{ $category->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-xs font-bold text-slate-400 uppercase tracking-widest px-1">Özel İade Şablonu (Opsiyonel)</label>
+                                <select name="return_template_id" class="w-full px-5 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-slate-800 font-medium focus:outline-none focus:ring-4 focus:ring-brand-500/10 focus:border-brand-500 transition-all appearance-none cursor-pointer">
+                                    <option value="">Varsayılan İade Koşulları</option>
+                                    @foreach($returnTemplates as $tmpl)
+                                        <option value="{{ $tmpl->id }}" {{ old('return_template_id', $product->return_template_id) == $tmpl->id ? 'selected' : '' }}>
+                                            {{ $tmpl->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
 
                         <div class="space-y-2">
                             <label class="text-xs font-bold text-slate-400 uppercase tracking-widest px-1">Açıklama</label>
