@@ -26,7 +26,8 @@ class AppServiceProvider extends ServiceProvider
 
         view()->composer(['layouts.app', 'home'], function ($view) {
             // Sadece leaf (alt kategorisi olmayan) kategorilerden, aktif & stoklu ürünü olanları getir
-            $categories = \App\Models\Category::whereDoesntHave('children')
+            $categories = \App\Models\Category::where('active', true)
+                ->whereDoesntHave('children')
                 ->whereHas('products', function ($q) {
                     $q->where('active', true)->where('stock', '>', 0);
                 })

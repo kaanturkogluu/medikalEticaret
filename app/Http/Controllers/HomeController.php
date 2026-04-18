@@ -29,8 +29,10 @@ class HomeController extends Controller
 
         // Category Filter (ID or Slug)
         if ($request->filled('category')) {
-            $categoryFilter = Category::where('id', $request->category)
-                ->orWhere('slug', $request->category)
+            $categoryFilter = Category::where('active', true)
+                ->where(function($q) use ($request) {
+                    $q->where('id', $request->category)->orWhere('slug', $request->category);
+                })
                 ->first();
             if ($categoryFilter) {
                 $query->where('category_id', $categoryFilter->id);
@@ -83,7 +85,9 @@ class HomeController extends Controller
             $q->where('active', true)->where('stock', '>', 0);
             
             if ($request->filled('category')) {
-                $categoryFilter = Category::where('id', $request->category)->orWhere('slug', $request->category)->first();
+                $categoryFilter = Category::where('active', true)->where(function($q) use ($request) {
+                    $q->where('id', $request->category)->orWhere('slug', $request->category);
+                })->first();
                 if ($categoryFilter) {
                     $q->where('category_id', $categoryFilter->id);
                 }
@@ -100,7 +104,9 @@ class HomeController extends Controller
         $brands = $brandsQuery->withCount(['products' => function($q) use ($request) {
             $q->where('active', true)->where('stock', '>', 0);
             if ($request->filled('category')) {
-                $categoryFilter = Category::where('id', $request->category)->orWhere('slug', $request->category)->first();
+                $categoryFilter = Category::where('active', true)->where(function($q) use ($request) {
+                    $q->where('id', $request->category)->orWhere('slug', $request->category);
+                })->first();
                 if ($categoryFilter) {
                     $q->where('category_id', $categoryFilter->id);
                 }

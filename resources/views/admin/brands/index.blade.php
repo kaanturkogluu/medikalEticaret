@@ -18,15 +18,23 @@
 
     <!-- Search Section -->
     <div class="mt-8 bg-white/50 backdrop-blur-md p-6 rounded-3xl border border-white shadow-2xl shadow-slate-200/50">
-        <form action="{{ route('admin.brands.index') }}" method="GET" class="flex gap-4">
+        <form action="{{ route('admin.brands.index') }}" method="GET" class="flex flex-col sm:flex-row gap-4">
             <div class="relative flex-grow group">
                 <input type="text" name="q" value="{{ request('q') }}" placeholder="Marka adı ile ara..." 
                        class="block w-full pl-12 pr-4 py-4 bg-white border border-slate-200 rounded-2xl text-sm font-medium placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-[var(--primary-color)]/10 focus:border-[var(--primary-color)] transition-all">
                 <i class="fas fa-search absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[var(--primary-color)] transition-colors"></i>
             </div>
-            <button type="submit" class="px-8 py-4 bg-slate-900 text-white rounded-2xl font-black italic uppercase tracking-tighter hover:bg-slate-800 transition-all shadow-xl shadow-slate-200 active:scale-95">Filtrele</button>
-            @if(request('q'))
-                <a href="{{ route('admin.brands.index') }}" class="px-8 py-4 bg-gray-100 text-gray-600 rounded-2xl font-black italic uppercase tracking-tighter hover:bg-gray-200 transition-all flex items-center">Temizle</a>
+            <div class="w-full sm:w-64 shrink-0 relative">
+                <select name="status" class="block w-full px-4 py-4 bg-white border border-slate-200 rounded-2xl text-sm font-medium focus:outline-none focus:ring-4 focus:ring-[var(--primary-color)]/10 focus:border-[var(--primary-color)] transition-all appearance-none cursor-pointer text-slate-600">
+                    <option value="">Tüm Markalar</option>
+                    <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Sadece Aktif Olanlar</option>
+                    <option value="passive" {{ request('status') === 'passive' ? 'selected' : '' }}>Sadece Pasif Olanlar</option>
+                </select>
+                <i class="fas fa-chevron-down absolute right-5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>
+            </div>
+            <button type="submit" class="px-8 py-4 bg-slate-900 text-white rounded-2xl font-black italic uppercase tracking-tighter hover:bg-slate-800 transition-all shadow-xl shadow-slate-200 active:scale-95 shrink-0">Filtrele</button>
+            @if(request('q') || request('status'))
+                <a href="{{ route('admin.brands.index') }}" class="px-8 py-4 bg-gray-100 text-gray-600 rounded-2xl font-black italic uppercase tracking-tighter hover:bg-gray-200 transition-all flex items-center shrink-0">Temizle</a>
             @endif
         </form>
     </div>

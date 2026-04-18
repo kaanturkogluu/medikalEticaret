@@ -17,7 +17,15 @@ class BrandController extends Controller
             $query->where('name', 'like', '%' . $request->q . '%');
         }
 
-        $brands = $query->latest()->paginate(20);
+        if ($request->filled('status')) {
+            if ($request->status === 'active') {
+                $query->where('active', true);
+            } elseif ($request->status === 'passive') {
+                $query->where('active', false);
+            }
+        }
+
+        $brands = $query->latest()->paginate(20)->withQueryString();
 
         return view('admin.brands.index', compact('brands'));
     }
