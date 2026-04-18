@@ -17,7 +17,15 @@ class CategoryController extends Controller
             $query->where('name', 'like', '%' . $request->q . '%');
         }
 
-        $categories = $query->latest()->paginate(20);
+        if ($request->filled('product_status')) {
+            if ($request->product_status === 'has_products') {
+                $query->has('products');
+            } elseif ($request->product_status === 'no_products') {
+                $query->doesntHave('products');
+            }
+        }
+
+        $categories = $query->latest()->paginate(20)->withQueryString();
 
         return view('admin.categories.index', compact('categories'));
     }

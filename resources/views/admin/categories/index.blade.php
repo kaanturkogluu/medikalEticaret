@@ -24,8 +24,15 @@
                        class="block w-full pl-12 pr-4 py-4 bg-white border border-slate-200 rounded-2xl text-sm font-medium placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-[var(--primary-color)]/10 focus:border-[var(--primary-color)] transition-all">
                 <i class="fas fa-search absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[var(--primary-color)] transition-colors"></i>
             </div>
+            
+            <select name="product_status" class="px-6 py-4 bg-white border border-slate-200 rounded-2xl text-sm font-medium text-slate-600 focus:outline-none focus:ring-4 focus:ring-[var(--primary-color)]/10 focus:border-[var(--primary-color)] transition-all appearance-none cursor-pointer hover:border-[var(--primary-color)]/50">
+                <option value="">Tümü</option>
+                <option value="has_products" {{ request('product_status') === 'has_products' ? 'selected' : '' }}>Ürünü Olanlar</option>
+                <option value="no_products" {{ request('product_status') === 'no_products' ? 'selected' : '' }}>Boş Kategoriler</option>
+            </select>
+
             <button type="submit" class="px-8 py-4 bg-slate-900 text-white rounded-2xl font-black italic uppercase tracking-tighter hover:bg-slate-800 transition-all shadow-xl shadow-slate-200 active:scale-95">Filtrele</button>
-            @if(request('q'))
+            @if(request('q') || request('product_status'))
                 <a href="{{ route('admin.categories.index') }}" class="px-8 py-4 bg-gray-100 text-gray-600 rounded-2xl font-black italic uppercase tracking-tighter hover:bg-gray-200 transition-all flex items-center">Temizle</a>
             @endif
         </form>
