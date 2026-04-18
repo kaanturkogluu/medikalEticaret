@@ -437,10 +437,53 @@
                 @endphp
 
                 @foreach($displayCats as $cat)
-                    @php $isActive = (request('category') == $cat->id || request('category') == $cat->slug); @endphp
-                    <a href="{{ route('home', ['category' => $cat->slug]) }}" class="category-link {{ $isActive ? 'text-[var(--primary-color)] border-b-2 border-[var(--primary-color)]' : '' }}">
-                        {{ str($cat->name)->upper() }}
-                    </a>
+                    @php 
+                        $isActive = (request('category') == $cat->id || request('category') == $cat->slug); 
+                        $categoryBrands = \App\Models\Brand::whereHas('products', function($q) use ($cat) {
+                            $q->where('category_id', $cat->id);
+                        })->take(12)->get();
+                    @endphp
+                    <div class="relative group/brandmenu h-full flex items-center">
+                        <a href="{{ route('home', ['category' => $cat->slug]) }}" class="category-link {{ $isActive ? 'text-[var(--primary-color)] border-b-2 border-[var(--primary-color)]' : '' }}">
+                            {{ str($cat->name)->upper() }}
+                        </a>
+                        
+                        @if($categoryBrands->count() > 0)
+                            <!-- Hover Brands Menu -->
+                            <div class="absolute top-full left-1/2 -translate-x-1/2 w-[450px] bg-white border border-gray-100 shadow-2xl rounded-2xl z-[1000] p-6 transition-all duration-300 transform opacity-0 invisible group-hover/brandmenu:opacity-100 group-hover/brandmenu:visible translate-y-4 group-hover/brandmenu:translate-y-1 text-center cursor-default">
+                                <h4 class="text-[11px] font-black uppercase text-slate-800 italic tracking-widest mb-4 border-b border-gray-100 pb-3">{{ $cat->name }} KATEGORİSİNDEKİ MARKALAR</h4>
+                                <div class="grid grid-cols-4 gap-4">
+                                    @foreach($categoryBrands as $b)
+                                        <a href="{{ route('home', ['category' => $cat->slug, 'brand' => $b->slug]) }}" class="flex flex-col items-center gap-2 text-xs font-bold text-slate-600 hover:text-[var(--primary-color)] transition-all group/brandlink">
+                                            <div class="h-14 w-14 rounded-2xl bg-white border border-gray-100 flex items-center justify-center overflow-hidden flex-shrink-0 group-hover/brandlink:shadow-lg group-hover/brandlink:border-[var(--primary-color)] transition-all p-2 relative">
+                                                <div class="absolute inset-0 bg-[var(--primary-color)] opacity-0 group-hover/brandlink:opacity-5 transition-opacity"></div>
+                                                @if($b->logo)
+                                                    <img src="{{ asset('storage/' . $b->logo) }}" class="h-full w-full object-contain filter grayscale group-hover/brandlink:grayscale-0 group-hover/brandlink:scale-110 transition-all duration-500">
+                                                @else
+                                                    <span class="text-[12px] text-slate-300 font-black uppercase inline-block group-hover/brandlink:scale-110 group-hover/brandlink:text-[var(--primary-color)] transition-all">{{ substr($b->name, 0, 2) }}</span>
+                                                @endif
+                                            </div>
+                                            <span class="text-[9px] font-black uppercase italic tracking-tighter truncate w-full text-center group-hover/brandlink:text-slate-900">{{ $b->name }}</span>
+                                        </a>
+                                    @endforeach
+                                </div>
+                                <div class="mt-5 pt-4 border-t border-gray-50">
+                                    <a href="{{ route('home', ['category' => $cat->slug]) }}" class="inline-flex items-center justify-center gap-2 text-[10px] font-black uppercase text-[var(--primary-color)] bg-[var(--primary-color)]/10 hover:bg-[var(--primary-color)] hover:text-white px-6 py-2.5 rounded-xl transition-colors w-full">Tüm {{ $cat->name }} Ürünlerini Gör <i class="fas fa-arrow-right"></i></a>
+                                </div>
+                            </div>
+                        @else
+                            <!-- Empty State -->
+                            <div class="absolute top-full left-1/2 -translate-x-1/2 w-[350px] bg-white border border-gray-100 shadow-2xl rounded-2xl z-[1000] p-6 transition-all duration-300 transform opacity-0 invisible group-hover/brandmenu:opacity-100 group-hover/brandmenu:visible translate-y-4 group-hover/brandmenu:translate-y-1 text-center cursor-default">
+                                <div class="py-4 text-slate-400">
+                                    <div class="w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center mx-auto mb-3">
+                                        <i class="fas fa-box-open text-xl opacity-50"></i>
+                                    </div>
+                                    <p class="text-[10px] font-black uppercase tracking-widest italic text-center">Bu kategoride henüz markalı ürün bulunmuyor.</p>
+                                    <a href="{{ route('home', ['category' => $cat->slug]) }}" class="mt-4 block text-[10px] font-black uppercase text-[var(--primary-color)] hover:underline">Yine de Ürünlere Göz At</a>
+                                </div>
+                            </div>
+                        @endif
+                    </div>
                 @endforeach
             </div>
         </nav>
