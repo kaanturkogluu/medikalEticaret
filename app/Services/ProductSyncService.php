@@ -123,6 +123,15 @@ class ProductSyncService
             }
 
             // Product Upsert
+            $sku = $data['stockCode'] ?? null;
+            if (!$sku) return;
+
+            $existingProduct = \App\Models\Product::withTrashed()->where('sku', $sku)->first();
+            if ($existingProduct && $existingProduct->trashed()) {
+                Log::debug("SYNC [SKIP] Deleted locally SKU: {$sku}");
+                return;
+            }
+
             $pData = [
                 'barcode' => $data['barcode'],
                 'name' => $data['title'] ?? $data['productName'],
@@ -138,7 +147,7 @@ class ProductSyncService
                 'marketplace_status' => ($data['approved'] ?? true) ? 'approved' : 'rejected'
             ];
 
-            $product = Product::updateOrCreate(['sku' => $data['stockCode']], $pData);
+            $product = Product::updateOrCreate(['sku' => $sku], $pData);
 
             // Channel Mapping
             $product->channels()->syncWithoutDetaching([

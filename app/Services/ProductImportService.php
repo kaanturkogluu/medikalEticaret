@@ -134,6 +134,13 @@ class ProductImportService
             return;
         }
 
+        $existingProduct = \App\Models\Product::withTrashed()->where('sku', $sku)->first();
+        if ($existingProduct && $existingProduct->trashed()) {
+            $this->skippedCount++;
+            Log::debug("SYNC [SKIP] Deleted locally SKU: {$sku}");
+            return;
+        }
+
         try {
             $isNew = false;
 

@@ -230,4 +230,13 @@ class ProductController extends Controller
 
         return redirect()->route('admin.products')->with('success', 'Ürün başarıyla güncellendi.');
     }
+
+    public function destroy(Product $product)
+    {
+        $product->delete(); // Soft delete
+        return response()->json([
+            'success' => true,
+            'message' => 'Ürün başarıyla silindi.'
+        ]);
+    }
 }

@@ -4,10 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Product extends Model
 {
+    use SoftDeletes;
+
     protected $fillable = [
         'parent_id', 'variant_key', 'brand_id', 'category_id', 'return_template_id', 'sku', 'barcode', 'name', 'slug',
         'brand_name', 'category_name', 'description', 'price', 'stock', 'active', 'is_popular',

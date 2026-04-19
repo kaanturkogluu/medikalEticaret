@@ -72,6 +72,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::post('/products', [\App\Http\Controllers\Admin\ProductController::class, 'store'])->name('admin.products.store');
     Route::get('/products/{product:id}/edit', [\App\Http\Controllers\Admin\ProductController::class, 'edit'])->name('admin.products.edit');
     Route::put('/products/{product:id}', [\App\Http\Controllers\Admin\ProductController::class, 'update'])->name('admin.products.update');
+    Route::delete('/products/{product:id}/delete', [\App\Http\Controllers\Admin\ProductController::class, 'destroy'])->name('admin.products.destroy');
     Route::post('/products/{product:id}/toggle-popular', [\App\Http\Controllers\Admin\ProductController::class, 'togglePopular'])->name('admin.products.toggle-popular');
     Route::get('/orders', [\App\Http\Controllers\Admin\OrderController::class, 'index'])->name('admin.orders');
     Route::post('/orders/{order}/approve', [\App\Http\Controllers\Admin\OrderController::class, 'approve'])->name('admin.orders.approve');
