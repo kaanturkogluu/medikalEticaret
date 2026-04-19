@@ -217,14 +217,14 @@
                 
                 <div x-show="tab == 'features'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0">
                     <div class="text-slate-600 leading-relaxed text-sm space-y-8 bg-gray-50/50 p-12 rounded-[50px] border border-gray-100 italic mb-10">
-                        {!! nl2br(e($product->description)) !!}
+                        {!! $product->description !!}
                     </div>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-2">
                         @foreach($product->productAttributes as $attr)
                             <div class="flex items-center justify-between py-5 border-b border-gray-50 group hover:bg-slate-50 px-8 rounded-2xl transition-all">
                                 <div class="text-xs font-black text-slate-400 uppercase tracking-widest group-hover:text-[var(--primary-color)] transition-colors">{{ $attr->name }}</div>
-                                <div class="text-sm text-slate-800 font-bold italic">{{ $attr->value }}</div>
+                                <div class="text-sm text-slate-800 font-bold italic">{!! $attr->value !!}</div>
                             </div>
                         @endforeach
                     </div>
