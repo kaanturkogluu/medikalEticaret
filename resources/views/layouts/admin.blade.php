@@ -199,7 +199,61 @@
                 </div>
             </div>
 
-            <div class="flex items-center gap-3 md:gap-6">
+            <div class="flex items-center gap-3 md:gap-6" x-data="{ 
+                count: 0,
+                notifications: [],
+                latestId: 0,
+                open: false,
+                sound: new Audio('/assets/sounds/order-notification.wav'),
+                unlocked: false,
+                init() {
+                    this.fetchUpdates();
+                    setInterval(() => this.fetchUpdates(), 10000);
+                    
+                    // Audio unlock mechanism
+                    const unlock = () => {
+                        this.sound.play().then(() => {
+                            this.sound.pause();
+                            this.sound.currentTime = 0;
+                            this.unlocked = true;
+                            console.log('Audio unlocked');
+                        }).catch(err => {
+                            console.log('Unlock failed', err);
+                        });
+                        document.removeEventListener('click', unlock);
+                    };
+                    document.addEventListener('click', unlock);
+                },
+                fetchUpdates() {
+                    fetch('/admin/api/notifications')
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.latest_id > this.latestId && this.latestId !== 0) {
+                                this.sound.play().catch(e => {
+                                    console.log('Audio play blocked', e);
+                                    notify('warning', 'Yeni Sipariş! (Ses için sayfada bir yere tıklayın)');
+                                });
+                                notify('info', 'Yeni bir siparişiniz var!');
+                            }
+                            this.count = data.count;
+                            this.notifications = data.notifications;
+                            this.latestId = data.latest_id;
+                        });
+                },
+                markAsRead() {
+                    if (this.count > 0) {
+                        this.count = 0;
+                        this.notifications = this.notifications.map(n => ({...n, is_new: false}));
+                        fetch('/admin/api/notifications/read', {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Content-Type': 'application/json'
+                            }
+                        });
+                    }
+                }
+            }">
                 <!-- View Site Button -->
                 <a href="{{ route('home') }}" target="_blank" class="hidden sm:flex items-center gap-2 px-4 py-1.5 bg-slate-900 text-white rounded-lg text-xs font-bold hover:bg-brand-600 transition-all shadow-lg hover:shadow-brand-500/20 active:scale-95 transform">
                     <i class="fas fa-external-link-alt text-[10px] opacity-70"></i>
@@ -209,13 +263,13 @@
                 <div class="w-px h-6 bg-slate-200 hidden sm:block"></div>
 
                 <!-- Marketplace Selector -->
-                <div class="relative" x-data="{ open: false }">
-                    <button @click="open = !open" class="flex items-center gap-2 px-3 py-1.5 bg-slate-100 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-200 transition-colors">
+                <div class="relative" x-data="{ selectorOpen: false }">
+                    <button @click="selectorOpen = !selectorOpen" class="flex items-center gap-2 px-3 py-1.5 bg-slate-100 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-200 transition-colors">
                         <i class="fas fa-store text-brand-500"></i>
                         <span class="hidden sm:inline">Tüm Kanallar</span>
                         <i class="fas fa-chevron-down text-[10px] ml-1"></i>
                     </button>
-                    <div x-show="open" @click.away="open = false" x-cloak class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-slate-100 py-1 z-50">
+                    <div x-show="selectorOpen" @click.away="selectorOpen = false" x-cloak class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-slate-100 py-1 z-50">
                         <a href="#" class="px-4 py-2 text-sm text-slate-700 hover:bg-brand-50 hover:text-brand-600 flex items-center gap-2">
                             <span class="h-2 w-2 rounded-full bg-brand-500"></span> Tüm Kanallar
                         </a>
@@ -230,44 +284,23 @@
 
                 <div class="w-px h-6 bg-slate-200 hidden sm:block"></div>
 
+                <!-- Sound Status Connector -->
+                <div class="hidden sm:block">
+                    <button @click="if(!unlocked) { sound.play().then(() => { sound.pause(); sound.currentTime = 0; unlocked = true; notify('success', 'Sesli bildirimler aktif edildi!'); }).catch(() => notify('error', 'Ses açılamadı, lütfen sayfada bir yere tıklayın.')); }" 
+                        class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold transition-all relative border"
+                        :class="unlocked ? 'bg-emerald-50 border-emerald-100 text-emerald-600' : 'bg-rose-50 border-rose-100 text-rose-600 animate-pulse'">
+                        <i class="fas" :class="unlocked ? 'fa-volume-up' : 'fa-volume-mute'"></i>
+                        <span x-text="unlocked ? 'SES AKTİF' : 'SESİ AÇ'"></span>
+                        <template x-if="!unlocked">
+                            <span class="absolute -top-1 -right-1 h-2 w-2 bg-rose-500 rounded-full animate-ping"></span>
+                        </template>
+                    </button>
+                </div>
+
+                <div class="w-px h-6 bg-slate-200 hidden sm:block"></div>
+
                 <!-- Notifications -->
-                <div class="relative" x-data="{ 
-                    count: 0,
-                    notifications: [],
-                    latestId: 0,
-                    open: false,
-                    sound: new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3'),
-                    init() {
-                        this.fetchUpdates();
-                        setInterval(() => this.fetchUpdates(), 60000);
-                    },
-                    fetchUpdates() {
-                        fetch('/admin/api/notifications')
-                            .then(res => res.json())
-                            .then(data => {
-                                if (data.latest_id > this.latestId && this.latestId !== 0) {
-                                    this.sound.play().catch(e => console.log('Audio play failed', e));
-                                    notify('info', 'Yeni bir siparişiniz var!');
-                                }
-                                this.count = data.count;
-                                this.notifications = data.notifications;
-                                this.latestId = data.latest_id;
-                            });
-                    },
-                    markAsRead() {
-                        if (this.count > 0) {
-                            this.count = 0;
-                            this.notifications = this.notifications.map(n => ({...n, is_new: false}));
-                            fetch('/admin/api/notifications/read', {
-                                method: 'POST',
-                                headers: {
-                                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                                    'Content-Type': 'application/json'
-                                }
-                            });
-                        }
-                    }
-                }">
+                <div class="relative">
                     <button @click="open = !open; if(open) markAsRead();" class="relative text-slate-500 hover:text-brand-600 transition-colors">
                         <i class="far fa-bell text-xl"></i>
                         <template x-if="count > 0">
@@ -312,9 +345,11 @@
                     </div>
                 </div>
 
+                <div class="w-px h-6 bg-slate-200 hidden sm:block"></div>
+
                 <!-- Profile -->
-                <div class="relative" x-data="{ open: false }">
-                    <button @click="open = !open" class="flex items-center gap-3 group">
+                <div class="relative" x-data="{ profileOpen: false }">
+                    <button @click="profileOpen = !profileOpen" class="flex items-center gap-3 group">
                         <div class="h-8 w-8 rounded-lg bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center text-white font-bold text-sm shadow-md group-hover:scale-105 transition-transform">
                             {{ substr(auth()->user()->name, 0, 1) . substr(strrchr(auth()->user()->name, ' '), 1, 1) }}
                         </div>
@@ -326,7 +361,7 @@
                     </button>
 
                     <!-- Dropdown -->
-                    <div x-show="open" @click.away="open = false" x-cloak 
+                    <div x-show="profileOpen" @click.away="profileOpen = false" x-cloak 
                         x-transition:enter="transition ease-out duration-100"
                         x-transition:enter-start="transform opacity-0 scale-95"
                         x-transition:enter-end="transform opacity-100 scale-100"

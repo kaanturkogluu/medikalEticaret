@@ -36,8 +36,8 @@ class ChannelSeeder extends Seeder
                 'slug' => 'n11',
                 'active' => false,
                 'credentials' => [
-                    'api_key' => null,
-                    'api_secret' => null,
+                    'api_key' => '54382c51-fba9-43f2-9ca9-f5cf67695c84',
+                    'api_secret' => 'LN3UWHQL9d7wsCLj',
                     'supplier_id' => null
                 ]
             ]

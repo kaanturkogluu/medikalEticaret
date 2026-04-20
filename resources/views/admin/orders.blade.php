@@ -4,19 +4,20 @@
 <div class="space-y-6" x-data="{ 
     selectedOrder: null,
     statusMap: {
-        'Awaiting': { label: 'Onay Bekliyor', color: 'bg-indigo-100 text-indigo-700' },
-        'Created': { label: 'Hazırlanıyor', color: 'bg-blue-100 text-blue-700' },
+        'awaiting': { label: 'Onay Bekliyor', color: 'bg-indigo-100 text-indigo-700' },
+        'created': { label: 'Hazırlanıyor', color: 'bg-blue-100 text-blue-700' },
         'pending_payment': { label: 'Ödeme Bekleniyor', color: 'bg-amber-100 text-amber-700' },
         'pending': { label: 'Beklemede', color: 'bg-slate-100 text-slate-700' },
-        'Picking': { label: 'Toplanıyor', color: 'bg-amber-100 text-amber-700' },
-        'Invoiced': { label: 'Faturalandı', color: 'bg-cyan-100 text-cyan-700' },
-        'Shipped': { label: 'Kargoya Verildi', color: 'bg-orange-100 text-orange-700' },
-        'AtCollectionPoint': { label: 'Teslimat Noktasında', color: 'bg-purple-100 text-purple-700' },
-        'Cancelled': { label: 'İptal Edildi', color: 'bg-red-100 text-red-700' },
-        'UnPacked': { label: 'Paket Bölündü', color: 'bg-slate-100 text-slate-700' },
-        'Delivered': { label: 'Teslim Edildi', color: 'bg-emerald-100 text-emerald-700' },
-        'UnDelivered': { label: 'Teslim Edilemedi', color: 'bg-rose-100 text-rose-700' },
-        'Returned': { label: 'İade Edildi', color: 'bg-gray-100 text-gray-700' }
+        'picking': { label: 'Toplanıyor', color: 'bg-amber-100 text-amber-700' },
+        'invoiced': { label: 'Faturalandı', color: 'bg-cyan-100 text-cyan-700' },
+        'shipped': { label: 'Kargoya Verildi', color: 'bg-orange-100 text-orange-700' },
+        'atcollectionpoint': { label: 'Teslimat Noktasında', color: 'bg-purple-100 text-purple-700' },
+        'cancelled': { label: 'İptal Edildi', color: 'bg-red-100 text-red-700' },
+        'unpacked': { label: 'Paket Bölündü', color: 'bg-slate-100 text-slate-700' },
+        'delivered': { label: 'Teslim Edildi', color: 'bg-emerald-100 text-emerald-700' },
+        'undelivered': { label: 'Teslim Edilemedi', color: 'bg-rose-100 text-rose-700' },
+        'returned': { label: 'İade Edildi', color: 'bg-gray-100 text-gray-700' },
+        'undeliveredandreturned': { label: 'İade Edildi', color: 'bg-gray-100 text-gray-700' }
     },
     formatDate(ms) {
         if (!ms) return '-';
@@ -26,7 +27,8 @@
         }).format(new Date(ms));
     },
     getStatus(status) {
-        return this.statusMap[status] || { label: status, color: 'bg-slate-100 text-slate-600' };
+        const s = (status || '').toLowerCase();
+        return this.statusMap[s] || { label: status, color: 'bg-slate-100 text-slate-600' };
     }
 }">
     <!-- Header -->
@@ -72,12 +74,14 @@
                     <th class="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-right">İşlem</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-slate-50">
+            <tbody>
                 @foreach($orders as $o)
                 @php
                     $bgColor = $o->channel?->color ?? '#f8fafc';
                 @endphp
-                <tr style="background-color: {{ $bgColor }}15;" class="hover:brightness-95 transition-all group">
+                <tr :class="getStatus('{{ $o->order_status }}').color.split(' ')[0]" 
+                    style="border-left: 6px solid {{ $bgColor }};" 
+                    class="hover:brightness-95 transition-all group border-b border-white">
                     <td class="px-6 py-4">
                         <div class="flex flex-col">
                             <span class="text-xs font-black text-slate-800 tracking-tighter">#{{ $o->external_order_id ?? $o->id }}</span>

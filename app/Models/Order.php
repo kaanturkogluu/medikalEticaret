@@ -48,6 +48,7 @@ class Order extends Model
             'shipped'         => 'Kargoya Verildi',
             'delivered'       => 'Teslim Edildi',
             'cancelled'       => 'İptal Edildi',
+            'undeliveredandreturned' => 'İade Edildi',
             'returned'        => 'İade Edildi',
             'unpaid'          => 'Ödenmedi',
         ];

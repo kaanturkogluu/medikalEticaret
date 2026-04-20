@@ -42,16 +42,17 @@ use Illuminate\Support\Str;
  */
 class ProductImportService
 {
-    protected int   $insertedCount = 0;
-    protected int   $updatedCount  = 0;
-    protected int   $skippedCount  = 0;
-    protected array $errors        = [];
+    protected int $insertedCount = 0;
+    protected int $updatedCount = 0;
+    protected int $skippedCount = 0;
+    protected array $errors = [];
 
     public function __construct(
-        protected TrendyolAdapter  $adapter,
+        protected TrendyolAdapter $adapter,
         protected AttributeService $attributeService,
-        protected VariantService   $variantService
-    ) {}
+        protected VariantService $variantService
+    ) {
+    }
 
     // ─────────────────────────────────────────────────────────────────────────
     // ENTRY POINT
@@ -63,18 +64,18 @@ class ProductImportService
 
         $credential = $channel->credential;
         $this->adapter->setConfig([
-            'api_key'     => $credential->api_key,
-            'api_secret'  => $credential->api_secret,
+            'api_key' => $credential->api_key,
+            'api_secret' => $credential->api_secret,
             'supplier_id' => $credential->supplier_id,
         ]);
 
         Log::info('SYNC [START]', [
-            'channel'     => $channel->slug,
+            'channel' => $channel->slug,
             'supplier_id' => $credential->supplier_id,
         ]);
 
-        $page    = 0;
-        $size    = 50;
+        $page = 0;
+        $size = 50;
         $hasMore = true;
 
         while ($hasMore) {
@@ -95,12 +96,12 @@ class ProductImportService
                     $hasMore = false;
                 }
 
-                usleep(300000); // 300ms rate-limit guard
+                usleep(30000); // 300ms rate-limit guard
 
             } catch (\Exception $e) {
                 Log::error('SYNC [PAGE_ERROR]', ['page' => $page, 'error' => $e->getMessage()]);
                 $this->errors[] = "Page {$page}: " . $e->getMessage();
-                $hasMore        = false;
+                $hasMore = false;
             }
         }
 
@@ -116,7 +117,7 @@ class ProductImportService
     protected function processProduct(Channel $channel, array $data): void
     {
         // ── STEP 1: Guard ─────────────────────────────────────────────────────
-        $sku        = trim((string) ($data['productMainId'] ?? $data['productCode'] ?? ''));
+        $sku = trim((string) ($data['productMainId'] ?? $data['productCode'] ?? ''));
         $externalId = trim((string) ($data['id'] ?? ''));
 
         if (!$sku || !$externalId) {
@@ -150,7 +151,7 @@ class ProductImportService
                 [$categoryId, $brandId] = $this->resolveChannelMappings($channel, $data);
 
                 // ── STEP 3-4: Normalize + detect variant attributes ───────────
-                $normalized   = $this->attributeService->normalizeAttributes($data['attributes'] ?? []);
+                $normalized = $this->attributeService->normalizeAttributes($data['attributes'] ?? []);
                 $variantAttrs = $categoryId
                     ? $this->attributeService->getVariantAttributes($categoryId, $normalized)
                     : [];
@@ -160,9 +161,9 @@ class ProductImportService
                 $variantKey = $this->variantService->generateVariantKey($variantAttrs);
 
                 Log::debug('SYNC [VARIANT_KEY]', [
-                    'sku'        => $sku,
-                    'label'      => $this->variantService->variantLabel($variantAttrs),
-                    'key'        => $variantKey,
+                    'sku' => $sku,
+                    'label' => $this->variantService->variantLabel($variantAttrs),
+                    'key' => $variantKey,
                 ]);
 
                 // ── STEPS 6-7: Parent resolution + enrichment ─────────────────
@@ -172,7 +173,7 @@ class ProductImportService
 
                 // ── STEP 8-9: Variant upsert (by SKU) + variant_key ──────────
                 $product = $this->upsertVariantProduct($data, $sku, $categoryId, $brandId, $variantKey);
-                $isNew   = $product->wasRecentlyCreated;
+                $isNew = $product->wasRecentlyCreated;
 
                 // ── STEP 10: Link to parent ───────────────────────────────────
                 if ($product->id !== $parent->id) {
@@ -205,10 +206,10 @@ class ProductImportService
         } catch (\Exception $e) {
             $this->errors[] = "SKU {$sku}: " . $e->getMessage();
             Log::error('SYNC [PRODUCT_FAIL]', [
-                'sku'   => $sku,
+                'sku' => $sku,
                 'error' => $e->getMessage(),
-                'line'  => $e->getLine(),
-                'file'  => $e->getFile(),
+                'line' => $e->getLine(),
+                'file' => $e->getFile(),
             ]);
         }
     }
@@ -224,7 +225,7 @@ class ProductImportService
     protected function resolveChannelMappings(Channel $channel, array $data): array
     {
         // Brand
-        $brandId   = null;
+        $brandId = null;
         $brandName = trim((string) ($data['brand'] ?? ''));
         if ($brandName) {
             $brand = Brand::where('name', $brandName)->first();
@@ -236,14 +237,14 @@ class ProductImportService
         }
 
         // Category
-        $categoryId    = null;
+        $categoryId = null;
         $externalCatId = $data['pimCategoryId'] ?? null;
-        $catName       = trim((string) ($data['categoryName'] ?? ''));
+        $catName = trim((string) ($data['categoryName'] ?? ''));
 
         $category = Category::where('external_id', $externalCatId)
             ->orWhere(function ($q) use ($catName) {
                 $q->where('name', $catName)
-                  ->orWhere('slug', Str::slug($catName));
+                    ->orWhere('slug', Str::slug($catName));
             })
             ->first();
 
@@ -251,7 +252,7 @@ class ProductImportService
             $categoryId = $category->id;
         } else {
             Log::warning('SYNC [CATEGORY_NOT_FOUND]', [
-                'name'        => $catName,
+                'name' => $catName,
                 'external_id' => $externalCatId,
             ]);
         }
@@ -264,36 +265,36 @@ class ProductImportService
      * Also stores variant_key on the product record for fast deduplication.
      */
     protected function upsertVariantProduct(
-        array  $data,
+        array $data,
         string $sku,
-        ?int   $categoryId,
-        ?int   $brandId,
+        ?int $categoryId,
+        ?int $brandId,
         string $variantKey
     ): Product {
         $salePrice = (float) ($data['salePrice'] ?? 0);
-        $listPrice = (float) ($data['listPrice']  ?? 0);
-        $price     = $salePrice > 0 ? $salePrice : ($listPrice > 0 ? $listPrice : 0);
+        $listPrice = (float) ($data['listPrice'] ?? 0);
+        $price = $salePrice > 0 ? $salePrice : ($listPrice > 0 ? $listPrice : 0);
 
         return Product::updateOrCreate(
             ['sku' => $sku],
             [
-                'name'                => $data['title']           ?? 'No Title',
-                'description'         => $data['description']      ?? '',
-                'barcode'             => $data['barcode']          ?? $sku,
-                'price'               => $price,
-                'stock'               => $data['quantity']         ?? 0,
-                'brand_id'            => $brandId,
-                'brand_name'          => $data['brand']            ?? null,
-                'category_id'         => $categoryId,
-                'category_name'       => $data['categoryName']     ?? null,
-                'external_id'         => (string) ($data['id']     ?? ''),
+                'name' => $data['title'] ?? 'No Title',
+                'description' => $data['description'] ?? '',
+                'barcode' => $data['barcode'] ?? $sku,
+                'price' => $price,
+                'stock' => $data['quantity'] ?? 0,
+                'brand_id' => $brandId,
+                'brand_name' => $data['brand'] ?? null,
+                'category_id' => $categoryId,
+                'category_name' => $data['categoryName'] ?? null,
+                'external_id' => (string) ($data['id'] ?? ''),
                 'platform_listing_id' => $data['platformListingId'] ?? null,
-                'product_content_id'  => $data['productContentId'] ?? null,
-                'supplier_id'         => (string) ($data['supplierId'] ?? ''),
-                'raw_marketplace_data'=> $data,
-                'marketplace'         => 'trendyol',
-                'variant_key'         => $variantKey,
-                'active'              => true,
+                'product_content_id' => $data['productContentId'] ?? null,
+                'supplier_id' => (string) ($data['supplierId'] ?? ''),
+                'raw_marketplace_data' => $data,
+                'marketplace' => 'trendyol',
+                'variant_key' => $variantKey,
+                'active' => true,
             ]
         );
     }
@@ -306,7 +307,7 @@ class ProductImportService
         if ($brandId && !empty($data['brandId'])) {
             ChannelBrand::firstOrCreate(
                 ['channel_id' => $channel->id, 'external_brand_id' => (string) $data['brandId']],
-                ['brand_id'   => $brandId]
+                ['brand_id' => $brandId]
             );
         }
 
@@ -324,20 +325,20 @@ class ProductImportService
     protected function upsertChannelProduct(Channel $channel, Product $product, array $data, string $externalId): void
     {
         $salePrice = (float) ($data['salePrice'] ?? 0);
-        $listPrice = (float) ($data['listPrice']  ?? 0);
+        $listPrice = (float) ($data['listPrice'] ?? 0);
 
         ChannelProduct::updateOrCreate(
             ['channel_id' => $channel->id, 'product_id' => $product->id],
             [
                 'external_id' => $externalId,
-                'price'       => $salePrice > 0 ? $salePrice : ($listPrice > 0 ? $listPrice : 0),
-                'stock'       => $data['quantity']  ?? 0,
+                'price' => $salePrice > 0 ? $salePrice : ($listPrice > 0 ? $listPrice : 0),
+                'stock' => $data['quantity'] ?? 0,
                 'sync_status' => 'synced',
-                'extra'       => [
+                'extra' => [
                     'platformListingId' => $data['platformListingId'] ?? null,
-                    'productContentId'  => $data['productContentId']  ?? null,
-                    'supplierId'        => $data['supplierId']         ?? null,
-                    'barcode'           => $data['barcode']            ?? null,
+                    'productContentId' => $data['productContentId'] ?? null,
+                    'supplierId' => $data['supplierId'] ?? null,
+                    'barcode' => $data['barcode'] ?? null,
                 ],
             ]
         );
@@ -348,7 +349,8 @@ class ProductImportService
      */
     protected function syncImages(Product $product, array $images): void
     {
-        if (!class_exists(ProductImage::class)) return;
+        if (!class_exists(ProductImage::class))
+            return;
 
         $product->productImages()->delete();
 
@@ -367,19 +369,19 @@ class ProductImportService
     protected function resetCounters(): void
     {
         $this->insertedCount = 0;
-        $this->updatedCount  = 0;
-        $this->skippedCount  = 0;
-        $this->errors        = [];
+        $this->updatedCount = 0;
+        $this->skippedCount = 0;
+        $this->errors = [];
     }
 
     protected function getSummary(): array
     {
         return [
             'processed' => $this->insertedCount + $this->updatedCount + $this->skippedCount,
-            'inserted'  => $this->insertedCount,
-            'updated'   => $this->updatedCount,
-            'skipped'   => $this->skippedCount,
-            'errors'    => $this->errors,
+            'inserted' => $this->insertedCount,
+            'updated' => $this->updatedCount,
+            'skipped' => $this->skippedCount,
+            'errors' => $this->errors,
         ];
     }
 }
