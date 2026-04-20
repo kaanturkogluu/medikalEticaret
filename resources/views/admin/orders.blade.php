@@ -33,12 +33,27 @@
     <div class="flex items-center justify-between">
         <div>
             <h2 class="text-2xl font-bold text-slate-800 tracking-tight">Sipariş Yönetimi (Tüm Siparişler)</h2>
-            <p class="text-sm text-slate-500 mt-1">Trendyol, Hepsiburada ve Web Sitenizden gelen tüm siparişleri buradan yönetebilirsiniz.</p>
+            <p class="text-sm text-slate-500 mt-1">Trendyol, Hepsiburada, N11 ve Web Sitenizden gelen tüm siparişleri buradan yönetebilirsiniz.</p>
         </div>
         <div class="flex items-center gap-2">
-            <form action="{{ route('admin.orders') }}" method="GET">
-                <button type="submit" class="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors flex items-center gap-2">
-                    <i class="fas fa-sync text-brand-500 text-[10px]"></i> Listeyi Yenile
+            <form action="{{ route('admin.orders') }}" method="GET" class="flex items-center gap-2">
+                <select name="channel_id" onchange="this.form.submit()" class="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all shadow-sm">
+                    <option value="">Tüm Pazaryerleri</option>
+                    <option value="web" {{ request('channel_id') === 'web' ? 'selected' : '' }}>Web Siparişleri</option>
+                    @foreach($channels as $channel)
+                        <option value="{{ $channel->id }}" {{ request('channel_id') == $channel->id ? 'selected' : '' }}>
+                            {{ $channel->name }}
+                        </option>
+                    @endforeach
+                </select>
+                <button type="submit" class="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors flex items-center gap-2 shadow-sm">
+                    <i class="fas fa-sync text-brand-500 text-[10px]"></i> Filtrele
+                </button>
+            </form>
+            <form action="{{ route('admin.orders.sync') }}" method="POST">
+                @csrf
+                <button type="submit" class="px-4 py-2 bg-brand-600 text-white rounded-lg text-sm font-semibold hover:bg-brand-700 transition-colors flex items-center gap-2 shadow-lg shadow-brand-500/20">
+                    <i class="fas fa-sync-alt text-[10px]"></i> Pazaryeri Siparişlerini Çek
                 </button>
             </form>
         </div>
@@ -59,7 +74,10 @@
             </thead>
             <tbody class="divide-y divide-slate-50">
                 @foreach($orders as $o)
-                <tr class="hover:bg-slate-50/50 transition-colors group">
+                @php
+                    $bgColor = $o->channel?->color ?? '#f8fafc';
+                @endphp
+                <tr style="background-color: {{ $bgColor }}15;" class="hover:brightness-95 transition-all group">
                     <td class="px-6 py-4">
                         <div class="flex flex-col">
                             <span class="text-xs font-black text-slate-800 tracking-tighter">#{{ $o->external_order_id ?? $o->id }}</span>
@@ -180,8 +198,8 @@
                             <i class="fas fa-map-marker-alt text-brand-500"></i> Teslimat Adresi
                         </h4>
                         <div class="space-y-3">
-                            <p class="text-xs font-bold text-slate-800 leading-relaxed" x-text="selectedOrder?.address_info?.address || selectedOrder?.raw_marketplace_data?.shipmentAddress?.fullAddress"></p>
-                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-tighter" x-text="(selectedOrder?.address_info?.district || selectedOrder?.raw_marketplace_data?.shipmentAddress?.district) + ' / ' + (selectedOrder?.address_info?.city || selectedOrder?.raw_marketplace_data?.shipmentAddress?.city)"></p>
+                            <p class="text-xs font-bold text-slate-800 leading-relaxed" x-text="selectedOrder?.address_info?.address || selectedOrder?.raw_marketplace_data?.shipmentAddress?.fullAddress || selectedOrder?.raw_marketplace_data?.shippingAddress?.address"></p>
+                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-tighter" x-text="(selectedOrder?.address_info?.district || selectedOrder?.raw_marketplace_data?.shipmentAddress?.district || selectedOrder?.raw_marketplace_data?.shippingAddress?.district || '-') + ' / ' + (selectedOrder?.address_info?.city || selectedOrder?.raw_marketplace_data?.shipmentAddress?.city || selectedOrder?.raw_marketplace_data?.shippingAddress?.city || '-')"></p>
                         </div>
                     </div>
                 </div>
@@ -210,10 +228,10 @@
                                     <tr class="hover:bg-slate-50/50 transition-colors">
                                         <td class="px-6 py-4">
                                             <div class="flex flex-col">
-                                                <span class="text-xs font-bold text-slate-800 tracking-tight" x-text="item.productName"></span>
+                                                <span class="text-xs font-bold text-slate-800 tracking-tight" x-text="item.productName || item.name"></span>
                                                 <div class="flex items-center gap-2 mt-1">
-                                                    <span class="text-[10px] px-1.5 py-0.5 bg-slate-100 text-slate-500 rounded font-black tracking-tighter" x-text="item.sku"></span>
-                                                    <span class="text-[9px] text-slate-400" x-text="'Barkod: ' + item.barcode"></span>
+                                                    <span class="text-[10px] px-1.5 py-0.5 bg-slate-100 text-slate-500 rounded font-black tracking-tighter" x-text="item.sku || item.stockCode || item.sellerStockCode || '-'"></span>
+                                                    <span class="text-[9px] text-slate-400" x-text="item.barcode ? 'Barkod: ' + item.barcode : ''"></span>
                                                 </div>
                                             </div>
                                         </td>

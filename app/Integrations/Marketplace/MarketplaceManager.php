@@ -34,8 +34,8 @@ class MarketplaceManager
     {
         return match ($slug) {
             'trendyol' => TrendyolAdapter::class,
+            'n11' => N11Adapter::class,
             // 'hepsiburada' => HepsiburadaAdapter::class,
-            // 'n11' => N11Adapter::class,
             default => throw new Exception("Unknown marketplace: {$slug}"),
         };
     }

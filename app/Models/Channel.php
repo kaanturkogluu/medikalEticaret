@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Channel extends Model
 {
-    protected $fillable = ['name', 'slug', 'settings', 'active'];
+    protected $fillable = ['name', 'slug', 'settings', 'active', 'color'];
 
     protected $casts = [
         'settings' => 'array',

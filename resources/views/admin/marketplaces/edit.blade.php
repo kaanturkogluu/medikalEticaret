@@ -7,6 +7,7 @@
         name: '{{ old('name', $channel->name) }}',
         slug: '{{ old('slug', $channel->slug) }}',
         active: {{ old('active', $channel->active ? 'true' : 'false') }},
+        color: '{{ old('color', $channel->color ?? '#f8fafc') }}',
         api_key: '{{ old('api_key', $channel->credential?->api_key) }}',
         api_secret: '{{ old('api_secret', $channel->credential?->api_secret) }}',
         supplier_id: '{{ old('supplier_id', $channel->credential?->supplier_id) }}'
@@ -57,6 +58,16 @@
                         <label class="text-xs font-bold text-slate-500 uppercase tracking-widest px-1">Slug / Tanımlayıcı</label>
                         <input type="text" name="slug" x-model="channel.slug" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all p-4">
                         @error('slug')<p class="text-[10px] text-red-500 font-bold px-1">{{ $message }}</p>@enderror
+                    </div>
+
+                    <!-- Marketplace Color -->
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-slate-500 uppercase tracking-widest px-1">Tablo Satır Rengi</label>
+                        <div class="flex items-center gap-3 p-2 bg-slate-50 border border-slate-200 rounded-xl">
+                            <input type="color" name="color" x-model="channel.color" class="h-10 w-12 border-0 bg-transparent cursor-pointer rounded-lg p-0">
+                            <input type="text" x-model="channel.color" class="flex-1 bg-transparent border-0 text-sm font-black text-slate-700 focus:ring-0 uppercase p-0" placeholder="#FFFFFF">
+                        </div>
+                        @error('color')<p class="text-[10px] text-red-500 font-bold px-1">{{ $message }}</p>@enderror
                     </div>
 
                     <!-- Active Toggle -->

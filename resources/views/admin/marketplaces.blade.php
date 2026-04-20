@@ -60,7 +60,7 @@
                     @endif
                 </div>
 
-                <div class="h-16 w-16 bg-slate-50 rounded-2xl flex items-center justify-center text-3xl mb-6 shadow-inner border border-slate-100 group-hover:scale-110 transition-transform">
+                <div style="background-color: {{ $m->color ?? '#f8fafc' }}20; border-color: {{ $m->color ?? '#cbd5e1' }}40;" class="h-16 w-16 rounded-2xl flex items-center justify-center text-3xl mb-6 shadow-inner border group-hover:scale-110 transition-transform">
                     @php
                         $icon = match($m->slug) {
                             'trendyol' => 'fa-bolt text-brand-500',

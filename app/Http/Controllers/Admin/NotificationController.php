@@ -12,14 +12,16 @@ class NotificationController extends Controller
     {
         $lastReadId = \Illuminate\Support\Facades\Cache::get('admin_last_read_order_id_' . auth()->id(), 0);
 
-        // For demonstration, we treat 'awaiting' status as new/unread notifications
+        // For demonstration, we treat 'awaiting', 'created', 'approved' statuses as new/unread notifications
+        $newOrderStatuses = ['awaiting', 'Awaiting', 'pending_payment', 'Pending_payment', 'Created', 'created', 'approved', 'Approved', 'scanning', 'Scanning'];
+        
         $newOrders = Order::with('channel')
-            ->whereIn('order_status', ['awaiting', 'Awaiting', 'pending_payment', 'Pending_payment', 'Created', 'created'])
+            ->whereIn('order_status', $newOrderStatuses)
             ->latest()
             ->take(5)
             ->get();
 
-        $count = Order::whereIn('order_status', ['awaiting', 'Awaiting', 'pending_payment', 'Pending_payment', 'Created', 'created'])
+        $count = Order::whereIn('order_status', $newOrderStatuses)
             ->where('id', '>', $lastReadId)
             ->count();
 

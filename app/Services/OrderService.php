@@ -76,27 +76,35 @@ class OrderService
 
     protected function processOrder(Channel $channel, array $orderData): void
     {
-        $externalId = $orderData['orderNumber'] ?? $orderData['id'];
+        $externalId = $orderData['orderNumber'] ?? $orderData['id'] ?? null;
 
-        if (Order::where('channel_id', $channel->id)->where('external_order_id', (string)$externalId)->exists()) {
+        if (!$externalId || Order::where('channel_id', $channel->id)->where('external_order_id', (string)$externalId)->exists()) {
             return;
         }
 
         DB::transaction(function () use ($channel, $orderData, $externalId) {
+            // Handle different naming conventions between marketplaces
+            $customerName = $orderData['customerfullName'] ?? 
+                           (($orderData['customerFirstName'] ?? '') . ' ' . ($orderData['customerLastName'] ?? ''));
+            
+            $totalPrice = $orderData['totalAmount'] ?? ($orderData['totalPrice'] ?? 0);
+            $status = $orderData['shipmentPackageStatus'] ?? ($orderData['status'] ?? 'created');
+
             $order = Order::create([
                 'channel_id' => $channel->id,
                 'external_order_id' => (string)$externalId,
-                'customer_name' => ($orderData['customerFirstName'] ?? '') . ' ' . ($orderData['customerLastName'] ?? ''),
+                'customer_name' => trim($customerName) ?: 'Bilinmeyen Müşteri',
                 'customer_email' => $orderData['customerEmail'] ?? null,
-                'total_price' => $orderData['totalPrice'] ?? 0,
-                'order_status' => $orderData['status'] ?? 'created',
+                'total_price' => $totalPrice,
+                'order_status' => strtolower($status),
                 'raw_marketplace_data' => $orderData,
+                'synced' => true,
             ]);
 
             $lines = $orderData['lines'] ?? $orderData['items'] ?? [];
 
             foreach ($lines as $line) {
-                $sku = $line['barcode'] ?? $line['sku'] ?? null;
+                $sku = $line['barcode'] ?? $line['stockCode'] ?? $line['sku'] ?? null;
                 $product = Product::where('sku', $sku)->first();
 
                 OrderItem::create([

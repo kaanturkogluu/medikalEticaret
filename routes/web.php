@@ -75,6 +75,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::delete('/products/{product:id}/delete', [\App\Http\Controllers\Admin\ProductController::class, 'destroy'])->name('admin.products.destroy');
     Route::post('/products/{product:id}/toggle-popular', [\App\Http\Controllers\Admin\ProductController::class, 'togglePopular'])->name('admin.products.toggle-popular');
     Route::get('/orders', [\App\Http\Controllers\Admin\OrderController::class, 'index'])->name('admin.orders');
+    Route::post('/orders/sync', [\App\Http\Controllers\Admin\OrderController::class, 'sync'])->name('admin.orders.sync');
     Route::post('/orders/{order}/approve', [\App\Http\Controllers\Admin\OrderController::class, 'approve'])->name('admin.orders.approve');
     Route::get('/orders/{order}', [\App\Http\Controllers\Admin\OrderController::class, 'show'])->name('admin.orders.show');
     Route::get('/test-products', [\App\Http\Controllers\Admin\OrderController::class, 'testProducts'])->name('admin.test-products');
@@ -94,6 +95,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::get('/marketplaces/{channel}/edit', [\App\Http\Controllers\Admin\ChannelController::class, 'edit'])->name('admin.marketplaces.edit');
     Route::put('/marketplaces/{channel}', [\App\Http\Controllers\Admin\ChannelController::class, 'update'])->name('admin.marketplaces.update');
     Route::post('/marketplaces/{channel}/test', [\App\Http\Controllers\Admin\ChannelController::class, 'test'])->name('admin.marketplaces.test');
+    Route::get('/n11-orders', [\App\Http\Controllers\Admin\ChannelController::class, 'n11Orders'])->name('admin.n11-orders');
 
     Route::get('/api/notifications', [\App\Http\Controllers\Admin\NotificationController::class, 'getUpdates'])->name('admin.api.notifications');
     Route::post('/api/notifications/read', [\App\Http\Controllers\Admin\NotificationController::class, 'markAsRead'])->name('admin.api.notifications.read');

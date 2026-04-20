@@ -37,6 +37,7 @@ class ChannelController extends Controller
             'name' => 'required|string|max:255',
             'slug' => 'required|string|unique:channels,slug,' . $channel->id,
             'active' => 'required|boolean',
+            'color' => 'nullable|string|max:7', // Hex color
             'api_key' => 'nullable|string',
             'api_secret' => 'nullable|string',
             'supplier_id' => 'nullable|string',
@@ -46,6 +47,7 @@ class ChannelController extends Controller
             'name' => $validated['name'],
             'slug' => $validated['slug'],
             'active' => $validated['active'],
+            'color' => $validated['color'] ?? '#f8fafc',
         ]);
 
         if ($channel->credential) {
@@ -84,6 +86,19 @@ class ChannelController extends Controller
                 'success' => false,
                 'message' => 'Hata: ' . $e->getMessage()
             ], 500);
+        }
+    }
+
+    public function n11Orders(\App\Integrations\Marketplace\MarketplaceManager $manager)
+    {
+        try {
+            $channel = Channel::where('slug', 'n11')->firstOrFail();
+            $adapter = $manager->getAdapter($channel);
+            $orders = $adapter->fetchOrders();
+
+            return view('admin.n11_orders_test', compact('orders'));
+        } catch (\Exception $e) {
+            return "Hata: " . $e->getMessage();
         }
     }
 }

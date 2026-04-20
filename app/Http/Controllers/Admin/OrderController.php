@@ -11,16 +11,39 @@ use Illuminate\View\View;
 
 class OrderController extends Controller
 {
+    public function __construct(
+        protected \App\Services\OrderService $orderService
+    ) {}
+
     /**
      * Display a listing of orders.
      */
-    public function index(): View
+    public function index(Request $request): View
     {
-        $orders = Order::with('channel')
-            ->latest()
-            ->paginate(15);
+        $query = Order::with('channel');
 
-        return view('admin.orders', compact('orders'));
+        if ($request->filled('channel_id')) {
+            if ($request->channel_id === 'web') {
+                $query->whereNull('channel_id');
+            } else {
+                $query->where('channel_id', $request->channel_id);
+            }
+        }
+
+        $orders = $query->latest()->paginate(15)->withQueryString();
+        $channels = \App\Models\Channel::all();
+
+        return view('admin.orders', compact('orders', 'channels'));
+    }
+
+    /**
+     * Sync orders from all channels.
+     */
+    public function sync()
+    {
+        $this->orderService->fetchAllChannelOrders();
+        
+        return back()->with('success', 'Siparişler başarıyla senkronize edildi.');
     }
 
     /**
