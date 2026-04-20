@@ -31,8 +31,8 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withSchedule(function (\Illuminate\Console\Scheduling\Schedule $schedule) {
-
         $schedule->command('sync:orders')->everyThreeMinutes();
+        $schedule->command('sync:n11-orders')->everyThreeMinutes();
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
