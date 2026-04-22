@@ -48,12 +48,11 @@
                         @error('parent_id') <p class="mt-2 text-xs text-red-500 font-bold italic">{{ $message }}</p> @enderror
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-center">
-                        <div class="flex items-center gap-6 p-6 bg-slate-50/50 rounded-3xl border border-slate-100">
+                    <div class="flex items-center gap-6 p-6 bg-slate-50/50 rounded-3xl border border-slate-100">
                             <div class="h-10 w-10 bg-white rounded-xl shadow-sm flex items-center justify-center text-[var(--primary-color)]">
                                 <i class="fas fa-power-off"></i>
                             </div>
-                            <div class="flex-grow text-left">
+                            <div class="flex-grow">
                                 <h4 class="text-xs font-black italic tracking-widest text-slate-400 uppercase">Durum</h4>
                                 <p class="text-[10px] text-slate-400 font-bold">Aktif / Pasif</p>
                             </div>
@@ -62,22 +61,7 @@
                                 <div class="w-14 h-8 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-green-500 shadow-inner"></div>
                             </label>
                         </div>
-
-                        <div class="flex items-center gap-6 p-6 bg-slate-50/50 rounded-3xl border border-slate-100">
-                            <div class="h-10 w-10 bg-white rounded-xl shadow-sm flex items-center justify-center text-indigo-500">
-                                <i class="fas fa-globe"></i>
-                            </div>
-                            <div class="flex-grow text-left">
-                                <h4 class="text-xs font-black italic tracking-widest text-slate-400 uppercase">Menüde Göster</h4>
-                                <p class="text-[10px] text-slate-400 font-bold">Navbar'da Sabitle</p>
-                            </div>
-                            <label class="relative inline-flex items-center cursor-pointer">
-                                <input type="checkbox" name="is_navbar" value="1" class="sr-only peer" {{ $category->is_navbar ? 'checked' : '' }}>
-                                <div class="w-14 h-8 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-indigo-500 shadow-inner"></div>
-                            </label>
-                        </div>
-                    </div>
-
+                    
                     <div class="pt-6 border-t border-slate-100 flex gap-4 text-center">
                         <button type="submit" class="flex-grow px-10 py-5 bg-slate-900 text-white font-black italic uppercase tracking-tighter rounded-2xl shadow-2xl shadow-slate-200/50 hover:bg-slate-800 transition-all transform hover:scale-105 active:scale-95 flex items-center justify-center gap-3">
                             <i class="fas fa-save text-orange-400"></i> Güncellemeleri Kaydet

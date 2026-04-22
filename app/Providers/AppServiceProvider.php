@@ -40,7 +40,7 @@ class AppServiceProvider extends ServiceProvider
 
             $navbarCategories = \App\Models\Category::where('is_navbar', true)
                 ->where('active', true)
-                ->orderBy('name')
+                ->orderBy('row_order')
                 ->get();
 
             $view->with(compact('categories', 'navbarCategories'));

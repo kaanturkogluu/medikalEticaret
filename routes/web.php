@@ -138,6 +138,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     // Category Management
     Route::group(['prefix' => 'categories', 'as' => 'admin.categories.'], function () {
         Route::get('/', [\App\Http\Controllers\Admin\CategoryController::class, 'index'])->name('index');
+        Route::get('/featured', [\App\Http\Controllers\Admin\CategoryController::class, 'featured'])->name('featured');
+        Route::post('/featured/update', [\App\Http\Controllers\Admin\CategoryController::class, 'updateFeatured'])->name('featured.update');
         Route::get('/create', [\App\Http\Controllers\Admin\CategoryController::class, 'create'])->name('create');
         Route::post('/store', [\App\Http\Controllers\Admin\CategoryController::class, 'store'])->name('store');
         Route::get('/{category:id}/edit', [\App\Http\Controllers\Admin\CategoryController::class, 'edit'])->name('edit');

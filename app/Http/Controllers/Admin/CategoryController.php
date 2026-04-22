@@ -114,6 +114,53 @@ class CategoryController extends Controller
         return redirect()->route('admin.categories.index')->with('success', 'Kategori başarıyla silindi.');
     }
 
+    public function featured(Request $request)
+    {
+        $query = Category::query();
+
+        // Search for categories to add
+        if ($request->filled('search')) {
+            $searchResults = Category::where('name', 'like', '%' . $request->search . '%')
+                ->where('is_navbar', false)
+                ->limit(10)
+                ->get();
+        } else {
+            $searchResults = collect();
+        }
+
+        // Currently featured categories
+        $featuredCategories = Category::where('is_navbar', true)
+            ->orderBy('row_order')
+            ->get();
+
+        return view('admin.categories.featured', compact('searchResults', 'featuredCategories'));
+    }
+
+    public function updateFeatured(Request $request)
+    {
+        // Add new category to navbar
+        if ($request->has('add_id')) {
+            Category::where('id', $request->add_id)->update(['is_navbar' => true, 'row_order' => Category::where('is_navbar', true)->count() + 1]);
+            return back()->with('success', 'Kategori menüye eklendi.');
+        }
+
+        // Remove category from navbar
+        if ($request->has('remove_id')) {
+            Category::where('id', $request->remove_id)->update(['is_navbar' => false, 'row_order' => 0]);
+            return back()->with('success', 'Kategori menüden kaldırıldı.');
+        }
+
+        // Update sorting
+        if ($request->has('orders')) {
+            foreach ($request->orders as $id => $order) {
+                Category::where('id', $id)->update(['row_order' => $order]);
+            }
+            return back()->with('success', 'Sıralama güncellendi.');
+        }
+
+        return back();
+    }
+
     public function toggleActive(Category $category)
     {
         $category->update(['active' => !$category->active]);

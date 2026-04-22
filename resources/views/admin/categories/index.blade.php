@@ -9,7 +9,10 @@
             <h1 class="text-2xl font-black italic tracking-tighter text-slate-900 uppercase underline decoration-[var(--primary-color)] decoration-4 underline-offset-8">Kategoriler</h1>
             <p class="mt-4 text-sm text-gray-500 font-medium">Sistemdeki tüm kategorileri buradan yönetebilirsiniz. Alt kategoriler oluşturabilir veya mevcut olanları düzenleyebilirsiniz.</p>
         </div>
-        <div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
+        <div class="mt-4 sm:mt-0 sm:ml-16 sm:flex flex-none gap-3">
+            <a href="{{ route('admin.categories.featured') }}" class="inline-flex items-center justify-center px-6 py-3 border border-indigo-200 text-sm font-black italic tracking-tighter uppercase rounded-xl shadow-lg shadow-indigo-100 text-indigo-700 bg-indigo-50 hover:bg-indigo-100 transition-all transform hover:scale-105 active:scale-95">
+                <i class="fas fa-star mr-2"></i> Navbar Öne Çıkar
+            </a>
             <a href="{{ route('admin.categories.create') }}" class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-sm font-black italic tracking-tighter uppercase rounded-xl shadow-xl shadow-orange-100 text-white bg-[var(--primary-color)] hover:bg-[var(--primary-hover)] transition-all transform hover:scale-105 active:scale-95">
                 <i class="fas fa-plus mr-2"></i> Yeni Kategori Ekle
             </a>
@@ -50,7 +53,6 @@
                                 <th scope="col" class="px-3 py-5 text-left text-xs font-black uppercase tracking-widest text-slate-400 italic">Üst Kategori</th>
                                 <th scope="col" class="px-3 py-5 text-left text-xs font-black uppercase tracking-widest text-slate-400 italic text-center">Ürün Sayısı</th>
                                 <th scope="col" class="px-3 py-5 text-left text-xs font-black uppercase tracking-widest text-slate-400 italic text-center">Durum</th>
-                                <th scope="col" class="px-3 py-5 text-left text-xs font-black uppercase tracking-widest text-slate-400 italic text-center">Menü</th>
                                 <th scope="col" class="relative py-5 pl-3 pr-8 text-right text-xs font-black uppercase tracking-widest text-slate-400 italic">İşlemler</th>
                             </tr>
                         </thead>
@@ -85,14 +87,7 @@
                                         </button>
                                     </form>
                                 </td>
-                                <td class="whitespace-nowrap px-3 py-5 text-center">
-                                    <form action="{{ route('admin.categories.toggle-navbar', $category->id) }}" method="POST">
-                                        @csrf
-                                        <button type="submit" class="inline-flex items-center p-2 rounded-xl text-xs transition-all {{ $category->is_navbar ? 'bg-indigo-50 text-indigo-600 shadow-inner' : 'bg-slate-50 text-slate-300 hover:text-slate-400' }}" title="Navbar'da Göster">
-                                            <i class="fas fa-globe"></i>
-                                        </button>
-                                    </form>
-                                </td>
+
                                 <td class="relative whitespace-nowrap py-5 pl-3 pr-8 text-right text-sm font-medium">
                                     <div class="flex justify-end gap-3 translate-x-4 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-300">
                                         <a href="{{ route('admin.categories.edit', $category->id) }}" class="p-2.5 bg-blue-50 text-blue-600 rounded-xl hover:bg-blue-600 hover:text-white transition-all shadow-sm">

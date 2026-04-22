@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Category extends Model
 {
-    protected $fillable = ['parent_id', 'name', 'slug', 'active', 'external_id', 'is_navbar'];
+    protected $fillable = ['parent_id', 'name', 'slug', 'active', 'external_id', 'is_navbar', 'row_order'];
 
     protected static function boot()
     {
@@ -29,6 +29,7 @@ class Category extends Model
     protected $casts = [
         'active' => 'boolean',
         'is_navbar' => 'boolean',
+        'row_order' => 'integer',
     ];
 
     public function parent(): BelongsTo
