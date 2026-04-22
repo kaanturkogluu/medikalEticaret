@@ -605,14 +605,8 @@
                 <h4 class="text-sm font-black italic tracking-tighter uppercase mb-6 text-white/90">Güvenli Alışveriş
                 </h4>
                 <div class="flex flex-col gap-6">
-                    <div
-                        class="flex flex-wrap items-center gap-6 grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all">
-                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS5LLCKGiA1A54u5bl67CTTP8v9eaDQWTllIw&s" class="h-6"
-                            alt="Mastercard">
-                        <img src="https://img.icons8.com/clr-gls/1200/visa.jpg" class="h-6"
-                            alt="Visa">
-                        <img src="https://www.troyodeme.com/Upload/CmsPageFile/Image/medias_02.webp" class="h-5"
-                            alt="Troy">
+                    <div class="flex flex-wrap items-center gap-6">
+                        <img src="{{ asset('images/logo_bandx.png') }}" class="h-8" alt="Ödeme Seçenekleri">
                         <div class="h-6 w-px bg-white/20 mx-2"></div>
                         <div class="flex items-center gap-3">
                             <img src="https://cdn-icons-png.flaticon.com/512/5950/5950545.png" class="h-6 invert opacity-80" alt="SSL">
