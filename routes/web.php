@@ -152,10 +152,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
         Route::get('/', [\App\Http\Controllers\Admin\PageController::class, 'index'])->name('index');
         Route::get('/create', [\App\Http\Controllers\Admin\PageController::class, 'create'])->name('create');
         Route::post('/store', [\App\Http\Controllers\Admin\PageController::class, 'store'])->name('store');
-        Route::get('/{page:id}/edit', [\App\Http\Controllers\Admin\PageController::class, 'edit'])->name('edit');
-        Route::put('/{page:id}/update', [\App\Http\Controllers\Admin\PageController::class, 'update'])->name('update');
-        Route::delete('/{page:id}/delete', [\App\Http\Controllers\Admin\PageController::class, 'destroy'])->name('destroy');
-        Route::post('/{page:id}/toggle', [\App\Http\Controllers\Admin\PageController::class, 'toggle'])->name('toggle');
+        Route::get('/{page}/edit', [\App\Http\Controllers\Admin\PageController::class, 'edit'])->name('edit');
+        Route::put('/{page}/update', [\App\Http\Controllers\Admin\PageController::class, 'update'])->name('update');
+        Route::delete('/{page}/delete', [\App\Http\Controllers\Admin\PageController::class, 'destroy'])->name('destroy');
+        Route::post('/{page}/toggle', [\App\Http\Controllers\Admin\PageController::class, 'toggle'])->name('toggle');
     });
 
     // FAQ Management
