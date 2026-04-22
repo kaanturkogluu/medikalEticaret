@@ -101,17 +101,29 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 pt-8 border-t border-slate-50">
-                <div class="space-y-2">
-                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2">Footer QR Kod Linki (ETBIS vb.)</label>
-                    <div class="flex gap-4">
-                        <input type="text" name="footer_qr" value="{{ $settings['footer_qr'] }}" class="flex-grow bg-slate-50 border border-slate-200 rounded-2xl px-6 py-4 text-xs font-medium text-slate-600 outline-none focus:bg-white focus:ring-4 focus:ring-brand-50 focus:border-brand-500 transition-all" placeholder="QR Kod görsel linkini buraya yapıştırın">
-                        <div class="w-14 h-14 bg-slate-50 border border-slate-200 rounded-2xl flex items-center justify-center overflow-hidden flex-shrink-0">
-                            @if($settings['footer_qr'])
-                                <img src="{{ $settings['footer_qr'] }}" class="w-full h-full object-contain p-1">
-                            @else
-                                <i class="fas fa-qrcode text-slate-300"></i>
-                            @endif
+            <div class="pt-8 border-t border-slate-50">
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between px-2">
+                        <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Footer QR Kod (ETBİS vb.)</label>
+                        <span class="text-[9px] text-brand-500 font-bold italic uppercase tracking-tighter">Dosya Yükle veya Link Gir</span>
+                    </div>
+                    <div class="flex items-center gap-6">
+                        <div class="relative group w-20 h-20 flex-shrink-0">
+                            <div class="w-full h-full bg-white border-2 border-dashed border-slate-200 rounded-3xl flex items-center justify-center overflow-hidden transition-all group-hover:border-brand-500 shadow-sm relative">
+                                @if($settings['footer_qr'])
+                                    <img src="{{ $settings['footer_qr'] }}" class="w-full h-full object-contain p-2">
+                                @else
+                                    <i class="fas fa-qrcode text-slate-300 text-2xl"></i>
+                                @endif
+                                <input type="file" name="site_footer_qr_file" class="absolute inset-0 opacity-0 cursor-pointer z-10">
+                            </div>
+                            <div class="absolute -bottom-2 -right-2 w-8 h-8 bg-slate-900 text-white rounded-xl flex items-center justify-center text-[10px] shadow-lg border-2 border-white pointer-events-none group-hover:bg-brand-600 transition-colors">
+                                <i class="fas fa-camera"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow space-y-2">
+                            <input type="text" name="footer_qr" value="{{ $settings['footer_qr'] }}" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-[11px] font-medium text-slate-400 outline-none focus:bg-white focus:border-brand-500 transition-all" placeholder="Görsel URL (veya dosya seçin)">
+                            <p class="text-[9px] text-slate-400 font-medium leading-relaxed italic">* Önerilen: Kare formatta, yüksek çözünürlüklü QR kod.</p>
                         </div>
                     </div>
                 </div>

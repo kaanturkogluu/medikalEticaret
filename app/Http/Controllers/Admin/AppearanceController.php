@@ -134,7 +134,14 @@ class AppearanceController extends Controller
             Setting::setValue('site_logo', $request->site_logo);
         }
 
-        Setting::setValue('site_footer_qr', $request->footer_qr);
+        if ($request->hasFile('site_footer_qr_file')) {
+            $file = $request->file('site_footer_qr_file');
+            $fileName = 'footer_qr.' . $file->getClientOriginalExtension();
+            $file->move(public_path('uploads'), $fileName);
+            Setting::setValue('site_footer_qr', '/uploads/' . $fileName);
+        } else {
+            Setting::setValue('site_footer_qr', $request->footer_qr);
+        }
         Setting::setValue('site_footer_columns', json_encode($request->footer_columns));
 
         return back()->with('success', 'Genel görünüm ayarları güncellendi.');
