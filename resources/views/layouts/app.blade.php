@@ -593,7 +593,7 @@
                     <h4 class="text-sm font-black italic tracking-tighter uppercase mb-6 text-white/90">{{ $col['title'] }}
                     </h4>
                     <ul class="space-y-3 text-sm text-gray-400 font-medium">
-                        @foreach($col['links'] as $link)
+                        @foreach($col['links'] ?? [] as $link)
                             <li><a href="{{ $link['url'] }}"
                                     class="hover:text-[var(--primary-color)] transition-colors">{{ $link['text'] }}</a></li>
                         @endforeach
