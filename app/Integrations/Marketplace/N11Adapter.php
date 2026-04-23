@@ -40,7 +40,6 @@ class N11Adapter implements MarketplaceInterface
     {
         $url = "{$this->baseUrl}/{$endpoint}";
 
-        Log::info("N11 API Request [{$method}] [{$url}]: " . json_encode($data));
 
         $request = $this->client();
 
@@ -51,7 +50,6 @@ class N11Adapter implements MarketplaceInterface
             default => throw new \Exception("Unsupported HTTP method: {$method}"),
         };
 
-        Log::info("N11 API Response [{$url}]: " . $response->body());
 
         if (!$response->successful()) {
             Log::error("N11 API Error [{$url}]: " . $response->body());

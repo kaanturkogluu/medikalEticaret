@@ -33,7 +33,6 @@ class OrderService
         
         // Eğer zaten bir senkronizasyon çalışıyorsa (Son 10 dk içinde başladıysa) durdur (Spam kilidi)
         if (Cache::has($lockKey)) {
-            Log::warning("SYNC [ORDER] [ABORT] Zaten aktif veya yeni bir senkronizasyon yapıldı: {$channel->slug}");
             return;
         }
 
@@ -66,7 +65,6 @@ class OrderService
 
             } while ($externalOrders->count() === $size);
 
-            Log::info("SYNC [ORDER] [TAMAM] Kanal [{$channel->slug}], Toplam: {$total}");
 
         } catch (\Exception $e) {
             Cache::forget($lockKey); // Hata durumunda kilidi aç ki tekrar denenebilsin
@@ -104,7 +102,6 @@ class OrderService
                     'order_status' => $newStatus,
                     'raw_marketplace_data' => $orderData,
                 ]);
-                Log::info("SYNC [ORDER] [GÜNCELLE] #{$externalId} durumu güncellendi: {$newStatus}");
             }
             return;
         }

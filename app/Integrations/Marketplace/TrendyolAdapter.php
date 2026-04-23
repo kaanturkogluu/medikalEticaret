@@ -47,12 +47,6 @@ class TrendyolAdapter implements MarketplaceInterface
 
         $userAgent = "{$supplierId} - SelfIntegration";
 
-        Log::info("TRENDYOL [REQUEST_AUTH_DEBUG]", [
-            'api_key' => $this->config['api_key'],
-            'supplier_id' => $supplierId,
-            'api_secret' => $this->config['api_secret'],
-            'url' => $url
-        ]);
 
         $request = $this->client()
             ->retry(3, 1000); // Retry with 1s delay
@@ -172,11 +166,6 @@ class TrendyolAdapter implements MarketplaceInterface
         $supplierId = $this->config['supplier_id'];
         $url = "https://apigw.trendyol.com/integration/product/sellers/{$supplierId}/products";
 
-        Log::info("TRENDYOL [FETCH_PRODUCTS_AUTH_DEBUG]", [
-            'api_key' => $this->config['api_key'],
-            'supplier_id' => $supplierId,
-            'url' => $url
-        ]);
 
         $response = $this->client()
             ->get($url, [
