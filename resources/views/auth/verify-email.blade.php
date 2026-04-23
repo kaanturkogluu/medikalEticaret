@@ -95,12 +95,13 @@
                 <!-- Resend -->
                 <div class="mt-6 pt-6 border-t border-slate-100 text-center">
                     <p class="text-sm text-slate-500 mb-3">Kod gelmedi mi?</p>
-                    <form action="{{ route('verify.resend') }}" method="POST" onsubmit="this.resendBtn.disabled = true; this.resendBtn.innerHTML = '<i class=\'fas fa-circle-notch fa-spin mr-2\'></i> Gönderiliyor...';">
+                    <form action="{{ route('verify.resend') }}" method="POST" onsubmit="localStorage.setItem('resend_cooldown_end', Date.now() + 60000); this.resendBtn.disabled = true; this.resendBtn.innerHTML = '<i class=\'fas fa-circle-notch fa-spin mr-2\'></i> Gönderiliyor...';">
                         @csrf
                         <input type="hidden" name="email" value="{{ $email }}">
-                        <button type="submit" name="resendBtn" class="text-sm font-bold text-orange-500 hover:underline inline-flex items-center gap-2 disabled:opacity-70">
+                        <button type="submit" name="resendBtn" id="resendBtn" class="text-sm font-bold text-orange-500 hover:underline inline-flex items-center gap-2 disabled:opacity-70 disabled:grayscale disabled:no-underline">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-                            Yeni Kod Gönder
+                            <span>Yeni Kod Gönder</span>
+                            <span id="resendTimer" class="hidden">(60s)</span>
                         </button>
                     </form>
                 </div>
@@ -137,6 +138,46 @@
         document.getElementById('code').addEventListener('input', function() {
             this.value = this.value.replace(/[^0-9]/g, '').slice(0, 6);
         });
+
+        // Resend Cooldown Logic
+        const resendBtn = document.getElementById('resendBtn');
+        const resendTimer = document.getElementById('resendTimer');
+        let cooldownTime = 60;
+        let cooldownInterval;
+
+        function startCooldown(remaining) {
+            resendBtn.disabled = true;
+            resendTimer.classList.remove('hidden');
+            let timeLeft = remaining;
+
+            cooldownInterval = setInterval(() => {
+                timeLeft--;
+                resendTimer.textContent = `(${timeLeft}s)`;
+                localStorage.setItem('resend_cooldown_end', Date.now() + (timeLeft * 1000));
+
+                if (timeLeft <= 0) {
+                    clearInterval(cooldownInterval);
+                    resendBtn.disabled = false;
+                    resendTimer.classList.add('hidden');
+                    localStorage.removeItem('resend_cooldown_end');
+                }
+            }, 1000);
+        }
+
+        // Check for existing cooldown on page load
+        const cooldownEnd = localStorage.getItem('resend_cooldown_end');
+        if (cooldownEnd) {
+            const remaining = Math.round((parseInt(cooldownEnd) - Date.now()) / 1000);
+            if (remaining > 0) {
+                startCooldown(remaining);
+            } else {
+                localStorage.removeItem('resend_cooldown_end');
+            }
+        }
+
+        // When button is clicked (the form handles the submission, we just trigger the timer for the next time if they refresh or if the page doesn't redirect immediately)
+        // Since the page redirects/refreshes on success, we need to make sure the timer starts if they stay on page.
+        // But the most important part is the check on page load.
     </script>
 </body>
 </html>

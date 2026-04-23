@@ -51,9 +51,9 @@ Route::middleware('guest')->group(function () {
 
 // Email verification (accessible even when logged in, before verified)
 Route::get('/verify-email', [\App\Http\Controllers\Auth\RegisterController::class, 'showVerifyForm'])->name('verify.form');
-Route::get('/verify-email/send', [\App\Http\Controllers\Auth\RegisterController::class, 'resendAndRedirect'])->name('verify.send');
+Route::get('/verify-email/send', [\App\Http\Controllers\Auth\RegisterController::class, 'resendAndRedirect'])->name('verify.send')->middleware('throttle:3,1');
 Route::post('/verify-email', [\App\Http\Controllers\Auth\RegisterController::class, 'verify'])->name('verify.submit');
-Route::post('/verify-email/resend', [\App\Http\Controllers\Auth\RegisterController::class, 'resend'])->name('verify.resend');
+Route::post('/verify-email/resend', [\App\Http\Controllers\Auth\RegisterController::class, 'resend'])->name('verify.resend')->middleware('throttle:3,1');
 
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout')->middleware('auth');
 
