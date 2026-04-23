@@ -68,6 +68,7 @@
             <thead class="bg-slate-50 border-b border-slate-100">
                 <tr>
                     <th class="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Sipariş / Paket No</th>
+                    <th class="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Pazaryeri</th>
                     <th class="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Müşteri</th>
                     <th class="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-right">Tutar</th>
                     <th class="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-center">Durum</th>
@@ -77,12 +78,7 @@
             </thead>
             <tbody>
                 @foreach($orders as $o)
-                @php
-                    $bgColor = $o->channel?->color ?? '#f8fafc';
-                @endphp
-                <tr :class="getStatus('{{ $o->order_status }}').color.split(' ')[0]" 
-                    style="border-left: 6px solid {{ $bgColor }};" 
-                    class="hover:brightness-95 transition-all group border-b border-white">
+                <tr class="hover:bg-slate-50 transition-all group border-b border-slate-50">
                     <td class="px-6 py-4">
                         <div class="flex flex-col">
                             <span class="text-xs font-black text-slate-800 tracking-tighter">#{{ $o->external_order_id ?? $o->id }}</span>
@@ -90,6 +86,19 @@
                                 {{ $o->raw_marketplace_data['shipmentNumber'] ?? ( $o->channel_id ? 'Paket No Yok' : 'WEB SİPARİŞİ' ) }}
                             </span>
                         </div>
+                    </td>
+                    <td class="px-6 py-4">
+                        @if($o->channel)
+                            <div class="flex items-center gap-2">
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold text-black uppercase tracking-tighter" style="background-color: {{ $o->channel->color ?? '#64748b' }}">
+                                    {{ $o->channel->name }}
+                                </span>
+                            </div>
+                        @else
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-500 uppercase tracking-tighter">
+                                WEB SİTE
+                            </span>
+                        @endif
                     </td>
                     <td class="px-6 py-4">
                         <div class="flex flex-col">
