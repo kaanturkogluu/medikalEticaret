@@ -96,7 +96,7 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     <!-- Supplier ID -->
-                    <div class="space-y-2">
+                    <div class="space-y-2" x-show="channel.slug !== 'ptt'">
                         <label class="text-xs font-bold text-slate-500 uppercase tracking-widest px-1">Supplier ID (Tedarikçi No)</label>
                         <div class="relative">
                             <i class="fas fa-building absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
@@ -106,7 +106,7 @@
 
                     <!-- API Key -->
                     <div class="space-y-2">
-                        <label class="text-xs font-bold text-slate-500 uppercase tracking-widest px-1">API Key</label>
+                        <label class="text-xs font-bold text-slate-500 uppercase tracking-widest px-1" x-text="channel.slug === 'ptt' ? 'API Key (ApiKey)' : 'API Key'"></label>
                         <div class="relative group">
                             <i class="fas fa-id-card absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
                             <input x-ref="apiKey" type="password" name="api_key" x-model="channel.api_key" class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all p-4">
@@ -118,7 +118,7 @@
 
                     <!-- API Secret -->
                     <div class="space-y-2">
-                        <label class="text-xs font-bold text-slate-500 uppercase tracking-widest px-1">API Secret</label>
+                        <label class="text-xs font-bold text-slate-500 uppercase tracking-widest px-1" x-text="channel.slug === 'ptt' ? 'API Token (AccessToken)' : 'API Secret'"></label>
                         <div class="relative group">
                             <i class="fas fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
                             <input type="password" name="api_secret" x-model="channel.api_secret" class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all p-4">

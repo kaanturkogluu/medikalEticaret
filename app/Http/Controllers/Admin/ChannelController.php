@@ -101,4 +101,20 @@ class ChannelController extends Controller
             return "Hata: " . $e->getMessage();
         }
     }
+
+    public function pttOrders(\App\Integrations\Marketplace\MarketplaceManager $manager)
+    {
+        try {
+            $channel = Channel::where('slug', 'ptt')->firstOrFail();
+            $adapter = $manager->getAdapter($channel);
+            $ordersData = $adapter->fetchOrders();
+
+            // If it's a single order object instead of a list, wrap it
+            $orders = collect(isset($ordersData['siparisNo']) ? [$ordersData] : $ordersData);
+
+            return view('admin.ptt_orders_test', compact('orders'));
+        } catch (\Exception $e) {
+            return "Hata: " . $e->getMessage();
+        }
+    }
 }

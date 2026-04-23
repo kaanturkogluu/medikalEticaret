@@ -76,7 +76,9 @@ class OrderService
 
     protected function processOrder(Channel $channel, array $orderData): void
     {
-        $externalId = $orderData['orderNumber'] ?? $orderData['id'] ?? null;
+        $externalId = $orderData['orderNumber'] ?? 
+                     $orderData['siparisNo'] ?? 
+                     $orderData['id'] ?? null;
 
         if (!$externalId || Order::where('channel_id', $channel->id)->where('external_order_id', (string)$externalId)->exists()) {
             return;
@@ -85,34 +87,48 @@ class OrderService
         DB::transaction(function () use ($channel, $orderData, $externalId) {
             // Handle different naming conventions between marketplaces
             $customerName = $orderData['customerfullName'] ?? 
+                           (($orderData['musteriAdi'] ?? '') . ' ' . ($orderData['musteriSoyadi'] ?? '')) ?:
                            (($orderData['customerFirstName'] ?? '') . ' ' . ($orderData['customerLastName'] ?? ''));
             
             $totalPrice = $orderData['totalAmount'] ?? ($orderData['totalPrice'] ?? 0);
-            $status = $orderData['shipmentPackageStatus'] ?? ($orderData['status'] ?? 'created');
+            
+            // PTT Total Price Calculation
+            if ($channel->slug === 'ptt' && isset($orderData['siparisUrunler'])) {
+                $totalPrice = collect($orderData['siparisUrunler'])->sum('kdvDahilToplamTutar');
+            }
+
+            $status = $orderData['shipmentPackageStatus'] ?? 
+                     ($orderData['siparisUrunler'][0]['siparisDurumu'] ?? ($orderData['status'] ?? 'created'));
 
             $order = Order::create([
                 'channel_id' => $channel->id,
                 'external_order_id' => (string)$externalId,
                 'customer_name' => trim($customerName) ?: 'Bilinmeyen Müşteri',
-                'customer_email' => $orderData['customerEmail'] ?? null,
+                'customer_email' => $orderData['customerEmail'] ?? ($orderData['eposta'] ?? null),
+                'customer_phone' => $orderData['telefonNo'] ?? null,
                 'total_price' => $totalPrice,
                 'order_status' => strtolower($status),
+                'address_info' => [
+                    'address' => $orderData['siparisAdresi'] ?? ($orderData['shippingAddress']['address'] ?? null),
+                    'city' => $orderData['siparisIli'] ?? ($orderData['shippingAddress']['city'] ?? null),
+                    'district' => $orderData['siparisIlce'] ?? ($orderData['shippingAddress']['district'] ?? null),
+                ],
                 'raw_marketplace_data' => $orderData,
                 'synced' => true,
             ]);
 
-            $lines = $orderData['lines'] ?? $orderData['items'] ?? [];
+            $lines = $orderData['siparisUrunler'] ?? $orderData['lines'] ?? $orderData['items'] ?? [];
 
             foreach ($lines as $line) {
-                $sku = $line['barcode'] ?? $line['stockCode'] ?? $line['sku'] ?? null;
+                $sku = $line['urunBarkod'] ?? $line['barcode'] ?? $line['stockCode'] ?? $line['sku'] ?? null;
                 $product = Product::where('sku', $sku)->first();
 
                 OrderItem::create([
                     'order_id' => $order->id,
                     'product_id' => $product?->id,
                     'external_product_id' => $sku,
-                    'quantity' => $line['quantity'] ?? 1,
-                    'price' => $line['price'] ?? 0,
+                    'quantity' => $line['toplamIslemAdedi'] ?? ($line['quantity'] ?? 1),
+                    'price' => $line['kdvDahilToplamTutar'] ?? ($line['price'] ?? 0),
                 ]);
 
                 if ($product) {

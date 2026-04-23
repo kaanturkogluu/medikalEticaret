@@ -66,6 +66,7 @@
                             'trendyol' => 'fa-bolt text-brand-500',
                             'hepsiburada' => 'fa-shopping-cart text-orange-500',
                             'n11' => 'fa-store text-emerald-600',
+                            'ptt' => 'fa-envelope text-amber-500',
                             default => 'fa-plug text-slate-400'
                         };
                     @endphp
@@ -93,15 +94,29 @@
                     </div>
                 </div>
 
-                <div class="mt-10 grid grid-cols-2 gap-3">
-                    <button @click="testConnection('{{ $m->id }}', '{{ $m->slug }}')" :disabled="testing === '{{ $m->id }}'" class="py-3 bg-white border border-slate-200 rounded-xl text-xs font-extrabold text-slate-600 hover:bg-slate-50 transition-colors flex items-center justify-center gap-2 disabled:opacity-50">
-                        <i :class="testing === '{{ $m->id }}' ? 'fa-spinner fa-spin' : 'fa-vial'" class="fas text-[10px]"></i>
-                        Test Et
-                    </button>
-                    <a href="{{ route('admin.marketplaces.edit', $m->id) }}" class="py-3 bg-corporate text-white rounded-xl text-xs font-extrabold hover:bg-slate-900 transition-all shadow-lg shadow-corporate/20 flex items-center justify-center gap-2">
-                        <i class="fas fa-edit text-[10px]"></i>
-                        Düzenle
-                    </a>
+                <div class="mt-10 flex flex-col gap-3">
+                    <div class="grid grid-cols-2 gap-3">
+                        <button @click="testConnection('{{ $m->id }}', '{{ $m->slug }}')" :disabled="testing === '{{ $m->id }}'" class="py-3 bg-white border border-slate-200 rounded-xl text-xs font-extrabold text-slate-600 hover:bg-slate-50 transition-colors flex items-center justify-center gap-2 disabled:opacity-50">
+                            <i :class="testing === '{{ $m->id }}' ? 'fa-spinner fa-spin' : 'fa-vial'" class="fas text-[10px]"></i>
+                            Test Et
+                        </button>
+                        <a href="{{ route('admin.marketplaces.edit', $m->id) }}" class="py-3 bg-slate-900 text-white rounded-xl text-xs font-extrabold hover:bg-black transition-all shadow-lg flex items-center justify-center gap-2">
+                            <i class="fas fa-edit text-[10px]"></i>
+                            Düzenle
+                        </a>
+                    </div>
+                    
+                    @if($m->slug === 'n11')
+                        <a href="{{ route('admin.n11-orders') }}" class="py-3 bg-emerald-50 text-emerald-700 border border-emerald-100 rounded-xl text-xs font-extrabold hover:bg-emerald-100 transition-all flex items-center justify-center gap-2">
+                            <i class="fas fa-shopping-basket text-[10px]"></i>
+                            N11 Siparişlerini Gör
+                        </a>
+                    @elseif($m->slug === 'ptt')
+                        <a href="{{ route('admin.ptt-orders') }}" class="py-3 bg-amber-50 text-amber-700 border border-amber-100 rounded-xl text-xs font-extrabold hover:bg-amber-100 transition-all flex items-center justify-center gap-2">
+                            <i class="fas fa-envelope text-[10px]"></i>
+                            PTT Siparişlerini Gör
+                        </a>
+                    @endif
                 </div>
             </div>
         @endforeach

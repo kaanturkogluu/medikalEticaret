@@ -1,0 +1,23 @@
+Bu metod ile mağazanızdaki belirtilen tarih aralığındaki sipariş bilgilerini almanıza olanak tanır. (Siparişte birden fazla ürün varsa ürün kırılımı ile bilgilerin alınmasına olanak tanır.)
+
+Endpoint Bilgileri
+URL: `https://integration-api.pttavm.com/api/v1/shipping/cargo-profiles
+HTTP Metodu: GET
+header : Api-Key zorunlu
+header : access-token zorunlu
+header : X-Correlation-Idzorunlu
+header : Content-Type: application/json
+Dikkat Edilmesi Gereken Kurallar
+Başlangıç ve bitiş tarihleri arasındaki süre en fazla 40 gün olabilir.
+Bitiş tarihi başlangıç tarihinden önce olamaz; aksi takdirde hata dönecektir.
+‘isActiveOrders’=true olarak gönderilirse, ‘kargo_yapilmasi_bekleniyor’ durumuna sahip siparişler gösterilir, yani ödeme yapılmıştır ancak sipariş tedarikçi tarafından hazırlanmamıştır. Tüm siparişleri almak için 'isActiveOrders'=false olarak gönderilmesi gerekmektedir.
+Parametre	Tür	Açıklama
+startDate	string / date-time	Sipariş bilgisini almak istediğiniz başlangıç tarihi ** zorunlu**
+endDate	DateTime / date-time	Sipariş bilgisini almak istediğiniz bitiş tarihi **zorunlu**
+isActiveOrders	boolean	False olarak gönderilmesi gerekmektedir. ** zorunlu**
+Örnek Servis İsteği
+
+curl 'http://integrator-core-api-test.rancher.pttavm.com/api/v1/orders/search?startDate=&endDate=&isActiveOrders=' \
+  --header 'Api-Key: ' \
+  --header 'Access-Token: '
+Örnek Servis Cevabı
