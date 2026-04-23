@@ -104,7 +104,7 @@
                     </td>
                     <td class="px-6 py-4">
                         <span class="text-[10px] font-bold text-slate-500">
-                            {{ $o->created_at->format('d.m.Y H:i') }}
+                            {{ $o->order_date ? $o->order_date->format('d.m.Y H:i') : $o->created_at->format('d.m.Y H:i') }}
                         </span>
                     </td>
                     <td class="px-6 py-4 text-right">

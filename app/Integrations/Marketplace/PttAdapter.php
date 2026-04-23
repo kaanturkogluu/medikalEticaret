@@ -66,10 +66,10 @@ class PttAdapter implements MarketplaceInterface
                 'Content-Type' => 'application/json',
                 'Accept' => 'application/json'
             ])->get("{$this->baseUrl}/orders/search", [
-                'startDate' => $startDate,
-                'endDate' => $endDate,
-                'isActiveOrders' => 'false'
-            ]);
+                        'startDate' => $startDate,
+                        'endDate' => $endDate,
+                        'isActiveOrders' => 'false'
+                    ]);
 
             if ($response->successful()) {
                 return collect($response->json() ?? []);
@@ -81,7 +81,7 @@ class PttAdapter implements MarketplaceInterface
                 'headers' => $response->headers(),
                 'url' => "{$this->baseUrl}/orders/search"
             ]);
-            
+
             return collect([]);
         } catch (\Exception $e) {
             Log::error("PTT AVM Fetch Orders Exception", [
@@ -105,28 +105,15 @@ class PttAdapter implements MarketplaceInterface
     public function testConnection(): bool
     {
         try {
-            $response = Http::withHeaders([
-                'Api-Key' => $this->config['api_key'],
-                'access-token' => $this->config['api_secret'],
-                'X-Correlation-Id' => (string) \Illuminate\Support\Str::uuid(),
-                'Content-Type' => 'application/json',
-                'Accept' => 'application/json'
-            ])->get("{$this->baseUrl}/shipping/cargo-profiles");
-            
-            if (!$response->successful()) {
-                Log::error("PTT AVM API Connection Test Failed", [
-                    'status' => $response->status(),
-                    'body' => $response->body(),
-                    'headers' => $response->headers()
-                ]);
-            }
+            $orders = $this->fetchOrders();
 
-            return $response->successful();
-        } catch (\Exception $e) {
+            return $orders->isNotEmpty();
+
+        } catch (\Throwable $e) {
             Log::error("PTT AVM API Exception", [
                 'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
             ]);
+
             return false;
         }
     }

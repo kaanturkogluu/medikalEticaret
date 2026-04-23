@@ -100,6 +100,16 @@ class OrderService
             $status = $orderData['shipmentPackageStatus'] ?? 
                      ($orderData['siparisUrunler'][0]['siparisDurumu'] ?? ($orderData['status'] ?? 'created'));
 
+            $orderDate = $orderData['orderDate'] ?? 
+                        $orderData['islemTarihi'] ?? 
+                        $orderData['creationDate'] ?? 
+                        now();
+            
+            // Handle millisecond timestamps if necessary
+            if (is_numeric($orderDate) && $orderDate > 1000000000000) {
+                $orderDate = \Carbon\Carbon::createFromTimestampMs($orderDate);
+            }
+
             $order = Order::create([
                 'channel_id' => $channel->id,
                 'external_order_id' => (string)$externalId,
@@ -107,6 +117,7 @@ class OrderService
                 'customer_email' => $orderData['customerEmail'] ?? ($orderData['eposta'] ?? null),
                 'customer_phone' => $orderData['telefonNo'] ?? null,
                 'total_price' => $totalPrice,
+                'order_date' => $orderDate,
                 'order_status' => strtolower($status),
                 'address_info' => [
                     'address' => $orderData['siparisAdresi'] ?? ($orderData['shippingAddress']['address'] ?? null),

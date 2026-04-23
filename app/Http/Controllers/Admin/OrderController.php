@@ -30,7 +30,7 @@ class OrderController extends Controller
             }
         }
 
-        $orders = $query->latest()->paginate(15)->withQueryString();
+        $orders = $query->orderByDesc('order_date')->paginate(15)->withQueryString();
         $channels = \App\Models\Channel::all();
 
         return view('admin.orders', compact('orders', 'channels'));
