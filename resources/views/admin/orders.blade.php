@@ -226,7 +226,7 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-50">
-                            <!-- Marketplace Lines -->
+                            <!-- Marketplace Lines (Generic/Trendyol) -->
                             <template x-if="selectedOrder?.raw_marketplace_data?.lines">
                                 <template x-for="item in selectedOrder?.raw_marketplace_data?.lines" :key="item.id">
                                     <tr class="hover:bg-slate-50/50 transition-colors">
@@ -247,8 +247,30 @@
                                     </tr>
                                 </template>
                             </template>
+
+                            <!-- PTT AVM Lines -->
+                            <template x-if="selectedOrder?.raw_marketplace_data?.siparisUrunler">
+                                <template x-for="item in selectedOrder?.raw_marketplace_data?.siparisUrunler" :key="item.lineItemId || item.urunId">
+                                    <tr class="hover:bg-slate-50/50 transition-colors">
+                                        <td class="px-6 py-4">
+                                            <div class="flex flex-col">
+                                                <span class="text-xs font-bold text-slate-800 tracking-tight" x-text="item.urun"></span>
+                                                <div class="flex items-center gap-2 mt-1">
+                                                    <span class="text-[10px] px-1.5 py-0.5 bg-slate-100 text-slate-500 rounded font-black tracking-tighter" x-text="item.urunBarkod || item.variantBarkod || '-'"></span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 text-center font-black text-slate-900 tabular-nums" x-text="item.toplamIslemAdedi"></td>
+                                        <td class="px-6 py-4 text-right text-xs font-bold text-slate-700 tabular-nums" x-text="(item.kdvDahilToplamTutar / item.toplamIslemAdedi).toFixed(2) + ' ₺'"></td>
+                                        <td class="px-6 py-4 text-right text-xs font-bold text-red-500 tabular-nums" x-text="(item.indirimToplam || 0).toFixed(2) + ' ₺'"></td>
+                                        <td class="px-6 py-4 text-right text-[10px] font-bold text-slate-400" x-text="'%' + (item.kdvOrani || 0)"></td>
+                                        <td class="px-6 py-4 text-right text-sm font-black text-slate-900 tabular-nums" x-text="item.kdvDahilToplamTutar.toFixed(2) + ' ₺'"></td>
+                                    </tr>
+                                </template>
+                            </template>
+
                             <!-- Website Lines -->
-                            <template x-if="!selectedOrder?.raw_marketplace_data?.lines && selectedOrder?.items">
+                            <template x-if="!selectedOrder?.raw_marketplace_data?.lines && !selectedOrder?.raw_marketplace_data?.siparisUrunler && selectedOrder?.items">
                                 <template x-for="item in selectedOrder?.items" :key="item.id">
                                     <tr class="hover:bg-slate-50/50 transition-colors">
                                         <td class="px-6 py-4">
