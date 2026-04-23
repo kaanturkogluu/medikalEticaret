@@ -100,14 +100,20 @@ class OrderService
             $status = $orderData['shipmentPackageStatus'] ?? 
                      ($orderData['siparisUrunler'][0]['siparisDurumu'] ?? ($orderData['status'] ?? 'created'));
 
-            $orderDate = $orderData['orderDate'] ?? 
-                        $orderData['islemTarihi'] ?? 
-                        $orderData['creationDate'] ?? 
-                        now();
+            $orderDateRaw = $orderData['orderDate'] ?? 
+                           $orderData['islemTarihi'] ?? 
+                           $orderData['creationDate'] ?? 
+                           now();
             
-            // Handle millisecond timestamps if necessary
-            if (is_numeric($orderDate) && $orderDate > 1000000000000) {
-                $orderDate = \Carbon\Carbon::createFromTimestampMs($orderDate);
+            // Handle millisecond timestamps or ISO strings
+            if (is_numeric($orderDateRaw) && $orderDateRaw > 1000000000000) {
+                $orderDate = \Illuminate\Support\Carbon::createFromTimestampMs($orderDateRaw);
+            } else {
+                try {
+                    $orderDate = \Illuminate\Support\Carbon::parse($orderDateRaw);
+                } catch (\Exception $e) {
+                    $orderDate = now();
+                }
             }
 
             $order = Order::create([
@@ -120,9 +126,9 @@ class OrderService
                 'order_date' => $orderDate,
                 'order_status' => strtolower($status),
                 'address_info' => [
-                    'address' => $orderData['siparisAdresi'] ?? ($orderData['shippingAddress']['address'] ?? null),
-                    'city' => $orderData['siparisIli'] ?? ($orderData['shippingAddress']['city'] ?? null),
-                    'district' => $orderData['siparisIlce'] ?? ($orderData['shippingAddress']['district'] ?? null),
+                    'address' => trim($orderData['siparisAdresi'] ?? ($orderData['shippingAddress']['address'] ?? '')),
+                    'city' => trim($orderData['siparisIli'] ?? ($orderData['shippingAddress']['city'] ?? '')),
+                    'district' => trim($orderData['siparisIlce'] ?? ($orderData['shippingAddress']['district'] ?? '')),
                 ],
                 'raw_marketplace_data' => $orderData,
                 'synced' => true,
