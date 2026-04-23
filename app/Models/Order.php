@@ -52,6 +52,7 @@ class Order extends Model
             'undeliveredandreturned' => 'İade Edildi',
             'returned'        => 'İade Edildi',
             'unpaid'          => 'Ödenmedi',
+            'readytoship'      => 'Kargoya Hazır',
         ];
 
         return $map[$status] ?? ($this->order_status ?? 'İşleniyor');

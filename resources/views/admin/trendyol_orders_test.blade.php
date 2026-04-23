@@ -9,7 +9,8 @@
         'Shipped': { label: 'Kargoya Verildi', color: 'bg-blue-100 text-blue-700' },
         'Delivered': { label: 'Teslim Edildi', color: 'bg-slate-100 text-slate-700' },
         'Cancelled': { label: 'İptal Edildi', color: 'bg-red-100 text-red-700' },
-        'UnPaid': { label: 'Ödeme Bekliyor', color: 'bg-orange-100 text-orange-700' }
+        'UnPaid': { label: 'Ödeme Bekliyor', color: 'bg-orange-100 text-orange-700' },
+        'ReadyToShip': { label: 'Kargoya Hazır', color: 'bg-indigo-100 text-indigo-700' }
     },
     formatDate(ms) {
         if (!ms) return '-';

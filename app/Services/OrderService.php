@@ -80,7 +80,32 @@ class OrderService
                      $orderData['siparisNo'] ?? 
                      $orderData['id'] ?? null;
 
-        if (!$externalId || Order::where('channel_id', $channel->id)->where('external_order_id', (string)$externalId)->exists()) {
+        if (!$externalId) {
+            return;
+        }
+
+        $existingOrder = Order::where('channel_id', $channel->id)
+            ->where('external_order_id', (string)$externalId)
+            ->first();
+
+        $newStatus = strtolower($orderData['shipmentPackageStatus'] ?? 
+                     ($orderData['siparisUrunler'][0]['siparisDurumu'] ?? ($orderData['status'] ?? 'created')));
+
+        if ($existingOrder) {
+            // Eğer sipariş zaten terminal (final) durumdaysa (Teslim edildi, İptal vb.) güncelleme yapma
+            $terminalStatuses = ['delivered', 'cancelled', 'returned', 'undeliveredandreturned'];
+            if (in_array(strtolower($existingOrder->order_status), $terminalStatuses)) {
+                return;
+            }
+
+            // Durum veya ham veri güncellenmişse kaydet
+            if ($existingOrder->order_status !== $newStatus) {
+                $existingOrder->update([
+                    'order_status' => $newStatus,
+                    'raw_marketplace_data' => $orderData,
+                ]);
+                Log::info("SYNC [ORDER] [GÜNCELLE] #{$externalId} durumu güncellendi: {$newStatus}");
+            }
             return;
         }
 

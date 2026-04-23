@@ -17,7 +17,8 @@
         'delivered': { label: 'Teslim Edildi', color: 'bg-emerald-100 text-emerald-700' },
         'undelivered': { label: 'Teslim Edilemedi', color: 'bg-rose-100 text-rose-700' },
         'returned': { label: 'İade Edildi', color: 'bg-gray-100 text-gray-700' },
-        'undeliveredandreturned': { label: 'İade Edildi', color: 'bg-gray-100 text-gray-700' }
+        'undeliveredandreturned': { label: 'İade Edildi', color: 'bg-gray-100 text-gray-700' },
+        'readytoship': { label: 'Kargoya Hazır', color: 'bg-indigo-100 text-indigo-700' }
     },
     formatDate(ms) {
         if (!ms) return '-';
