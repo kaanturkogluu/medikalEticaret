@@ -117,4 +117,17 @@ class ChannelController extends Controller
             return "Hata: " . $e->getMessage();
         }
     }
+
+    public function trendyolOrders(\App\Integrations\Marketplace\MarketplaceManager $manager)
+    {
+        try {
+            $channel = Channel::where('slug', 'trendyol')->firstOrFail();
+            $adapter = $manager->getAdapter($channel);
+            $orders = $adapter->fetchOrders();
+
+            return view('admin.trendyol_orders_test', compact('orders'));
+        } catch (\Exception $e) {
+            return "Hata: " . $e->getMessage();
+        }
+    }
 }

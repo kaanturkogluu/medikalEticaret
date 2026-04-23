@@ -23,7 +23,7 @@ return Application::configure(basePath: dirname(__DIR__))
         );
         $middleware->alias([
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
-            'user'  => \App\Http\Middleware\UserMiddleware::class,
+            'user' => \App\Http\Middleware\UserMiddleware::class,
         ]);
         // CSP başlıklarını tüm web isteklerine uygula (spatie/laravel-csp)
         $middleware->web(append: [
@@ -33,6 +33,8 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withSchedule(function (\Illuminate\Console\Scheduling\Schedule $schedule) {
         $schedule->command('sync:orders')->everyThreeMinutes();
         $schedule->command('sync:n11-orders')->everyThreeMinutes();
+        $schedule->command('sync:ptt-orders')->everyThreeMinutes();
+
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

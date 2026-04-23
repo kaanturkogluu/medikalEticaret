@@ -118,6 +118,7 @@ class CheckoutController extends Controller
                         'address' => $validated['address']
                     ],
                     'payment_method' => $validated['payment_method'],
+                    'order_date' => now(),
                     'discount_amount' => $discount,
                     'synced' => false,
                     'currency' => 'TL'

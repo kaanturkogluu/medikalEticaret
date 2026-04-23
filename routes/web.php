@@ -97,6 +97,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::post('/marketplaces/{channel}/test', [\App\Http\Controllers\Admin\ChannelController::class, 'test'])->name('admin.marketplaces.test');
     Route::get('/n11-orders', [\App\Http\Controllers\Admin\ChannelController::class, 'n11Orders'])->name('admin.n11-orders');
     Route::get('/ptt-orders', [\App\Http\Controllers\Admin\ChannelController::class, 'pttOrders'])->name('admin.ptt-orders');
+    Route::get('/trendyol-orders', [\App\Http\Controllers\Admin\ChannelController::class, 'trendyolOrders'])->name('admin.trendyol-orders');
 
     Route::get('/api/notifications', [\App\Http\Controllers\Admin\NotificationController::class, 'getUpdates'])->name('admin.api.notifications');
     Route::post('/api/notifications/read', [\App\Http\Controllers\Admin\NotificationController::class, 'markAsRead'])->name('admin.api.notifications.read');
