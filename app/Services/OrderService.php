@@ -103,6 +103,7 @@ class OrderService
             $orderDateRaw = $orderData['orderDate'] ?? 
                            $orderData['islemTarihi'] ?? 
                            $orderData['creationDate'] ?? 
+                           ($orderData['packageHistories'][0]['createdDate'] ?? null) ??
                            now();
             
             // Handle millisecond timestamps or ISO strings
