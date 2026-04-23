@@ -41,10 +41,17 @@ Route::middleware('guest')->group(function () {
     // Social Auth
     Route::get('/auth/google', [\App\Http\Controllers\Auth\SocialController::class, 'redirectToGoogle'])->name('auth.google');
     Route::get('/auth/google/callback', [\App\Http\Controllers\Auth\SocialController::class, 'handleGoogleCallback']);
+
+    // Password Reset
+    Route::get('/forgot-password', [\App\Http\Controllers\Auth\PasswordResetController::class, 'showLinkRequestForm'])->name('password.request');
+    Route::post('/forgot-password', [\App\Http\Controllers\Auth\PasswordResetController::class, 'sendResetLinkEmail'])->name('password.email');
+    Route::get('/reset-password/{token}', [\App\Http\Controllers\Auth\PasswordResetController::class, 'showResetForm'])->name('password.reset');
+    Route::post('/reset-password', [\App\Http\Controllers\Auth\PasswordResetController::class, 'reset'])->name('password.update.submit');
 });
 
 // Email verification (accessible even when logged in, before verified)
 Route::get('/verify-email', [\App\Http\Controllers\Auth\RegisterController::class, 'showVerifyForm'])->name('verify.form');
+Route::get('/verify-email/send', [\App\Http\Controllers\Auth\RegisterController::class, 'resendAndRedirect'])->name('verify.send');
 Route::post('/verify-email', [\App\Http\Controllers\Auth\RegisterController::class, 'verify'])->name('verify.submit');
 Route::post('/verify-email/resend', [\App\Http\Controllers\Auth\RegisterController::class, 'resend'])->name('verify.resend');
 

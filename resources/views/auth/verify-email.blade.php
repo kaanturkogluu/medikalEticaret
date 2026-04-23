@@ -67,7 +67,7 @@
                     <span class="text-sm font-bold text-orange-600">Kodun geçerlilik süresi: <span id="countdown" class="font-black">30:00</span></span>
                 </div>
 
-                <form action="{{ route('verify.submit') }}" method="POST" class="space-y-6">
+                <form action="{{ route('verify.submit') }}" method="POST" class="space-y-6" onsubmit="this.submitBtn.disabled = true; this.submitBtn.innerHTML = '<i class=\'fas fa-circle-notch fa-spin mr-2\'></i> Doğrulanıyor...';">
                     @csrf
                     <input type="hidden" name="email" value="{{ $email }}">
 
@@ -87,7 +87,7 @@
                         >
                     </div>
 
-                    <button type="submit" class="btn-primary w-full py-4 rounded-xl text-white font-black text-sm uppercase tracking-widest shadow-lg">
+                    <button type="submit" name="submitBtn" class="btn-primary w-full py-4 rounded-xl text-white font-black text-sm uppercase tracking-widest shadow-lg disabled:opacity-70">
                         Hesabımı Doğrula
                     </button>
                 </form>
@@ -95,10 +95,10 @@
                 <!-- Resend -->
                 <div class="mt-6 pt-6 border-t border-slate-100 text-center">
                     <p class="text-sm text-slate-500 mb-3">Kod gelmedi mi?</p>
-                    <form action="{{ route('verify.resend') }}" method="POST">
+                    <form action="{{ route('verify.resend') }}" method="POST" onsubmit="this.resendBtn.disabled = true; this.resendBtn.innerHTML = '<i class=\'fas fa-circle-notch fa-spin mr-2\'></i> Gönderiliyor...';">
                         @csrf
                         <input type="hidden" name="email" value="{{ $email }}">
-                        <button type="submit" class="text-sm font-bold text-orange-500 hover:underline inline-flex items-center gap-2">
+                        <button type="submit" name="resendBtn" class="text-sm font-bold text-orange-500 hover:underline inline-flex items-center gap-2 disabled:opacity-70">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
                             Yeni Kod Gönder
                         </button>

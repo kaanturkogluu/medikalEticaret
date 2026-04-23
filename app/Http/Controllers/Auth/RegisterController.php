@@ -134,4 +134,30 @@ class RegisterController extends Controller
 
         return back()->with('success', 'Yeni doğrulama kodu e-postanıza gönderildi.');
     }
+
+    /**
+     * Resend the verification code and redirect to the form.
+     */
+    public function resendAndRedirect(Request $request)
+    {
+        $user = Auth::user();
+        if (!$user || $user->email_verified_at) {
+            return redirect()->route('home');
+        }
+
+        $code = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+
+        $user->update([
+            'email_verification_code'       => $code,
+            'email_verification_expires_at' => \Carbon\Carbon::now()->addMinutes(30),
+        ]);
+
+        \Illuminate\Support\Facades\Mail::send('emails.verify-email', ['user' => $user, 'code' => $code], function ($m) use ($user) {
+            $m->to($user->email, $user->name)
+              ->subject('E-posta Doğrulama Kodunuz');
+        });
+
+        return redirect()->route('verify.form', ['email' => $user->email])
+            ->with('success', 'Doğrulama kodu e-postanıza tekrar gönderildi.');
+    }
 }

@@ -490,6 +490,37 @@
     </header>
 
     @yield('sub_header')
+    
+    <!-- Flash Messages -->
+    <div class="ty-container mt-6">
+        @if(session('success'))
+        <div class="mb-6 p-5 bg-green-50 border border-green-100 rounded-3xl text-sm font-bold text-green-700 flex items-center gap-4 shadow-sm italic">
+            <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm">
+                <i class="fas fa-check text-green-500"></i>
+            </div>
+            {{ session('success') }}
+        </div>
+        @endif
+        
+        @if(session('error'))
+        <div class="mb-6 p-5 bg-red-50 border border-red-100 rounded-3xl text-sm font-bold text-red-700 flex items-center gap-4 shadow-sm italic">
+            <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm">
+                <i class="fas fa-times text-red-500"></i>
+            </div>
+            {{ session('error') }}
+        </div>
+        @endif
+
+        @if($errors->any() && !Request::is('login') && !Request::is('register') && !Request::is('forgot-password') && !Request::is('reset-password*'))
+        <div class="mb-6 p-5 bg-red-50 border border-red-100 rounded-3xl text-sm font-bold text-red-700 shadow-sm italic">
+            <ul class="list-disc list-inside">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+        @endif
+    </div>
 
     <main>
         @yield('content')

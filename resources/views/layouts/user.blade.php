@@ -47,7 +47,7 @@
                     </div>
                 </div>
                 @unless(auth()->user()->email_verified_at)
-                <a href="{{ route('verify.form', ['email' => auth()->user()->email]) }}" class="mt-4 block text-center text-[10px] font-black uppercase tracking-widest text-orange-600 bg-orange-50 border border-orange-100 rounded-xl py-3 hover:bg-orange-100 transition-all">
+                <a href="{{ route('verify.send') }}" class="mt-4 block text-center text-[10px] font-black uppercase tracking-widest text-orange-600 bg-orange-50 border border-orange-100 rounded-xl py-3 hover:bg-orange-100 transition-all">
                     <i class="fas fa-exclamation-circle mr-1"></i> E-postanı Doğrula
                 </a>
                 @endunless

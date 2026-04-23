@@ -79,7 +79,7 @@
 
             <!-- Form Card -->
             <div class="bg-white rounded-[2.5rem] shadow-2xl shadow-slate-200/60 border border-slate-100 p-8 md:p-12">
-                <form action="{{ route('register') }}" method="POST" class="space-y-6" id="registerForm">
+                <form action="{{ route('register') }}" method="POST" class="space-y-6" id="registerForm" onsubmit="this.submitBtn.disabled = true; this.submitBtn.innerHTML = '<i class=\'fas fa-circle-notch fa-spin mr-2\'></i> İşleniyor...';">
                     @csrf
                     
                     <!-- Honeypot -->
@@ -161,7 +161,7 @@
                         </label>
                     </div>
 
-                    <button type="submit" class="btn-primary w-full py-4.5 rounded-2xl text-white font-black text-sm uppercase italic tracking-widest shadow-xl shadow-orange-500/20 active:scale-[0.98] transition-all">
+                    <button type="submit" name="submitBtn" class="btn-primary w-full py-4.5 rounded-2xl text-white font-black text-sm uppercase italic tracking-widest shadow-xl shadow-orange-500/20 active:scale-[0.98] transition-all disabled:opacity-70 disabled:cursor-not-allowed">
                         Üye Ol & Devam Et
                     </button>
                 </form>

@@ -35,7 +35,7 @@
             </div>
         </div>
 
-        <form action="{{ route('login.authenticate') }}" method="POST" class="space-y-6">
+        <form action="{{ route('login.authenticate') }}" method="POST" class="space-y-6" onsubmit="this.submitBtn.disabled = true; this.submitBtn.innerHTML = '<i class=\'fas fa-circle-notch fa-spin mr-2\'></i> Giriş Yapılıyor...';">
             @csrf
             <div>
                 <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 px-1" for="email">E-POSTA ADRESİ</label>
@@ -73,10 +73,10 @@
                     <input type="checkbox" name="remember" class="w-4 h-4 rounded border-slate-300 text-orange-500 focus:ring-orange-500 transition-all">
                     <span class="ml-2 text-[11px] font-bold text-slate-500 group-hover:text-slate-700 transition-colors">Beni Hatırla</span>
                 </label>
-                <a href="#" class="text-[11px] font-black text-orange-500 hover:text-orange-600 transition-colors uppercase italic tracking-tighter">Şifremi Unuttum</a>
+                <a href="{{ route('password.request') }}" class="text-[11px] font-black text-orange-500 hover:text-orange-600 transition-colors uppercase italic tracking-tighter">Şifremi Unuttum</a>
             </div>
 
-            <button type="submit" class="w-full btn-trendyol py-4 rounded-2xl text-white font-black text-sm uppercase italic tracking-widest shadow-lg shadow-orange-500/20 active:scale-[0.98] transition-transform">
+            <button type="submit" name="submitBtn" class="w-full btn-trendyol py-4 rounded-2xl text-white font-black text-sm uppercase italic tracking-widest shadow-lg shadow-orange-500/20 active:scale-[0.98] transition-transform disabled:opacity-70 disabled:cursor-not-allowed">
                 Giriş Yap
             </button>
         </form>
