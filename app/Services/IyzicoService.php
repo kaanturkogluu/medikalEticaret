@@ -28,7 +28,8 @@ class IyzicoService
     {
         $request = new CreateCheckoutFormInitializeRequest();
         $request->setLocale(\Iyzipay\Model\Locale::TR);
-        $request->setConversationId($order->id);
+        \Illuminate\Support\Facades\Log::info('Iyzico createForm: Setting ConversationId to ' . $order->id);
+        $request->setConversationId((string)$order->id);
         $request->setPrice($order->total_price);
         $request->setPaidPrice($order->total_price);
         $request->setCurrency(\Iyzipay\Model\Currency::TL);

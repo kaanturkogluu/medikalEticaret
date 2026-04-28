@@ -41,6 +41,9 @@ class IyzicoController extends Controller
             return redirect()->back()->with('error', 'Ödeme sistemi şu an başlatılamıyor: ' . $form->getErrorMessage());
         }
 
+        // Save token to order for callback verification
+        $order->update(['payment_token' => $form->getToken()]);
+
         $paymentContent = $form->getCheckoutFormContent();
 
         return view('iyzico-pay', compact('paymentContent', 'order'));
@@ -48,15 +51,31 @@ class IyzicoController extends Controller
 
     public function callback(Request $request)
     {
+        Log::info('Iyzico Callback received. Token: ' . $request->token);
+
         if (!$request->token) {
+            Log::warning('Iyzico Callback: Missing token.');
             return redirect()->route('home')->with('error', 'Geçersiz ödeme isteği.');
         }
 
         $payment = $this->iyzicoService->getPaymentStatus($request->token);
+        
+        Log::info('Iyzico Payment Status: ' . $payment->getStatus() . ' | Payment Status: ' . $payment->getPaymentStatus() . ' | Conversation ID: ' . $payment->getConversationId());
 
         if ($payment->getStatus() === 'success' && $payment->getPaymentStatus() === 'SUCCESS') {
-            $orderId = $payment->getConversationId();
-            $order = Order::findOrFail($orderId);
+            // First try to find by token (most reliable)
+            $order = Order::where('payment_token', $request->token)->first();
+            
+            // Fallback to conversationId
+            if (!$order) {
+                $orderId = $payment->getConversationId();
+                $order = Order::find($orderId);
+            }
+
+            if (!$order) {
+                Log::error('Iyzico Callback: Order not found! Token: ' . $request->token . ' | ID: ' . $payment->getConversationId());
+                return redirect()->route('home')->with('error', 'Sipariş bulunamadı.');
+            }
 
             $order->update([
                 'order_status' => 'Created', // Mapping to "Hazırlanıyor"
@@ -70,10 +89,30 @@ class IyzicoController extends Controller
                 Log::error('Iyzico Callback Email Error: ' . $e->getMessage());
             }
 
-            return redirect()->route('checkout.success', $order->id)->with('success', 'Ödemeniz başarıyla alındı.');
+            return redirect()->route('payment.success', $order->id)->with('success', 'Ödemeniz başarıyla alındı.');
         } else {
-            Log::error('Iyzico Payment Failed: ' . $payment->getErrorMessage());
-            return redirect()->route('home')->with('error', 'Ödeme başarısız: ' . $payment->getErrorMessage());
+            // Try to find the order even on failure to show a better error page
+            $order = Order::where('payment_token', $request->token)->first();
+            if (!$order) {
+                $orderId = $payment->getConversationId();
+                $order = Order::find($orderId);
+            }
+            
+            $orderId = $order ? $order->id : $payment->getConversationId();
+            Log::error('Iyzico Payment Failed: ' . $payment->getErrorMessage() . ' | Order ID: ' . $orderId . ' | Token: ' . $request->token);
+            return redirect()->route('payment.failed', $orderId)->with('error', $payment->getErrorMessage());
         }
+    }
+
+    public function success($order_id)
+    {
+        $order = Order::findOrFail($order_id);
+        return view('iyzico-success', compact('order'));
+    }
+
+    public function failed($order_id = null)
+    {
+        $order = $order_id ? Order::find($order_id) : null;
+        return view('iyzico-failed', compact('order'));
     }
 }
