@@ -67,9 +67,13 @@ class CheckoutController extends Controller
             return DB::transaction(function() use ($validated) {
                 $subtotal = 0;
                 $items = [];
+                $hasFreeShippingProduct = false;
 
                 foreach ($validated['cart_items'] as $itemData) {
                     $product = Product::findOrFail($itemData['id']);
+                    if ($product->free_shipping) {
+                        $hasFreeShippingProduct = true;
+                    }
                     $price = $product->price;
                     $qty = $itemData['qty'];
                     $subtotal += $price * $qty;
@@ -84,7 +88,7 @@ class CheckoutController extends Controller
 
                 $shippingLimit = 700;
                 $shippingFee = 89;
-                $shipping = $subtotal >= $shippingLimit ? 0 : $shippingFee;
+                $shipping = ($subtotal >= $shippingLimit || $hasFreeShippingProduct) ? 0 : $shippingFee;
 
                 $total = $subtotal + $shipping;
 

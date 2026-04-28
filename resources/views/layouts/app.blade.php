@@ -804,7 +804,8 @@
                         return this.items.reduce((total, item) => total + (item.price * item.qty), 0);
                     },
                     shipping() {
-                        return this.subtotal() >= 700 ? 0 : (this.items.length > 0 ? 89 : 0);
+                        const hasFreeShippingItem = this.items.some(item => item.free_shipping === true);
+                        return (this.subtotal() >= 700 || hasFreeShippingItem) ? 0 : (this.items.length > 0 ? 89 : 0);
                     },
                     total() {
                         return (this.subtotal() + this.shipping()).toFixed(2);

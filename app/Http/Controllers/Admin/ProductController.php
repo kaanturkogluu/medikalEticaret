@@ -79,6 +79,8 @@ class ProductController extends Controller
             'stock' => 'required|integer|min:0',
             'description' => 'nullable|string',
             'active' => 'boolean',
+            'is_popular' => 'boolean',
+            'free_shipping' => 'boolean',
             'brand_id' => 'nullable|exists:brands,id',
             'category_id' => 'nullable|exists:categories,id',
             'return_template_id' => 'nullable|exists:return_templates,id',
@@ -100,6 +102,8 @@ class ProductController extends Controller
         }
 
         $validated['active'] = $request->has('active');
+        $validated['is_popular'] = $request->has('is_popular');
+        $validated['free_shipping'] = $request->has('free_shipping');
         
         // Handle Marketplace URLs
         $validated['raw_marketplace_data'] = [
@@ -192,6 +196,8 @@ class ProductController extends Controller
         }
 
         $validated['active'] = $request->has('active');
+        $validated['is_popular'] = $request->has('is_popular');
+        $validated['free_shipping'] = $request->has('free_shipping');
 
         // Handle Marketplace URLs
         $raw = $product->raw_marketplace_data ?? [];

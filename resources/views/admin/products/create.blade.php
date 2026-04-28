@@ -216,14 +216,36 @@
             <!-- Right Column -->
             <div class="space-y-6">
                 <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm space-y-6">
-                    <div>
-                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4">Ürün Durumu</p>
-                        <div class="flex items-center justify-between p-4 bg-emerald-50 text-emerald-600 rounded-2xl border border-emerald-100">
-                            <div class="flex items-center gap-3">
-                                <span class="h-2.5 w-2.5 rounded-full bg-emerald-500"></span>
-                                <p class="text-xs font-bold uppercase tracking-widest">AKTİF</p>
+                    <div class="space-y-4">
+                        <div>
+                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Ürün Durumu</p>
+                            <div class="flex items-center justify-between p-4 bg-emerald-50 text-emerald-600 rounded-2xl border border-emerald-100">
+                                <div class="flex items-center gap-3">
+                                    <span class="h-2.5 w-2.5 rounded-full bg-emerald-500"></span>
+                                    <p class="text-xs font-bold uppercase tracking-widest">AKTİF</p>
+                                </div>
+                                <input type="checkbox" name="active" value="1" checked class="h-5 w-5 rounded-md border-emerald-300 text-emerald-600 focus:ring-emerald-500 cursor-pointer">
                             </div>
-                            <input type="checkbox" name="active" value="1" checked class="h-5 w-5 rounded-md border-emerald-300 text-emerald-600 focus:ring-emerald-500 cursor-pointer">
+                        </div>
+
+                        <div>
+                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Öne Çıkan Özellikler</p>
+                            <div class="grid grid-cols-1 gap-2">
+                                <div class="flex items-center justify-between p-4 bg-amber-50 text-amber-700 rounded-2xl border border-amber-100">
+                                    <div class="flex items-center gap-3">
+                                        <i class="fas fa-star text-xs"></i>
+                                        <p class="text-[11px] font-bold uppercase tracking-widest italic">POPÜLER ÜRÜN</p>
+                                    </div>
+                                    <input type="checkbox" name="is_popular" value="1" {{ old('is_popular') ? 'checked' : '' }} class="h-5 w-5 rounded-md border-amber-300 text-amber-600 focus:ring-amber-500 cursor-pointer">
+                                </div>
+                                <div class="flex items-center justify-between p-4 bg-blue-50 text-blue-700 rounded-2xl border border-blue-100">
+                                    <div class="flex items-center gap-3">
+                                        <i class="fas fa-truck-fast text-xs"></i>
+                                        <p class="text-[11px] font-bold uppercase tracking-widest italic">KARGO BEDAVA</p>
+                                    </div>
+                                    <input type="checkbox" name="free_shipping" value="1" {{ old('free_shipping') ? 'checked' : '' }} class="h-5 w-5 rounded-md border-blue-300 text-blue-600 focus:ring-blue-500 cursor-pointer">
+                                </div>
+                            </div>
                         </div>
                     </div>
 
