@@ -98,7 +98,7 @@ class CheckoutController extends Controller
                 // Determine Order Status (Mapping to Admin statusMap)
                 $status = 'Awaiting'; // Default: Onay Bekliyor
                 if ($validated['payment_method'] === 'credit_card') {
-                    $status = 'Created'; // Hazırlanıyor
+                    $status = 'pending_payment'; // Ödeme Bekleniyor
                 }
 
                 $websiteChannel = \App\Models\Channel::where('slug', 'website')->first();
@@ -133,7 +133,18 @@ class CheckoutController extends Controller
                     ]);
                 }
 
-                // Send Order Confirmation Email (Asynchronous)
+                // If Credit Card, redirect to Iyzico
+                if ($validated['payment_method'] === 'credit_card') {
+                    return response()->json([
+                        'success' => true,
+                        'order_id' => $order->id,
+                        'redirect_url' => route('iyzico.pay', $order->id),
+                        'payment_method' => 'credit_card',
+                        'message' => 'Ödeme sayfasına yönlendiriliyorsunuz...'
+                    ]);
+                }
+
+                // Send Order Confirmation Email (Asynchronous) - Only for non-CC (EFT/COD)
                 try {
                     Mail::to($order->customer_email)->send(new OrderPlaced($order));
                 } catch (\Exception $e) {

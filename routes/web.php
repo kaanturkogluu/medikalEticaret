@@ -15,6 +15,10 @@ Route::get('/odeme', [\App\Http\Controllers\CheckoutController::class, 'index'])
 Route::get('/siparis-tamamlandi/{order}', [\App\Http\Controllers\CheckoutController::class, 'success'])->name('checkout.success');
 Route::post('/odeme-tamamla', [\App\Http\Controllers\CheckoutController::class, 'store'])->name('checkout.store');
 
+// Iyzico Payment
+Route::get('/iyzico/pay/{order}', [\App\Http\Controllers\IyzicoController::class, 'pay'])->name('iyzico.pay');
+Route::post('/iyzico/callback', [\App\Http\Controllers\IyzicoController::class, 'callback'])->name('iyzico.callback');
+
 Route::get('/iletisim', function () {
     return view('contact');
 })->name('contact');

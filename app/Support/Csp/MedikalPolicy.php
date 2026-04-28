@@ -32,6 +32,7 @@ class MedikalPolicy extends Policy
             ->addDirective(Directive::SCRIPT, 'https://cdn.jsdelivr.net')
             ->addDirective(Directive::SCRIPT, 'https://code.jquery.com')
             ->addDirective(Directive::SCRIPT, 'https://unpkg.com')
+            ->addDirective(Directive::SCRIPT, 'https://*.iyzipay.com')
 
             // -------------------------------------------------------
             // style-src: CSS kaynakları
@@ -82,6 +83,7 @@ class MedikalPolicy extends Policy
             ->addDirective(Directive::FRAME, Keyword::SELF)
             ->addDirective(Directive::FRAME, 'https://www.youtube.com')
             ->addDirective(Directive::FRAME, 'https://player.vimeo.com')
+            ->addDirective(Directive::FRAME, 'https://*.iyzipay.com')
 
             // -------------------------------------------------------
             // base-uri: <base> etiketini kısıtla
@@ -91,6 +93,8 @@ class MedikalPolicy extends Policy
             // -------------------------------------------------------
             // form-action: Form gönderimi sadece kendi alanımıza
             // -------------------------------------------------------
-            ->addDirective(Directive::FORM_ACTION, Keyword::SELF);
+            ->addDirective(Directive::FORM_ACTION, Keyword::SELF)
+            ->addDirective(Directive::FORM_ACTION, 'https://*.iyzipay.com')
+            ->addDirective(Directive::FORM_ACTION, 'https://*.iyzico.com');
     }
 }

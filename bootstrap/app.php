@@ -29,6 +29,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web(append: [
             \Spatie\Csp\AddCspHeaders::class,
         ]);
+
+        $middleware->validateCsrfTokens(except: [
+            'iyzico/callback',
+        ]);
     })
     ->withSchedule(function (\Illuminate\Console\Scheduling\Schedule $schedule) {
         $schedule->command('sync:orders')->everyThreeMinutes();
