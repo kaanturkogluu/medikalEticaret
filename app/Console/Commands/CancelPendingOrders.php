@@ -28,18 +28,22 @@ class CancelPendingOrders extends Command
     public function handle()
     {
         $websiteChannel = \App\Models\Channel::where('slug', 'website')->first();
-        
-        if (!$websiteChannel) {
-            $this->error('Website channel not found.');
-            return 1;
-        }
+        $websiteChannelId = $websiteChannel ? $websiteChannel->id : null;
 
         $expiryTime = Carbon::now()->subMinutes(5);
 
-        $expiredOrders = Order::where('channel_id', $websiteChannel->id)
-            ->where('order_status', 'pending_payment')
-            ->where('created_at', '<=', $expiryTime)
-            ->get();
+        $query = Order::where('order_status', 'pending_payment')
+            ->where('created_at', '<=', $expiryTime);
+
+        if ($websiteChannelId) {
+            $query->where('channel_id', $websiteChannelId);
+        } else {
+            // Fallback: If no website channel exists, assume null channel_id means website
+            $query->whereNull('channel_id');
+            $this->warn('Website channel not found in database, falling back to orders with null channel_id.');
+        }
+
+        $expiredOrders = $query->get();
 
         $count = $expiredOrders->count();
 
