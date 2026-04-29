@@ -38,6 +38,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $schedule->command('sync:orders')->everyThreeMinutes();
         $schedule->command('sync:n11-orders')->everyThreeMinutes();
         $schedule->command('sync:ptt-orders')->everyThreeMinutes();
+        $schedule->command('orders:cancel-pending')->everyFiveMinutes();
 
     })
     ->withExceptions(function (Exceptions $exceptions): void {

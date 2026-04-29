@@ -44,10 +44,18 @@
                     <span class="text-orange-500 font-black">{{ number_format($order->total_price, 2, ',', '.') }} TL</span>
                 </div>
             </div>
-            <a href="{{ route('user.orders.show', $order->id) }}"
-               class="px-5 py-2.5 bg-orange-500 text-white text-xs font-bold rounded-lg hover:bg-orange-600 transition-all flex-shrink-0">
-               Detaylar
-            </a>
+            <div class="flex items-center gap-2">
+                @if(strtolower($order->order_status) === 'pending_payment' && $order->payment_method === 'credit_card')
+                    <a href="{{ route('iyzico.pay', $order->id) }}"
+                       class="px-5 py-2.5 bg-green-600 text-white text-xs font-black rounded-lg hover:bg-green-700 transition-all flex-shrink-0 animate-pulse">
+                       <i class="fas fa-credit-card mr-1"></i> ÖDEME YAP
+                    </a>
+                @endif
+                <a href="{{ route('user.orders.show', $order->id) }}"
+                   class="px-5 py-2.5 bg-orange-500 text-white text-xs font-bold rounded-lg hover:bg-orange-600 transition-all flex-shrink-0">
+                   Detaylar
+                </a>
+            </div>
         </div>
 
         {{-- Order status row --}}

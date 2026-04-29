@@ -85,8 +85,8 @@
                         @foreach($order->items as $item)
                         <div class="flex gap-3 items-center py-2 border-b border-slate-50 last:border-0">
                             <div class="w-12 h-12 rounded-lg bg-slate-50 border border-slate-100 flex items-center justify-center shrink-0 overflow-hidden">
-                                @if($item->product && $item->product->images->count() > 0)
-                                    <img src="{{ asset('storage/' . $item->product->images->first()->image_path) }}" class="w-full h-full object-contain p-1">
+                                @if($item->product && $item->product->productImages->count() > 0)
+                                    <img src="{{ asset($item->product->productImages->first()->url) }}" class="w-full h-full object-contain p-1">
                                 @else
                                     <i class="fas fa-box text-slate-200"></i>
                                 @endif

@@ -29,6 +29,13 @@
                     <i class="fas fa-{{ $isDelivered ? 'check-circle' : ($isCancelled ? 'times-circle' : 'clock') }}"></i>
                     {{ $order->status_label }}
                 </span>
+                @if(strtolower($order->order_status) === 'pending_payment' && $order->payment_method === 'credit_card')
+                <div class="mt-4">
+                    <a href="{{ route('iyzico.pay', $order->id) }}" class="inline-flex items-center gap-2 px-6 py-3 bg-green-600 text-white rounded-xl text-sm font-black hover:bg-green-700 transition-all shadow-lg shadow-green-100 animate-pulse uppercase italic tracking-tighter">
+                        <i class="fas fa-credit-card"></i> ÖDEMEYİ TAMAMLA
+                    </a>
+                </div>
+                @endif
             </div>
         </div>
     </div>
@@ -81,8 +88,12 @@
             </div>
             @forelse($order->items as $item)
             <div class="px-6 py-4 border-b border-gray-50 last:border-b-0 flex items-center gap-4">
-                <div class="w-16 h-16 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                    <i class="fas fa-box text-gray-300 text-xl"></i>
+                <div class="w-16 h-16 bg-gray-50 rounded-xl flex items-center justify-center flex-shrink-0 overflow-hidden border border-gray-100">
+                    @if($item->product && $item->product->productImages->count() > 0)
+                        <img src="{{ $item->product->productImages->first()->url }}" class="w-full h-full object-contain p-1" alt="{{ $item->product->name }}">
+                    @else
+                        <i class="fas fa-box text-gray-300 text-xl"></i>
+                    @endif
                 </div>
                 <div class="flex-1 min-w-0">
                     <p class="font-semibold text-sm text-gray-900 truncate">{{ $item->product->name ?? 'Ürün' }}</p>

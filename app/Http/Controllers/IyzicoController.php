@@ -20,6 +20,8 @@ class IyzicoController extends Controller
 
     public function pay(Order $order)
     {
+        $order->load(['items.product.productImages']);
+
         // Check if already paid
         if (strtolower($order->order_status) !== 'pending_payment') {
             return redirect()->route('home')->with('error', 'Bu sipariş için ödeme yapılamaz.');
@@ -81,6 +83,15 @@ class IyzicoController extends Controller
                 'order_status' => 'Created', // Mapping to "Hazırlanıyor"
                 'synced' => false
             ]);
+
+            // Deduct Stock and Sync
+            $syncService = app(\App\Services\SyncService::class);
+            foreach ($order->items as $item) {
+                if ($item->product) {
+                    $item->product->decrement('stock', $item->quantity);
+                    $syncService->syncProductStock($item->product);
+                }
+            }
 
             // Send Email
             try {
