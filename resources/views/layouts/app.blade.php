@@ -653,11 +653,11 @@
                     </div>
 
                     @if($footerQr)
-                        <div
-                            class="bg-white p-2 pb-3 rounded-[24px] w-fit shadow-2xl shadow-black/40 group hover:scale-105 transition-transform duration-300 flex flex-col items-center">
+                        <a href="{{ \App\Models\Setting::getValue('etbis_url', '#') }}" target="_blank"
+                            class="bg-white p-2 pb-3 rounded-[24px] w-fit shadow-2xl shadow-black/40 group hover:scale-105 transition-transform duration-300 flex flex-col items-center cursor-pointer">
                             <img src="{{ $footerQr }}" class="w-24 h-24 object-contain" alt="QR Kod">
                             <span class="text-[8px] text-slate-900 font-black italic uppercase tracking-tighter mt-1">ETBİS'E KAYITLIDIR</span>
-                        </div>
+                        </a>
                     @endif
                 </div>
             </div>

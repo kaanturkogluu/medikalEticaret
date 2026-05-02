@@ -34,6 +34,11 @@
                             <input type="email" name="admin_order_notification_email" value="{{ \App\Models\Setting::getValue('admin_order_notification_email') }}" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all" placeholder="admin@example.com">
                             <p class="text-[10px] text-slate-400 font-medium px-1 leading-relaxed">Web sitesinden yeni bir sipariş geldiğinde bu adrese bilgilendirme e-postası gönderilecektir.</p>
                         </div>
+                        <div class="space-y-2">
+                            <label class="text-xs font-bold text-slate-500 uppercase tracking-widest px-1">ETBİS Profil Linki</label>
+                            <input type="url" name="etbis_url" value="{{ \App\Models\Setting::getValue('etbis_url') }}" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all" placeholder="https://www.eticaret.gov.tr/siteprofil/...">
+                            <p class="text-[10px] text-slate-400 font-medium px-1 leading-relaxed">Footerdaki QR kod tıklandığında gidilecek ETBİS profil sayfası.</p>
+                        </div>
                     </div>
                 </div>
 
