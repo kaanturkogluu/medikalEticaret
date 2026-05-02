@@ -9,10 +9,32 @@ use Illuminate\Support\Str;
 
 class CouponController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $coupons = Coupon::latest()->paginate(20);
-        return view('admin.coupons.index', compact('coupons'));
+        $query = Coupon::with('categories');
+
+        // Status Filter (default: unused)
+        if ($request->has('status')) {
+            if ($request->status === 'used') {
+                $query->where('is_used', true);
+            } elseif ($request->status === 'unused') {
+                $query->where('is_used', false);
+            }
+            // 'all' doesn't add a where clause
+        } else {
+            // Default: Unused
+            $query->where('is_used', false);
+        }
+
+        // Type Filter
+        if ($request->filled('type')) {
+            $query->where('type', $request->type);
+        }
+
+        $coupons = $query->latest()->paginate(20)->withQueryString();
+        $categories = \App\Models\Category::all();
+        
+        return view('admin.coupons.index', compact('coupons', 'categories'));
     }
 
     public function store(Request $request)
@@ -20,18 +42,24 @@ class CouponController extends Controller
         $request->validate([
             'type' => 'required|in:fixed,percent',
             'value' => 'required|numeric|min:0',
-            'count' => 'nullable|integer|min:1|max:50', // Allow creating multiple at once
+            'count' => 'nullable|integer|min:1|max:50',
+            'category_ids' => 'nullable|array',
+            'category_ids.*' => 'exists:categories,id',
         ]);
 
         $count = $request->input('count', 1);
 
         for ($i = 0; $i < $count; $i++) {
             $code = $this->generateUniqueCode();
-            Coupon::create([
+            $coupon = Coupon::create([
                 'code' => $code,
                 'type' => $request->type,
                 'value' => $request->value,
             ]);
+
+            if ($request->filled('category_ids')) {
+                $coupon->categories()->sync($request->category_ids);
+            }
         }
 
         return redirect()->back()->with('success', "$count adet kupon başarıyla oluşturuldu.");

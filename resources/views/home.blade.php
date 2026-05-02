@@ -199,7 +199,7 @@
                             </template>
                         </div>
 
-                        <button @click="$store.fav.toggle({id: '{{ $product->id }}', slug: '{{ $product->slug }}', name: '{{ addslashes($product->name) }}', brand: '{{ addslashes($product->brand->name ?? '') }}', price: {{ $product->price }}, image: '{{ $img }}', free_shipping: {{ $product->free_shipping ? 'true' : 'false' }}})" class="favorite-btn absolute top-2 right-2 w-8 h-8 bg-white border border-gray-100 rounded-full flex items-center justify-center shadow-sm z-30" :class="$store.fav.has('{{ $product->id }}') ? 'text-red-500' : 'text-gray-400'">
+                        <button @click="$store.fav.toggle({id: '{{ $product->id }}', slug: '{{ $product->slug }}', name: '{{ addslashes($product->name) }}', brand: '{{ addslashes($product->brand->name ?? '') }}', price: {{ $product->price }}, category_id: '{{ $product->category_id }}', image: '{{ $img }}', free_shipping: {{ $product->free_shipping ? 'true' : 'false' }}})" class="favorite-btn absolute top-2 right-2 w-8 h-8 bg-white border border-gray-100 rounded-full flex items-center justify-center shadow-sm z-30" :class="$store.fav.has('{{ $product->id }}') ? 'text-red-500' : 'text-gray-400'">
                             <i :class="$store.fav.has('{{ $product->id }}') ? 'fas fa-heart' : 'far fa-heart'"></i>
                         </button>
                         
@@ -228,7 +228,7 @@
                             <div class="text-[var(--primary-color)] font-black text-base">{{ number_format($product->price, 2) }} TL</div>
                         </div>
                         
-                        <button @click="$store.cart.add({id: '{{ $product->id }}', slug: '{{ $product->slug }}', name: '{{ addslashes($product->name) }}', brand: '{{ addslashes($product->brand->name ?? '') }}', price: {{ $product->price }}, image: '{{ $img }}', free_shipping: {{ $product->free_shipping ? 'true' : 'false' }}})" class="w-full mt-3 py-2 bg-slate-900 text-white text-[11px] font-black rounded hover:bg-slate-800 transition-colors uppercase tracking-widest">
+                        <button @click="$store.cart.add({id: '{{ $product->id }}', slug: '{{ $product->slug }}', name: '{{ addslashes($product->name) }}', brand: '{{ addslashes($product->brand->name ?? '') }}', price: {{ $product->price }}, category_id: '{{ $product->category_id }}', image: '{{ $img }}', free_shipping: {{ $product->free_shipping ? 'true' : 'false' }}})" class="w-full mt-3 py-2 bg-slate-900 text-white text-[11px] font-black rounded hover:bg-slate-800 transition-colors uppercase tracking-widest">
                             Sepete Ekle
                         </button>
                     </div>
@@ -400,7 +400,7 @@
                                     </template>
                                 </div>
 
-                                <button @click="$store.fav.toggle({id: '{{ $product->id }}', slug: '{{ $product->slug }}', name: '{{ addslashes($product->name) }}', brand: '{{ addslashes($product->brand->name ?? '') }}', price: {{ $product->price }}, image: '{{ $img }}', free_shipping: {{ $product->free_shipping ? 'true' : 'false' }}})" class="favorite-btn absolute top-2 right-2 w-8 h-8 bg-white border border-gray-100 rounded-full flex items-center justify-center shadow-sm z-30" :class="$store.fav.has('{{ $product->id }}') ? 'text-red-500' : 'text-gray-400'">
+                                <button @click="$store.fav.toggle({id: '{{ $product->id }}', slug: '{{ $product->slug }}', name: '{{ addslashes($product->name) }}', brand: '{{ addslashes($product->brand->name ?? '') }}', price: {{ $product->price }}, category_id: '{{ $product->category_id }}', image: '{{ $img }}', free_shipping: {{ $product->free_shipping ? 'true' : 'false' }}})" class="favorite-btn absolute top-2 right-2 w-8 h-8 bg-white border border-gray-100 rounded-full flex items-center justify-center shadow-sm z-30" :class="$store.fav.has('{{ $product->id }}') ? 'text-red-500' : 'text-gray-400'">
                                     <i :class="$store.fav.has('{{ $product->id }}') ? 'fas fa-heart' : 'far fa-heart'"></i>
                                 </button>
                                 
@@ -435,7 +435,7 @@
                                     </div>
                                 </div>
                                 
-                                <button @click="$store.cart.add({id: '{{ $product->id }}', slug: '{{ $product->slug }}', name: '{{ addslashes($product->name) }}', brand: '{{ addslashes($product->brand->name ?? '') }}', price: {{ $product->price }}, image: '{{ $img }}', free_shipping: {{ $product->free_shipping ? 'true' : 'false' }}})" class="w-full mt-3 py-2 bg-slate-900 text-white text-[11px] font-black rounded hover:bg-slate-800 transition-colors uppercase tracking-widest">
+                                <button @click="$store.cart.add({id: '{{ $product->id }}', slug: '{{ $product->slug }}', name: '{{ addslashes($product->name) }}', brand: '{{ addslashes($product->brand->name ?? '') }}', price: {{ $product->price }}, category_id: '{{ $product->category_id }}', image: '{{ $img }}', free_shipping: {{ $product->free_shipping ? 'true' : 'false' }}})" class="w-full mt-3 py-2 bg-slate-900 text-white text-[11px] font-black rounded hover:bg-slate-800 transition-colors uppercase tracking-widest">
                                     Sepete Ekle
                                 </button>
                             </div>
@@ -507,7 +507,7 @@
                             </template>
                         </div>
 
-                        <button @click="$store.fav.toggle({id: '{{ $product->id }}', slug: '{{ $product->slug }}', name: '{{ addslashes($product->name) }}', brand: '{{ addslashes($product->brand->name ?? '') }}', price: {{ $product->price }}, image: '{{ $img }}', free_shipping: {{ $product->free_shipping ? 'true' : 'false' }}})" class="favorite-btn absolute top-2 right-2 w-8 h-8 bg-white border border-gray-100 rounded-full flex items-center justify-center shadow-sm z-30" :class="$store.fav.has('{{ $product->id }}') ? 'text-red-500' : 'text-gray-400'">
+                        <button @click="$store.fav.toggle({id: '{{ $product->id }}', slug: '{{ $product->slug }}', name: '{{ addslashes($product->name) }}', brand: '{{ addslashes($product->brand->name ?? '') }}', price: {{ $product->price }}, category_id: '{{ $product->category_id }}', image: '{{ $img }}', free_shipping: {{ $product->free_shipping ? 'true' : 'false' }}})" class="favorite-btn absolute top-2 right-2 w-8 h-8 bg-white border border-gray-100 rounded-full flex items-center justify-center shadow-sm z-30" :class="$store.fav.has('{{ $product->id }}') ? 'text-red-500' : 'text-gray-400'">
                             <i :class="$store.fav.has('{{ $product->id }}') ? 'fas fa-heart' : 'far fa-heart'"></i>
                         </button>
                     </div>
@@ -522,7 +522,7 @@
                             <div class="text-[var(--primary-color)] font-black text-sm">{{ number_format($product->price, 2) }} TL</div>
                         </div>
                         
-                        <button @click="$store.cart.add({id: '{{ $product->id }}', slug: '{{ $product->slug }}', name: '{{ addslashes($product->name) }}', brand: '{{ addslashes($product->brand->name ?? '') }}', price: {{ $product->price }}, image: '{{ $img }}', free_shipping: {{ $product->free_shipping ? 'true' : 'false' }}})" class="w-full mt-3 py-1.5 bg-slate-900 text-white text-[10px] font-black rounded hover:bg-slate-800 transition-colors uppercase tracking-widest">
+                        <button @click="$store.cart.add({id: '{{ $product->id }}', slug: '{{ $product->slug }}', name: '{{ addslashes($product->name) }}', brand: '{{ addslashes($product->brand->name ?? '') }}', price: {{ $product->price }}, category_id: '{{ $product->category_id }}', image: '{{ $img }}', free_shipping: {{ $product->free_shipping ? 'true' : 'false' }}})" class="w-full mt-3 py-1.5 bg-slate-900 text-white text-[10px] font-black rounded hover:bg-slate-800 transition-colors uppercase tracking-widest">
                             Sepete Ekle
                         </button>
                     </div>

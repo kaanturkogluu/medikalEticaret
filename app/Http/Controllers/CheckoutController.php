@@ -27,6 +27,27 @@ class CheckoutController extends Controller
         if (!$coupon->isValid()) {
             return response()->json(['success' => false, 'message' => 'Bu kupon daha önce kullanılmış.']);
         }
+
+        // Kategori Kısıtlaması Kontrolü
+        if ($coupon->categories->count() > 0 && $request->filled('cart_items')) {
+            $eligibleCategoryIds = $coupon->categories->pluck('id')->toArray();
+            $hasEligibleItem = false;
+            
+            foreach ($request->cart_items as $item) {
+                if (isset($item['category_id']) && in_array((int)$item['category_id'], $eligibleCategoryIds)) {
+                    $hasEligibleItem = true;
+                    break;
+                }
+            }
+            
+            if (!$hasEligibleItem) {
+                $categoryNames = $coupon->categories->pluck('name')->implode(', ');
+                return response()->json([
+                    'success' => false, 
+                    'message' => "Bu kupon sadece şu kategorilerde geçerlidir: $categoryNames. Sepetinizde uygun ürün bulunamadı."
+                ]);
+            }
+        }
         
         session(['applied_coupon' => $coupon->code]);
         
@@ -36,7 +57,8 @@ class CheckoutController extends Controller
             'coupon' => [
                 'code' => $coupon->code,
                 'type' => $coupon->type,
-                'value' => $coupon->value
+                'value' => $coupon->value,
+                'category_ids' => $coupon->categories->pluck('id')->toArray()
             ]
         ]);
     }
@@ -126,7 +148,7 @@ class CheckoutController extends Controller
                 if (session()->has('applied_coupon')) {
                     $coupon = Coupon::where('code', session('applied_coupon'))->first();
                     if ($coupon && $coupon->isValid()) {
-                        $couponDiscount = $coupon->calculateDiscount($subtotal);
+                        $couponDiscount = $coupon->calculateDiscountForItems($items);
                     }
                 }
 

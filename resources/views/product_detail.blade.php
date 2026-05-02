@@ -137,12 +137,12 @@
                         </div>
                     @endif
                     @php $imgArr = $product->productImages->first()?->url ?? 'https://via.placeholder.com/600x900'; @endphp
-                    <button @click="$store.cart.add({id: '{{ $product->id }}', slug: '{{ $product->slug }}', name: '{{ addslashes($product->name) }}', brand: '{{ addslashes($product->brand->name ?? '') }}', price: {{ $product->price }}, image: '{{ $imgArr }}', free_shipping: {{ $product->free_shipping ? 'true' : 'false' }}})" 
+                    <button @click="$store.cart.add({id: '{{ $product->id }}', slug: '{{ $product->slug }}', name: '{{ addslashes($product->name) }}', brand: '{{ addslashes($product->brand->name ?? '') }}', price: {{ $product->price }}, category_id: '{{ $product->category_id }}', image: '{{ $imgArr }}', free_shipping: {{ $product->free_shipping ? 'true' : 'false' }}})" 
                             class="flex-grow h-20 bg-slate-900 text-white text-xl font-black rounded-3xl shadow-xl shadow-slate-100 hover:bg-orange-600 hover:shadow-orange-100 transition-all flex items-center justify-center gap-4 group active:scale-95">
                         <i class="fas fa-shopping-basket group-hover:rotate-12 transition-transform"></i>
                         <span>SEPETE EKLE</span>
                     </button>
-                    <button @click="$store.fav.toggle({id: '{{ $product->id }}', slug: '{{ $product->slug }}', name: '{{ addslashes($product->name) }}', brand: '{{ addslashes($product->brand->name ?? '') }}', price: {{ $product->price }}, image: '{{ $imgArr }}', free_shipping: {{ $product->free_shipping ? 'true' : 'false' }}})" 
+                    <button @click="$store.fav.toggle({id: '{{ $product->id }}', slug: '{{ $product->slug }}', name: '{{ addslashes($product->name) }}', brand: '{{ addslashes($product->brand->name ?? '') }}', price: {{ $product->price }}, category_id: '{{ $product->category_id }}', image: '{{ $imgArr }}', free_shipping: {{ $product->free_shipping ? 'true' : 'false' }}})" 
                             class="w-20 h-20 border-2 border-gray-100 rounded-3xl flex items-center justify-center transition-all bg-white hover:border-red-100 active:scale-90" 
                             :class="$store.fav.has('{{ $product->id }}') ? 'text-red-500 bg-red-50 border-red-50' : 'text-gray-300'">
                         <i :class="$store.fav.has('{{ $product->id }}') ? 'fas fa-heart text-3xl' : 'far fa-heart text-3xl'"></i>
@@ -488,7 +488,7 @@
                         </a>
                         
                         <!-- Quick Add -->
-                        <button @click="$store.cart.add({id: '{{ $rp->id }}', slug: '{{ $rp->slug }}', name: '{{ addslashes($rp->name) }}', brand: '{{ addslashes($rp->brand->name ?? '') }}', price: {{ $rp->price }}, image: '{{ $rp->productImages->first()?->url ?? '' }}', free_shipping: {{ $rp->free_shipping ? 'true' : 'false' }}})" 
+                        <button @click="$store.cart.add({id: '{{ $rp->id }}', slug: '{{ $rp->slug }}', name: '{{ addslashes($rp->name) }}', brand: '{{ addslashes($rp->brand->name ?? '') }}', price: {{ $rp->price }}, category_id: '{{ $rp->category_id }}', image: '{{ $rp->productImages->first()?->url ?? '' }}', free_shipping: {{ $rp->free_shipping ? 'true' : 'false' }}})" 
                                 class="absolute top-4 right-4 bg-slate-900 text-white w-12 h-12 rounded-2xl flex items-center justify-center opacity-0 translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all shadow-xl hover:bg-orange-500 hover:scale-110 active:scale-95 z-30">
                             <i class="fas fa-cart-plus text-lg"></i>
                         </button>

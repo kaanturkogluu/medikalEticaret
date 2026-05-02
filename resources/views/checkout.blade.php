@@ -239,11 +239,11 @@
                         </div>
                         <div x-show="appliedCoupon" x-cloak class="flex justify-between text-indigo-600 bg-indigo-50 px-3 py-2 rounded-xl border border-indigo-100">
                             <span>Kupon İndirimi</span>
-                            <span x-text="'-' + (appliedCoupon.type === 'percent' ? (cart.subtotal() * appliedCoupon.value / 100).toFixed(2) : parseFloat(appliedCoupon.value).toFixed(2)) + ' TL'"></span>
+                            <span x-text="'-' + calculateCouponDiscount().toFixed(2) + ' TL'"></span>
                         </div>
                         <div x-show="form.payment_method === 'eft'" class="flex justify-between text-green-600 bg-green-50 px-3 py-2 rounded-xl border border-green-100">
                             <span>EFT İndirimi (%5)</span>
-                            <span x-text="'-' + (Math.max(0, cart.subtotal() - (appliedCoupon ? (appliedCoupon.type === 'percent' ? cart.subtotal() * appliedCoupon.value / 100 : appliedCoupon.value) : 0)) * 0.05).toFixed(2) + ' TL'"></span>
+                            <span x-text="'-' + (Math.max(0, cart.subtotal() - calculateCouponDiscount()) * 0.05).toFixed(2) + ' TL'"></span>
                         </div>
                         <div class="flex justify-between text-lg font-black text-slate-900 pt-4 uppercase italic">
                             <span>Toplam</span>
@@ -374,7 +374,7 @@ function checkoutPage() {
                         'Content-Type': 'application/json',
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
                     },
-                    body: JSON.stringify({ code: this.couponCode })
+                    body: JSON.stringify({ code: this.couponCode, cart_items: this.cart.items })
                 });
                 const result = await response.json();
                 if (result.success) {
@@ -475,24 +475,37 @@ function checkoutPage() {
                     this.appliedCoupon = {
                         code: '{{ $sessionCoupon->code }}',
                         type: '{{ $sessionCoupon->type }}',
-                        value: '{{ $sessionCoupon->value }}'
+                        value: '{{ $sessionCoupon->value }}',
+                        category_ids: @json($sessionCoupon->categories->pluck('id'))
                     };
                 @endif
             @endif
+        },
+        calculateCouponDiscount() {
+            if (!this.appliedCoupon) return 0;
+            let eligibleSubtotal = 0;
+            if (this.appliedCoupon.category_ids && this.appliedCoupon.category_ids.length > 0) {
+                this.cart.items.forEach(item => {
+                    if (this.appliedCoupon.category_ids.map(Number).includes(Number(item.category_id))) {
+                        eligibleSubtotal += item.price * item.qty;
+                    }
+                });
+            } else {
+                eligibleSubtotal = this.cart.subtotal();
+            }
+
+            if (this.appliedCoupon.type === 'percent') {
+                return (eligibleSubtotal * parseFloat(this.appliedCoupon.value)) / 100;
+            } else {
+                return parseFloat(this.appliedCoupon.value);
+            }
         },
         grandTotal() {
             let total = parseFloat(this.cart.total());
             
             // Coupon Discount
-            let couponDiscount = 0;
-            if (this.appliedCoupon) {
-                if (this.appliedCoupon.type === 'percent') {
-                    couponDiscount = (this.cart.subtotal() * parseFloat(this.appliedCoupon.value)) / 100;
-                } else {
-                    couponDiscount = parseFloat(this.appliedCoupon.value);
-                }
-                total -= couponDiscount;
-            }
+            let couponDiscount = this.calculateCouponDiscount();
+            total -= couponDiscount;
 
             // EFT Discount
             if (this.form.payment_method === 'eft') {

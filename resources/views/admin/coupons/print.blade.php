@@ -198,6 +198,11 @@
                 <div class="code-box">
                     KUPON KODU: <b>{{ $coupon->code }}</b>
                 </div>
+                @if($coupon->categories->count() > 0)
+                <div class="text-[10px] text-slate-500 font-bold mt-2 uppercase tracking-tighter">
+                    {{ $coupon->categories->pluck('name')->implode(' & ') }} ÜRÜNLERİNDE GEÇERLİ OLMAK ÜZERE
+                </div>
+                @endif
             </div>
 
             <hr class="separator" style="margin-bottom: 10px;">

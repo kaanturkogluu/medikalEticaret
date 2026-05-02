@@ -20,6 +20,37 @@
             </button>
         </div>
     </div>
+    
+    <!-- Filters -->
+    <div class="mb-6 bg-white p-4 rounded-2xl shadow-sm border border-slate-200 flex flex-wrap items-center gap-4">
+        <form action="{{ route('admin.coupons.index') }}" method="GET" class="flex flex-wrap items-center gap-4 w-full">
+            <div class="flex flex-col gap-1">
+                <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-1">Durum</label>
+                <select name="status" onchange="this.form.submit()" class="px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold focus:ring-2 focus:ring-brand-500 outline-none">
+                    <option value="unused" {{ request('status') == 'unused' || !request()->has('status') ? 'selected' : '' }}>Kullanılmamış</option>
+                    <option value="used" {{ request('status') == 'used' ? 'selected' : '' }}>Kullanılmış</option>
+                    <option value="all" {{ request('status') == 'all' ? 'selected' : '' }}>Tümü</option>
+                </select>
+            </div>
+            
+            <div class="flex flex-col gap-1">
+                <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-1">İndirim Tipi</label>
+                <select name="type" onchange="this.form.submit()" class="px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold focus:ring-2 focus:ring-brand-500 outline-none">
+                    <option value="">Tümü</option>
+                    <option value="percent" {{ request('type') == 'percent' ? 'selected' : '' }}>Yüzdelik (%)</option>
+                    <option value="fixed" {{ request('type') == 'fixed' ? 'selected' : '' }}>Sabit (TL)</option>
+                </select>
+            </div>
+
+            @if(request()->hasAny(['status', 'type']))
+            <div class="flex flex-col gap-1 self-end">
+                <a href="{{ route('admin.coupons.index') }}" class="px-4 py-2 text-rose-500 text-xs font-bold hover:underline flex items-center gap-2">
+                    <i class="fas fa-times"></i> Filtreleri Temizle
+                </a>
+            </div>
+            @endif
+        </form>
+    </div>
 
     <!-- Coupons Table -->
     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
@@ -46,6 +77,13 @@
                         </td>
                         <td class="px-6 py-4">
                             <span class="font-mono font-bold text-slate-700 bg-slate-100 px-2 py-1 rounded">{{ $coupon->code }}</span>
+                            @if($coupon->categories->count() > 0)
+                            <div class="mt-2 flex flex-wrap gap-1">
+                                @foreach($coupon->categories as $cat)
+                                <span class="text-[9px] font-bold bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded border border-slate-200 uppercase">{{ $cat->name }}</span>
+                                @endforeach
+                            </div>
+                            @endif
                         </td>
                         <td class="px-6 py-4">
                             @if($coupon->type === 'percent')
@@ -101,11 +139,6 @@
         @endif
     </div>
 </div>
-    @if($coupons->hasPages())
-    <div class="px-6 py-4 border-t border-slate-100 bg-slate-50">
-        {{ $coupons->links() }}
-    </div>
-    @endif
 </div>
 
 <!-- Create Coupon Modal -->
@@ -144,6 +177,23 @@
                 <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-1.5">Oluşturulacak Adet</label>
                 <input type="number" name="count" value="1" min="1" max="50" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all outline-none">
                 <p class="text-[10px] text-slate-400 mt-1">Tek seferde maksimum 50 adet oluşturabilirsiniz.</p>
+            </div>
+
+            <div x-data="{ catSearch: '' }">
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-1.5">Geçerli Kategoriler (Opsiyonel)</label>
+                <div class="mb-2 relative">
+                    <input type="text" x-model="catSearch" placeholder="Kategori ara..." class="w-full px-3 py-1.5 text-[11px] bg-slate-100 border border-slate-200 rounded-lg focus:ring-1 focus:ring-brand-500 outline-none pl-8">
+                    <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[10px]"></i>
+                </div>
+                <div class="space-y-2 max-h-40 overflow-y-auto p-3 bg-slate-50 rounded-xl border border-slate-200 custom-scrollbar">
+                    @foreach($categories as $category)
+                    <label class="flex items-center gap-2 cursor-pointer group" x-show="catSearch === '' || '{{ str($category->name)->lower() }}'.includes(catSearch.toLowerCase())">
+                        <input type="checkbox" name="category_ids[]" value="{{ $category->id }}" class="rounded border-slate-300 text-brand-500 focus:ring-brand-500">
+                        <span class="text-xs font-medium text-slate-600 group-hover:text-slate-900 transition-colors">{{ $category->name }}</span>
+                    </label>
+                    @endforeach
+                </div>
+                <p class="text-[10px] text-slate-400 mt-1">Herhangi bir kategori seçilmezse kupon tüm ürünlerde geçerli olur.</p>
             </div>
             
             <div class="pt-4 flex gap-3">
