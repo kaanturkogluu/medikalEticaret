@@ -71,6 +71,19 @@
                     {{ $order->status_label }}
                 </span>
             </div>
+
+            @if($order->tracking_code && $order->shippingCompany)
+            <div class="flex items-center gap-4">
+                <div class="text-right">
+                    <span class="text-[9px] text-gray-400 font-bold uppercase block tracking-widest">Kargo Takip</span>
+                    <span class="text-[11px] font-black text-gray-800">{{ $order->shippingCompany->name }} - {{ $order->tracking_code }}</span>
+                </div>
+                <a href="{{ $order->shippingCompany->getTrackingLink($order->tracking_code) }}" target="_blank"
+                   class="px-4 py-2 border border-orange-500 text-orange-500 text-[10px] font-black rounded-lg hover:bg-orange-50 transition-all flex items-center gap-2">
+                    <i class="fas fa-external-link-alt"></i> TAKİP ET
+                </a>
+            </div>
+            @endif
         </div>
     </div>
     @empty

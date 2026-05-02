@@ -32,8 +32,9 @@ class OrderController extends Controller
 
         $orders = $query->orderByDesc('order_date')->orderByDesc('id')->paginate(15)->withQueryString();
         $channels = \App\Models\Channel::all();
+        $shippingCompanies = \App\Models\ShippingCompany::where('active', true)->get();
 
-        return view('admin.orders', compact('orders', 'channels'));
+        return view('admin.orders', compact('orders', 'channels', 'shippingCompanies'));
     }
 
     /**
@@ -64,6 +65,32 @@ class OrderController extends Controller
         }
         
         return back()->with('success', 'Sipariş başarıyla onaylandı.');
+    }
+
+    /**
+     * Update shipping information for an order and mark as shipped.
+     */
+    public function updateShipping(Request $request, Order $order)
+    {
+        $request->validate([
+            'shipping_company_id' => 'required|exists:shipping_companies,id',
+            'tracking_code' => 'required|string|max:50',
+        ]);
+
+        $order->update([
+            'shipping_company_id' => $request->shipping_company_id,
+            'tracking_code' => $request->tracking_code,
+            'order_status' => 'Shipped' // Kargoya Verildi
+        ]);
+
+        // Send Email
+        try {
+            \Illuminate\Support\Facades\Mail::to($order->customer_email)->send(new \App\Mail\OrderShipped($order));
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Shipping Email Error: ' . $e->getMessage());
+        }
+
+        return back()->with('success', 'Kargo bilgileri güncellendi ve müşteriye bildirildi.');
     }
 
     /**

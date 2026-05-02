@@ -92,6 +92,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::get('/orders', [\App\Http\Controllers\Admin\OrderController::class, 'index'])->name('admin.orders');
     Route::post('/orders/sync', [\App\Http\Controllers\Admin\OrderController::class, 'sync'])->name('admin.orders.sync');
     Route::post('/orders/{order}/approve', [\App\Http\Controllers\Admin\OrderController::class, 'approve'])->name('admin.orders.approve');
+    Route::post('/orders/{order}/update-shipping', [\App\Http\Controllers\Admin\OrderController::class, 'updateShipping'])->name('admin.orders.update-shipping');
     Route::get('/orders/{order}', [\App\Http\Controllers\Admin\OrderController::class, 'show'])->name('admin.orders.show');
     Route::get('/test-products', [\App\Http\Controllers\Admin\OrderController::class, 'testProducts'])->name('admin.test-products');
     Route::view('/sync/stock', 'admin.sync.stock')->name('admin.sync.stock');
@@ -188,7 +189,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
         Route::post('/{faq:id}/toggle', [\App\Http\Controllers\Admin\FaqController::class, 'toggle'])->name('toggle');
     });
 
-    Route::view('/settings', 'admin.settings')->name('admin.settings');
+    Route::get('/settings', [\App\Http\Controllers\Admin\SettingController::class, 'index'])->name('admin.settings');
+    Route::post('/settings', [\App\Http\Controllers\Admin\SettingController::class, 'update'])->name('admin.settings.update');
 
     // Comment Management
     Route::group(['prefix' => 'comments', 'as' => 'admin.comments.'], function () {
@@ -204,6 +206,15 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
         Route::post('/', [\App\Http\Controllers\Admin\CouponController::class, 'store'])->name('store');
         Route::delete('/{coupon}', [\App\Http\Controllers\Admin\CouponController::class, 'destroy'])->name('destroy');
         Route::get('/print', [\App\Http\Controllers\Admin\CouponController::class, 'print'])->name('print');
+    });
+
+    // Shipping Company Management
+    Route::group(['prefix' => 'shipping-companies', 'as' => 'admin.shipping-companies.'], function () {
+        Route::get('/', [\App\Http\Controllers\Admin\ShippingCompanyController::class, 'index'])->name('index');
+        Route::post('/', [\App\Http\Controllers\Admin\ShippingCompanyController::class, 'store'])->name('store');
+        Route::put('/{shipping_company}', [\App\Http\Controllers\Admin\ShippingCompanyController::class, 'update'])->name('update');
+        Route::delete('/{shipping_company}', [\App\Http\Controllers\Admin\ShippingCompanyController::class, 'destroy'])->name('destroy');
+        Route::post('/{shipping_company}/toggle', [\App\Http\Controllers\Admin\ShippingCompanyController::class, 'toggleActive'])->name('toggle');
     });
 });
 

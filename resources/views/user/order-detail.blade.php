@@ -40,6 +40,37 @@
         </div>
     </div>
 
+    {{-- Shipping Info Card --}}
+    @if($order->tracking_code && $order->shippingCompany)
+    <div class="bg-indigo-50 rounded-2xl border border-indigo-100 p-8 shadow-sm">
+        <div class="flex items-center gap-4 mb-6">
+            <div class="w-12 h-12 bg-indigo-600 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-200">
+                <i class="fas fa-truck text-xl"></i>
+            </div>
+            <div>
+                <h3 class="font-black text-xl text-indigo-900 uppercase italic tracking-tighter">Kargonuz Yolda!</h3>
+                <p class="text-xs font-bold text-indigo-800 opacity-70">Paketiniz kargo firmasına teslim edilmiştir.</p>
+            </div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-white/60 p-5 rounded-2xl border border-indigo-200">
+                <p class="text-[10px] font-black text-indigo-800/40 uppercase tracking-widest mb-1">Kargo Firması</p>
+                <p class="text-sm font-black text-slate-900">{{ $order->shippingCompany->name }}</p>
+            </div>
+            <div class="bg-white/60 p-5 rounded-2xl border border-indigo-200 flex items-center justify-between">
+                <div>
+                    <p class="text-[10px] font-black text-indigo-800/40 uppercase tracking-widest mb-1">Takip Numarası</p>
+                    <p class="text-sm font-black text-slate-900 tracking-wider">{{ $order->tracking_code }}</p>
+                </div>
+                <a href="{{ $order->shippingCompany->getTrackingLink($order->tracking_code) }}" target="_blank" class="px-6 py-2.5 bg-indigo-600 text-white rounded-xl text-[11px] font-black uppercase italic tracking-tighter hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100">
+                    KARGOMU TAKİP ET
+                </a>
+            </div>
+        </div>
+    </div>
+    @endif
+
     @if(strtolower($order->order_status) === 'awaiting' && $order->payment_method === 'eft')
     <div class="bg-amber-50 rounded-2xl border border-amber-100 p-8 shadow-sm">
         <div class="flex items-center gap-4 mb-6">

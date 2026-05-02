@@ -118,7 +118,7 @@
                         </span>
                     </td>
                     <td class="px-6 py-4 text-right">
-                        @php $o->load(['items.product', 'channel']); @endphp
+                        @php $o->load(['items.product', 'channel', 'shippingCompany']); @endphp
                         <button @click="selectedOrder = {{ json_encode($o) }}" class="p-2 bg-white border border-slate-200 rounded-lg shadow-sm hover:border-brand-500 hover:text-brand-600 transition-all opacity-0 group-hover:opacity-100">
                             <i class="fas fa-eye text-sm"></i>
                         </button>
@@ -189,20 +189,20 @@
                         <div class="space-y-4">
                             <div>
                                 <p class="text-[10px] font-bold text-slate-400 uppercase">Kargo Şirketi</p>
-                                <p class="text-xs font-bold text-slate-800" x-text="selectedOrder?.raw_marketplace_data?.cargoProviderName || '-'"></p>
+                                <p class="text-xs font-bold text-slate-800" x-text="selectedOrder?.shipping_company?.name || selectedOrder?.raw_marketplace_data?.cargoProviderName || '-'"></p>
                             </div>
                             <div>
                                 <p class="text-[10px] font-bold text-slate-400 uppercase">Takip Numarası</p>
                                 <div class="flex items-center gap-2">
-                                    <p class="text-xs font-black text-slate-900 tracking-tighter tabular-nums" x-text="selectedOrder?.raw_marketplace_data?.cargoTrackingNumber || '-'"></p>
-                                    <template x-if="selectedOrder?.raw_marketplace_data?.cargoTrackingNumber">
-                                        <button class="text-[10px] text-brand-500 font-bold hover:underline">Sorgula</button>
+                                    <p class="text-xs font-black text-slate-900 tracking-tighter tabular-nums" x-text="selectedOrder?.tracking_code || selectedOrder?.raw_marketplace_data?.cargoTrackingNumber || '-'"></p>
+                                    <template x-if="selectedOrder?.tracking_code || selectedOrder?.raw_marketplace_data?.cargoTrackingNumber">
+                                        <a :href="selectedOrder?.shipping_company?.tracking_url ? selectedOrder.shipping_company.tracking_url.replace('[TRACKING_CODE]', selectedOrder.tracking_code) : '#'" target="_blank" class="text-[10px] text-brand-500 font-bold hover:underline">Sorgula</a>
                                     </template>
                                 </div>
                             </div>
                             <div>
                                 <p class="text-[10px] font-bold text-slate-400 uppercase">Paket Durumu</p>
-                                <p class="text-xs font-extrabold text-brand-600 uppercase tracking-tighter" x-text="selectedOrder?.raw_marketplace_data?.shipmentPackageStatus || '-'"></p>
+                                <p class="text-xs font-extrabold text-brand-600 uppercase tracking-tighter" x-text="selectedOrder?.raw_marketplace_data?.shipmentPackageStatus || (selectedOrder?.order_status === 'Shipped' ? 'Kargoya Verildi' : '-')"></p>
                             </div>
                         </div>
                     </div>
@@ -217,6 +217,54 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Shipping Management (Website Orders only or Manual Override) -->
+                <template x-if="selectedOrder && (selectedOrder.order_status === 'Created' || selectedOrder.order_status === 'Picking')">
+                    <div class="p-8 bg-brand-50 rounded-[2rem] border border-brand-100 space-y-6">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-brand-600 shadow-sm">
+                                <i class="fas fa-truck-loading text-lg"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-black text-slate-800 uppercase italic tracking-tighter">Kargo İşlemleri</h4>
+                                <p class="text-[10px] font-bold text-slate-400 uppercase">Siparişi kargoya vermek için firma ve takip kodu girin.</p>
+                            </div>
+                        </div>
+                        
+                        <form :action="'{{ route('admin.orders.update-shipping', ':id') }}'.replace(':id', selectedOrder.id)" 
+                              method="POST" 
+                              class="space-y-4"
+                              x-data="{ loading: false }"
+                              @submit="if(loading) { $event.preventDefault(); return; } loading = true">
+                            @csrf
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 px-1">Kargo Firması</label>
+                                    <select name="shipping_company_id" required class="w-full px-5 py-3 bg-white border border-slate-200 rounded-2xl text-xs font-bold focus:ring-4 focus:ring-brand-500/10 focus:border-brand-500 outline-none transition-all">
+                                        <option value="">Seçiniz...</option>
+                                        @foreach($shippingCompanies as $company)
+                                            <option value="{{ $company->id }}">{{ $company->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 px-1">Takip Kodu</label>
+                                    <input type="text" name="tracking_code" required placeholder="Örn: 123456789" class="w-full px-5 py-3 bg-white border border-slate-200 rounded-2xl text-xs font-bold focus:ring-4 focus:ring-brand-500/10 focus:border-brand-500 outline-none transition-all">
+                                </div>
+                            </div>
+                            <button type="submit" 
+                                    :disabled="loading"
+                                    class="w-full py-4 bg-brand-600 text-white rounded-[1.5rem] text-xs font-black hover:bg-brand-700 transition-all shadow-xl shadow-brand-500/20 uppercase tracking-widest flex items-center justify-center gap-3 disabled:opacity-70 disabled:cursor-not-allowed">
+                                <span x-show="!loading" class="flex items-center gap-3">
+                                    <i class="fas fa-paper-plane"></i> Kargoya Ver ve Müşteriyi Bilgilendir
+                                </span>
+                                <span x-show="loading" class="flex items-center gap-3">
+                                    <i class="fas fa-spinner fa-spin"></i> İşlem Yapılıyor...
+                                </span>
+                            </button>
+                        </form>
+                    </div>
+                </template>
 
                 <!-- Items Table -->
                 <div class="bg-white rounded-3xl border border-slate-100 overflow-hidden shadow-sm">
@@ -345,10 +393,18 @@
                 </div>
                 <div class="flex gap-3">
                     <template x-if="selectedOrder?.order_status === 'Awaiting' || selectedOrder?.order_status === 'pending_payment'">
-                        <form :action="'{{ route('admin.orders.approve', ':id') }}'.replace(':id', selectedOrder.id)" method="POST">
+                        <form :action="'{{ route('admin.orders.approve', ':id') }}'.replace(':id', selectedOrder.id)" 
+                              method="POST"
+                              x-data="{ approving: false }"
+                              @submit="if(approving) { $event.preventDefault(); return; } approving = true">
                             @csrf
-                            <button type="submit" class="px-6 py-3 bg-emerald-600 text-white rounded-2xl text-xs font-black hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-500/30 uppercase tracking-widest">
-                                Siparişi Onayla
+                            <button type="submit" 
+                                    :disabled="approving"
+                                    class="px-6 py-3 bg-emerald-600 text-white rounded-2xl text-xs font-black hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-500/30 uppercase tracking-widest disabled:opacity-70 disabled:cursor-not-allowed flex items-center gap-2">
+                                <span x-show="!approving">Siparişi Onayla</span>
+                                <span x-show="approving" class="flex items-center gap-2">
+                                    <i class="fas fa-spinner fa-spin"></i> Onaylanıyor...
+                                </span>
                             </button>
                         </form>
                     </template>

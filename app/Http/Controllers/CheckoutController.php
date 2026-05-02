@@ -230,6 +230,16 @@ class CheckoutController extends Controller
                     \Illuminate\Support\Facades\Log::error('Order Email Error: ' . $e->getMessage());
                 }
 
+                // Send Admin Notification Email
+                $adminEmail = \App\Models\Setting::getValue('admin_order_notification_email');
+                if ($adminEmail) {
+                    try {
+                        Mail::to($adminEmail)->send(new \App\Mail\NewOrderAdminNotification($order));
+                    } catch (\Exception $e) {
+                        \Illuminate\Support\Facades\Log::error('Admin Order Notification Email Error: ' . $e->getMessage());
+                    }
+                }
+
                 $message = 'Siparişiniz başarıyla alındı.';
                 if ($validated['payment_method'] === 'eft') {
                     $message = 'Siparişiniz oluşturuldu. Lütfen banka transferini gerçekleştirin.';
