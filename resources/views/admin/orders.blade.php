@@ -276,7 +276,7 @@
                 </template>
 
                 <!-- Label Printing -->
-                <div class="p-8 bg-slate-50 rounded-[2rem] border border-slate-100 space-y-6 mt-6">
+                <div x-show="!selectedOrder?.channel_id" class="p-8 bg-slate-50 rounded-[2rem] border border-slate-100 space-y-6 mt-6">
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-slate-600 shadow-sm">
                             <i class="fas fa-print text-lg"></i>

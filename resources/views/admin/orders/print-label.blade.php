@@ -181,7 +181,7 @@
                     $barcodeData = $order->external_order_id ?? $order->id;
                 @endphp
                 <img src="https://bwipjs-api.metafloor.com/?bcid=code128&text={{ $barcodeData }}&scale=4&rotate=N" alt="Barcode">
-                <div class="barcode-val">#{{ $barcodeData }}</div>
+                <div class="barcode-val">{{ $barcodeData }}</div>
             </div>
             
             <div class="packer-box">
