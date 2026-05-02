@@ -30,6 +30,15 @@ class OrderController extends Controller
             }
         }
 
+        if ($request->filled('q')) {
+            $q = $request->q;
+            $query->where(function($sub) use ($q) {
+                $sub->where('id', 'LIKE', "%$q%")
+                    ->orWhere('customer_name', 'LIKE', "%$q%")
+                    ->orWhere('tracking_code', 'LIKE', "%$q%");
+            });
+        }
+
         $orders = $query->orderByDesc('order_date')->orderByDesc('id')->paginate(15)->withQueryString();
         $channels = \App\Models\Channel::all();
         $shippingCompanies = \App\Models\ShippingCompany::where('active', true)->get();

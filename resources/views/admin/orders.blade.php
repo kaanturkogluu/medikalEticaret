@@ -40,6 +40,10 @@
         </div>
         <div class="flex items-center gap-2">
             <form action="{{ route('admin.orders') }}" method="GET" class="flex items-center gap-2">
+                <div class="relative group">
+                    <input type="text" name="q" value="{{ request('q') }}" placeholder="Sipariş No, Müşteri Adı..." class="pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all shadow-sm min-w-[240px]">
+                    <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs transition-colors group-focus-within:text-brand-500"></i>
+                </div>
                 <select name="channel_id" onchange="this.form.submit()" class="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all shadow-sm">
                     <option value="">Tüm Pazaryerleri</option>
                     <option value="web" {{ request('channel_id') === 'web' ? 'selected' : '' }}>Web Siparişleri</option>
@@ -50,7 +54,7 @@
                     @endforeach
                 </select>
                 <button type="submit" class="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors flex items-center gap-2 shadow-sm">
-                    <i class="fas fa-sync text-brand-500 text-[10px]"></i> Filtrele
+                    <i class="fas fa-filter text-brand-500 text-[10px]"></i> Filtrele
                 </button>
             </form>
             <form action="{{ route('admin.orders.sync') }}" method="POST">
