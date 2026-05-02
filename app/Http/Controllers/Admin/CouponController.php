@@ -32,7 +32,7 @@ class CouponController extends Controller
         }
 
         $coupons = $query->latest()->paginate(20)->withQueryString();
-        $categories = \App\Models\Category::all();
+        $categories = \App\Models\Category::has('products')->get();
         
         return view('admin.coupons.index', compact('coupons', 'categories'));
     }

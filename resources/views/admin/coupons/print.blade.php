@@ -202,6 +202,10 @@
                 <div class="text-[10px] text-slate-500 font-bold mt-2 uppercase tracking-tighter">
                     {{ $coupon->categories->pluck('name')->implode(' & ') }} ÜRÜNLERİNDE GEÇERLİ OLMAK ÜZERE
                 </div>
+                @elseif($coupon->type === 'fixed')
+                <div class="text-[10px] text-slate-500 font-bold mt-2 uppercase tracking-tighter">
+                    TÜM ÜRÜNLERDE GEÇERLİ OLMAK ÜZERE
+                </div>
                 @endif
             </div>
 
