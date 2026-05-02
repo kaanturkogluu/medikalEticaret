@@ -51,7 +51,6 @@
                 </div>
                 <select name="channel_id" onchange="this.form.submit()" class="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all shadow-sm">
                     <option value="">Tüm Pazaryerleri</option>
-                    <option value="web" {{ request('channel_id') === 'web' ? 'selected' : '' }}>Web Siparişleri</option>
                     @foreach($channels as $channel)
                         <option value="{{ $channel->id }}" {{ request('channel_id') == $channel->id ? 'selected' : '' }}>
                             {{ $channel->name }}

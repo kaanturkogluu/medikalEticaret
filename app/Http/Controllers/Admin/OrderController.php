@@ -23,11 +23,7 @@ class OrderController extends Controller
         $query = Order::with('channel');
 
         if ($request->filled('channel_id')) {
-            if ($request->channel_id === 'web') {
-                $query->whereNull('channel_id');
-            } else {
-                $query->where('channel_id', $request->channel_id);
-            }
+            $query->where('channel_id', $request->channel_id);
         }
 
         if ($request->filled('q')) {
