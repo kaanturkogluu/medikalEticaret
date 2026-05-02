@@ -20,15 +20,21 @@ class OrderService
 
     public function fetchAllChannelOrders(): void
     {
-        Channel::where('active', true)->each(function (Channel $channel) {
-            $this->fetchChannelOrders($channel);
-            // Her kanal sonrası 1 saniye mola (Spam önleme)
-            usleep(1000000);
-        });
+        Channel::where('active', true)
+            ->where('slug', '!=', 'website')
+            ->each(function (Channel $channel) {
+                $this->fetchChannelOrders($channel);
+                // Her kanal sonrası 1 saniye mola (Spam önleme)
+                usleep(1000000);
+            });
     }
 
     public function fetchChannelOrders(Channel $channel): void
     {
+        if ($channel->slug === 'website') {
+            return;
+        }
+
         $lockKey = "sync_orders_{$channel->slug}";
         
         // Eğer zaten bir senkronizasyon çalışıyorsa (Son 10 dk içinde başladıysa) durdur (Spam kilidi)
