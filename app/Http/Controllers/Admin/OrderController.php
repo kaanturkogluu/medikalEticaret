@@ -102,6 +102,14 @@ class OrderController extends Controller
         return back()->with('success', 'Kargo bilgileri güncellendi ve müşteriye bildirildi.');
     }
 
+    public function printLabel(Order $order)
+    {
+        $order->load(['items.product']);
+        $packer = request('packer', 'Bilinmiyor');
+        
+        return view('admin.orders.print-label', compact('order', 'packer'));
+    }
+
     /**
      * Display the specified order.
      */

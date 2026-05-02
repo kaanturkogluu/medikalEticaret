@@ -89,10 +89,12 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::put('/products/{product:id}', [\App\Http\Controllers\Admin\ProductController::class, 'update'])->name('admin.products.update');
     Route::delete('/products/{product:id}/delete', [\App\Http\Controllers\Admin\ProductController::class, 'destroy'])->name('admin.products.destroy');
     Route::post('/products/{product:id}/toggle-popular', [\App\Http\Controllers\Admin\ProductController::class, 'togglePopular'])->name('admin.products.toggle-popular');
+    Route::get('/products/{product}/print-barcode', [\App\Http\Controllers\Admin\ProductController::class, 'printBarcode'])->name('admin.products.print-barcode');
     Route::get('/orders', [\App\Http\Controllers\Admin\OrderController::class, 'index'])->name('admin.orders');
     Route::post('/orders/sync', [\App\Http\Controllers\Admin\OrderController::class, 'sync'])->name('admin.orders.sync');
     Route::post('/orders/{order}/approve', [\App\Http\Controllers\Admin\OrderController::class, 'approve'])->name('admin.orders.approve');
     Route::post('/orders/{order}/update-shipping', [\App\Http\Controllers\Admin\OrderController::class, 'updateShipping'])->name('admin.orders.update-shipping');
+    Route::get('/orders/{order}/print-label', [\App\Http\Controllers\Admin\OrderController::class, 'printLabel'])->name('admin.orders.print-label');
     Route::get('/orders/{order}', [\App\Http\Controllers\Admin\OrderController::class, 'show'])->name('admin.orders.show');
     Route::get('/test-products', [\App\Http\Controllers\Admin\OrderController::class, 'testProducts'])->name('admin.test-products');
     Route::view('/sync/stock', 'admin.sync.stock')->name('admin.sync.stock');

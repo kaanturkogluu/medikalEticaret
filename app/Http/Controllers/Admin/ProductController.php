@@ -245,4 +245,9 @@ class ProductController extends Controller
             'message' => 'Ürün başarıyla silindi.'
         ]);
     }
+
+    public function printBarcode(Product $product)
+    {
+        return view('admin.products.print-barcode', compact('product'));
+    }
 }

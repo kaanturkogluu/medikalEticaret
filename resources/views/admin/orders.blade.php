@@ -30,6 +30,11 @@
     getStatus(status) {
         const s = (status || '').toLowerCase();
         return this.statusMap[s] || { label: status, color: 'bg-slate-100 text-slate-600' };
+    },
+    packerName: 'Turgay Vural',
+    printLabel() {
+        const url = '{{ route("admin.orders.print-label", ":id") }}'.replace(':id', this.selectedOrder.id) + '?packer=' + encodeURIComponent(this.packerName);
+        window.open(url, '_blank', 'width=800,height=600');
     }
 }">
     <!-- Header -->
@@ -269,6 +274,32 @@
                         </form>
                     </div>
                 </template>
+
+                <!-- Label Printing -->
+                <div class="p-8 bg-slate-50 rounded-[2rem] border border-slate-100 space-y-6 mt-6">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-slate-600 shadow-sm">
+                            <i class="fas fa-print text-lg"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-black text-slate-800 uppercase italic tracking-tighter">Etiket Hazırlama</h4>
+                            <p class="text-[10px] font-bold text-slate-400 uppercase">Paketleme ve sevkiyat etiketi oluşturun.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-end gap-4">
+                        <div class="flex-1">
+                            <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 px-1">Paketleyici</label>
+                            <select x-model="packerName" class="w-full px-5 py-3 bg-white border border-slate-200 rounded-2xl text-xs font-bold focus:ring-4 focus:ring-brand-500/10 focus:border-brand-500 outline-none transition-all">
+                                <option value="Turgay Vural">Turgay Vural</option>
+                                <option value="Doğukan Vural">Doğukan Vural</option>
+                            </select>
+                        </div>
+                        <button @click="printLabel()" class="px-6 py-4 bg-slate-900 text-white rounded-[1.5rem] text-xs font-black hover:bg-black transition-all shadow-xl shadow-slate-500/20 uppercase tracking-widest flex items-center justify-center gap-3">
+                            <i class="fas fa-barcode"></i> Etiketi Yazdır
+                        </button>
+                    </div>
+                </div>
 
                 <!-- Items Table -->
                 <div class="bg-white rounded-3xl border border-slate-100 overflow-hidden shadow-sm">
