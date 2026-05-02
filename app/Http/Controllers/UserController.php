@@ -58,7 +58,7 @@ class UserController extends Controller
         if ($order->customer_email !== Auth::user()->email) {
             abort(403);
         }
-        $order->load('items.product');
+        $order->load(['items.product', 'coupon']);
 
         $bankDetails = [
             'bank_name' => 'Ziraat Bankası',

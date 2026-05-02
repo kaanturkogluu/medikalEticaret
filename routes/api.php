@@ -10,4 +10,7 @@ Route::prefix('v1')->group(function () {
 
     // Sync Management
     Route::post('sync/orders', [SyncController::class, 'syncOrders']);
+
+    // Iyzico Callback (No session/CSRF handled here)
+    Route::match(['get', 'post'], 'iyzico/callback', [\App\Http\Controllers\IyzicoController::class, 'callback'])->name('iyzico.callback');
 });

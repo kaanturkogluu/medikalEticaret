@@ -126,7 +126,13 @@
                     </div>
                     @if($order->discount_amount > 0)
                     <div class="flex justify-between text-gray-600">
-                        <span>%5 EFT İndirimi</span>
+                        <span>
+                            @if($order->coupon_id)
+                                İndirim Kuponu ({{ $order->coupon->code ?? 'Kupon' }})
+                            @else
+                                %5 EFT İndirimi
+                            @endif
+                        </span>
                         <span class="font-semibold text-red-500">- {{ number_format($order->discount_amount, 2, ',', '.') }} TL</span>
                     </div>
                     @endif

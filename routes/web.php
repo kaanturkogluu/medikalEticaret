@@ -19,7 +19,7 @@ Route::post('/kupon-kaldir', [\App\Http\Controllers\CheckoutController::class, '
 
 // Iyzico Payment
 Route::get('/iyzico/pay/{order}', [\App\Http\Controllers\IyzicoController::class, 'pay'])->name('iyzico.pay');
-Route::match(['get', 'post'], '/iyzico/callback', [\App\Http\Controllers\IyzicoController::class, 'callback'])->name('iyzico.callback');
+// Route::match(['get', 'post'], '/iyzico/callback', [\App\Http\Controllers\IyzicoController::class, 'callback'])->name('iyzico.callback'); // Moved to api.php to prevent logout issue
 Route::get('/odeme-basarili/{order_id}', [\App\Http\Controllers\IyzicoController::class, 'success'])->name('payment.success');
 Route::get('/odeme-basarisiz/{order_id?}', [\App\Http\Controllers\IyzicoController::class, 'failed'])->name('payment.failed');
 
