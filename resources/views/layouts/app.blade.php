@@ -748,11 +748,82 @@
                             <p x-text="$store.cart.total() + ' TL'"></p>
                         </div>
                         <div class="mt-8">
-                            <a href="{{ route('checkout') }}"
-                                class="flex items-center justify-center rounded-2xl border border-transparent bg-slate-900 px-6 py-4 text-base font-black text-white shadow-xl hover:bg-orange-600 transition-all active:scale-95">Ödemeye
-                                Geç</a>
+                            @auth
+                                <a href="{{ route('checkout') }}"
+                                    class="flex items-center justify-center rounded-2xl border border-transparent bg-slate-900 px-6 py-4 text-base font-black text-white shadow-xl hover:bg-orange-600 transition-all active:scale-95">Ödemeye
+                                    Geç</a>
+                            @else
+                                <button @click="$dispatch('open-checkout-choice')"
+                                    class="w-full flex items-center justify-center rounded-2xl border border-transparent bg-slate-900 px-6 py-4 text-base font-black text-white shadow-xl hover:bg-orange-600 transition-all active:scale-95">Ödemeye
+                                    Geç</button>
+                            @endauth
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Checkout Choice Modal -->
+    <div x-data="{ open: false }" 
+         @open-checkout-choice.window="open = true"
+         x-show="open" 
+         x-cloak
+         class="fixed inset-0 z-[3000] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+        
+        <div @click.away="open = false" 
+             x-show="open"
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0 scale-95 translate-y-4"
+             x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+             class="bg-white w-full max-w-md rounded-[40px] shadow-2xl overflow-hidden relative">
+            
+            <div class="absolute -right-10 -top-10 w-40 h-40 bg-[var(--primary-color)]/10 rounded-full blur-3xl"></div>
+            
+            <div class="p-8 md:p-10 relative">
+                <button @click="open = false" class="absolute right-6 top-6 text-slate-300 hover:text-slate-600 transition-colors">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+                
+                <div class="text-center mb-8">
+                    <div class="w-20 h-20 bg-slate-50 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-sm border border-slate-100">
+                        <i class="fas fa-shopping-basket text-3xl text-slate-900"></i>
+                    </div>
+                    <h3 class="text-2xl font-black text-slate-900 uppercase italic tracking-tighter mb-2">Devam Etmek İçin Seçim Yapın</h3>
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-widest leading-relaxed">Avantajlı alışveriş için üye olun veya hızlıca devam edin.</p>
+                </div>
+                
+                <div class="space-y-4">
+                    <a href="{{ route('login') }}" class="flex items-center justify-between w-full p-6 bg-slate-900 text-white rounded-[30px] shadow-xl hover:bg-orange-600 transition-all group overflow-hidden relative">
+                        <div class="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        <div class="flex items-center gap-4 relative z-10">
+                            <div class="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center border border-white/10">
+                                <i class="fas fa-sign-in-alt"></i>
+                            </div>
+                            <div class="text-left">
+                                <p class="text-sm font-black uppercase italic leading-none mb-1">Giriş Yap</p>
+                                <p class="text-[9px] font-bold text-white/50 uppercase tracking-widest">Siparişlerini takip et</p>
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-right text-xs group-hover:translate-x-1 transition-transform relative z-10"></i>
+                    </a>
+                    
+                    <a href="{{ route('checkout') }}" class="flex items-center justify-between w-full p-6 bg-white text-slate-900 rounded-[30px] border-2 border-slate-100 hover:border-slate-900 transition-all group relative">
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center border border-slate-100 group-hover:bg-slate-900 group-hover:text-white transition-colors">
+                                <i class="fas fa-bolt"></i>
+                            </div>
+                            <div class="text-left">
+                                <p class="text-sm font-black uppercase italic leading-none mb-1">Üyeliksiz Devam Et</p>
+                                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Hızlı alışveriş</p>
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-right text-xs group-hover:translate-x-1 transition-transform"></i>
+                    </a>
+                </div>
+                
+                <div class="mt-8 text-center">
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Henüz hesabınız yok mu? <a href="{{ route('register') }}" class="text-slate-900 underline hover:text-[var(--primary-color)] transition-colors">Şimdi Üye Ol</a></p>
                 </div>
             </div>
         </div>
