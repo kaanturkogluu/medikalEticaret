@@ -11,10 +11,27 @@ return new class extends Migration
         if (!Schema::hasTable('shipping_companies')) {
             Schema::create('shipping_companies', function (Blueprint $table) {
                 $table->id();
-                $table->string('name');
-                $table->string('tracking_url')->nullable(); // Pattern like https://kargo.com/track?code=[TRACKING_CODE]
+                $table->string('name')->unique();
+                $table->string('tracking_url', 500)->nullable(); 
                 $table->boolean('active')->default(true);
                 $table->timestamps();
+            });
+        } else {
+            Schema::table('shipping_companies', function (Blueprint $table) {
+                if (!Schema::hasColumn('shipping_companies', 'tracking_url')) {
+                    $table->string('tracking_url', 500)->nullable()->after('name');
+                }
+                
+                // Handle active column
+                if (!Schema::hasColumn('shipping_companies', 'active')) {
+                    if (Schema::hasColumn('shipping_companies', 'is_active')) {
+                        // If is_active exists, we can use it or rename it. 
+                        // To be safe and simple, we'll just add 'active' if missing.
+                        $table->boolean('active')->default(true);
+                    } else {
+                        $table->boolean('active')->default(true);
+                    }
+                }
             });
         }
 
