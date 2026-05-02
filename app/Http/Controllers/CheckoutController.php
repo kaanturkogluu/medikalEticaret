@@ -9,10 +9,44 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\OrderPlaced;
+use App\Models\Coupon;
 use Illuminate\Support\Str;
 
 class CheckoutController extends Controller
 {
+    public function applyCoupon(Request $request)
+    {
+        $request->validate(['code' => 'required|string']);
+        
+        $coupon = Coupon::where('code', strtoupper($request->code))->first();
+        
+        if (!$coupon) {
+            return response()->json(['success' => false, 'message' => 'Geçersiz kupon kodu.']);
+        }
+        
+        if (!$coupon->isValid()) {
+            return response()->json(['success' => false, 'message' => 'Bu kupon daha önce kullanılmış.']);
+        }
+        
+        session(['applied_coupon' => $coupon->code]);
+        
+        return response()->json([
+            'success' => true, 
+            'message' => 'Kupon başarıyla uygulandı.',
+            'coupon' => [
+                'code' => $coupon->code,
+                'type' => $coupon->type,
+                'value' => $coupon->value
+            ]
+        ]);
+    }
+
+    public function removeCoupon()
+    {
+        session()->forget('applied_coupon');
+        return response()->json(['success' => true, 'message' => 'Kupon kaldırıldı.']);
+    }
+
     public function index()
     {
         $provinces = \App\Models\Province::orderBy('name')->get();
@@ -86,18 +120,30 @@ class CheckoutController extends Controller
                     ];
                 }
 
+                // --- KUPON UYGULAMA ---
+                $couponDiscount = 0;
+                $coupon = null;
+                if (session()->has('applied_coupon')) {
+                    $coupon = Coupon::where('code', session('applied_coupon'))->first();
+                    if ($coupon && $coupon->isValid()) {
+                        $couponDiscount = $coupon->calculateDiscount($subtotal);
+                    }
+                }
+
                 $shippingLimit = 700;
                 $shippingFee = 89;
                 $shipping = ($subtotal >= $shippingLimit || $hasFreeShippingProduct) ? 0 : $shippingFee;
 
-                $total = $subtotal + $shipping;
+                $total = $subtotal + $shipping - $couponDiscount;
 
-                // EFT Discount (5%)
-                $discount = 0;
+                // EFT İndirimi (%5) - Kupon sonrası tutar üzerinden
+                $eftDiscount = 0;
                 if ($validated['payment_method'] === 'eft') {
-                    $discount = $subtotal * 0.05;
-                    $total -= $discount;
+                    $eftDiscount = ($subtotal - $couponDiscount) * 0.05;
+                    $total -= $eftDiscount;
                 }
+
+                $totalDiscount = $eftDiscount + $couponDiscount;
 
                 // Determine Order Status (Mapping to Admin statusMap)
                 $status = 'Awaiting'; // Default: Onay Bekliyor
@@ -109,10 +155,12 @@ class CheckoutController extends Controller
 
                 $order = Order::create([
                     'channel_id' => $websiteChannel?->id,
+                    'coupon_id' => $coupon?->id, // Kupon ID'sini kaydet
+                    'user_id' => auth()->id(), // Giriş yapmış kullanıcı ID'si
                     'customer_name' => $validated['first_name'] . ' ' . $validated['last_name'],
                     'customer_email' => $validated['email'],
                     'customer_phone' => $validated['phone'],
-                    'total_price' => $total,
+                    'total_price' => max(0, $total),
                     'shipping_price' => $shipping,
                     'order_status' => $status,
                     'address_info' => [
@@ -123,10 +171,15 @@ class CheckoutController extends Controller
                     ],
                     'payment_method' => $validated['payment_method'],
                     'order_date' => now(),
-                    'discount_amount' => $discount,
+                    'discount_amount' => $totalDiscount,
                     'synced' => false,
                     'currency' => 'TL'
                 ]);
+
+                // Kuponu sessiondan temizle (Artık order_id üzerinden takip edilecek)
+                if ($coupon) {
+                    session()->forget('applied_coupon');
+                }
 
                 foreach ($items as $item) {
                     OrderItem::create([

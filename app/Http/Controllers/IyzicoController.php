@@ -84,6 +84,16 @@ class IyzicoController extends Controller
                 'synced' => false
             ]);
 
+            // Kuponu kullanıldı olarak işaretle
+            if ($order->coupon_id) {
+                $order->coupon()->update([
+                    'is_used' => true,
+                    'used_at' => now(),
+                    'order_id' => $order->id,
+                    'user_id' => $order->user_id // Siparişle ilişkili kullanıcıyı kullan
+                ]);
+            }
+
             // Deduct Stock and Sync
             $syncService = app(\App\Services\SyncService::class);
             foreach ($order->items as $item) {

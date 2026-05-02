@@ -65,24 +65,48 @@ class IyzicoService
         $request->setBillingAddress($billingAddress);
 
         $basketItems = [];
+        $totalBasketOriginal = 0;
         foreach ($items as $item) {
+            $totalBasketOriginal += $item['price'] * $item['quantity'];
+        }
+        $totalBasketOriginal += $order->shipping_price;
+
+        // İndirim oranını hesapla (Toplam Tutar / Orijinal Tutar)
+        $ratio = $order->total_price / ($totalBasketOriginal ?: 1);
+        $currentSum = 0;
+
+        foreach ($items as $index => $item) {
             $basketItem = new BasketItem();
             $basketItem->setId($item['product_id']);
             $basketItem->setName($item['name']);
             $basketItem->setCategory1("Medical");
             $basketItem->setItemType(BasketItemType::PHYSICAL);
-            $basketItem->setPrice($item['price'] * $item['quantity']);
+            
+            // Oranla indirimli fiyatı hesapla
+            $itemTotalPrice = round($item['price'] * $item['quantity'] * $ratio, 2);
+            
+            // Eğer son kalemse ve kargo yoksa, yuvarlama farkını ekle/çıkar
+            if ($index === count($items) - 1 && $order->shipping_price <= 0) {
+                $itemTotalPrice = round($order->total_price - $currentSum, 2);
+            }
+
+            $basketItem->setPrice($itemTotalPrice);
+            $currentSum += $itemTotalPrice;
             $basketItems[] = $basketItem;
         }
         
-        // If there is shipping, add it as a basket item
+        // Kargo varsa, kargo fiyatını da oranla veya farkı kargoya yansıt
         if ($order->shipping_price > 0) {
             $shippingItem = new BasketItem();
             $shippingItem->setId("SHIPPING");
             $shippingItem->setName("Kargo Ücreti");
             $shippingItem->setCategory1("Shipping");
             $shippingItem->setItemType(BasketItemType::VIRTUAL);
-            $shippingItem->setPrice($order->shipping_price);
+            
+            // Kargo tutarı farkı kapatacak şekilde ayarlanır
+            $shippingPrice = round($order->total_price - $currentSum, 2);
+            
+            $shippingItem->setPrice($shippingPrice);
             $basketItems[] = $shippingItem;
         }
 

@@ -52,6 +52,16 @@ class OrderController extends Controller
     public function approve(Order $order)
     {
         $order->update(['order_status' => 'Created']);
+
+        // Kuponu kullanıldı olarak işaretle (Eğer daha önce işaretlenmediyse)
+        if ($order->coupon_id && !$order->coupon->is_used) {
+            $order->coupon->update([
+                'is_used' => true,
+                'used_at' => now(),
+                'order_id' => $order->id,
+                'user_id' => $order->user_id ?? auth()->id()
+            ]);
+        }
         
         return back()->with('success', 'Sipariş başarıyla onaylandı.');
     }

@@ -14,6 +14,8 @@ Route::get('/location/neighborhoods/{district}', [\App\Http\Controllers\Location
 Route::get('/odeme', [\App\Http\Controllers\CheckoutController::class, 'index'])->name('checkout');
 Route::get('/siparis-tamamlandi/{order}', [\App\Http\Controllers\CheckoutController::class, 'success'])->name('checkout.success');
 Route::post('/odeme-tamamla', [\App\Http\Controllers\CheckoutController::class, 'store'])->name('checkout.store');
+Route::post('/kupon-uygula', [\App\Http\Controllers\CheckoutController::class, 'applyCoupon'])->name('coupon.apply');
+Route::post('/kupon-kaldir', [\App\Http\Controllers\CheckoutController::class, 'removeCoupon'])->name('coupon.remove');
 
 // Iyzico Payment
 Route::get('/iyzico/pay/{order}', [\App\Http\Controllers\IyzicoController::class, 'pay'])->name('iyzico.pay');
@@ -194,6 +196,14 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
         Route::post('/{comment}/approve', [\App\Http\Controllers\Admin\CommentController::class, 'approve'])->name('approve');
         Route::post('/{comment}/reply', [\App\Http\Controllers\Admin\CommentController::class, 'reply'])->name('reply');
         Route::delete('/{comment}/delete', [\App\Http\Controllers\Admin\CommentController::class, 'destroy'])->name('destroy');
+    });
+
+    // Coupon Management
+    Route::group(['prefix' => 'coupons', 'as' => 'admin.coupons.'], function () {
+        Route::get('/', [\App\Http\Controllers\Admin\CouponController::class, 'index'])->name('index');
+        Route::post('/', [\App\Http\Controllers\Admin\CouponController::class, 'store'])->name('store');
+        Route::delete('/{coupon}', [\App\Http\Controllers\Admin\CouponController::class, 'destroy'])->name('destroy');
+        Route::get('/print', [\App\Http\Controllers\Admin\CouponController::class, 'print'])->name('print');
     });
 });
 

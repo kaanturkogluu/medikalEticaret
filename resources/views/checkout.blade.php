@@ -237,13 +237,41 @@
                             <span>Kargo Ücreti</span>
                             <span :class="cart.shipping() === 0 ? 'text-green-600' : ''" x-text="cart.shipping() === 0 ? 'Ücretsiz' : cart.shipping().toFixed(2) + ' TL'"></span>
                         </div>
+                        <div x-show="appliedCoupon" x-cloak class="flex justify-between text-indigo-600 bg-indigo-50 px-3 py-2 rounded-xl border border-indigo-100">
+                            <span>Kupon İndirimi</span>
+                            <span x-text="'-' + (appliedCoupon.type === 'percent' ? (cart.subtotal() * appliedCoupon.value / 100).toFixed(2) : parseFloat(appliedCoupon.value).toFixed(2)) + ' TL'"></span>
+                        </div>
                         <div x-show="form.payment_method === 'eft'" class="flex justify-between text-green-600 bg-green-50 px-3 py-2 rounded-xl border border-green-100">
                             <span>EFT İndirimi (%5)</span>
-                            <span x-text="'-' + (cart.subtotal() * 0.05).toFixed(2) + ' TL'"></span>
+                            <span x-text="'-' + (Math.max(0, cart.subtotal() - (appliedCoupon ? (appliedCoupon.type === 'percent' ? cart.subtotal() * appliedCoupon.value / 100 : appliedCoupon.value) : 0)) * 0.05).toFixed(2) + ' TL'"></span>
                         </div>
                         <div class="flex justify-between text-lg font-black text-slate-900 pt-4 uppercase italic">
                             <span>Toplam</span>
                             <span x-text="grandTotal() + ' TL'"></span>
+                        </div>
+                    </div>
+
+                    {{-- Coupon Section --}}
+                    <div class="mb-8 pt-8 border-t border-gray-100">
+                        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1 mb-4">İndirim Kuponu</p>
+                        <div class="flex gap-2" x-show="!appliedCoupon">
+                            <input type="text" x-model="couponCode" placeholder="Kupon Kodunuz" 
+                                   class="flex-grow px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl text-xs font-bold focus:ring-2 focus:ring-slate-900 focus:border-slate-900 outline-none uppercase">
+                            <button @click="applyCoupon" :disabled="couponLoading" 
+                                    class="px-4 py-2.5 bg-slate-900 text-white rounded-xl text-[10px] font-bold hover:bg-orange-600 transition-all disabled:opacity-50">
+                                <span x-show="!couponLoading">UYGULA</span>
+                                <i x-show="couponLoading" class="fas fa-spinner fa-spin"></i>
+                            </button>
+                        </div>
+                        <div x-show="appliedCoupon" x-cloak class="flex items-center justify-between bg-green-50 px-4 py-3 rounded-xl border border-green-100">
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-check-circle text-green-600 text-xs"></i>
+                                <span class="text-[10px] font-black text-green-800 uppercase tracking-widest" x-text="appliedCoupon.code"></span>
+                                <span class="text-[9px] font-bold text-green-600" x-text="appliedCoupon.type === 'percent' ? '(%' + parseFloat(appliedCoupon.value).toFixed(0) + ' İndirim)' : '(₺' + parseFloat(appliedCoupon.value).toFixed(0) + ' İndirim)'"></span>
+                            </div>
+                            <button @click="removeCoupon" class="text-rose-600 hover:text-rose-700">
+                                <i class="fas fa-times"></i>
+                            </button>
                         </div>
                     </div>
 
@@ -333,6 +361,45 @@ function checkoutPage() {
             payment_method: 'credit_card',
             selected_address_id: null
         },
+        appliedCoupon: null,
+        couponCode: '',
+        couponLoading: false,
+        async applyCoupon() {
+            if (!this.couponCode) return;
+            this.couponLoading = true;
+            try {
+                const response = await fetch('{{ route("coupon.apply") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({ code: this.couponCode })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    this.appliedCoupon = result.coupon;
+                    this.couponCode = '';
+                    notify('success', result.message);
+                } else {
+                    notify('error', result.message);
+                }
+            } catch (e) {
+                notify('error', 'Kupon uygulanırken bir hata oluştu.');
+            } finally {
+                this.couponLoading = false;
+            }
+        },
+        async removeCoupon() {
+            try {
+                await fetch('{{ route("coupon.remove") }}', {
+                    method: 'POST',
+                    headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
+                });
+                this.appliedCoupon = null;
+                notify('success', 'Kupon kaldırıldı.');
+            } catch (e) {}
+        },
         selectAddress(addr) {
             this.form.selected_address_id = addr.id;
             this.form.first_name = addr.first_name;
@@ -398,17 +465,42 @@ function checkoutPage() {
         init() {
             window.checkoutData = this;
             this.cart = Alpine.store('cart');
-            if (this.cart.items.length === 0) {
-                // window.location.href = '/';
-            }
+            
+            // Handle existing coupon from session
+            @if(session()->has('applied_coupon'))
+                @php
+                    $sessionCoupon = \App\Models\Coupon::where('code', session('applied_coupon'))->first();
+                @endphp
+                @if($sessionCoupon)
+                    this.appliedCoupon = {
+                        code: '{{ $sessionCoupon->code }}',
+                        type: '{{ $sessionCoupon->type }}',
+                        value: '{{ $sessionCoupon->value }}'
+                    };
+                @endif
+            @endif
         },
         grandTotal() {
             let total = parseFloat(this.cart.total());
-            if (this.form.payment_method === 'eft') {
-                let discount = this.cart.subtotal() * 0.05;
-                total -= discount;
+            
+            // Coupon Discount
+            let couponDiscount = 0;
+            if (this.appliedCoupon) {
+                if (this.appliedCoupon.type === 'percent') {
+                    couponDiscount = (this.cart.subtotal() * parseFloat(this.appliedCoupon.value)) / 100;
+                } else {
+                    couponDiscount = parseFloat(this.appliedCoupon.value);
+                }
+                total -= couponDiscount;
             }
-            return total.toFixed(2);
+
+            // EFT Discount
+            if (this.form.payment_method === 'eft') {
+                let subtotalAfterCoupon = Math.max(0, this.cart.subtotal() - couponDiscount);
+                let eftDiscount = subtotalAfterCoupon * 0.05;
+                total -= eftDiscount;
+            }
+            return Math.max(0, total).toFixed(2);
         },
         formatPhone(e) {
             let x = e.target.value.replace(/\D/g, '').match(/(\d{0,4})(\d{0,3})(\d{0,2})(\d{0,2})/);
