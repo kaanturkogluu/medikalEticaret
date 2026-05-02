@@ -91,9 +91,11 @@
                     <td class="px-6 py-4">
                         <div class="flex flex-col">
                             <span class="text-xs font-black text-slate-800 tracking-tighter">#{{ $o->external_order_id ?? $o->id }}</span>
-                            <span class="text-[9px] font-bold text-brand-600 uppercase tracking-tighter opacity-70">
-                                {{ $o->raw_marketplace_data['shipmentNumber'] ?? ( $o->channel_id ? 'Paket No Yok' : 'WEB SİPARİŞİ' ) }}
-                            </span>
+                            @if($o->channel_id)
+                                <span class="text-[9px] font-bold text-brand-600 uppercase tracking-tighter opacity-70">
+                                    {{ $o->raw_marketplace_data['shipmentNumber'] ?? 'Paket No Yok' }}
+                                </span>
+                            @endif
                         </div>
                     </td>
                     <td class="px-6 py-4">
@@ -105,7 +107,7 @@
                             </div>
                         @else
                             <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-500 uppercase tracking-tighter">
-                                WEB SİTE
+                                WEB SİPARİŞİ
                             </span>
                         @endif
                     </td>
