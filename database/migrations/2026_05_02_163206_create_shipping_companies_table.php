@@ -8,17 +8,23 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('shipping_companies', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('tracking_url')->nullable(); // Pattern like https://kargo.com/track?code=[TRACKING_CODE]
-            $table->boolean('active')->default(true);
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('shipping_companies')) {
+            Schema::create('shipping_companies', function (Blueprint $table) {
+                $table->id();
+                $table->string('name');
+                $table->string('tracking_url')->nullable(); // Pattern like https://kargo.com/track?code=[TRACKING_CODE]
+                $table->boolean('active')->default(true);
+                $table->timestamps();
+            });
+        }
 
         Schema::table('orders', function (Blueprint $table) {
-            $table->foreignId('shipping_company_id')->nullable()->constrained('shipping_companies')->nullOnDelete();
-            $table->string('tracking_code')->nullable();
+            if (!Schema::hasColumn('orders', 'shipping_company_id')) {
+                $table->foreignId('shipping_company_id')->nullable()->constrained('shipping_companies')->nullOnDelete();
+            }
+            if (!Schema::hasColumn('orders', 'tracking_code')) {
+                $table->string('tracking_code')->nullable();
+            }
         });
     }
 
