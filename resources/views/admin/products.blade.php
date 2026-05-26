@@ -182,17 +182,6 @@
                             </td>
                             <td class="px-6 py-4 text-right">
                                 <div class="flex items-center justify-end gap-1.5 lg:opacity-0 lg:group-hover:opacity-100 opacity-100 transition-opacity">
-                                    <!-- Sync Buttons -->
-                                    <button @click="sync(p.id, 'all')" :disabled="syncing" class="p-2 bg-white border border-slate-200 rounded-lg hover:border-brand-500 hover:text-brand-600 transition-all shadow-sm" title="Tam Senkronize">
-                                        <i :class="syncing === p.id + '-all' ? 'fa-spinner fa-spin' : 'fa-sync-alt'" class="fas text-sm"></i>
-                                    </button>
-                                    <button @click="sync(p.id, 'stock')" :disabled="syncing" class="p-2 bg-white border border-slate-200 rounded-lg hover:border-emerald-500 hover:text-emerald-600 transition-all shadow-sm" title="Stok Güncelle">
-                                        <i :class="syncing === p.id + '-stock' ? 'fa-spinner fa-spin' : 'fa-cubes'" class="fas text-sm"></i>
-                                    </button>
-                                    <button @click="sync(p.id, 'price')" :disabled="syncing" class="p-2 bg-white border border-slate-200 rounded-lg hover:border-amber-500 hover:text-amber-600 transition-all shadow-sm" title="Fiyat Güncelle">
-                                        <i :class="syncing === p.id + '-price' ? 'fa-spinner fa-spin' : 'fa-tag'" class="fas text-sm"></i>
-                                    </button>
-                                     <div class="w-px h-6 bg-slate-200 mx-1"></div>
                                      <a :href="'/admin/products/' + p.id + '/print-barcode'" target="_blank" class="p-2 bg-white border border-slate-200 rounded-lg hover:bg-slate-900 hover:text-white transition-all shadow-sm" title="Barkod Yazdır (58x40)">
                                          <i class="fas fa-barcode text-sm"></i>
                                      </a>

@@ -421,25 +421,6 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Quick Actions -->
-                <div class="bg-corporate p-6 rounded-3xl text-white shadow-xl shadow-corporate/20 relative overflow-hidden">
-                    <div class="absolute -right-8 -bottom-8 h-32 w-32 bg-brand-500 rounded-full blur-[60px] opacity-20"></div>
-                    
-                    <h3 class="text-sm font-black uppercase tracking-widest mb-6 relative z-10">Hızli İşlemler</h3>
-                    
-                    <div class="grid grid-cols-1 gap-2 relative z-10">
-                        <button type="button" @click="notify('info', 'Fiyat tüm kanallarda güncelleniyor...')" class="w-full py-3 bg-white/10 hover:bg-white/20 rounded-2xl flex items-center gap-3 px-4 transition-all text-xs font-bold">
-                            <i class="fas fa-tag text-brand-400"></i> Tüm Kanallarda Fiyatı Eşitle
-                        </button>
-                        <button type="button" @click="notify('info', 'Stok tüm kanallarda güncelleniyor...')" class="w-full py-3 bg-white/10 hover:bg-white/20 rounded-2xl flex items-center gap-3 px-4 transition-all text-xs font-bold">
-                            <i class="fas fa-cubes text-emerald-400"></i> Tüm Kanallarda Stoğu Eşitle
-                        </button>
-                        <button type="button" @click="notify('warning', 'Ürün pazaryeri silme henüz aktif değil')" class="w-full py-3 bg-rose-500/20 hover:bg-rose-500/30 text-rose-400 rounded-2xl flex items-center gap-3 px-4 transition-all text-xs font-bold">
-                            <i class="fas fa-trash-alt"></i> Ürünü Tüm Kanallardan Sil
-                        </button>
-                    </div>
-                </div>
             </div>
         </div>
     </form>
