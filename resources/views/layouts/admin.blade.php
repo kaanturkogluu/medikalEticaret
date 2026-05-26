@@ -79,6 +79,140 @@
 </head>
 <body class="h-full overflow-hidden flex" x-data="{ sidebarOpen: true, mobileMenu: false }">
 
+    <!-- Mobile Sidebar Backdrop -->
+    <div x-show="mobileMenu" 
+         x-transition:enter="transition-opacity ease-linear duration-300"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition-opacity ease-linear duration-300"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         @click="mobileMenu = false"
+         class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 md:hidden"
+         x-cloak>
+    </div>
+
+    <!-- Mobile Sidebar Drawer -->
+    <aside x-show="mobileMenu"
+           x-transition:enter="transition ease-in-out duration-300 transform"
+           x-transition:enter-start="-translate-x-full"
+           x-transition:enter-end="translate-x-0"
+           x-transition:leave="transition ease-in-out duration-300 transform"
+           x-transition:leave-start="translate-x-0"
+           x-transition:leave-end="-translate-x-full"
+           class="fixed inset-y-0 left-0 w-72 bg-corporate text-slate-300 flex flex-col h-full z-50 shadow-2xl md:hidden"
+           x-cloak>
+        <!-- Logo Area with Close Button -->
+        <div class="h-16 flex items-center justify-between px-6 border-b border-slate-800 shrink-0">
+            <div class="flex items-center">
+                <div class="h-9 w-9 bg-brand-500 rounded-lg flex items-center justify-center shrink-0 shadow-lg shadow-brand-500/20">
+                    <i class="fas fa-sync-alt text-white"></i>
+                </div>
+                <span class="ml-3 font-bold text-lg text-white tracking-tight whitespace-nowrap">MultiSync</span>
+            </div>
+            <button @click="mobileMenu = false" class="p-2 text-slate-400 hover:text-white transition-colors">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="flex-1 overflow-y-auto py-6 px-4 space-y-1 custom-scrollbar">
+            <p class="px-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Genel</p>
+            
+            <a href="/admin" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-all group {{ Request::is('admin') ? 'sidebar-item-active' : '' }}">
+                <i class="fas fa-th-large w-6 flex justify-center text-lg {{ Request::is('admin') ? 'text-white' : 'text-slate-500 group-hover:text-brand-400' }}"></i>
+                <span class="font-medium text-sm">Dashboard</span>
+            </a>
+
+            <a href="/admin/products" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-all group {{ Request::is('admin/products*') ? 'sidebar-item-active' : '' }}">
+                <i class="fas fa-box w-6 flex justify-center text-lg {{ Request::is('admin/products*') ? 'text-white' : 'text-slate-500 group-hover:text-brand-400' }}"></i>
+                <span class="font-medium text-sm">Ürünler</span>
+            </a>
+
+            <a href="/admin/orders" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-all group {{ Request::is('admin/orders*') ? 'sidebar-item-active' : '' }}">
+                <i class="fas fa-shopping-cart w-6 flex justify-center text-lg {{ Request::is('admin/orders*') ? 'text-white' : 'text-slate-500 group-hover:text-brand-400' }}"></i>
+                <span class="font-medium text-sm">Siparişler</span>
+            </a>
+            
+            <a href="{{ route('admin.shipping-companies.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-all group {{ Request::is('admin/shipping-companies*') ? 'sidebar-item-active' : '' }}">
+                <i class="fas fa-truck w-6 flex justify-center text-lg {{ Request::is('admin/shipping-companies*') ? 'text-white' : 'text-slate-500 group-hover:text-brand-400' }}"></i>
+                <span class="font-medium text-sm">Kargo Firmaları</span>
+            </a>
+
+            <a href="{{ route('admin.coupons.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-all group {{ Request::is('admin/coupons*') ? 'sidebar-item-active' : '' }}">
+                <i class="fas fa-ticket-alt w-6 flex justify-center text-lg {{ Request::is('admin/coupons*') ? 'text-white' : 'text-slate-500 group-hover:text-brand-400' }}"></i>
+                <span class="font-medium text-sm">Kuponlar</span>
+            </a>
+
+            <a href="{{ route('admin.comments.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-all group {{ Request::is('admin/comments*') ? 'sidebar-item-active' : '' }}">
+                <i class="fas fa-comments w-6 flex justify-center text-lg {{ Request::is('admin/comments*') ? 'text-white' : 'text-slate-500 group-hover:text-brand-400' }}"></i>
+                <span class="font-medium text-sm">Yorumlar</span>
+            </a>
+
+            <div class="pt-6 pb-2">
+                <p class="px-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Sistem Ayarları</p>
+            </div>
+
+            <a href="{{ route('admin.brands.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-all group {{ Request::is('admin/brands*') ? 'sidebar-item-active' : '' }}">
+                <i class="fas fa-industry w-6 flex justify-center text-lg {{ Request::is('admin/brands*') ? 'text-white' : 'text-slate-500 group-hover:text-brand-400' }}"></i>
+                <span class="font-medium text-sm">Markalar</span>
+            </a>
+
+            <a href="{{ route('admin.categories.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-all group {{ Request::is('admin/categories*') ? 'sidebar-item-active' : '' }}">
+                <i class="fas fa-tags w-6 flex justify-center text-lg {{ Request::is('admin/categories*') ? 'text-white' : 'text-slate-500 group-hover:text-brand-400' }}"></i>
+                <span class="font-medium text-sm">Kategoriler</span>
+            </a>
+
+            <a href="{{ route('admin.pages.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-all group {{ Request::is('admin/pages*') ? 'sidebar-item-active' : '' }}">
+                <i class="fas fa-file-contract w-6 flex justify-center text-lg {{ Request::is('admin/pages*') ? 'text-white' : 'text-slate-500 group-hover:text-brand-400' }}"></i>
+                <span class="font-medium text-sm text-[11px] leading-tight flex-grow">Sözleşmeler & Politikalar</span>
+            </a>
+
+            <a href="{{ route('admin.faqs.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-all group {{ Request::is('admin/faqs*') ? 'sidebar-item-active' : '' }}">
+                <i class="fas fa-question-circle w-6 flex justify-center text-lg {{ Request::is('admin/faqs*') ? 'text-white' : 'text-slate-500 group-hover:text-brand-400' }}"></i>
+                <span class="font-medium text-sm">Sıkça Sorulan Sorular</span>
+            </a>
+
+            <a href="/admin/appearance" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-all group {{ Request::is('admin/appearance*') ? 'sidebar-item-active' : '' }}">
+                <i class="fas fa-eye w-6 flex justify-center text-lg {{ Request::is('admin/appearance*') ? 'text-white' : 'text-slate-500 group-hover:text-brand-400' }}"></i>
+                <span class="font-medium text-sm">Site Görünümü</span>
+            </a>
+
+            <div class="pt-6 pb-2">
+                <p class="px-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Senkronizasyon</p>
+            </div>
+
+            <a href="/admin/sync/stock" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-all group {{ Request::is('admin/sync/stock*') ? 'sidebar-item-active' : '' }}">
+                <i class="fas fa-cubes w-6 flex justify-center text-lg {{ Request::is('admin/sync/stock*') ? 'text-white' : 'text-slate-500 group-hover:text-brand-400' }}"></i>
+                <span class="font-medium text-sm">Stok Senkronize</span>
+            </a>
+
+            <a href="/admin/sync/price" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-all group {{ Request::is('admin/sync/price*') ? 'sidebar-item-active' : '' }}">
+                <i class="fas fa-tag w-6 flex justify-center text-lg {{ Request::is('admin/sync/price*') ? 'text-white' : 'text-slate-500 group-hover:text-brand-400' }}"></i>
+                <span class="font-medium text-sm">Fiyat Senkronize</span>
+            </a>
+
+            <div class="pt-6 pb-2">
+                <p class="px-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Altyapı</p>
+            </div>
+
+            <a href="/admin/marketplaces" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-all group {{ Request::is('admin/marketplaces*') ? 'sidebar-item-active' : '' }}">
+                <i class="fas fa-plug w-6 flex justify-center text-lg {{ Request::is('admin/marketplaces*') ? 'text-white' : 'text-slate-500 group-hover:text-brand-400' }}"></i>
+                <span class="font-medium text-sm">Pazaryeri Bağlantıları</span>
+            </a>
+
+            <a href="/admin/logs" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-all group {{ Request::is('admin/logs*') ? 'sidebar-item-active' : '' }}">
+                <i class="fas fa-terminal w-6 flex justify-center text-lg {{ Request::is('admin/logs*') ? 'text-white' : 'text-slate-500 group-hover:text-brand-400' }}"></i>
+                <span class="font-medium text-sm">Loglar & Debug</span>
+            </a>
+
+            <a href="/admin/settings" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-all group {{ Request::is('admin/settings*') ? 'sidebar-item-active' : '' }}">
+                <i class="fas fa-sliders-h w-6 flex justify-center text-lg {{ Request::is('admin/settings*') ? 'text-white' : 'text-slate-500 group-hover:text-brand-400' }}"></i>
+                <span class="font-medium text-sm">Ayarlar</span>
+            </a>
+        </nav>
+    </aside>
+
     <!-- Sidebar -->
     <aside :class="sidebarOpen ? 'w-64' : 'w-20'" class="hidden md:flex flex-col h-full bg-corporate text-slate-300 transition-all duration-300 z-50 shadow-2xl relative">
         <!-- Logo Area -->

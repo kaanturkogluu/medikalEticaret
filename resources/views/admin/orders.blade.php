@@ -38,18 +38,18 @@
     }
 }">
     <!-- Header -->
-    <div class="flex items-center justify-between">
+    <div class="flex flex-col xl:flex-row gap-4 xl:items-center xl:justify-between">
         <div>
             <h2 class="text-2xl font-bold text-slate-800 tracking-tight">Sipariş Yönetimi (Tüm Siparişler)</h2>
             <p class="text-sm text-slate-500 mt-1">Trendyol, Hepsiburada, N11 ve Web Sitenizden gelen tüm siparişleri buradan yönetebilirsiniz.</p>
         </div>
-        <div class="flex items-center gap-2">
-            <form action="{{ route('admin.orders') }}" method="GET" class="flex items-center gap-2">
-                <div class="relative group">
-                    <input type="text" name="q" value="{{ request('q') }}" placeholder="Sipariş No, Müşteri Adı..." class="pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all shadow-sm min-w-[240px]">
+        <div class="flex flex-wrap items-stretch sm:items-center gap-3 w-full xl:w-auto">
+            <form action="{{ route('admin.orders') }}" method="GET" class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto flex-grow xl:flex-grow-0">
+                <div class="relative group w-full sm:w-auto">
+                    <input type="text" name="q" value="{{ request('q') }}" placeholder="Sipariş No, Müşteri Adı..." class="w-full pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all shadow-sm sm:min-w-[240px]">
                     <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs transition-colors group-focus-within:text-brand-500"></i>
                 </div>
-                <select name="channel_id" onchange="this.form.submit()" class="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all shadow-sm">
+                <select name="channel_id" onchange="this.form.submit()" class="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all shadow-sm w-full sm:w-auto">
                     <option value="">Tüm Pazaryerleri</option>
                     @foreach($channels as $channel)
                         <option value="{{ $channel->id }}" {{ request('channel_id') == $channel->id ? 'selected' : '' }}>
@@ -57,13 +57,13 @@
                         </option>
                     @endforeach
                 </select>
-                <button type="submit" class="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors flex items-center gap-2 shadow-sm">
+                <button type="submit" class="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors flex items-center justify-center gap-2 shadow-sm w-full sm:w-auto">
                     <i class="fas fa-filter text-brand-500 text-[10px]"></i> Filtrele
                 </button>
             </form>
-            <form action="{{ route('admin.orders.sync') }}" method="POST">
+            <form action="{{ route('admin.orders.sync') }}" method="POST" class="w-full sm:w-auto">
                 @csrf
-                <button type="submit" class="px-4 py-2 bg-brand-600 text-white rounded-lg text-sm font-semibold hover:bg-brand-700 transition-colors flex items-center gap-2 shadow-lg shadow-brand-500/20">
+                <button type="submit" class="w-full sm:w-auto px-4 py-2 bg-brand-600 text-white rounded-lg text-sm font-semibold hover:bg-brand-700 transition-colors flex items-center justify-center gap-2 shadow-lg shadow-brand-500/20">
                     <i class="fas fa-sync-alt text-[10px]"></i> Pazaryeri Siparişlerini Çek
                 </button>
             </form>
@@ -72,7 +72,8 @@
 
     <!-- Orders Table -->
     <div class="bg-white border border-slate-100 rounded-3xl shadow-sm overflow-hidden">
-        <table class="w-full text-left">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left min-w-[1000px]">
             <thead class="bg-slate-50 border-b border-slate-100">
                 <tr>
                     <th class="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Sipariş / Paket No</th>
@@ -129,14 +130,15 @@
                     </td>
                     <td class="px-6 py-4 text-right">
                         @php $o->load(['items.product', 'channel', 'shippingCompany']); @endphp
-                        <button @click="selectedOrder = {{ json_encode($o) }}" class="p-2 bg-white border border-slate-200 rounded-lg shadow-sm hover:border-brand-500 hover:text-brand-600 transition-all opacity-0 group-hover:opacity-100">
+                        <button @click="selectedOrder = {{ json_encode($o) }}" class="p-2 bg-white border border-slate-200 rounded-lg shadow-sm hover:border-brand-500 hover:text-brand-600 transition-all lg:opacity-0 lg:group-hover:opacity-100 opacity-100">
                             <i class="fas fa-eye text-sm"></i>
                         </button>
                     </td>
                 </tr>
                 @endforeach
             </tbody>
-        </table>
+            </table>
+        </div>
         <div class="p-4 bg-slate-50 border-t border-slate-100">
             {{ $orders->links() }}
         </div>
@@ -144,9 +146,9 @@
 
     <!-- Dynamic Order Details Modal -->
     <div x-show="selectedOrder" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm transition-all overflow-y-auto">
-        <div @click.away="selectedOrder = null" class="bg-white rounded-[2.5rem] w-full max-w-4xl shadow-2xl relative animate-in fade-in zoom-in duration-200 flex flex-col max-h-[90vh]">
+        <div @click.away="selectedOrder = null" class="bg-white rounded-[2.5rem] w-full max-w-4xl shadow-2xl relative animate-in fade-in zoom-in duration-200 flex flex-col max-h-[90vh] my-8">
             <!-- Modal Header -->
-            <div class="p-8 pb-4 flex items-center justify-between border-b border-slate-50">
+            <div class="p-4 md:p-8 pb-4 flex items-center justify-between border-b border-slate-50">
                 <div class="flex items-center gap-4">
                     <div class="h-12 w-12 bg-brand-50 rounded-2xl flex items-center justify-center text-brand-600 text-xl font-black">
                         <i class="fas fa-box"></i>
@@ -166,7 +168,7 @@
             </div>
 
             <!-- Modal Content -->
-            <div class="flex-1 overflow-y-auto p-8 pt-6 space-y-8 custom-scrollbar">
+            <div class="flex-1 overflow-y-auto p-4 md:p-8 pt-6 space-y-8 custom-scrollbar">
                 
                 <!-- Info Grid -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -230,7 +232,7 @@
 
                 <!-- Shipping Management (Website Orders only or Manual Override) -->
                 <template x-if="selectedOrder && (selectedOrder.order_status === 'Created' || selectedOrder.order_status === 'Picking')">
-                    <div class="p-8 bg-brand-50 rounded-[2rem] border border-brand-100 space-y-6">
+                    <div class="p-4 md:p-8 bg-brand-50 rounded-[2rem] border border-brand-100 space-y-6">
                         <div class="flex items-center gap-3">
                             <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-brand-600 shadow-sm">
                                 <i class="fas fa-truck-loading text-lg"></i>
@@ -277,7 +279,7 @@
                 </template>
 
                 <!-- Label Printing -->
-                <div x-show="!selectedOrder?.channel_id" class="p-8 bg-slate-50 rounded-[2rem] border border-slate-100 space-y-6 mt-6">
+                <div x-show="!selectedOrder?.channel_id" class="p-4 md:p-8 bg-slate-50 rounded-[2rem] border border-slate-100 space-y-6 mt-6">
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-slate-600 shadow-sm">
                             <i class="fas fa-print text-lg"></i>
@@ -288,7 +290,7 @@
                         </div>
                     </div>
                     
-                    <div class="flex items-end gap-4">
+                    <div class="flex flex-col sm:flex-row sm:items-end gap-4">
                         <div class="flex-1">
                             <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 px-1">Paketleyici</label>
                             <select x-model="packerName" class="w-full px-5 py-3 bg-white border border-slate-200 rounded-2xl text-xs font-bold focus:ring-4 focus:ring-brand-500/10 focus:border-brand-500 outline-none transition-all">
@@ -308,7 +310,8 @@
                         <h4 class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Sipariş İçeriği (Lines)</h4>
                         <span class="text-[10px] font-extrabold text-brand-600 bg-brand-50 px-2 py-0.5 rounded-lg" x-text="(selectedOrder?.raw_marketplace_data?.lines?.length || selectedOrder?.items?.length || 0) + ' Kalem Ürün'"></span>
                     </div>
-                    <table class="w-full text-left">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left min-w-[600px]">
                         <thead>
                             <tr class="text-[9px] font-black text-slate-400 uppercase tracking-widest bg-slate-50/50">
                                 <th class="px-6 py-3">Ürün / SKU</th>
@@ -386,6 +389,7 @@
                         </tbody>
                     </table>
                 </div>
+                </div>
 
                 <!-- History Timeline -->
                 <div class="space-y-4">
@@ -410,24 +414,24 @@
             </div>
 
             <!-- Modal Footer -->
-            <div class="p-8 bg-slate-50 rounded-b-[2.5rem] border-t border-slate-100 flex items-center justify-between">
-                <div class="flex items-center gap-8">
+            <div class="p-4 md:p-8 bg-slate-50 rounded-b-[2.5rem] border-t border-slate-100 flex flex-col lg:flex-row gap-6 items-stretch lg:items-center lg:justify-between">
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 sm:gap-8">
                     <div>
                         <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Toplam Brüt</p>
                         <p class="text-xl font-black text-slate-800 tabular-nums" x-text="((selectedOrder?.raw_marketplace_data?.grossAmount * 1 || (selectedOrder?.total_price * 1 + selectedOrder?.discount_amount * 1) || 0)).toFixed(2) + ' ₺'"></p>
                     </div>
-                    <div class="h-10 w-px bg-slate-200"></div>
+                    <div class="hidden sm:block h-10 w-px bg-slate-200"></div>
                     <div>
                         <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Toplam İndirim</p>
                         <p class="text-xl font-black text-red-500 tabular-nums" x-text="'- ' + (selectedOrder?.raw_marketplace_data?.totalDiscount || selectedOrder?.discount_amount || 0).toFixed(2) + ' ₺'"></p>
                     </div>
-                    <div class="h-10 w-px bg-slate-200"></div>
+                    <div class="hidden sm:block h-10 w-px bg-slate-200"></div>
                     <div>
                         <p class="text-[10px] font-black text-brand-600 uppercase tracking-widest mb-1">Genel Toplam (NET)</p>
                         <p class="text-2xl font-black text-brand-600 tabular-nums" x-text="(selectedOrder?.total_price * 1 || 0).toLocaleString('tr-TR', { minimumFractionDigits: 2 }) + ' ₺'"></p>
                     </div>
                 </div>
-                <div class="flex gap-3">
+                <div class="flex flex-wrap gap-3 justify-end">
                     <template x-if="selectedOrder?.order_status === 'Awaiting' || selectedOrder?.order_status === 'pending_payment'">
                         <form :action="'{{ route('admin.orders.approve', ':id') }}'.replace(':id', selectedOrder.id)" 
                               method="POST"

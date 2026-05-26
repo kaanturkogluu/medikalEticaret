@@ -7,12 +7,12 @@
     chartLabels: @json($chartLabels)
 }">
     <!-- Header -->
-    <div class="flex items-center justify-between">
+    <div class="flex flex-col sm:flex-row gap-4 sm:items-center sm:justify-between">
         <div>
             <h2 class="text-2xl font-bold text-slate-800 tracking-tight">Genel Bakış</h2>
             <p class="text-sm text-slate-500 mt-1">Sistemin anlık durumunu ve başarılı senkronizasyonları inceleyin.</p>
         </div>
-        <div class="flex items-center gap-2">
+        <div class="flex flex-wrap items-center gap-2">
             <a href="{{ route('admin.test-products') }}" class="px-4 py-2 bg-brand-600 text-white rounded-lg text-sm font-semibold hover:bg-brand-700 transition-all flex items-center gap-2 shadow-lg shadow-brand-500/20">
                 <i class="fas fa-vial text-[10px]"></i> Trendyol API Test
             </a>
@@ -23,7 +23,7 @@
     </div>
 
     <!-- Stats Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
         <!-- Card 1 -->
         <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-between hover:shadow-md transition-shadow relative overflow-hidden group">
             <div class="z-10">

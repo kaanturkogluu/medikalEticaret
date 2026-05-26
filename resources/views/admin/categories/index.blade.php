@@ -4,12 +4,12 @@
 
 @section('content')
 <div class="px-4 sm:px-6 lg:px-8">
-    <div class="sm:flex sm:items-center">
-        <div class="sm:flex-auto">
+    <div class="flex flex-col sm:flex-row gap-4 sm:items-center sm:justify-between">
+        <div>
             <h1 class="text-2xl font-black italic tracking-tighter text-slate-900 uppercase underline decoration-[var(--primary-color)] decoration-4 underline-offset-8">Kategoriler</h1>
             <p class="mt-4 text-sm text-gray-500 font-medium">Sistemdeki tüm kategorileri buradan yönetebilirsiniz. Alt kategoriler oluşturabilir veya mevcut olanları düzenleyebilirsiniz.</p>
         </div>
-        <div class="mt-4 sm:mt-0 sm:ml-16 sm:flex flex-none gap-3">
+        <div class="flex flex-wrap items-center gap-3 shrink-0">
             <a href="{{ route('admin.categories.featured') }}" class="inline-flex items-center justify-center px-6 py-3 border border-indigo-200 text-sm font-black italic tracking-tighter uppercase rounded-xl shadow-lg shadow-indigo-100 text-indigo-700 bg-indigo-50 hover:bg-indigo-100 transition-all transform hover:scale-105 active:scale-95">
                 <i class="fas fa-star mr-2"></i> Navbar Öne Çıkar
             </a>
@@ -21,22 +21,25 @@
 
     <!-- Search Section -->
     <div class="mt-8 bg-white/50 backdrop-blur-md p-6 rounded-3xl border border-white shadow-2xl shadow-slate-200/50">
-        <form action="{{ route('admin.categories.index') }}" method="GET" class="flex gap-4">
+        <form action="{{ route('admin.categories.index') }}" method="GET" class="flex flex-col sm:flex-row gap-4">
             <div class="relative flex-grow group">
                 <input type="text" name="q" value="{{ request('q') }}" placeholder="Kategori adı ile ara..." 
                        class="block w-full pl-12 pr-4 py-4 bg-white border border-slate-200 rounded-2xl text-sm font-medium placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-[var(--primary-color)]/10 focus:border-[var(--primary-color)] transition-all">
                 <i class="fas fa-search absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[var(--primary-color)] transition-colors"></i>
             </div>
             
-            <select name="product_status" class="px-6 py-4 bg-white border border-slate-200 rounded-2xl text-sm font-medium text-slate-600 focus:outline-none focus:ring-4 focus:ring-[var(--primary-color)]/10 focus:border-[var(--primary-color)] transition-all appearance-none cursor-pointer hover:border-[var(--primary-color)]/50">
-                <option value="">Tümü</option>
-                <option value="has_products" {{ request('product_status') === 'has_products' ? 'selected' : '' }}>Ürünü Olanlar</option>
-                <option value="no_products" {{ request('product_status') === 'no_products' ? 'selected' : '' }}>Boş Kategoriler</option>
-            </select>
+            <div class="relative">
+                <select name="product_status" class="w-full sm:w-auto px-6 py-4 bg-white border border-slate-200 rounded-2xl text-sm font-medium text-slate-600 focus:outline-none focus:ring-4 focus:ring-[var(--primary-color)]/10 focus:border-[var(--primary-color)] transition-all appearance-none cursor-pointer hover:border-[var(--primary-color)]/50 pr-12">
+                    <option value="">Tümü</option>
+                    <option value="has_products" {{ request('product_status') === 'has_products' ? 'selected' : '' }}>Ürünü Olanlar</option>
+                    <option value="no_products" {{ request('product_status') === 'no_products' ? 'selected' : '' }}>Boş Kategoriler</option>
+                </select>
+                <i class="fas fa-chevron-down absolute right-5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>
+            </div>
 
             <button type="submit" class="px-8 py-4 bg-slate-900 text-white rounded-2xl font-black italic uppercase tracking-tighter hover:bg-slate-800 transition-all shadow-xl shadow-slate-200 active:scale-95">Filtrele</button>
             @if(request('q') || request('product_status'))
-                <a href="{{ route('admin.categories.index') }}" class="px-8 py-4 bg-gray-100 text-gray-600 rounded-2xl font-black italic uppercase tracking-tighter hover:bg-gray-200 transition-all flex items-center">Temizle</a>
+                <a href="{{ route('admin.categories.index') }}" class="px-8 py-4 bg-gray-100 text-gray-600 rounded-2xl font-black italic uppercase tracking-tighter hover:bg-gray-200 transition-all flex items-center justify-center">Temizle</a>
             @endif
         </form>
     </div>
@@ -89,7 +92,7 @@
                                 </td>
 
                                 <td class="relative whitespace-nowrap py-5 pl-3 pr-8 text-right text-sm font-medium">
-                                    <div class="flex justify-end gap-3 translate-x-4 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-300">
+                                    <div class="flex justify-end gap-3 lg:translate-x-4 lg:opacity-0 lg:group-hover:translate-x-0 lg:group-hover:opacity-100 opacity-100 transition-all duration-300">
                                         <a href="{{ route('admin.categories.edit', $category->id) }}" class="p-2.5 bg-blue-50 text-blue-600 rounded-xl hover:bg-blue-600 hover:text-white transition-all shadow-sm">
                                             <i class="fas fa-edit"></i>
                                         </a>

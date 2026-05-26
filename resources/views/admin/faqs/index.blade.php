@@ -3,12 +3,12 @@
 @section('content')
 <div class="space-y-8 pb-20">
     <!-- Header -->
-    <div class="flex items-center justify-between">
+    <div class="flex flex-col sm:flex-row gap-4 sm:items-center sm:justify-between">
         <div>
             <h1 class="text-2xl font-black text-slate-900 tracking-tighter italic uppercase">Sıkça Sorulan Sorular</h1>
             <p class="text-xs text-slate-500 font-medium mt-1">Müşteri sorularını yönetin, sıralayın ve yayınlayın.</p>
         </div>
-        <a href="{{ route('admin.faqs.create') }}" class="bg-slate-900 text-white px-8 py-4 rounded-2xl font-black italic uppercase tracking-tighter hover:bg-brand-600 transition-all shadow-xl shadow-slate-200 flex items-center gap-3">
+        <a href="{{ route('admin.faqs.create') }}" class="bg-slate-900 text-white px-8 py-4 rounded-2xl font-black italic uppercase tracking-tighter hover:bg-brand-600 transition-all shadow-xl shadow-slate-200 flex items-center justify-center gap-3 shrink-0 w-full sm:w-auto">
             <i class="fas fa-plus-circle"></i> YENİ SORU EKLE
         </a>
     </div>
@@ -53,7 +53,7 @@
                             </form>
                         </td>
                         <td class="px-8 py-6 text-right">
-                            <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <div class="flex items-center justify-end gap-2 lg:opacity-0 lg:group-hover:opacity-100 opacity-100 transition-opacity">
                                 <a href="{{ route('admin.faqs.edit', $faq) }}" class="w-10 h-10 bg-white border border-slate-200 rounded-xl flex items-center justify-center text-slate-400 hover:text-brand-500 hover:border-brand-500 transition-all shadow-sm">
                                     <i class="fas fa-edit text-xs"></i>
                                 </a>

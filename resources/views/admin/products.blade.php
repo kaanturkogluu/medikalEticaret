@@ -58,12 +58,12 @@
     }
 }">
     <!-- Header -->
-    <div class="flex items-center justify-between">
+    <div class="flex flex-col sm:flex-row gap-4 sm:items-center sm:justify-between">
         <div>
             <h2 class="text-2xl font-bold text-slate-800 tracking-tight">Ürün Yönetimi</h2>
             <p class="text-sm text-slate-500 mt-1">Stok, fiyat ve ürün bilgilerini tüm mecralarda yönetin.</p>
         </div>
-        <div class="flex items-center gap-2">
+        <div class="flex flex-wrap items-center gap-2">
             <a href="{{ route('admin.products.create') }}" class="px-4 py-2 bg-slate-900 text-white rounded-lg text-sm font-semibold hover:bg-slate-800 transition-colors flex items-center gap-2 shadow-lg shadow-slate-900/20">
                 <i class="fas fa-plus text-xs"></i> Yeni Ürün Ekle
             </a>
@@ -75,21 +75,21 @@
 
     <!-- Filters Bar -->
     <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100">
-        <form action="{{ route('admin.products') }}" method="GET" class="flex flex-wrap items-center gap-4" id="filterForm">
-            <div class="flex-1 min-w-[200px] relative">
+        <form action="{{ route('admin.products') }}" method="GET" class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4" id="filterForm">
+            <div class="flex-1 relative">
                 <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
                 <input type="text" name="q" value="{{ request('q') }}" placeholder="SKU veya Ürün Adı ile ara..." class="w-full pl-10 pr-20 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all">
                 <button type="submit" class="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-1 bg-slate-900 text-white text-[10px] font-black italic rounded-md hover:bg-brand-600 transition-all uppercase">ARA</button>
             </div>
             
-            <div class="flex items-center gap-3">
-                <select name="stock_status" onchange="this.form.submit()" class="px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all cursor-pointer">
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                <select name="stock_status" onchange="this.form.submit()" class="px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all cursor-pointer w-full sm:w-auto">
                     <option value="all">Tüm Stok Durumları</option>
                     <option value="in_stock" {{ request('stock_status') == 'in_stock' ? 'selected' : '' }}>Stokta Var</option>
                     <option value="out_of_stock" {{ request('stock_status') == 'out_of_stock' ? 'selected' : '' }}>Stokta Yok</option>
                 </select>
 
-                <select x-model="marketplaceFilter" class="px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-bold text-slate-700 focus:outline-none transition-all cursor-pointer">
+                <select x-model="marketplaceFilter" class="px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-bold text-slate-700 focus:outline-none transition-all cursor-pointer w-full sm:w-auto">
                     <option value="all">Tüm Pazaryerleri</option>
                     <option value="Trendyol">Trendyol</option>
                     <option value="Hepsiburada">Hepsiburada</option>
@@ -181,7 +181,7 @@
                                 </div>
                             </td>
                             <td class="px-6 py-4 text-right">
-                                <div class="flex items-center justify-end gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <div class="flex items-center justify-end gap-1.5 lg:opacity-0 lg:group-hover:opacity-100 opacity-100 transition-opacity">
                                     <!-- Sync Buttons -->
                                     <button @click="sync(p.id, 'all')" :disabled="syncing" class="p-2 bg-white border border-slate-200 rounded-lg hover:border-brand-500 hover:text-brand-600 transition-all shadow-sm" title="Tam Senkronize">
                                         <i :class="syncing === p.id + '-all' ? 'fa-spinner fa-spin' : 'fa-sync-alt'" class="fas text-sm"></i>

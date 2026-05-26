@@ -4,12 +4,12 @@
 
 @section('content')
 <div class="px-4 sm:px-6 lg:px-8">
-    <div class="sm:flex sm:items-center">
-        <div class="sm:flex-auto">
+    <div class="flex flex-col sm:flex-row gap-4 sm:items-center sm:justify-between">
+        <div>
             <h1 class="text-2xl font-black italic tracking-tighter text-slate-900 uppercase underline decoration-[var(--primary-color)] decoration-4 underline-offset-8">Markalar</h1>
             <p class="mt-4 text-sm text-gray-500 font-medium">Sistemdeki tüm markaları buradan yönetebilirsiniz. Marka ekleyebilir, düzenleyebilir veya aktif/pasif durumlarını değiştirebilirsiniz.</p>
         </div>
-        <div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
+        <div class="flex flex-wrap items-center gap-3 shrink-0">
             <a href="{{ route('admin.brands.create') }}" class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-sm font-black italic tracking-tighter uppercase rounded-xl shadow-xl shadow-orange-100 text-white bg-[var(--primary-color)] hover:bg-[var(--primary-hover)] transition-all transform hover:scale-105 active:scale-95">
                 <i class="fas fa-plus mr-2"></i> Yeni Marka Ekle
             </a>
@@ -95,7 +95,7 @@
                                     </form>
                                 </td>
                                 <td class="relative whitespace-nowrap py-5 pl-3 pr-8 text-right text-sm font-medium">
-                                    <div class="flex justify-end gap-3 translate-x-4 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-300">
+                                    <div class="flex justify-end gap-3 lg:translate-x-4 lg:opacity-0 lg:group-hover:translate-x-0 lg:group-hover:opacity-100 opacity-100 transition-all duration-300">
                                         <a href="{{ route('admin.brands.edit', $brand->id) }}" class="p-2.5 bg-blue-50 text-blue-600 rounded-xl hover:bg-blue-600 hover:text-white transition-all shadow-sm">
                                             <i class="fas fa-edit"></i>
                                         </a>
