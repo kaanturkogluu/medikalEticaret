@@ -96,6 +96,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::post('/orders/{order}/update-shipping', [\App\Http\Controllers\Admin\OrderController::class, 'updateShipping'])->name('admin.orders.update-shipping');
     Route::get('/orders/{order}/print-label', [\App\Http\Controllers\Admin\OrderController::class, 'printLabel'])->name('admin.orders.print-label');
     Route::get('/orders/{order}', [\App\Http\Controllers\Admin\OrderController::class, 'show'])->name('admin.orders.show');
+    Route::get('/customers', [\App\Http\Controllers\Admin\CustomerController::class, 'index'])->name('admin.customers');
     Route::get('/test-products', [\App\Http\Controllers\Admin\OrderController::class, 'testProducts'])->name('admin.test-products');
     Route::view('/sync/stock', 'admin.sync.stock')->name('admin.sync.stock');
     Route::view('/sync/price', 'admin.sync.price')->name('admin.sync.price');
@@ -119,8 +120,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
 
     Route::get('/api/notifications', [\App\Http\Controllers\Admin\NotificationController::class, 'getUpdates'])->name('admin.api.notifications');
     Route::post('/api/notifications/read', [\App\Http\Controllers\Admin\NotificationController::class, 'markAsRead'])->name('admin.api.notifications.read');
-    Route::get('/logs', [\App\Http\Controllers\Admin\LogController::class, 'index'])->name('admin.logs');
-    Route::post('/logs/clear', [\App\Http\Controllers\Admin\LogController::class, 'clear'])->name('admin.logs.clear');
+
     Route::get('/appearance', [\App\Http\Controllers\Admin\AppearanceController::class, 'index'])->name('admin.appearance');
     Route::get('/appearance/contact', [\App\Http\Controllers\Admin\AppearanceController::class, 'contact'])->name('admin.appearance.contact');
     Route::post('/appearance/contact', [\App\Http\Controllers\Admin\AppearanceController::class, 'updateContact'])->name('admin.appearance.contact.update');

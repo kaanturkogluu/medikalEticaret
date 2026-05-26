@@ -134,6 +134,11 @@
                 <span class="font-medium text-sm">Siparişler</span>
             </a>
             
+            <a href="{{ route('admin.customers') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-all group {{ Request::is('admin/customers*') ? 'sidebar-item-active' : '' }}">
+                <i class="fas fa-users w-6 flex justify-center text-lg {{ Request::is('admin/customers*') ? 'text-white' : 'text-slate-500 group-hover:text-brand-400' }}"></i>
+                <span class="font-medium text-sm">Müşteriler</span>
+            </a>
+            
             <a href="{{ route('admin.shipping-companies.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-all group {{ Request::is('admin/shipping-companies*') ? 'sidebar-item-active' : '' }}">
                 <i class="fas fa-truck w-6 flex justify-center text-lg {{ Request::is('admin/shipping-companies*') ? 'text-white' : 'text-slate-500 group-hover:text-brand-400' }}"></i>
                 <span class="font-medium text-sm">Kargo Firmaları</span>
@@ -178,19 +183,6 @@
                 <span class="font-medium text-sm">Site Görünümü</span>
             </a>
 
-            <div class="pt-6 pb-2">
-                <p class="px-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Senkronizasyon</p>
-            </div>
-
-            <a href="/admin/sync/stock" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-all group {{ Request::is('admin/sync/stock*') ? 'sidebar-item-active' : '' }}">
-                <i class="fas fa-cubes w-6 flex justify-center text-lg {{ Request::is('admin/sync/stock*') ? 'text-white' : 'text-slate-500 group-hover:text-brand-400' }}"></i>
-                <span class="font-medium text-sm">Stok Senkronize</span>
-            </a>
-
-            <a href="/admin/sync/price" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-all group {{ Request::is('admin/sync/price*') ? 'sidebar-item-active' : '' }}">
-                <i class="fas fa-tag w-6 flex justify-center text-lg {{ Request::is('admin/sync/price*') ? 'text-white' : 'text-slate-500 group-hover:text-brand-400' }}"></i>
-                <span class="font-medium text-sm">Fiyat Senkronize</span>
-            </a>
 
             <div class="pt-6 pb-2">
                 <p class="px-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Altyapı</p>
@@ -199,11 +191,6 @@
             <a href="/admin/marketplaces" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-all group {{ Request::is('admin/marketplaces*') ? 'sidebar-item-active' : '' }}">
                 <i class="fas fa-plug w-6 flex justify-center text-lg {{ Request::is('admin/marketplaces*') ? 'text-white' : 'text-slate-500 group-hover:text-brand-400' }}"></i>
                 <span class="font-medium text-sm">Pazaryeri Bağlantıları</span>
-            </a>
-
-            <a href="/admin/logs" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-all group {{ Request::is('admin/logs*') ? 'sidebar-item-active' : '' }}">
-                <i class="fas fa-terminal w-6 flex justify-center text-lg {{ Request::is('admin/logs*') ? 'text-white' : 'text-slate-500 group-hover:text-brand-400' }}"></i>
-                <span class="font-medium text-sm">Loglar & Debug</span>
             </a>
 
             <a href="/admin/settings" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-all group {{ Request::is('admin/settings*') ? 'sidebar-item-active' : '' }}">
@@ -240,6 +227,11 @@
             <a href="/admin/orders" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-all group {{ Request::is('admin/orders*') ? 'sidebar-item-active' : '' }}">
                 <i class="fas fa-shopping-cart w-6 flex justify-center text-lg {{ Request::is('admin/orders*') ? 'text-white' : 'text-slate-500 group-hover:text-brand-400' }}"></i>
                 <span x-show="sidebarOpen" class="font-medium text-sm">Siparişler</span>
+            </a>
+            
+            <a href="{{ route('admin.customers') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-all group {{ Request::is('admin/customers*') ? 'sidebar-item-active' : '' }}">
+                <i class="fas fa-users w-6 flex justify-center text-lg {{ Request::is('admin/customers*') ? 'text-white' : 'text-slate-500 group-hover:text-brand-400' }}"></i>
+                <span x-show="sidebarOpen" class="font-medium text-sm">Müşteriler</span>
             </a>
             
             <a href="{{ route('admin.shipping-companies.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-all group {{ Request::is('admin/shipping-companies*') ? 'sidebar-item-active' : '' }}">
@@ -286,19 +278,6 @@
                 <span x-show="sidebarOpen" class="font-medium text-sm">Site Görünümü</span>
             </a>
 
-            <div class="pt-6 pb-2">
-                <p x-show="sidebarOpen" class="px-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Senkronizasyon</p>
-            </div>
-
-            <a href="/admin/sync/stock" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-all group {{ Request::is('admin/sync/stock*') ? 'sidebar-item-active' : '' }}">
-                <i class="fas fa-cubes w-6 flex justify-center text-lg {{ Request::is('admin/sync/stock*') ? 'text-white' : 'text-slate-500 group-hover:text-brand-400' }}"></i>
-                <span x-show="sidebarOpen" class="font-medium text-sm">Stok Senkronize</span>
-            </a>
-
-            <a href="/admin/sync/price" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-all group {{ Request::is('admin/sync/price*') ? 'sidebar-item-active' : '' }}">
-                <i class="fas fa-tag w-6 flex justify-center text-lg {{ Request::is('admin/sync/price*') ? 'text-white' : 'text-slate-500 group-hover:text-brand-400' }}"></i>
-                <span x-show="sidebarOpen" class="font-medium text-sm">Fiyat Senkronize</span>
-            </a>
 
             <div class="pt-6 pb-2">
                 <p x-show="sidebarOpen" class="px-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Altyapı</p>
@@ -307,11 +286,6 @@
             <a href="/admin/marketplaces" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-all group {{ Request::is('admin/marketplaces*') ? 'sidebar-item-active' : '' }}">
                 <i class="fas fa-plug w-6 flex justify-center text-lg {{ Request::is('admin/marketplaces*') ? 'text-white' : 'text-slate-500 group-hover:text-brand-400' }}"></i>
                 <span x-show="sidebarOpen" class="font-medium text-sm">Pazaryeri Bağlantıları</span>
-            </a>
-
-            <a href="/admin/logs" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-all group {{ Request::is('admin/logs*') ? 'sidebar-item-active' : '' }}">
-                <i class="fas fa-terminal w-6 flex justify-center text-lg {{ Request::is('admin/logs*') ? 'text-white' : 'text-slate-500 group-hover:text-brand-400' }}"></i>
-                <span x-show="sidebarOpen" class="font-medium text-sm">Loglar & Debug</span>
             </a>
 
             <a href="/admin/settings" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-all group {{ Request::is('admin/settings*') ? 'sidebar-item-active' : '' }}">
