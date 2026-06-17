@@ -110,6 +110,16 @@ class IyzicoController extends Controller
                 Log::error('Iyzico Callback Email Error: ' . $e->getMessage());
             }
 
+            // Send Admin Notification Email
+            $adminEmail = \App\Models\Setting::getValue('admin_order_notification_email') ?: config('mail.from.address');
+            if ($adminEmail) {
+                try {
+                    Mail::to($adminEmail)->send(new \App\Mail\NewOrderAdminNotification($order));
+                } catch (\Exception $e) {
+                    Log::error('Iyzico Callback Admin Email Error: ' . $e->getMessage());
+                }
+            }
+
             return redirect()->route('payment.success', $order->id)->with('success', 'Ödemeniz başarıyla alındı.');
         } else {
             // Try to find the order even on failure to show a better error page

@@ -190,6 +190,10 @@
                                 <p class="text-[10px] font-bold text-slate-400 uppercase">Müşteri E-Posta</p>
                                 <p class="text-xs font-bold text-slate-800" x-text="selectedOrder?.customer_email || '-'"></p>
                             </div>
+                            <div>
+                                <p class="text-[10px] font-bold text-slate-400 uppercase">Müşteri Numarası</p>
+                                <p class="text-xs font-bold text-slate-800" x-text="selectedOrder?.customer_phone || '-'"></p>
+                            </div>
                         </div>
                     </div>
 
@@ -228,6 +232,31 @@
                             <p class="text-[10px] font-black text-slate-400 uppercase tracking-tighter" x-text="(selectedOrder?.address_info?.district || selectedOrder?.raw_marketplace_data?.shipmentAddress?.district || selectedOrder?.raw_marketplace_data?.shippingAddress?.district || '-') + ' / ' + (selectedOrder?.address_info?.city || selectedOrder?.raw_marketplace_data?.shipmentAddress?.city || selectedOrder?.raw_marketplace_data?.shippingAddress?.city || '-')"></p>
                         </div>
                     </div>
+
+                    <!-- Cancellation Info -->
+                    <template x-if="selectedOrder?.order_status?.toLowerCase() === 'cancelled'">
+                        <div class="p-6 bg-red-50 rounded-3xl border border-red-100 space-y-4 md:col-span-3">
+                            <h4 class="text-[10px] font-black text-red-500 uppercase tracking-widest flex items-center gap-2">
+                                <i class="fas fa-ban"></i> İptal Bilgileri
+                            </h4>
+                            <div class="flex flex-wrap gap-8">
+                                <div>
+                                    <p class="text-[10px] font-bold text-red-400 uppercase">İptal Zamanı</p>
+                                    <p class="text-xs font-bold text-red-900" x-text="selectedOrder?.canceled_at ? formatDate(new Date(selectedOrder.canceled_at).getTime()) : formatDate(new Date(selectedOrder?.updated_at).getTime())"></p>
+                                </div>
+                                <div>
+                                    <p class="text-[10px] font-bold text-red-400 uppercase">Ödeme Durumu (İptal Anında)</p>
+                                    <p class="text-xs font-black uppercase tracking-tighter" :class="selectedOrder?.is_paid ? 'text-green-600' : 'text-red-600'" x-text="selectedOrder?.is_paid ? 'ÖDEME YAPILDIKTAN SONRA İPTAL EDİLDİ' : 'ÖDEME YAPILMADAN İPTAL EDİLDİ'"></p>
+                                </div>
+                                <template x-if="selectedOrder?.cancel_reason">
+                                    <div>
+                                        <p class="text-[10px] font-bold text-red-400 uppercase">İptal Nedeni</p>
+                                        <p class="text-xs font-bold text-red-900" x-text="selectedOrder.cancel_reason"></p>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    </template>
                 </div>
 
                 <!-- Shipping Management (Website Orders only or Manual Override) -->

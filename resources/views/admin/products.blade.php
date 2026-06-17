@@ -67,9 +67,6 @@
             <a href="{{ route('admin.products.create') }}" class="px-4 py-2 bg-slate-900 text-white rounded-lg text-sm font-semibold hover:bg-slate-800 transition-colors flex items-center gap-2 shadow-lg shadow-slate-900/20">
                 <i class="fas fa-plus text-xs"></i> Yeni Ürün Ekle
             </a>
-            <button @click="notify('info', 'İçe Aktarım Başlatıldı')" class="px-4 py-2 bg-brand-600 text-white rounded-lg text-sm font-semibold hover:bg-brand-700 transition-colors flex items-center gap-2 shadow-lg shadow-brand-500/20">
-                <i class="fas fa-file-import text-xs"></i> Excel/CSV İçe Aktar
-            </button>
         </div>
     </div>
 

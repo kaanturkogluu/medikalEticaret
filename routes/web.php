@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\LoginController;
 
 // Public Routes
 Route::get('/', [\App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/sitemap.xml', [\App\Http\Controllers\SitemapController::class, 'index'])->name('sitemap');
 Route::get('/urun/{product}', [\App\Http\Controllers\HomeController::class, 'show'])->name('product.show');
 Route::get('/favorites', [\App\Http\Controllers\HomeController::class, 'favorites'])->name('favorites');
 Route::get('/location/districts/{province}', [\App\Http\Controllers\LocationController::class, 'getDistricts'])->name('location.districts');

@@ -231,7 +231,7 @@ class CheckoutController extends Controller
                 }
 
                 // Send Admin Notification Email
-                $adminEmail = \App\Models\Setting::getValue('admin_order_notification_email');
+                $adminEmail = \App\Models\Setting::getValue('admin_order_notification_email') ?: config('mail.from.address');
                 if ($adminEmail) {
                     try {
                         Mail::to($adminEmail)->send(new \App\Mail\NewOrderAdminNotification($order));

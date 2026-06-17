@@ -108,8 +108,6 @@
                             </div>
                         </div>
                         <div class="flex flex-col gap-2">
-                            <div class="text-[10px] font-black text-orange-400 uppercase tracking-[0.2em]">Ödeme Seçenekleri</div>
-                            <div class="text-xs text-gray-300 font-bold italic">Vade farksız 3 taksit imkanı</div>
                         </div>
                     </div>
                 </div>

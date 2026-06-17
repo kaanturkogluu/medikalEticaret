@@ -67,7 +67,7 @@
                         @if($banner->buttons && count($banner->buttons) > 0)
                         <div class="flex flex-wrap gap-4 pt-4">
                             @foreach($banner->buttons as $button)
-                            <a href="{{ $button['link'] ?? '#' }}" class="px-8 py-4 rounded-xl font-black italic shadow-2xl flex items-center gap-3 transition-all transform hover:scale-105 group/btn border border-white/10"
+                            <a href="{{ $button['link'] ?? '#' }}" target="_blank" class="px-8 py-4 rounded-xl font-black italic shadow-2xl flex items-center gap-3 transition-all transform hover:scale-105 group/btn border border-white/10"
                                style="background-color: {{ $button['bg'] ?? 'var(--primary-color)' }}; color: {{ $button['color'] ?? '#FFFFFF' }};">
                                 {{ $button['text'] }} 
                                 <i class="fas fa-chevron-right text-[10px] group-hover/btn:translate-x-1 transition-transform"></i>
