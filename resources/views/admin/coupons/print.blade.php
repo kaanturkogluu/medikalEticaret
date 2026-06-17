@@ -186,19 +186,7 @@
 
             <!-- Body -->
             <div class="main-content">
-                <div class="coupon-title">ÖZEL İNDİRİM KUPONU</div>
-                <div class="discount-value">
-                    @if($coupon->type === 'percent')
-                        %{{ number_format($coupon->value, 0) }}
-                    @else
-                        <span class="symbol">₺</span>{{ number_format($coupon->value, 0) }}
-                    @endif
-                    <span class="label">İNDİRİM</span>
-                </div>
-                <div class="code-box">
-                    KUPON KODU: <b>{{ $coupon->code }}</b>
-                </div>
-                <div class="text-[10px] text-slate-500 font-bold mt-2 uppercase tracking-tighter text-center px-4">
+                <div class="coupon-title text-center px-4 !text-sm !font-bold !tracking-normal">
                     @if($coupon->type === 'fixed_limit')
                         {{ number_format($coupon->min_spend, 0) }} TL VE ÜZERİ 
                         @if($coupon->categories->count() > 0)
@@ -213,6 +201,23 @@
                         TÜM ÜRÜNLERDE GEÇERLİ OLMAK ÜZERE
                     @endif
                 </div>
+                <div class="discount-value mt-2">
+                    @if($coupon->type === 'percent')
+                        %{{ number_format($coupon->value, 0) }}
+                    @else
+                        <span class="symbol">₺</span>{{ number_format($coupon->value, 0) }}
+                    @endif
+                    <span class="label">İNDİRİM</span>
+                </div>
+                <div class="code-box">
+                    KUPON KODU: <b>{{ $coupon->code }}</b>
+                </div>
+                
+                @if($coupon->expires_at)
+                <div class="text-[11px] text-slate-500 font-bold mt-2 uppercase tracking-wider text-center px-4">
+                    SON GEÇERLİLİK TARİHİ: {{ $coupon->expires_at->format('d.m.Y') }}
+                </div>
+                @endif
             </div>
 
             <hr class="separator" style="margin-bottom: 10px;">
