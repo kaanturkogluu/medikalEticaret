@@ -15,6 +15,8 @@ class Coupon extends Model
         'code',
         'type',
         'value',
+        'min_spend',
+        'expires_at',
         'is_used',
         'user_id',
         'order_id',
@@ -24,7 +26,9 @@ class Coupon extends Model
     protected $casts = [
         'is_used' => 'boolean',
         'used_at' => 'datetime',
+        'expires_at' => 'datetime',
         'value' => 'decimal:2',
+        'min_spend' => 'decimal:2',
     ];
 
     public function user(): BelongsTo
@@ -47,7 +51,9 @@ class Coupon extends Model
      */
     public function isValid(): bool
     {
-        return !$this->is_used;
+        if ($this->is_used) return false;
+        if ($this->expires_at && $this->expires_at->isPast()) return false;
+        return true;
     }
 
     /**
@@ -74,6 +80,11 @@ class Coupon extends Model
 
         if ($this->type === 'percent') {
             return ($eligibleAmount * $this->value) / 100;
+        } elseif ($this->type === 'fixed_limit') {
+            if ($this->min_spend && $eligibleAmount < $this->min_spend) {
+                return 0; // Does not meet min spend
+            }
+            return $this->value;
         }
 
         return min($eligibleAmount, $this->value);

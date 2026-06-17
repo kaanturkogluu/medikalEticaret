@@ -40,8 +40,9 @@ class CouponController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'type' => 'required|in:fixed,percent',
+            'type' => 'required|in:fixed,percent,fixed_limit',
             'value' => 'required|numeric|min:0',
+            'min_spend' => 'nullable|numeric|min:0|required_if:type,fixed_limit',
             'count' => 'nullable|integer|min:1|max:50',
             'category_ids' => 'nullable|array',
             'category_ids.*' => 'exists:categories,id',
@@ -55,6 +56,8 @@ class CouponController extends Controller
                 'code' => $code,
                 'type' => $request->type,
                 'value' => $request->value,
+                'min_spend' => $request->type === 'fixed_limit' ? $request->min_spend : null,
+                'expires_at' => now()->addMonth(),
             ]);
 
             if ($request->filled('category_ids')) {

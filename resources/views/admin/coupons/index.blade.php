@@ -39,6 +39,7 @@
                     <option value="">Tümü</option>
                     <option value="percent" {{ request('type') == 'percent' ? 'selected' : '' }}>Yüzdelik (%)</option>
                     <option value="fixed" {{ request('type') == 'fixed' ? 'selected' : '' }}>Sabit (TL)</option>
+                    <option value="fixed_limit" {{ request('type') == 'fixed_limit' ? 'selected' : '' }}>Limitli Kupon</option>
                 </select>
             </div>
 
@@ -88,6 +89,11 @@
                         <td class="px-6 py-4">
                             @if($coupon->type === 'percent')
                             <span class="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded">Yüzdelik (%)</span>
+                            @elseif($coupon->type === 'fixed_limit')
+                            <span class="text-xs font-bold text-purple-600 bg-purple-50 px-2 py-1 rounded">Limitli Kupon</span>
+                            @if($coupon->min_spend)
+                            <div class="text-[9px] font-bold text-slate-400 mt-1">Min: ₺{{ number_format($coupon->min_spend, 2) }}</div>
+                            @endif
                             @else
                             <span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded">Sabit (TL)</span>
                             @endif
@@ -156,13 +162,14 @@
             </button>
         </div>
         
-        <form action="{{ route('admin.coupons.store') }}" method="POST" class="p-6 space-y-4">
+        <form action="{{ route('admin.coupons.store') }}" method="POST" class="p-6 space-y-4" x-data="{ type: 'fixed' }">
             @csrf
             <div>
                 <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-1.5">İndirim Tipi</label>
-                <select name="type" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all outline-none">
+                <select name="type" x-model="type" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all outline-none">
                     <option value="fixed">Sabit TL Tutarı</option>
                     <option value="percent">Yüzdelik (%) İndirim</option>
+                    <option value="fixed_limit">Limitli Kupon (Min. Harcama Limitli)</option>
                 </select>
             </div>
             
@@ -172,6 +179,15 @@
                     <input type="number" name="value" step="0.01" required placeholder="Örn: 100 veya 15" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all outline-none">
                 </div>
             </div>
+
+            <template x-if="type === 'fixed_limit'">
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-1.5">Minimum Harcama Tutarı (TL)</label>
+                    <div class="relative">
+                        <input type="number" name="min_spend" step="0.01" :required="type === 'fixed_limit'" placeholder="Örn: 1500" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all outline-none">
+                    </div>
+                </div>
+            </template>
 
             <div>
                 <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-1.5">Oluşturulacak Adet</label>

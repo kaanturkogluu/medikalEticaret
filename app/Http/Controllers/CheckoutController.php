@@ -48,6 +48,34 @@ class CheckoutController extends Controller
                 ]);
             }
         }
+
+        // Limitli Kupon (Min. Harcama) Kontrolü
+        if ($coupon->type === 'fixed_limit' && $coupon->min_spend > 0 && $request->filled('cart_items')) {
+            $eligibleAmount = 0;
+            $eligibleCategoryIds = $coupon->categories->pluck('id')->toArray();
+
+            foreach ($request->cart_items as $item) {
+                $productId = isset($item['id']) ? $item['id'] : (isset($item['product_id']) ? $item['product_id'] : null);
+                $qty = isset($item['qty']) ? (int)$item['qty'] : (isset($item['quantity']) ? (int)$item['quantity'] : 1);
+                
+                if ($productId) {
+                    $product = Product::find($productId);
+                    if ($product) {
+                        $isEligible = empty($eligibleCategoryIds) || in_array($product->category_id, $eligibleCategoryIds);
+                        if ($isEligible) {
+                            $eligibleAmount += $product->price * $qty;
+                        }
+                    }
+                }
+            }
+
+            if ($eligibleAmount < $coupon->min_spend) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "Bu kuponu kullanabilmek için sepetinizde en az " . number_format($coupon->min_spend, 2) . " TL değerinde geçerli ürün olmalıdır."
+                ]);
+            }
+        }
         
         session(['applied_coupon' => $coupon->code]);
         

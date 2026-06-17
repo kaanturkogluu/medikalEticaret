@@ -198,15 +198,21 @@
                 <div class="code-box">
                     KUPON KODU: <b>{{ $coupon->code }}</b>
                 </div>
-                @if($coupon->categories->count() > 0)
-                <div class="text-[10px] text-slate-500 font-bold mt-2 uppercase tracking-tighter">
-                    {{ $coupon->categories->pluck('name')->implode(' & ') }} ÜRÜNLERİNDE GEÇERLİ OLMAK ÜZERE
+                <div class="text-[10px] text-slate-500 font-bold mt-2 uppercase tracking-tighter text-center px-4">
+                    @if($coupon->type === 'fixed_limit')
+                        {{ number_format($coupon->min_spend, 0) }} TL VE ÜZERİ 
+                        @if($coupon->categories->count() > 0)
+                            {{ $coupon->categories->pluck('name')->implode(' & ') }} ÜRÜNLERİNDE 
+                        @else
+                            TÜM ÜRÜNLERDE 
+                        @endif
+                        GEÇERLİ OLMAK ÜZERE
+                    @elseif($coupon->categories->count() > 0)
+                        {{ $coupon->categories->pluck('name')->implode(' & ') }} ÜRÜNLERİNDE GEÇERLİ OLMAK ÜZERE
+                    @else
+                        TÜM ÜRÜNLERDE GEÇERLİ OLMAK ÜZERE
+                    @endif
                 </div>
-                @elseif($coupon->type === 'fixed')
-                <div class="text-[10px] text-slate-500 font-bold mt-2 uppercase tracking-tighter">
-                    TÜM ÜRÜNLERDE GEÇERLİ OLMAK ÜZERE
-                </div>
-                @endif
             </div>
 
             <hr class="separator" style="margin-bottom: 10px;">
