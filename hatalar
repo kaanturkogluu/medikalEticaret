@@ -1,0 +1,29 @@
+ [2026-06-17 20:12:55] local.ERROR: Attempt to read property "name" on null (View: /home/u111121823/domains/umutmedikalmarket.com/public_html/resources/views/layouts/user.blade.php) (View: /home/u111121823/domains/umutmedikalmarket.com/public_html/resources/views/layouts/user.blade.php) {"exception":"[object] (Illuminate\\View\\ViewException(code: 0): Attempt to read property \"name\" on null (View: /home/u111121823/domains/umutmedikalmarket.com/public_html/resources/views/layouts/user.blade.php) (View: /home/u111121823/domains/umutmedikalmarket.com/public_html/resources/views/layouts/user.blade.php) at /home/u111121823/domains/umutmedikalmarket.com/public_html/storage/framework/views/af659bf6f1180a4871553f11cf198c69.php:40)
+[stacktrace]
+
+
+[previous exception] [object] (Illuminate\\View\\ViewException(code: 0): Attempt to read property \"name\" on null (View: /home/u111121823/domains/umutmedikalmarket.com/public_html/resources/views/layouts/user.blade.php) at /home/u111121823/domains/umutmedikalmarket.com/public_html/storage/framework/views/af659bf6f1180a4871553f11cf198c69.php:40)
+[stacktrace]
+[previous exception] [object] (ErrorException(code: 0): Attempt to read property \"name\" on null at /home/u111121823/domains/umutmedikalmarket.com/public_html/storage/framework/views/af659bf6f1180a4871553f11cf198c69.php:40)
+[stacktrace]
+  
+[2026-06-18 01:51:34] local.ERROR: Failed to fetch orders for channel: n11: cURL error 28: Operation timed out after 30002 milliseconds with 0 bytes received (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for https://api.n11.com/rest/delivery/v1/shipmentPackages?startDate=1780451464000&endDate=1781747464000&page=0&size=50&orderByDirection=ASC  
+[2026-06-18 07:14:04] local.ERROR: Attempt to read property "name" on null (View: /home/u111121823/domains/umutmedikalmarket.com/public_html/resources/views/layouts/user.blade.php) (View: /home/u111121823/domains/umutmedikalmarket.com/public_html/resources/views/layouts/user.blade.php) {"exception":"[object] (Illuminate\\View\\ViewException(code: 0): Attempt to read property \"name\" on null (View: /home/u111121823/domains/umutmedikalmarket.com/public_html/resources/views/layouts/user.blade.php) (View: /home/u111121823/domains/umutmedikalmarket.com/public_html/resources/views/layouts/user.blade.php) at /home/u111121823/domains/umutmedikalmarket.com/public_html/storage/framework/views/af659bf6f1180a4871553f11cf198c69.php:40)
+[stacktrace]
+  
+[previous exception] [object] (Illuminate\\View\\ViewException(code: 0): Attempt to read property \"name\" on null (View: /home/u111121823/domains/umutmedikalmarket.com/public_html/resources/views/layouts/user.blade.php) at /home/u111121823/domains/umutmedikalmarket.com/public_html/storage/framework/views/af659bf6f1180a4871553f11cf198c69.php:40)
+[stacktrace]
+
+[previous exception] [object] (ErrorException(code: 0): Attempt to read property \"name\" on null at /home/u111121823/domains/umutmedikalmarket.com/public_html/storage/framework/views/af659bf6f1180a4871553f11cf198c69.php:40)
+[stacktrace]
+  
+[2026-06-18 08:27:19] local.ERROR: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'status' in 'WHERE' (Connection: mysql, Host: 127.0.0.1, Port: 3306, Database: u111121823_umutmedikal, SQL: select * from `products` where (`status` = active or `status` = 1) and `products`.`deleted_at` is null) {"exception":"[object] (Illuminate\\Database\\QueryException(code: 42S22): SQLSTATE[42S22]: Column not found: 1054 Unknown column 'status' in 'WHERE' (Connection: mysql, Host: 127.0.0.1, Port: 3306, Database: u111121823_umutmedikal, SQL: select * from `products` where (`status` = active or `status` = 1) and `products`.`deleted_at` is null) at /home/u111121823/domains/umutmedikalmarket.com/public_html/vendor/laravel/framework/src/Illuminate/Database/Connection.php:838)
+[stacktrace]
+[previous exception] [object] (PDOException(code: 42S22): SQLSTATE[42S22]: Column not found: 1054 Unknown column 'status' in 'WHERE' at /home/u111121823/domains/umutmedikalmarket.com/public_html/vendor/laravel/framework/src/Illuminate/Database/Connection.php:420)
+[stacktrace]
+   
+[2026-06-18 11:12:40] local.ERROR: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'status' in 'WHERE' (Connection: mysql, Host: 127.0.0.1, Port: 3306, Database: u111121823_umutmedikal, SQL: select * from `products` where (`status` = active or `status` = 1) and `products`.`deleted_at` is null) {"exception":"[object] (Illuminate\\Database\\QueryException(code: 42S22): SQLSTATE[42S22]: Column not found: 1054 Unknown column 'status' in 'WHERE' (Connection: mysql, Host: 127.0.0.1, Port: 3306, Database: u111121823_umutmedikal, SQL: select * from `products` where (`status` = active or `status` = 1) and `products`.`deleted_at` is null) at /home/u111121823/domains/umutmedikalmarket.com/public_html/vendor/laravel/framework/src/Illuminate/Database/Connection.php:838)
+[stacktrace]
+
+[previous exception] [object] (PDOException(code: 42S22): SQLSTATE[42S22]: Column not found: 1054 Unknown column 'status' in 'WHERE' at /home/u111121823/domains/umutmedikalmarket.com/public_html/vendor/laravel/framework/src/Illuminate/Database/Connection.php:420)
+[stacktrace]

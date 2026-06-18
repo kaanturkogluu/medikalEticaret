@@ -12,7 +12,7 @@ class SitemapController extends Controller
 {
     public function index()
     {
-        $products = Product::where('status', 'active')->orWhere('status', 1)->get();
+        $products = Product::where('active', 1)->get();
         $categories = Category::all();
         $pages = Page::all();
         $brands = Brand::all();

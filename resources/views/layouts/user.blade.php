@@ -39,18 +39,24 @@
             <div class="sidebar-card p-5 mb-6">
                 <div class="flex items-center gap-4">
                     <div class="w-14 h-14 bg-orange-100 rounded-2xl flex items-center justify-center border-2 border-white shadow-sm flex-shrink-0">
-                        <span class="text-2xl font-black text-orange-500">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</span>
+                        <span class="text-2xl font-black text-orange-500">{{ strtoupper(substr(auth()->user()->name ?? 'M', 0, 1)) }}</span>
                     </div>
                     <div class="min-w-0">
-                        <p class="font-black text-sm text-slate-900 truncate uppercase italic tracking-tighter">{{ auth()->user()->name }}</p>
-                        <p class="text-[11px] text-slate-400 truncate opacity-70">{{ auth()->user()->email }}</p>
+                        <p class="font-black text-sm text-slate-900 truncate uppercase italic tracking-tighter">{{ auth()->user()->name ?? 'Misafir' }}</p>
+                        <p class="text-[11px] text-slate-400 truncate opacity-70">{{ auth()->user()->email ?? 'Giriş yapılmadı' }}</p>
                     </div>
                 </div>
+                @auth
                 @unless(auth()->user()->email_verified_at)
                 <a href="{{ route('verify.send') }}" class="mt-4 block text-center text-[10px] font-black uppercase tracking-widest text-orange-600 bg-orange-50 border border-orange-100 rounded-xl py-3 hover:bg-orange-100 transition-all">
                     <i class="fas fa-exclamation-circle mr-1"></i> E-postanı Doğrula
                 </a>
                 @endunless
+                @else
+                <a href="{{ route('login') }}" class="mt-4 block text-center text-[10px] font-black uppercase tracking-widest text-orange-600 bg-orange-50 border border-orange-100 rounded-xl py-3 hover:bg-orange-100 transition-all">
+                    <i class="fas fa-sign-in-alt mr-1"></i> Giriş Yap
+                </a>
+                @endauth
             </div>
 
             {{-- Navigation --}}
@@ -99,6 +105,7 @@
                     </a>
                 </div>
 
+                @auth
                 <div class="border-t border-slate-50 pt-4 px-2">
                     <form action="{{ route('logout') }}" method="POST">
                         @csrf
@@ -107,6 +114,7 @@
                         </button>
                     </form>
                 </div>
+                @endauth
             </nav>
         </aside>
 
