@@ -3,10 +3,27 @@
 @section('content')
     <div class="space-y-8">
         <!-- Header -->
-        <div class="flex items-center justify-between">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
-                <h2 class="text-2xl font-bold text-slate-800 tracking-tight">Netgsm SMS Entegrasyonu</h2>
+                <div class="flex items-center gap-3">
+                    <h2 class="text-2xl font-bold text-slate-800 tracking-tight">Netgsm SMS Entegrasyonu</h2>
+                    @if($hasCredentials)
+                        <span class="bg-emerald-100 text-emerald-600 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest flex items-center gap-1"><i class="fas fa-check-circle"></i> Aktif</span>
+                    @else
+                        <span class="bg-rose-100 text-rose-600 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest flex items-center gap-1"><i class="fas fa-times-circle"></i> Eksik Kurulum</span>
+                    @endif
+                </div>
                 <p class="text-sm text-slate-500 mt-1">Netgsm üzerinden SMS gönderim durumunu kontrol edin ve test mesajı gönderin.</p>
+            </div>
+            <div class="flex gap-3">
+                <a href="{{ route('admin.netgsm.history') }}" class="py-3 px-6 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 rounded-xl text-sm font-bold shadow-sm transition-all flex items-center justify-center gap-2 group">
+                    <i class="fas fa-history text-slate-400 group-hover:text-slate-600 transition-colors"></i>
+                    <span>Geçmiş SMS'ler</span>
+                </a>
+                <a href="{{ route('admin.netgsm.bulk') }}" class="py-3 px-6 bg-brand-500 hover:bg-brand-600 text-white rounded-xl text-sm font-black tracking-wide shadow-lg shadow-brand-500/20 transition-all flex items-center justify-center gap-2 group">
+                    <i class="fas fa-users group-hover:scale-110 transition-transform"></i>
+                    <span>Toplu SMS Gönder</span>
+                </a>
             </div>
         </div>
 
@@ -34,36 +51,7 @@
             </div>
         @endif
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <!-- Durum Kartı -->
-            <div class="bg-white border border-slate-100 rounded-3xl p-8 shadow-sm relative">
-                <div class="absolute top-6 right-6">
-                    @if($hasCredentials)
-                        <span class="bg-emerald-100 text-emerald-600 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">Aktif (Bilgiler Girilmiş)</span>
-                    @else
-                        <span class="bg-rose-100 text-rose-600 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">Eksik Kurulum</span>
-                    @endif
-                </div>
-
-                <div class="h-16 w-16 bg-blue-50 border-blue-100 rounded-2xl flex items-center justify-center text-3xl mb-6 shadow-inner border">
-                    <i class="fas fa-sms text-blue-500"></i>
-                </div>
-
-                <h3 class="text-xl font-black text-slate-800 tracking-tight mb-1">Bağlantı Durumu</h3>
-                <p class="text-xs text-slate-400 font-bold uppercase tracking-widest mb-8">Netgsm API Bilgileri</p>
-
-                <div class="space-y-4">
-                    <div class="p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                        <p class="text-[10px] font-bold text-slate-400 uppercase mb-2">Kurulum Durumu</p>
-                        @if($hasCredentials)
-                            <p class="text-xs font-black text-emerald-600">.env dosyasında bilgiler tanımlı.</p>
-                        @else
-                            <p class="text-xs font-black text-rose-600">Lütfen .env dosyasına NETGSM_USERCODE, NETGSM_PASSWORD ve NETGSM_HEADER bilgilerini ekleyin.</p>
-                        @endif
-                    </div>
-                </div>
-            </div>
-
+        <div class="max-w-2xl">
             <!-- Test Formu -->
             <div class="bg-white border border-slate-100 rounded-3xl p-8 shadow-sm">
                 <h3 class="text-xl font-black text-slate-800 tracking-tight mb-6">Test SMS Gönder</h3>
@@ -96,5 +84,6 @@
                 </form>
             </div>
         </div>
+
     </div>
 @endsection

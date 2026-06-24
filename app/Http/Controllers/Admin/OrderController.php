@@ -88,6 +88,8 @@ class OrderController extends Controller
             'order_status' => 'Shipped' // Kargoya Verildi
         ]);
 
+        $order->load('shippingCompany');
+
         // Send Email
         try {
             \Illuminate\Support\Facades\Mail::to($order->customer_email)->send(new \App\Mail\OrderShipped($order));
@@ -95,7 +97,20 @@ class OrderController extends Controller
             \Illuminate\Support\Facades\Log::error('Shipping Email Error: ' . $e->getMessage());
         }
 
-        return back()->with('success', 'Kargo bilgileri güncellendi ve müşteriye bildirildi.');
+        // Send SMS to Customer
+        try {
+            if (!empty($order->customer_phone)) {
+                $netgsmService = app(\App\Services\NetgsmService::class);
+                $companyName = $order->shippingCompany ? $order->shippingCompany->name : 'Kargo';
+                $trackingCode = $order->tracking_code;
+                $smsMessage = "Sayın {$order->customer_name} , Ürününüz {$companyName} firmasına . {$trackingCode} kargo takip numarası ile kargoya verilmiştir . Bizi tercih ettiğiniz için teşekkür ederiz. UmutMedikalMarket";
+                $netgsmService->sendSms($order->customer_phone, $smsMessage, 'Kargo Bildirimi', $order->customer_name);
+            }
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Shipping SMS Error: ' . $e->getMessage());
+        }
+
+        return back()->with('success', 'Kargo bilgileri güncellendi ve müşteriye SMS/E-posta bildirimi gönderildi.');
     }
 
     public function printLabel(Order $order)

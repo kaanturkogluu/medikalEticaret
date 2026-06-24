@@ -225,6 +225,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::group(['prefix' => 'netgsm', 'as' => 'admin.netgsm.'], function () {
         Route::get('/', [\App\Http\Controllers\Admin\NetgsmController::class, 'index'])->name('index');
         Route::post('/test', [\App\Http\Controllers\Admin\NetgsmController::class, 'test'])->name('test');
+        Route::get('/history', [\App\Http\Controllers\Admin\NetgsmController::class, 'history'])->name('history');
+        Route::get('/bulk', [\App\Http\Controllers\Admin\NetgsmController::class, 'bulk'])->name('bulk');
+        Route::post('/bulk', [\App\Http\Controllers\Admin\NetgsmController::class, 'sendBulk'])->name('bulk.send');
     });
 });
 

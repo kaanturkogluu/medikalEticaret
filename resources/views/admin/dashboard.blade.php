@@ -1,14 +1,10 @@
 @extends('layouts.admin')
 
 @section('content')
-<div class="space-y-8" x-data="{ 
-    syncStats: @json($syncStats),
-    chartData: @json($chartData),
-    chartLabels: @json($chartLabels)
-}">
+<div class="space-y-8">
 
     <!-- Stats Grid -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <!-- Card 1 -->
         <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-between hover:shadow-md transition-shadow relative overflow-hidden group">
             <div class="z-10">
@@ -51,87 +47,32 @@
             </div>
         </div>
 
-        <!-- Card 4 -->
-        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-between hover:shadow-md transition-shadow relative overflow-hidden group border-l-4 border-l-red-500">
+        <!-- Card 4: Netgsm Bakiyesi -->
+        <div class="bg-gradient-to-br from-blue-500 to-brand-600 p-6 rounded-2xl shadow-sm border border-brand-500 flex flex-col justify-between hover:shadow-md transition-shadow relative overflow-hidden group !text-white shadow-xl shadow-brand-500/20">
             <div class="z-10">
-                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Hata Kayıtları</p>
-                <h3 class="text-3xl font-extrabold text-slate-900 tabular-nums">{{ $stats['error_count'] }}</h3>
-                <p class="text-xs text-red-500 mt-3 font-semibold flex items-center gap-1">
-                    <i class="fas fa-exclamation-triangle"></i> Kritik hatalar
-                </p>
-            </div>
-            <div class="absolute -right-4 -bottom-4 h-24 w-24 bg-red-50 rounded-full flex items-center justify-center transition-transform group-hover:scale-110">
-                <i class="fas fa-bug text-red-200 text-4xl"></i>
-            </div>
-        </div>
-
-        <!-- Card 5 -->
-        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-between hover:shadow-md transition-shadow relative overflow-hidden group border-l-4 border-l-brand-600 bg-brand-600 !text-white shadow-xl shadow-brand-500/20">
-            <div class="z-10">
-                <p class="text-[10px] font-bold text-brand-200 uppercase tracking-widest mb-1">Ciro</p>
-                <h3 class="text-3xl font-extrabold text-white tabular-nums">{{ number_format($stats['total_sales'], 2) }} ₺</h3>
-                <p class="text-xs text-brand-100 mt-3 font-semibold flex items-center gap-1">
-                    <i class="fas fa-coins"></i> Toplam Satış Hacmi
+                <p class="text-[10px] font-bold text-brand-200 uppercase tracking-widest mb-1">Netgsm Bakiyesi</p>
+                
+                @if(isset($smsBalance) && is_array($smsBalance) && count($smsBalance) > 0)
+                    <div class="flex flex-col gap-2 mt-2">
+                        @foreach($smsBalance as $bal)
+                            <div class="flex items-center justify-between bg-white/10 rounded-lg px-3 py-1.5 backdrop-blur-sm">
+                                <span class="text-xs text-white/80 font-semibold">{{ $bal['balance_name'] ?? 'Bakiye' }}</span>
+                                <span class="text-lg font-black text-white tabular-nums">{{ $bal['amount'] ?? '0' }}</span>
+                            </div>
+                        @endforeach
+                    </div>
+                @else
+                    <div class="mt-2 bg-rose-500/50 rounded-lg px-3 py-2 backdrop-blur-sm text-center">
+                        <span class="text-xs font-bold">Bakiye çekilemedi veya yok.</span>
+                    </div>
+                @endif
+                
+                <p class="text-[10px] text-brand-100 mt-3 font-semibold flex items-center gap-1">
+                    <i class="fas fa-envelope"></i> SMS Altyapısı
                 </p>
             </div>
             <div class="absolute -right-4 -bottom-4 h-24 w-24 bg-brand-500/50 rounded-full flex items-center justify-center transition-transform group-hover:scale-110">
-                <i class="fas fa-wallet text-brand-400 text-4xl"></i>
-            </div>
-        </div>
-    </div>
-
-    <!-- Charts Row -->
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        <!-- Success Rate Chart -->
-        <div class="lg:col-span-4 bg-white border border-slate-100 rounded-2xl p-6 shadow-sm flex flex-col">
-            <h3 class="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
-                <i class="fas fa-chart-pie text-brand-500"></i> Senkronizasyon Başarısı
-            </h3>
-            <div class="flex-1 flex items-center justify-center relative">
-                <canvas id="syncChart" class="max-h-[250px]"></canvas>
-                <div class="absolute flex flex-col items-center">
-                    <span class="text-2xl font-bold text-slate-800">%{{ $successRate }}</span>
-                    <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Başarı</span>
-                </div>
-            </div>
-            <div class="mt-6 flex flex-col gap-3">
-                <div class="flex items-center justify-between text-xs">
-                    <div class="flex items-center gap-2">
-                        <span class="h-2 w-2 rounded-full bg-emerald-500"></span>
-                        <span class="text-slate-600 font-medium tracking-tight">Başarılı</span>
-                    </div>
-                    <span class="font-bold text-slate-800">{{ $syncStats['success'] }} Adet</span>
-                </div>
-                <div class="flex items-center justify-between text-xs">
-                    <div class="flex items-center gap-2">
-                        <span class="h-2 w-2 rounded-full bg-red-500"></span>
-                        <span class="text-slate-600 font-medium tracking-tight">Hatalı</span>
-                    </div>
-                    <span class="font-bold text-slate-800">{{ $syncStats['failed'] }} Adet</span>
-                </div>
-                <div class="flex items-center justify-between text-xs">
-                    <div class="flex items-center gap-2">
-                        <span class="h-2 w-2 rounded-full bg-amber-500"></span>
-                        <span class="text-slate-600 font-medium tracking-tight">Bekleyen</span>
-                    </div>
-                    <span class="font-bold text-slate-800">{{ $syncStats['pending'] }} Adet</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Orders Chart -->
-        <div class="lg:col-span-8 bg-white border border-slate-100 rounded-2xl p-6 shadow-sm flex flex-col">
-            <div class="flex items-center justify-between mb-8">
-                <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
-                    <i class="fas fa-chart-line text-brand-500"></i> Sipariş Akışı
-                </h3>
-                <div class="flex items-center gap-2 bg-slate-50 p-1 rounded-lg">
-                    <button class="px-3 py-1 text-xs font-bold bg-white text-brand-600 rounded-md shadow-sm border border-slate-200">Haftalık</button>
-                    <button class="px-3 py-1 text-xs font-bold text-slate-500 hover:text-slate-700 transition-colors">Aylık</button>
-                </div>
-            </div>
-            <div class="flex-1 flex items-center justify-center">
-                <canvas id="ordersChart" class="max-h-[300px] w-full"></canvas>
+                <i class="fas fa-sms text-brand-400 text-4xl"></i>
             </div>
         </div>
     </div>
@@ -140,7 +81,7 @@
     <div class="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm">
         <div class="flex items-center justify-between mb-6">
             <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
-                <i class="fas fa-shopping-cart text-brand-600"></i> Son Siparişler
+                <i class="fas fa-shopping-cart text-brand-600"></i> Son Web Siparişleri
             </h3>
             <a href="{{ route('admin.orders') }}" class="text-brand-500 text-xs font-bold hover:underline tracking-tight">Tüm Siparişler</a>
         </div>
@@ -149,7 +90,7 @@
                 <thead>
                     <tr class="text-[10px] font-bold text-slate-400 uppercase tracking-widest border-b border-slate-50">
                         <th class="pb-3 px-2">Sipariş No</th>
-                        <th class="pb-3 px-2">Pazaryeri</th>
+                        <th class="pb-3 px-2">Pazaryeri / Kaynak</th>
                         <th class="pb-3 px-2">Müşteri</th>
                         <th class="pb-3 px-2 text-right">Tutar</th>
                     </tr>
@@ -158,7 +99,7 @@
                     @foreach($recentOrders as $ro)
                         <tr class="group hover:bg-slate-50 transition-colors">
                             <td class="py-4 px-2">
-                                <span class="text-xs font-bold text-slate-800">#{{ $ro->external_order_id }}</span>
+                                <span class="text-xs font-bold text-slate-800">#{{ $ro->external_order_id ?? $ro->id }}</span>
                             </td>
                             <td class="py-4 px-2">
                                 <span class="px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 text-[9px] font-bold uppercase">{{ $ro->channel->name ?? 'Web Sitesi' }}</span>
@@ -177,68 +118,4 @@
         </div>
     </div>
 </div>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Sync Success/Fail Chart
-        const ctxSync = document.getElementById('syncChart').getContext('2d');
-        const syncChart = new Chart(ctxSync, {
-            type: 'doughnut',
-            data: {
-                labels: ['Başarılı', 'Hatalı', 'Bekleyen'],
-                datasets: [{
-                    data: [{{ $syncStats['success'] }}, {{ $syncStats['failed'] }}, {{ $syncStats['pending'] }}],
-                    backgroundColor: ['#10b981', '#ef4444', '#f59e0b'],
-                    borderWidth: 0,
-                    hoverOffset: 10
-                }]
-            },
-            options: {
-                plugins: {
-                    legend: { display: false }
-                },
-                cutout: '80%',
-                responsive: true
-            }
-        });
-
-        // Orders Over Time Chart
-        const ctxOrders = document.getElementById('ordersChart').getContext('2d');
-        const ordersChart = new Chart(ctxOrders, {
-            type: 'line',
-            data: {
-                labels: @json($chartLabels),
-                datasets: [{
-                    label: 'Siparişler',
-                    data: @json($chartData),
-                    borderColor: '#0ea5e9',
-                    backgroundColor: 'rgba(14, 165, 233, 0.1)',
-                    borderWidth: 3,
-                    fill: true,
-                    tension: 0.4,
-                    pointRadius: 4,
-                    pointBackgroundColor: '#fff',
-                    pointBorderColor: '#0ea5e9'
-                }]
-            },
-            options: {
-                plugins: {
-                    legend: { display: false }
-                },
-                scales: {
-                    x: { grid: { display: false } },
-                    y: { 
-                        grid: { borderDash: [5, 5] },
-                        beginAtZero: true,
-                        ticks: {
-                            stepSize: 1
-                        }
-                    }
-                },
-                responsive: true,
-                maintainAspectRatio: false
-            }
-        });
-    });
-</script>
 @endsection

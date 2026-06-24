@@ -11,33 +11,13 @@ use Illuminate\Support\Facades\File;
 
 class DashboardController extends Controller
 {
-    public function index(): View
+    public function index(\App\Services\NetgsmService $netgsmService): View
     {
         $stats = [
             'total_products' => Product::count(),
             'total_orders'   => Order::count(),
-            'total_sales'    => Order::sum('total_price'),
             'active_channels' => Channel::where('active', true)->count(),
-            'error_count'    => 0,
         ];
-
-        // Error count from log
-        $logPath = storage_path('logs/laravel.log');
-        if (File::exists($logPath)) {
-            $content = File::get($logPath);
-            $stats['error_count'] = substr_count(strtoupper($content), '.ERROR:');
-        }
-
-        // Sync Stats
-        $syncStats = [
-            'success' => Product::whereIn('marketplace_status', ['ACTIVE', 'APPROVED', 'synced'])->count(),
-            'failed'  => Product::whereIn('marketplace_status', ['REJECTED', 'ERROR', 'error'])->count(),
-            'pending' => Product::whereIn('marketplace_status', ['PENDING', 'IN_REVIEW', 'pending', 'waiting'])->count(),
-        ];
-        
-        // Total for success rate percentage
-        $totalSync = array_sum($syncStats);
-        $successRate = $totalSync > 0 ? round(($syncStats['success'] / $totalSync) * 100) : 0;
 
         // Orders Chart (Last 7 Days)
         $chartLabels = [];
@@ -49,22 +29,26 @@ class DashboardController extends Controller
             $chartData[] = Order::whereDate('created_at', $date->toDateString())->count();
         }
 
+        // Son 10 Website Siparişi (channel_id null olanlar websayfası sayılıyor)
         $recentOrders = Order::with('channel')
+            ->whereNull('channel_id')
             ->latest()
-            ->take(5)
+            ->take(10)
             ->get();
 
-        $channels = Channel::withCount('channelProducts')
-            ->get();
+        $channels = Channel::withCount('channelProducts')->get();
+
+        // Netgsm Bakiye
+        $balanceResult = $netgsmService->checkBalance(3);
+        $smsBalance = $balanceResult['status'] ? $balanceResult['data'] : [];
 
         return view('admin.dashboard', compact(
             'stats', 
             'recentOrders', 
             'channels', 
-            'syncStats', 
-            'successRate', 
             'chartData', 
-            'chartLabels'
+            'chartLabels',
+            'smsBalance'
         ));
     }
 }

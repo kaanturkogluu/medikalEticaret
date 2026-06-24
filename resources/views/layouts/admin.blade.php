@@ -390,27 +390,7 @@
 
                 <div class="w-px h-6 bg-slate-200 hidden sm:block"></div>
 
-                <!-- Marketplace Selector -->
-                <div class="relative" x-data="{ selectorOpen: false }">
-                    <button @click="selectorOpen = !selectorOpen" class="flex items-center gap-2 px-3 py-1.5 bg-slate-100 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-200 transition-colors">
-                        <i class="fas fa-store text-brand-500"></i>
-                        <span class="hidden sm:inline">Tüm Kanallar</span>
-                        <i class="fas fa-chevron-down text-[10px] ml-1"></i>
-                    </button>
-                    <div x-show="selectorOpen" @click.away="selectorOpen = false" x-cloak class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-slate-100 py-1 z-50">
-                        <a href="#" class="px-4 py-2 text-sm text-slate-700 hover:bg-brand-50 hover:text-brand-600 flex items-center gap-2">
-                            <span class="h-2 w-2 rounded-full bg-brand-500"></span> Tüm Kanallar
-                        </a>
-                        <a href="#" class="px-4 py-2 text-sm text-slate-700 hover:bg-brand-50 hover:text-brand-600 flex items-center gap-2">
-                            <span class="h-2 w-2 rounded-full bg-slate-300"></span> Trendyol
-                        </a>
-                        <a href="#" class="px-4 py-2 text-sm text-slate-700 hover:bg-brand-50 hover:text-brand-600 flex items-center gap-2">
-                            <span class="h-2 w-2 rounded-full bg-slate-300"></span> Hepsiburada
-                        </a>
-                    </div>
-                </div>
 
-                <div class="w-px h-6 bg-slate-200 hidden sm:block"></div>
 
                 <!-- Sound Status Connector -->
                 <div class="hidden sm:block">
