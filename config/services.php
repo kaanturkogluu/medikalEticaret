@@ -41,4 +41,10 @@ return [
         'redirect' => env('GOOGLE_REDIRECT_URI'),
     ],
 
+    'netgsm' => [
+        'usercode' => env('NETGSM_USERCODE'),
+        'password' => env('NETGSM_PASSWORD'),
+        'header' => env('NETGSM_HEADER'),
+    ],
+
 ];

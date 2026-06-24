@@ -193,6 +193,11 @@
                 <span class="font-medium text-sm">Pazaryeri Bağlantıları</span>
             </a>
 
+            <a href="{{ route('admin.netgsm.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-all group {{ Request::is('admin/netgsm*') ? 'sidebar-item-active' : '' }}">
+                <i class="fas fa-sms w-6 flex justify-center text-lg {{ Request::is('admin/netgsm*') ? 'text-white' : 'text-slate-500 group-hover:text-brand-400' }}"></i>
+                <span class="font-medium text-sm">Netgsm SMS</span>
+            </a>
+
             <a href="/admin/settings" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-all group {{ Request::is('admin/settings*') ? 'sidebar-item-active' : '' }}">
                 <i class="fas fa-sliders-h w-6 flex justify-center text-lg {{ Request::is('admin/settings*') ? 'text-white' : 'text-slate-500 group-hover:text-brand-400' }}"></i>
                 <span class="font-medium text-sm">Ayarlar</span>
@@ -286,6 +291,11 @@
             <a href="/admin/marketplaces" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-all group {{ Request::is('admin/marketplaces*') ? 'sidebar-item-active' : '' }}">
                 <i class="fas fa-plug w-6 flex justify-center text-lg {{ Request::is('admin/marketplaces*') ? 'text-white' : 'text-slate-500 group-hover:text-brand-400' }}"></i>
                 <span x-show="sidebarOpen" class="font-medium text-sm">Pazaryeri Bağlantıları</span>
+            </a>
+
+            <a href="{{ route('admin.netgsm.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-all group {{ Request::is('admin/netgsm*') ? 'sidebar-item-active' : '' }}">
+                <i class="fas fa-sms w-6 flex justify-center text-lg {{ Request::is('admin/netgsm*') ? 'text-white' : 'text-slate-500 group-hover:text-brand-400' }}"></i>
+                <span x-show="sidebarOpen" class="font-medium text-sm">Netgsm SMS</span>
             </a>
 
             <a href="/admin/settings" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-all group {{ Request::is('admin/settings*') ? 'sidebar-item-active' : '' }}">

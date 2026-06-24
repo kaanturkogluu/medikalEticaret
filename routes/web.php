@@ -220,6 +220,12 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
         Route::delete('/{shipping_company}', [\App\Http\Controllers\Admin\ShippingCompanyController::class, 'destroy'])->name('destroy');
         Route::post('/{shipping_company}/toggle', [\App\Http\Controllers\Admin\ShippingCompanyController::class, 'toggleActive'])->name('toggle');
     });
+
+    // Netgsm Integration
+    Route::group(['prefix' => 'netgsm', 'as' => 'admin.netgsm.'], function () {
+        Route::get('/', [\App\Http\Controllers\Admin\NetgsmController::class, 'index'])->name('index');
+        Route::post('/test', [\App\Http\Controllers\Admin\NetgsmController::class, 'test'])->name('test');
+    });
 });
 
 // Comment submission (Protected + Throttled)
