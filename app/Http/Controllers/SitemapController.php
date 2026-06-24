@@ -19,4 +19,13 @@ class SitemapController extends Controller
 
         return response()->view('sitemap', compact('products', 'categories', 'pages', 'brands'))->header('Content-Type', 'text/xml');
     }
+
+    public function akakce()
+    {
+        $products = Product::with(['category', 'brand', 'images'])
+            ->where('active', 1)
+            ->get();
+
+        return response()->view('akakce', compact('products'))->header('Content-Type', 'text/xml');
+    }
 }
