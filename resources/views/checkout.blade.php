@@ -597,7 +597,9 @@ function checkoutPage() {
                         title: 'Başarılı!',
                         text: result.message,
                         confirmButtonText: 'Tamam',
-                        confirmButtonColor: '#0f172a'
+                        confirmButtonColor: '#0f172a',
+                        timer: 3000,
+                        timerProgressBar: true
                     }).then(() => {
                         this.cart.clear();
                         window.location.href = result.redirect_url;

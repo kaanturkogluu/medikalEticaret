@@ -51,25 +51,36 @@ class Order extends Model
      */
     public function getStatusLabelAttribute(): string
     {
-        $status = strtolower($this->order_status ?? '');
+        $status = strtolower(trim($this->order_status ?? ''));
         
         $map = [
-            'created'         => 'Onaylandı',
-            'awaiting'        => 'Onay Bekliyor',
+            // Bekleyen / Yeni Siparişler
+            'created'         => 'Yeni Sipariş',
+            'awaiting'        => 'Yeni Sipariş',
+            'approved'        => 'Yeni Sipariş',
             'pending_payment' => 'Ödeme Bekliyor',
+            'unpaid'          => 'Ödenmedi',
+            
+            // Hazırlık ve Kargo Öncesi
             'preparing'       => 'Hazırlanıyor',
-            'picking'         => 'Toplanıyor',
-            'approved'        => 'Onaylandı',
-            'scanning'        => 'Okutuluyor',
+            'picking'         => 'Hazırlanıyor',
+            'scanning'        => 'Hazırlanıyor',
+            'readytoship'     => 'Hazırlanıyor',
+            'kargo bekleniyor' => 'Hazırlanıyor',
+            'kargoya hazır'   => 'Hazırlanıyor',
+            
+            // Kargo ve Teslimat
             'shipped'         => 'Kargoya Verildi',
             'delivered'       => 'Teslim Edildi',
+            
+            // İptal ve İade
             'cancelled'       => 'İptal Edildi',
+            'iptal edildi'    => 'İptal Edildi',
+            'kargo yapilmasi beklenmiyor' => 'İptal Edildi', // Veya 'Gönderim Yapılmayacak'
             'undeliveredandreturned' => 'İade Edildi',
             'returned'        => 'İade Edildi',
-            'unpaid'          => 'Ödenmedi',
-            'readytoship'      => 'Kargoya Hazır',
         ];
 
-        return $map[$status] ?? ($this->order_status ?? 'İşleniyor');
+        return $map[$status] ?? ucfirst($status);
     }
 }
