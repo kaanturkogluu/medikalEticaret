@@ -3,7 +3,7 @@
 @foreach ($products as $product)
 <product>
 <sku>{{ $product->sku ?? $product->id }}</sku>
-<name><![CDATA[{{ $product->name }}]]></name>
+<name>{{ $product->name }}</name>
 <url>{{ route('product.show', $product->slug ?? $product->id) }}</url>
 @php
     $images = $product->images;
@@ -25,8 +25,8 @@
 <dayOfDelivery>3</dayOfDelivery>
 <expressDeliveryTime></expressDeliveryTime>
 <quantity>{{ $product->stock }}</quantity>
-<productBrand><![CDATA[{{ $product->brand_name ?? ($product->brand ? $product->brand->name : '') }}]]></productBrand>
-<productCategory><![CDATA[{{ $product->category_name ?? ($product->category ? $product->category->name : '') }}]]></productCategory>
+<productBrand>{{ $product->brand_name ?? ($product->brand ? $product->brand->name : '') }}</productBrand>
+<productCategory>{{ $product->category_name ?? ($product->category ? $product->category->name : '') }}</productCategory>
 <barcode>{{ $product->barcode ?? '' }}</barcode>
 </product>
 @endforeach
