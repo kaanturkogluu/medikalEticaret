@@ -75,7 +75,7 @@
             </thead>
             <tbody>
                 @foreach($orders as $o)
-                <tr class="hover:bg-slate-50 transition-all group border-b border-slate-50">
+                <tr @dblclick="selectedOrder = {{ json_encode($o) }}" class="hover:bg-slate-50 transition-all group border-b border-slate-50 cursor-pointer">
                     <td class="px-6 py-4">
                         <div class="flex flex-col">
                             <span class="text-xs font-black text-slate-800 tracking-tighter">#{{ $o->external_order_id ?? $o->id }}</span>
