@@ -17,105 +17,100 @@
         body {
             font-family: 'Arial', sans-serif; /* Clean font for thermal printers */
             margin: 0;
-            padding: 5mm;
+            padding: 0;
             width: 100mm;
-            height: 100mm;
             color: #000;
             background: #fff;
         }
+        .page-break {
+            page-break-after: always;
+            height: 100mm;
+            width: 100mm;
+            padding: 5mm;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
         .label-border {
             border: 3px solid #000;
-            height: 90mm; /* 100mm - padding */
+            flex-grow: 1;
             padding: 3mm;
             display: flex;
             flex-direction: column;
         }
         .header {
             text-align: center;
-            border-bottom: 3px solid #000;
+            border-bottom: 2px solid #000;
             padding-bottom: 2mm;
             margin-bottom: 3mm;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         .header h1 {
             margin: 0;
-            font-size: 24px;
+            font-size: 16px;
             font-weight: 900;
             text-transform: uppercase;
         }
         .header p {
             margin: 0;
-            font-size: 11px;
+            font-size: 10px;
             font-weight: bold;
         }
-        .info-grid {
-            display: grid;
-            grid-template-cols: 1fr;
-            gap: 2mm;
-        }
         .section-box {
-            border: 1px solid #000;
-            padding: 2mm;
+            border-bottom: 1px dashed #000;
+            padding-bottom: 2mm;
+            margin-bottom: 2mm;
+        }
+        .section-box:last-child {
+            border-bottom: none;
         }
         .label-text {
             font-size: 9px;
             font-weight: bold;
             text-transform: uppercase;
-            margin-bottom: 1mm;
             display: block;
+            margin-bottom: 1px;
+            color: #333;
         }
         .value-text {
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 900;
             line-height: 1.2;
+            word-wrap: break-word;
         }
-        .items-list {
-            flex-grow: 1;
-            margin: 3mm 0;
-            border: 2px solid #000;
-            padding: 2mm;
-            overflow: hidden;
-        }
-        .items-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        .items-table th {
+        .value-text.address {
             font-size: 10px;
-            text-align: left;
-            border-bottom: 2px solid #000;
-            padding-bottom: 1mm;
+            font-weight: bold;
         }
-        .items-table td {
+        .value-text.product {
             font-size: 11px;
-            font-weight: 900;
-            padding: 1.5mm 0;
-            border-bottom: 1px solid #000;
-        }
-        .footer-area {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            margin-top: auto;
         }
         .barcode-box {
             text-align: center;
+            margin-top: auto;
+            border-top: 2px solid #000;
+            padding-top: 2mm;
         }
         .barcode-box img {
-            height: 12mm;
-            max-width: 50mm;
+            height: 14mm;
+            max-width: 80mm;
         }
         .barcode-val {
-            font-size: 10px;
-            font-weight: bold;
+            font-size: 12px;
+            font-weight: 900;
             font-family: monospace;
             margin-top: 1mm;
+            letter-spacing: 2px;
         }
-        .packer-box {
-            text-align: right;
-            font-size: 10px;
+        .qty-badge {
+            background: #000;
+            color: #fff;
+            font-size: 14px;
             font-weight: 900;
-            border-left: 2px solid #000;
-            padding-left: 3mm;
+            padding: 2px 6px;
+            border-radius: 4px;
         }
         .print-btn {
             position: fixed;
@@ -132,67 +127,100 @@
         @media print {
             .print-btn { display: none; }
             body { padding: 0; margin: 0; }
-            .label-border { height: 100mm; width: 100mm; border: none; } /* Printer uses physical labels */
         }
     </style>
 </head>
 <body>
     <button class="print-btn" onclick="window.print()">YAZDIR (PRINT)</button>
 
-    <div class="label-border">
-        <div class="header">
-            <h1>umutMed</h1>
-            <p>SEVKİYAT ETİKETİ (WEB)</p>
-        </div>
+    @php
+        // Normal items
+        $itemsToPrint = [];
+        if ($order->items && $order->items->count() > 0) {
+            foreach($order->items as $item) {
+                $itemsToPrint[] = [
+                    'product_name' => $item->product ? $item->product->name : 'Bilinmeyen Ürün',
+                    'barcode' => ($item->product && $item->product->barcode) ? $item->product->barcode : ($item->product ? $item->product->sku : $order->external_order_id),
+                    'qty' => $item->quantity
+                ];
+            }
+        } 
+        // Fallback for raw marketplace lines if order items not synced
+        elseif (isset($order->raw_marketplace_data['lines'])) {
+            foreach($order->raw_marketplace_data['lines'] as $line) {
+                $itemsToPrint[] = [
+                    'product_name' => $line['productName'] ?? $line['name'] ?? 'Bilinmeyen Ürün',
+                    'barcode' => $line['barcode'] ?? $line['merchantSku'] ?? $line['sku'] ?? $order->external_order_id,
+                    'qty' => $line['quantity'] ?? 1
+                ];
+            }
+        }
+        // Fallback for PTT AVM
+        elseif (isset($order->raw_marketplace_data['siparisUrunler'])) {
+            foreach($order->raw_marketplace_data['siparisUrunler'] as $line) {
+                $itemsToPrint[] = [
+                    'product_name' => $line['urun'] ?? 'Bilinmeyen Ürün',
+                    'barcode' => $line['urunBarkod'] ?? $line['variantBarkod'] ?? $order->external_order_id,
+                    'qty' => $line['toplamIslemAdedi'] ?? 1
+                ];
+            }
+        }
+        // Absolute fallback (just the order)
+        else {
+            $itemsToPrint[] = [
+                'product_name' => 'Sipariş Paketi',
+                'barcode' => $order->external_order_id ?? $order->id,
+                'qty' => 1
+            ];
+        }
+    @endphp
 
-        <div class="info-grid">
-            <div class="section-box">
-                <span class="label-text">MÜŞTERİ / ADRES:</span>
-                <div class="value-text">{{ $order->customer_name }}</div>
-                <div class="value-text" style="font-size: 11px; margin-top: 1mm;">
-                    {{ $order->address_info['address'] ?? '-' }}<br>
-                    {{ $order->address_info['district'] ?? '' }} / {{ $order->address_info['city'] ?? '' }}
+    @foreach($itemsToPrint as $idx => $item)
+        <div class="page-break">
+            <div class="label-border">
+                <div class="header">
+                    <h1>umutMed</h1>
+                    <p>Sip: #{{ $order->external_order_id ?? $order->id }}</p>
+                </div>
+
+                <div class="section-box">
+                    <span class="label-text">MÜŞTERİ:</span>
+                    <div class="value-text">{{ $order->customer_name }}</div>
+                </div>
+
+                <div class="section-box" style="flex-grow: 1;">
+                    <span class="label-text">ADRES:</span>
+                    <div class="value-text address">
+                        {{ $order->address_info['address'] ?? ($order->raw_marketplace_data['shipmentAddress']['fullAddress'] ?? '-') }}<br>
+                        {{ $order->address_info['district'] ?? ($order->raw_marketplace_data['shipmentAddress']['district'] ?? '') }} / 
+                        {{ $order->address_info['city'] ?? ($order->raw_marketplace_data['shipmentAddress']['city'] ?? '') }}
+                    </div>
+                </div>
+
+                <div class="section-box">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                        <div>
+                            <span class="label-text">ÜRÜN ({{ $idx + 1 }}/{{ count($itemsToPrint) }}):</span>
+                            <div class="value-text product">{{ str($item['product_name'])->limit(60) }}</div>
+                        </div>
+                        <div class="qty-badge">{{ $item['qty'] }} Adet</div>
+                    </div>
+                </div>
+
+                <div class="barcode-box">
+                    @php
+                        // Clean barcode for URL
+                        $cleanBarcode = urlencode(trim($item['barcode']));
+                    @endphp
+                    <!-- Using bwip-js API to generate a crisp barcode -->
+                    <img src="https://bwipjs-api.metafloor.com/?bcid=code128&text={{ $cleanBarcode }}&scale=4&rotate=N" alt="Barcode">
+                    <div class="barcode-val">{{ $item['barcode'] }}</div>
                 </div>
             </div>
         </div>
-
-        <div class="items-list">
-            <table class="items-table">
-                <thead>
-                    <tr>
-                        <th>ÜRÜN ADI</th>
-                        <th style="text-align: right;">ADET</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($order->items as $item)
-                        <tr>
-                            <td>{{ str($item->product->name)->limit(40) }}</td>
-                            <td style="text-align: right;">{{ $item->quantity }}</td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
-
-        <div class="footer-area">
-            <div class="barcode-box">
-                @php
-                    $barcodeData = $order->external_order_id ?? $order->id;
-                @endphp
-                <img src="https://bwipjs-api.metafloor.com/?bcid=code128&text={{ $barcodeData }}&scale=4&rotate=N" alt="Barcode">
-                <div class="barcode-val">{{ $barcodeData }}</div>
-            </div>
-            
-            <div class="packer-box">
-                <span class="label-text" style="margin-bottom: 0;">PAKETLEYİCİ:</span>
-                <div class="value-text" style="font-size: 12px;">{{ $packer }}</div>
-            </div>
-        </div>
-    </div>
+    @endforeach
 
     <script>
-        // Zebra printers often benefit from a slight delay before printing starts
         window.onload = () => {
             // setTimeout(() => window.print(), 500);
         };

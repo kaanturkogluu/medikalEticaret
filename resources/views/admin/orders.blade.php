@@ -465,12 +465,11 @@
                             </button>
                         </form>
                     </template>
-                    <button class="px-6 py-3 bg-white border border-slate-200 rounded-2xl text-xs font-black text-slate-600 hover:bg-slate-100 transition-all uppercase tracking-widest">
-                        Yazdır
-                    </button>
-                    <button class="px-6 py-3 bg-brand-600 text-white rounded-2xl text-xs font-black hover:bg-brand-700 transition-all shadow-lg shadow-brand-500/30 uppercase tracking-widest">
-                        Etiket Çıkar
-                    </button>
+                    <template x-if="!selectedOrder?.channel_id">
+                        <button @click="printLabel()" class="px-6 py-3 bg-brand-600 text-white rounded-2xl text-xs font-black hover:bg-brand-700 transition-all shadow-lg shadow-brand-500/30 uppercase tracking-widest flex items-center gap-2">
+                            <i class="fas fa-barcode"></i> Barkod
+                        </button>
+                    </template>
                 </div>
             </div>
         </div>
