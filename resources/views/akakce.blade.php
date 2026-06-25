@@ -10,18 +10,20 @@
     $mainImage = $images->first();
     $additionalImages = $images->skip(1)->take(5);
 @endphp
-<imgUrl>{{ $mainImage ? asset('storage/' . $mainImage->image_path) : url('images/default-product.jpg') }}</imgUrl>
+<imgUrl>{{ ($mainImage && !empty($mainImage->image_path)) ? asset('storage/' . $mainImage->image_path) : url('images/default-product.jpg') }}</imgUrl>
 @if($additionalImages->count() > 0)
 <additionalimages>
 @foreach($additionalImages as $image)
+@if(!empty($image->image_path))
 <imgUrl>{{ asset('storage/' . $image->image_path) }}</imgUrl>
+@endif
 @endforeach
 </additionalimages>
 @endif
 <description><![CDATA[{!! $product->description !!}]]></description>
 <distributor></distributor>
 <price>{{ number_format($product->price, 2, '.', '') }}</price>
-<shipPrice>{{ $product->free_shipping ? '0.00' : '0.00' }}</shipPrice>
+<shipPrice>{{ $product->price < 700 ? '89.00' : '0.00' }}</shipPrice>
 <dayOfDelivery>3</dayOfDelivery>
 <expressDeliveryTime></expressDeliveryTime>
 <quantity>{{ $product->stock }}</quantity>
