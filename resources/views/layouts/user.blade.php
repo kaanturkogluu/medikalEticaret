@@ -93,6 +93,9 @@
                         <a href="{{ route('user.comments') }}" class="nav-link {{ Request::is('hesabim/yorumlarim') ? 'active' : '' }}">
                             <i class="fas fa-comment-dots text-amber-400"></i> Yorumlarım
                         </a>
+                        <a href="{{ route('user.points') }}" class="nav-link {{ Request::is('hesabim/puanlarim') ? 'active' : '' }}">
+                            <i class="fas fa-star text-brand-400"></i> Puanlarım
+                        </a>
                     </div>
                 </div>
                 

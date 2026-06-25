@@ -161,7 +161,6 @@ class UserController extends Controller
         return back()->with('success', 'Şifreniz başarıyla güncellendi.');
     }
 
-    /** User Comments */
     public function comments()
     {
         $comments = \App\Models\Comment::where('user_id', Auth::id())
@@ -170,5 +169,15 @@ class UserController extends Controller
             ->paginate(10);
             
         return view('user.comments', compact('comments'));
+    }
+
+    /** User Med Puan */
+    public function points()
+    {
+        $user = Auth::user();
+        $rate = \App\Models\Setting::getValue('med_puan_rate', 1);
+        $rules = \App\Models\LoyaltyRule::orderBy('min_amount')->get();
+
+        return view('user.points', compact('user', 'rate', 'rules'));
     }
 }

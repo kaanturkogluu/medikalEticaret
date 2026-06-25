@@ -80,6 +80,7 @@ Route::middleware(['auth', 'user'])->prefix('hesabim')->name('user.')->group(fun
     Route::post('/bilgilerim', [\App\Http\Controllers\UserController::class, 'profileUpdate'])->name('profile.update');
     Route::post('/sifre-guncelle', [\App\Http\Controllers\UserController::class, 'passwordUpdate'])->name('password.update');
     Route::get('/yorumlarim', [\App\Http\Controllers\UserController::class, 'comments'])->name('comments');
+    Route::get('/puanlarim', [\App\Http\Controllers\UserController::class, 'points'])->name('points');
 });
 
 // Admin Routes (Protected)
