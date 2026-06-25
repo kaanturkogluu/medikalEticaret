@@ -3,6 +3,10 @@
 @section('title', 'Ödeme ve Sipariş')
 
 @section('content')
+@php
+    $medPuanRate = \App\Models\Setting::getValue('med_puan_rate', 1);
+    $userMedPuan = auth()->check() ? auth()->user()->med_puan : 0;
+@endphp
 <div class="bg-gray-50/50 min-h-screen py-12" x-data="checkoutPage()">
     <div class="ty-container">
         <div class="flex flex-col lg:flex-row gap-12">
@@ -241,9 +245,13 @@
                             <span>Kupon İndirimi</span>
                             <span x-text="'-' + calculateCouponDiscount().toFixed(2) + ' TL'"></span>
                         </div>
+                        <div x-show="appliedPoints > 0" x-cloak class="flex justify-between text-brand-600 bg-brand-50 px-3 py-2 rounded-xl border border-brand-100">
+                            <span>Med Puan İndirimi</span>
+                            <span x-text="'-' + (appliedPoints * medPuanRate).toFixed(2) + ' TL'"></span>
+                        </div>
                         <div x-show="form.payment_method === 'eft'" class="flex justify-between text-green-600 bg-green-50 px-3 py-2 rounded-xl border border-green-100">
                             <span>EFT İndirimi (%5)</span>
-                            <span x-text="'-' + (Math.max(0, cart.subtotal() - calculateCouponDiscount()) * 0.05).toFixed(2) + ' TL'"></span>
+                            <span x-text="'-' + (Math.max(0, cart.subtotal() - calculateCouponDiscount() - (appliedPoints * medPuanRate)) * 0.05).toFixed(2) + ' TL'"></span>
                         </div>
                         <div class="flex justify-between text-lg font-black text-slate-900 pt-4 uppercase italic">
                             <span>Toplam</span>
@@ -274,6 +282,40 @@
                             </button>
                         </div>
                     </div>
+
+                    {{-- Med Puan Section --}}
+                    @if(auth()->check() && $userMedPuan > 0)
+                    <div class="mb-8 pt-8 border-t border-gray-100">
+                        <div class="flex items-center justify-between mb-4">
+                            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Med Puan</p>
+                            <span class="text-[10px] font-bold bg-brand-100 text-brand-700 px-2 py-1 rounded-full">{{ $userMedPuan }} Puanınız Var ({{ $userMedPuan * $medPuanRate }} TL)</span>
+                        </div>
+                        
+                        <div class="flex gap-2" x-show="appliedPoints === 0">
+                            <input type="number" x-model.number="pointsToApply" placeholder="Kullanmak istediğiniz puan" max="{{ $userMedPuan }}" min="1"
+                                   class="flex-grow px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl text-xs font-bold focus:ring-2 focus:ring-slate-900 focus:border-slate-900 outline-none">
+                            <button @click="applyPoints(pointsToApply)" :disabled="pointsLoading || !pointsToApply || pointsToApply > userMedPuan || pointsToApply < 1" 
+                                    class="px-4 py-2.5 bg-brand-600 text-white rounded-xl text-[10px] font-bold hover:bg-brand-700 transition-all disabled:opacity-50">
+                                <span x-show="!pointsLoading">KULLAN</span>
+                                <i x-show="pointsLoading" class="fas fa-spinner fa-spin"></i>
+                            </button>
+                        </div>
+                        <div class="flex gap-2 mt-2" x-show="appliedPoints === 0">
+                            <button @click="applyPoints(userMedPuan)" class="text-[10px] font-bold text-brand-600 underline">Tümünü Kullan</button>
+                        </div>
+
+                        <div x-show="appliedPoints > 0" x-cloak class="flex items-center justify-between bg-brand-50 px-4 py-3 rounded-xl border border-brand-100 mt-2">
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-star text-brand-600 text-xs"></i>
+                                <span class="text-[10px] font-black text-brand-800 uppercase tracking-widest" x-text="appliedPoints + ' Puan Uygulandı'"></span>
+                                <span class="text-[9px] font-bold text-brand-600" x-text="'(₺' + (appliedPoints * medPuanRate).toFixed(2) + ' İndirim)'"></span>
+                            </div>
+                            <button @click="removePoints" class="text-rose-600 hover:text-rose-700">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                    @endif
 
                     <div class="bg-amber-50 border border-amber-100 p-4 rounded-2xl mb-8">
                         <p class="text-[10px] text-amber-800 leading-relaxed font-bold italic">
@@ -364,6 +406,11 @@ function checkoutPage() {
         appliedCoupon: null,
         couponCode: '',
         couponLoading: false,
+        appliedPoints: {{ session()->has('applied_points') ? session('applied_points') : 0 }},
+        pointsToApply: '',
+        pointsLoading: false,
+        userMedPuan: {{ $userMedPuan }},
+        medPuanRate: {{ $medPuanRate }},
         async applyCoupon() {
             if (!this.couponCode) return;
             this.couponLoading = true;
@@ -398,6 +445,42 @@ function checkoutPage() {
                 });
                 this.appliedCoupon = null;
                 notify('success', 'Kupon kaldırıldı.');
+            } catch (e) {}
+        },
+        async applyPoints(pts) {
+            if (!pts || pts < 1) return;
+            this.pointsLoading = true;
+            try {
+                const response = await fetch('{{ route("medpuan.apply") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({ points: pts })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    this.appliedPoints = result.points;
+                    this.pointsToApply = '';
+                    notify('success', result.message);
+                } else {
+                    notify('error', result.message);
+                }
+            } catch (e) {
+                notify('error', 'Med Puan uygulanırken hata oluştu.');
+            } finally {
+                this.pointsLoading = false;
+            }
+        },
+        async removePoints() {
+            try {
+                await fetch('{{ route("medpuan.remove") }}', {
+                    method: 'POST',
+                    headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
+                });
+                this.appliedPoints = 0;
+                notify('success', 'Med Puan kaldırıldı.');
             } catch (e) {}
         },
         selectAddress(addr) {
@@ -507,10 +590,14 @@ function checkoutPage() {
             let couponDiscount = this.calculateCouponDiscount();
             total -= couponDiscount;
 
+            // Med Puan Discount
+            let pointsDiscount = this.appliedPoints * this.medPuanRate;
+            total -= pointsDiscount;
+
             // EFT Discount
             if (this.form.payment_method === 'eft') {
-                let subtotalAfterCoupon = Math.max(0, this.cart.subtotal() - couponDiscount);
-                let eftDiscount = subtotalAfterCoupon * 0.05;
+                let subtotalAfterDiscounts = Math.max(0, this.cart.subtotal() - couponDiscount - pointsDiscount);
+                let eftDiscount = subtotalAfterDiscounts * 0.05;
                 total -= eftDiscount;
             }
             return Math.max(0, total).toFixed(2);

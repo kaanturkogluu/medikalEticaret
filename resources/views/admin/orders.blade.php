@@ -441,6 +441,22 @@
                             </button>
                         </form>
                     </template>
+                    <template x-if="selectedOrder?.order_status !== 'cancelled' && selectedOrder?.order_status !== 'İptal Edildi' && selectedOrder?.order_status !== 'Shipped' && selectedOrder?.order_status !== 'Delivered'">
+                        <form :action="'{{ route('admin.orders.cancel', ':id') }}'.replace(':id', selectedOrder.id)" 
+                              method="POST"
+                              x-data="{ cancelling: false }"
+                              @submit="if(cancelling) { $event.preventDefault(); return; } if(!confirm('Siparişi iptal etmek istediğinize emin misiniz?')) { $event.preventDefault(); return; } cancelling = true">
+                            @csrf
+                            <button type="submit" 
+                                    :disabled="cancelling"
+                                    class="px-6 py-3 bg-red-600 text-white rounded-2xl text-xs font-black hover:bg-red-700 transition-all shadow-lg shadow-red-500/30 uppercase tracking-widest disabled:opacity-70 disabled:cursor-not-allowed flex items-center gap-2">
+                                <span x-show="!cancelling">Siparişi İptal Et</span>
+                                <span x-show="cancelling" class="flex items-center gap-2">
+                                    <i class="fas fa-spinner fa-spin"></i> İptal Ediliyor...
+                                </span>
+                            </button>
+                        </form>
+                    </template>
                     <button x-show="!selectedOrder?.channel_id || selectedOrder?.channel?.slug === 'website'" @click="printLabel()" class="px-6 py-3 bg-brand-600 text-white rounded-2xl text-xs font-black hover:bg-brand-700 transition-all shadow-lg shadow-brand-500/30 uppercase tracking-widest flex items-center gap-2">
                         <i class="fas fa-barcode"></i> Barkod
                     </button>

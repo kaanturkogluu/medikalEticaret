@@ -183,6 +183,10 @@
                 <span class="font-medium text-sm">Site Görünümü</span>
             </a>
 
+            <a href="{{ route('admin.loyalty.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-all group {{ Request::is('admin/loyalty*') ? 'sidebar-item-active' : '' }}">
+                <i class="fas fa-gift w-6 flex justify-center text-lg {{ Request::is('admin/loyalty*') ? 'text-white' : 'text-slate-500 group-hover:text-brand-400' }}"></i>
+                <span class="font-medium text-sm">Sadakat Sistemi</span>
+            </a>
 
             <div class="pt-6 pb-2">
                 <p class="px-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Altyapı</p>
@@ -283,6 +287,10 @@
                 <span x-show="sidebarOpen" class="font-medium text-sm">Site Görünümü</span>
             </a>
 
+            <a href="{{ route('admin.loyalty.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-all group {{ Request::is('admin/loyalty*') ? 'sidebar-item-active' : '' }}">
+                <i class="fas fa-gift w-6 flex justify-center text-lg {{ Request::is('admin/loyalty*') ? 'text-white' : 'text-slate-500 group-hover:text-brand-400' }}"></i>
+                <span x-show="sidebarOpen" class="font-medium text-sm">Sadakat Sistemi</span>
+            </a>
 
             <div class="pt-6 pb-2">
                 <p x-show="sidebarOpen" class="px-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Altyapı</p>

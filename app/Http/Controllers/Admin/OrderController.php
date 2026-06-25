@@ -45,9 +45,6 @@ class OrderController extends Controller
         return back()->with('success', 'Siparişler başarıyla senkronize edildi.');
     }
 
-    /**
-     * Approve an order (e.g. EFT paid)
-     */
     public function approve(Order $order)
     {
         $order->update(['order_status' => 'Created']);
@@ -63,6 +60,55 @@ class OrderController extends Controller
         }
         
         return back()->with('success', 'Sipariş başarıyla onaylandı.');
+    }
+
+    /**
+     * Cancel an order and revert points/coupons
+     */
+    public function cancel(Order $order)
+    {
+        if (in_array(strtolower($order->order_status), ['cancelled', 'iptal edildi'])) {
+            return back()->with('error', 'Bu sipariş zaten iptal edilmiş.');
+        }
+
+        $order->update([
+            'order_status' => 'cancelled',
+            'canceled_at' => now(), // We can use updated_at, but we set status
+        ]);
+
+        // Kuponu iptal et (Tekrar kullanılabilir hale getir)
+        if ($order->coupon_id && $order->coupon->is_used) {
+            $order->coupon->update([
+                'is_used' => false,
+                'used_at' => null,
+                'order_id' => null,
+                'user_id' => null
+            ]);
+        }
+
+        // Med Puan İade İşlemleri
+        if ($order->user_id) {
+            $user = \App\Models\User::find($order->user_id);
+            if ($user) {
+                // Kullanılan puanları geri ver
+                if ($order->used_points > 0) {
+                    $user->med_puan += $order->used_points;
+                }
+                
+                // Kazanılan puanları geri al (Eğer varsa)
+                if ($order->earned_points > 0) {
+                    $user->med_puan -= $order->earned_points;
+                    // Puanın eksiye düşmemesini sağlayalım
+                    if ($user->med_puan < 0) {
+                        $user->med_puan = 0;
+                    }
+                }
+                
+                $user->save();
+            }
+        }
+
+        return back()->with('success', 'Sipariş başarıyla iptal edildi. Kullanılan puanlar iade edildi, kazanılan puanlar geri alındı.');
     }
 
     /**

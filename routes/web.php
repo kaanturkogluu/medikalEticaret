@@ -18,7 +18,8 @@ Route::get('/siparis-tamamlandi/{order}', [\App\Http\Controllers\CheckoutControl
 Route::post('/odeme-tamamla', [\App\Http\Controllers\CheckoutController::class, 'store'])->name('checkout.store');
 Route::post('/kupon-uygula', [\App\Http\Controllers\CheckoutController::class, 'applyCoupon'])->name('coupon.apply');
 Route::post('/kupon-kaldir', [\App\Http\Controllers\CheckoutController::class, 'removeCoupon'])->name('coupon.remove');
-
+Route::post('/med-puan-uygula', [\App\Http\Controllers\CheckoutController::class, 'applyPoints'])->name('medpuan.apply');
+Route::post('/med-puan-kaldir', [\App\Http\Controllers\CheckoutController::class, 'removePoints'])->name('medpuan.remove');
 // Iyzico Payment
 Route::get('/iyzico/pay/{order}', [\App\Http\Controllers\IyzicoController::class, 'pay'])->name('iyzico.pay');
 // Route::match(['get', 'post'], '/iyzico/callback', [\App\Http\Controllers\IyzicoController::class, 'callback'])->name('iyzico.callback'); // Moved to api.php to prevent logout issue
@@ -95,6 +96,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::get('/orders', [\App\Http\Controllers\Admin\OrderController::class, 'index'])->name('admin.orders');
     Route::post('/orders/sync', [\App\Http\Controllers\Admin\OrderController::class, 'sync'])->name('admin.orders.sync');
     Route::post('/orders/{order}/approve', [\App\Http\Controllers\Admin\OrderController::class, 'approve'])->name('admin.orders.approve');
+    Route::post('/orders/{order}/cancel', [\App\Http\Controllers\Admin\OrderController::class, 'cancel'])->name('admin.orders.cancel');
     Route::post('/orders/{order}/update-shipping', [\App\Http\Controllers\Admin\OrderController::class, 'updateShipping'])->name('admin.orders.update-shipping');
     Route::get('/orders/{order}/print-label', [\App\Http\Controllers\Admin\OrderController::class, 'printLabel'])->name('admin.orders.print-label');
     Route::get('/orders/{order}', [\App\Http\Controllers\Admin\OrderController::class, 'show'])->name('admin.orders.show');
@@ -228,6 +230,15 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
         Route::get('/history', [\App\Http\Controllers\Admin\NetgsmController::class, 'history'])->name('history');
         Route::get('/bulk', [\App\Http\Controllers\Admin\NetgsmController::class, 'bulk'])->name('bulk');
         Route::post('/bulk', [\App\Http\Controllers\Admin\NetgsmController::class, 'sendBulk'])->name('bulk.send');
+    });
+
+    // Loyalty System
+    Route::group(['prefix' => 'loyalty', 'as' => 'admin.loyalty.'], function () {
+        Route::get('/', [\App\Http\Controllers\Admin\LoyaltyController::class, 'index'])->name('index');
+        Route::post('/rules', [\App\Http\Controllers\Admin\LoyaltyController::class, 'storeRule'])->name('rules.store');
+        Route::delete('/rules/{id}', [\App\Http\Controllers\Admin\LoyaltyController::class, 'destroyRule'])->name('rules.destroy');
+        Route::post('/rate', [\App\Http\Controllers\Admin\LoyaltyController::class, 'updateRate'])->name('rate.update');
+        Route::post('/assign', [\App\Http\Controllers\Admin\LoyaltyController::class, 'assignManual'])->name('assign');
     });
 });
 

@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\OrderPlaced;
 use App\Models\Coupon;
 use Illuminate\Support\Str;
+use App\Models\Setting;
+use App\Models\LoyaltyRule;
 
 class CheckoutController extends Controller
 {
@@ -97,6 +99,33 @@ class CheckoutController extends Controller
         return response()->json(['success' => true, 'message' => 'Kupon kaldırıldı.']);
     }
 
+    public function applyPoints(Request $request)
+    {
+        if (!auth()->check()) {
+            return response()->json(['success' => false, 'message' => 'Lütfen giriş yapın.']);
+        }
+        $request->validate(['points' => 'required|integer|min:1']);
+        
+        $userPoints = auth()->user()->med_puan;
+        if ($request->points > $userPoints) {
+            return response()->json(['success' => false, 'message' => 'Yetersiz Med Puan bakiyesi.']);
+        }
+
+        session(['applied_points' => $request->points]);
+        
+        return response()->json([
+            'success' => true, 
+            'message' => 'Med Puan başarıyla uygulandı.',
+            'points' => $request->points
+        ]);
+    }
+
+    public function removePoints()
+    {
+        session()->forget('applied_points');
+        return response()->json(['success' => true, 'message' => 'Med Puan iptal edildi.']);
+    }
+
     public function index()
     {
         $provinces = \App\Models\Province::orderBy('name')->get();
@@ -180,20 +209,43 @@ class CheckoutController extends Controller
                     }
                 }
 
+                // --- MED PUAN UYGULAMA ---
+                $usedPoints = 0;
+                $usedPointsDiscount = 0;
+                if (auth()->check() && session()->has('applied_points')) {
+                    $pts = session('applied_points');
+                    if ($pts <= auth()->user()->med_puan) {
+                        $usedPoints = $pts;
+                        $rate = Setting::getValue('med_puan_rate', 1);
+                        $usedPointsDiscount = $pts * $rate;
+                    }
+                }
+
                 $shippingLimit = 700;
                 $shippingFee = 89;
                 $shipping = ($subtotal >= $shippingLimit || $hasFreeShippingProduct) ? 0 : $shippingFee;
 
-                $total = $subtotal + $shipping - $couponDiscount;
+                $total = $subtotal + $shipping - $couponDiscount - $usedPointsDiscount;
+                if ($total < 0) $total = 0;
 
-                // EFT İndirimi (%5) - Kupon sonrası tutar üzerinden
+                // EFT İndirimi (%5) - Kupon ve Puan sonrası tutar üzerinden
                 $eftDiscount = 0;
                 if ($validated['payment_method'] === 'eft') {
-                    $eftDiscount = ($subtotal - $couponDiscount) * 0.05;
+                    $eftDiscount = ($subtotal - $couponDiscount - $usedPointsDiscount) * 0.05;
+                    if ($eftDiscount < 0) $eftDiscount = 0;
                     $total -= $eftDiscount;
                 }
 
-                $totalDiscount = $eftDiscount + $couponDiscount;
+                $totalDiscount = $eftDiscount + $couponDiscount + $usedPointsDiscount;
+
+                // Kazanılan Puan Hesaplama (İndirimler sonrası Sepet Toplamı üzerinden)
+                $earnedPoints = 0;
+                $rule = LoyaltyRule::where('min_amount', '<=', $subtotal - $couponDiscount - $usedPointsDiscount)
+                                   ->where('max_amount', '>=', $subtotal - $couponDiscount - $usedPointsDiscount)
+                                   ->first();
+                if ($rule) {
+                    $earnedPoints = $rule->points;
+                }
 
                 // Determine Order Status (Mapping to Admin statusMap)
                 $status = 'Awaiting'; // Default: Onay Bekliyor
@@ -223,8 +275,25 @@ class CheckoutController extends Controller
                     'order_date' => now(),
                     'discount_amount' => $totalDiscount,
                     'synced' => false,
-                    'currency' => 'TL'
+                    'currency' => 'TL',
+                    'used_points' => $usedPoints,
+                    'used_points_discount' => $usedPointsDiscount,
+                    'earned_points' => $earnedPoints
                 ]);
+
+                // Kullanıcının puanlarını güncelle
+                if (auth()->check()) {
+                    $user = auth()->user();
+                    if ($usedPoints > 0) {
+                        $user->med_puan -= $usedPoints;
+                    }
+                    if ($earnedPoints > 0) {
+                        $user->med_puan += $earnedPoints;
+                    }
+                    $user->save();
+                    
+                    session()->forget('applied_points');
+                }
 
                 // Kuponu sessiondan temizle (Artık order_id üzerinden takip edilecek)
                 if ($coupon) {

@@ -26,12 +26,15 @@
         <p class="text-3xl font-black text-gray-900">{{ $commentCount }}</p>
         <p class="text-xs text-gray-500 font-medium mt-1">Değerlendirmem</p>
     </div>
-    <div class="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm text-center">
-        <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mx-auto mb-3">
-            <i class="fas fa-heart text-purple-500 text-lg"></i>
+    <div class="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm text-center relative overflow-hidden group">
+        <div class="absolute inset-0 bg-gradient-to-br from-brand-50 to-white opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+        <div class="relative z-10">
+            <div class="w-12 h-12 bg-brand-100 rounded-xl flex items-center justify-center mx-auto mb-3 shadow-inner shadow-brand-200/50">
+                <i class="fas fa-star text-brand-500 text-lg"></i>
+            </div>
+            <p class="text-3xl font-black text-gray-900">{{ auth()->user()->med_puan }}</p>
+            <p class="text-xs text-brand-600 font-bold mt-1">Med Puan</p>
         </div>
-        <p class="text-3xl font-black text-gray-900">—</p>
-        <p class="text-xs text-gray-500 font-medium mt-1">Favori Ürün</p>
     </div>
 </div>
 
