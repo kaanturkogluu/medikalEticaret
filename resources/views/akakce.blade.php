@@ -10,12 +10,12 @@
     $mainImage = $images->first();
     $additionalImages = $images->skip(1)->take(5);
 @endphp
-<imgUrl>{{ ($mainImage && !empty($mainImage->image_path)) ? asset('storage/' . $mainImage->image_path) : url('images/default-product.jpg') }}</imgUrl>
+<imgUrl>{{ ($mainImage && !empty($mainImage->url)) ? asset($mainImage->url) : url('images/default-product.jpg') }}</imgUrl>
 @if($additionalImages->count() > 0)
 <additionalimages>
 @foreach($additionalImages as $image)
-@if(!empty($image->image_path))
-<imgUrl>{{ asset('storage/' . $image->image_path) }}</imgUrl>
+@if(!empty($image->url))
+<imgUrl>{{ asset($image->url) }}</imgUrl>
 @endif
 @endforeach
 </additionalimages>
