@@ -144,7 +144,24 @@ class CheckoutController extends Controller
             $savedAddresses = \App\Models\UserAddress::where('user_id', auth()->id())->get();
         }
 
-        return view('checkout', compact('provinces', 'bankDetails', 'agreement', 'savedAddresses'));
+        $loyaltyRules = \App\Models\LoyaltyRule::orderBy('min_amount')->get();
+        $loyaltyMultipliers = \App\Models\LoyaltyMultiplier::orderBy('multiplier', 'desc')->get();
+        
+        // Kullanıcının son x günde iptal/iade olmayan sipariş sayısını hesaplayıp view'a geçelim
+        $pastOrdersCountByDuration = [];
+        if (auth()->check()) {
+            foreach ($loyaltyMultipliers as $multiplier) {
+                if (!isset($pastOrdersCountByDuration[$multiplier->duration_days])) {
+                    $startDate = now()->subDays($multiplier->duration_days);
+                    $pastOrdersCountByDuration[$multiplier->duration_days] = \App\Models\Order::where('user_id', auth()->id())
+                        ->where('created_at', '>=', $startDate)
+                        ->whereNotIn('order_status', ['Cancelled', 'Refunded'])
+                        ->count();
+                }
+            }
+        }
+
+        return view('checkout', compact('provinces', 'bankDetails', 'agreement', 'savedAddresses', 'loyaltyRules', 'loyaltyMultipliers', 'pastOrdersCountByDuration'));
     }
 
     public function success(Order $order)

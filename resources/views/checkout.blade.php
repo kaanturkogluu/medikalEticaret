@@ -219,9 +219,10 @@
                     
                     <div class="space-y-4 mb-8 max-h-60 overflow-y-auto pr-2 custom-scrollbar">
                         <template x-for="item in cart.items" :key="item.id">
-                            <div class="flex items-center gap-4">
-                                <div class="w-12 h-12 bg-gray-50 rounded-xl border border-gray-100 flex items-center justify-center shrink-0 overflow-hidden p-1">
-                                    <img :src="item.image" class="w-full h-full object-contain">
+                            <div class="flex items-center gap-4 relative">
+                                <div class="w-12 h-12 bg-gray-50 rounded-xl border border-gray-100 flex items-center justify-center shrink-0 overflow-hidden p-1 relative">
+                                    <div x-show="calculatePointsForProduct(item.price) > 0" class="absolute top-0 left-0 bg-orange-500 text-white text-[8px] font-black px-1 rounded-br-lg shadow-sm z-10" x-text="'+' + calculatePointsForProduct(item.price) + ' Puan'"></div>
+                                    <img :src="item.image" class="w-full h-full object-contain relative z-0">
                                 </div>
                                 <div class="flex-grow min-w-0">
                                     <p class="text-[10px] font-black text-slate-900 uppercase truncate" x-text="item.name"></p>
@@ -249,13 +250,26 @@
                             <span>Med Puan İndirimi</span>
                             <span x-text="'-' + (appliedPoints * medPuanRate).toFixed(2) + ' TL'"></span>
                         </div>
-                        <div x-show="form.payment_method === 'eft'" class="flex justify-between text-green-600 bg-green-50 px-3 py-2 rounded-xl border border-green-100">
-                            <span>EFT İndirimi (%5)</span>
-                            <span x-text="'-' + (Math.max(0, cart.subtotal() - calculateCouponDiscount() - (appliedPoints * medPuanRate)) * 0.05).toFixed(2) + ' TL'"></span>
+                        <div x-show="form.payment_method === 'eft'" x-cloak class="flex justify-between text-green-600 bg-green-50 px-3 py-2 rounded-xl border border-green-100">
+                            <span>Havale/EFT İndirimi (%5)</span>
+                            <span x-text="'-' + calculateEftDiscount().toFixed(2) + ' TL'"></span>
                         </div>
-                        <div class="flex justify-between text-lg font-black text-slate-900 pt-4 uppercase italic">
-                            <span>Toplam</span>
-                            <span x-text="grandTotal() + ' TL'"></span>
+                    </div>
+
+                    <div class="flex items-center justify-between pt-6 border-t border-gray-100">
+                        <span class="text-sm font-black text-gray-900 uppercase tracking-widest">Genel Toplam</span>
+                        <div class="text-right">
+                            <span class="text-2xl font-black text-brand-600 tracking-tighter" x-text="grandTotal() + ' TL'"></span>
+                        </div>
+                    </div>
+                    
+                    <div x-show="calculateEarnedPoints() > 0" x-cloak class="mt-4 p-3 bg-gradient-to-r from-orange-50 to-amber-50 rounded-xl border border-orange-100/50 flex items-center gap-3">
+                        <div class="w-8 h-8 bg-orange-100 text-orange-500 rounded-lg flex items-center justify-center text-sm">
+                            <i class="fas fa-gift"></i>
+                        </div>
+                        <div>
+                            <p class="text-[10px] font-black text-orange-800 uppercase tracking-widest mb-0.5">Bu Siparişten Kazanılacak</p>
+                            <p class="text-xs font-black text-orange-600" x-text="'+' + calculateEarnedPoints() + ' Med Puan'"></p>
                         </div>
                     </div>
 
@@ -414,6 +428,52 @@ function checkoutPage() {
         pointsLoading: false,
         userMedPuan: {{ $userMedPuan }},
         medPuanRate: {{ $medPuanRate }},
+        loyaltyRules: @json($loyaltyRules ?? []),
+        loyaltyMultipliers: @json($loyaltyMultipliers ?? []),
+        pastOrdersCountByDuration: @json($pastOrdersCountByDuration ?? []),
+        
+        calculatePointsForProduct(price) {
+            let pts = 0;
+            let p = parseFloat(price);
+            for (let i = 0; i < this.loyaltyRules.length; i++) {
+                let rule = this.loyaltyRules[i];
+                let min = parseFloat(rule.min_amount);
+                let max = rule.max_amount ? parseFloat(rule.max_amount) : 9999999;
+                if (p >= min && p <= max) {
+                    pts = parseInt(rule.points);
+                }
+            }
+            return pts;
+        },
+        calculateEarnedPoints() {
+            let baseAmount = Math.max(0, this.cart.subtotal() - this.calculateCouponDiscount() - (this.appliedPoints * this.medPuanRate));
+            let earnedPoints = 0;
+            
+            for (let i = 0; i < this.loyaltyRules.length; i++) {
+                let rule = this.loyaltyRules[i];
+                let min = parseFloat(rule.min_amount);
+                let max = rule.max_amount ? parseFloat(rule.max_amount) : 9999999;
+                if (baseAmount >= min && baseAmount <= max) {
+                    earnedPoints = parseInt(rule.points);
+                }
+            }
+            
+            if (earnedPoints > 0 && this.loyaltyMultipliers && this.loyaltyMultipliers.length > 0) {
+                for (let i = 0; i < this.loyaltyMultipliers.length; i++) {
+                    let multiplier = this.loyaltyMultipliers[i];
+                    let pastCount = this.pastOrdersCountByDuration[multiplier.duration_days] || 0;
+                    if (pastCount >= multiplier.order_count) {
+                        earnedPoints = Math.round(earnedPoints * parseFloat(multiplier.multiplier));
+                        break;
+                    }
+                }
+            }
+            return earnedPoints;
+        },
+        calculateEftDiscount() {
+            let baseAmount = Math.max(0, this.cart.subtotal() - this.calculateCouponDiscount() - (this.appliedPoints * this.medPuanRate));
+            return baseAmount * 0.05;
+        },
         async applyCoupon() {
             if (!this.couponCode) return;
             this.couponLoading = true;

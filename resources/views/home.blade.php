@@ -370,6 +370,12 @@
                                  @mouseleave="activeImage = 0">
                                 @php $img = $product->productImages->first()?->url ?? 'https://via.placeholder.com/400x600?text=Resim+Yok'; @endphp
                                 
+                                @if($product->earned_points > 0)
+                                    <div class="absolute top-0 left-0 bg-orange-500 text-white text-[9px] font-black px-1.5 py-1 rounded-br-lg shadow-sm z-30">
+                                        +{{ $product->earned_points }} Puan
+                                    </div>
+                                @endif
+
                                 <a href="{{ route('product.show', $product->slug) }}" target="_blank" class="block w-full h-full relative z-10">
                                     <template x-for="(image, index) in images.slice(0, 5)" :key="index">
                                         <img :src="image" 

@@ -107,4 +107,22 @@ class Product extends Model
     {
         return $this->hasMany(Comment::class)->where('is_approved', true);
     }
+
+    public function getEarnedPointsAttribute()
+    {
+        static $rules = null;
+        if ($rules === null) {
+            $rules = \App\Models\LoyaltyRule::orderBy('min_amount')->get();
+        }
+
+        $price = $this->price;
+        foreach ($rules as $rule) {
+            $min = $rule->min_amount;
+            $max = $rule->max_amount ?: 9999999;
+            if ($price >= $min && $price <= $max) {
+                return $rule->points;
+            }
+        }
+        return 0;
+    }
 }
