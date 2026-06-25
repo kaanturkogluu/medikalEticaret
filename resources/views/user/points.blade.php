@@ -21,7 +21,7 @@
         </div>
         <div class="relative z-10 flex items-center gap-6">
             <div class="w-20 h-20 bg-white/20 rounded-2xl flex items-center justify-center text-4xl border-2 border-white/30 shadow-inner">
-                <i class="fas fa-lira-sign text-white drop-shadow-md"></i>
+                <span class="text-white font-bold drop-shadow-md">₺</span>
             </div>
             <div>
                 <p class="text-orange-100 font-bold uppercase tracking-widest text-sm mb-1">Mevcut Bakiyeniz</p>
@@ -32,8 +32,8 @@
             </div>
         </div>
         <div class="relative z-10 bg-white text-orange-700 px-6 py-4 rounded-2xl shadow-xl flex items-center gap-4 min-w-[200px]">
-            <div class="w-10 h-10 bg-orange-50 rounded-xl flex items-center justify-center text-orange-500">
-                <i class="fas fa-lira-sign"></i>
+            <div class="w-10 h-10 bg-orange-50 rounded-xl flex items-center justify-center text-orange-500 text-xl font-bold">
+                ₺
             </div>
             <div>
                 <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-0.5">Toplam Değer</p>

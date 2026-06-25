@@ -280,7 +280,7 @@
                                     </a>
                                 @else
                                     <div class="relative group" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false">
-                                        <a href="{{ route('user.dashboard') }}"
+                                        <a href="javascript:void(0)"
                                             class="flex items-center gap-2 hover:text-[var(--primary-color)] transition-colors py-4">
                                             <i class="far fa-user text-lg text-gray-400 group-hover:text-[var(--primary-color)]"></i>
                                             <span class="hidden lg:inline uppercase tracking-tighter italic">Hesabım</span>
@@ -344,7 +344,7 @@
                                 @endif
                             @else
                                 <div class="relative group" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false">
-                                    <a href="{{ route('login') }}" class="flex items-center gap-2 hover:text-[var(--primary-color)] transition-colors py-4">
+                                    <a href="javascript:void(0)" class="flex items-center gap-2 hover:text-[var(--primary-color)] transition-colors py-4">
                                         <i class="far fa-user text-lg text-gray-400 group-hover:text-[var(--primary-color)]"></i>
                                         <span class="hidden lg:inline uppercase tracking-tighter italic">Giriş Yap</span>
                                     </a>
