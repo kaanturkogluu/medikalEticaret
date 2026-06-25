@@ -441,7 +441,7 @@
                             </button>
                         </form>
                     </template>
-                    <button x-show="!selectedOrder?.channel_id" @click="printLabel()" class="px-6 py-3 bg-brand-600 text-white rounded-2xl text-xs font-black hover:bg-brand-700 transition-all shadow-lg shadow-brand-500/30 uppercase tracking-widest flex items-center gap-2">
+                    <button x-show="!selectedOrder?.channel_id || selectedOrder?.channel?.slug === 'website'" @click="printLabel()" class="px-6 py-3 bg-brand-600 text-white rounded-2xl text-xs font-black hover:bg-brand-700 transition-all shadow-lg shadow-brand-500/30 uppercase tracking-widest flex items-center gap-2">
                         <i class="fas fa-barcode"></i> Barkod
                     </button>
                 </div>
