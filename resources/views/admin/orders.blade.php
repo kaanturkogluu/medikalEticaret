@@ -75,6 +75,7 @@
             </thead>
             <tbody>
                 @foreach($orders as $o)
+                @php $o->load(['items.product.productImages', 'channel', 'shippingCompany']); @endphp
                 <tr @dblclick="selectedOrder = {{ json_encode($o) }}" class="hover:bg-slate-50 transition-all group border-b border-slate-50 cursor-pointer">
                     <td class="px-6 py-4">
                         <div class="flex flex-col">
@@ -117,7 +118,6 @@
                         </span>
                     </td>
                     <td class="px-6 py-4 text-right">
-                        @php $o->load(['items.product.productImages', 'channel', 'shippingCompany']); @endphp
                         <button @click="selectedOrder = {{ json_encode($o) }}" class="p-2 bg-white border border-slate-200 rounded-lg shadow-sm hover:border-brand-500 hover:text-brand-600 transition-all lg:opacity-0 lg:group-hover:opacity-100 opacity-100">
                             <i class="fas fa-eye text-sm"></i>
                         </button>
