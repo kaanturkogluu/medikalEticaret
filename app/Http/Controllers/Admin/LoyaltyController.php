@@ -13,10 +13,11 @@ class LoyaltyController extends Controller
     public function index()
     {
         $rules = LoyaltyRule::orderBy('min_amount')->get();
+        $multipliers = \App\Models\LoyaltyMultiplier::orderBy('duration_days')->get();
         $rate = Setting::getValue('med_puan_rate', 1); // 1 Med Puan = 1 TL varsayılan
         $customers = User::where('role', 'user')->orderBy('name')->get();
         
-        return view('admin.loyalty.index', compact('rules', 'rate', 'customers'));
+        return view('admin.loyalty.index', compact('rules', 'multipliers', 'rate', 'customers'));
     }
 
     public function storeRule(Request $request)
@@ -61,5 +62,24 @@ class LoyaltyController extends Controller
         $user->save();
 
         return redirect()->back()->with('success', "{$user->name} adlı müşteriye {$request->points} Med Puan eklendi.");
+    }
+
+    public function storeMultiplier(Request $request)
+    {
+        $request->validate([
+            'duration_days' => 'required|integer|min:1',
+            'order_count' => 'required|integer|min:1',
+            'multiplier' => 'required|numeric|min:1',
+        ]);
+
+        \App\Models\LoyaltyMultiplier::create($request->all());
+
+        return redirect()->back()->with('success', 'Çarpan kuralı eklendi.');
+    }
+
+    public function destroyMultiplier($id)
+    {
+        \App\Models\LoyaltyMultiplier::findOrFail($id)->delete();
+        return redirect()->back()->with('success', 'Çarpan kuralı silindi.');
     }
 }

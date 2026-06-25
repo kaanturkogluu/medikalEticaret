@@ -240,6 +240,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
         Route::delete('/rules/{id}', [\App\Http\Controllers\Admin\LoyaltyController::class, 'destroyRule'])->name('rules.destroy');
         Route::post('/rate', [\App\Http\Controllers\Admin\LoyaltyController::class, 'updateRate'])->name('rate.update');
         Route::post('/assign', [\App\Http\Controllers\Admin\LoyaltyController::class, 'assignManual'])->name('assign');
+        Route::post('/multipliers', [\App\Http\Controllers\Admin\LoyaltyController::class, 'storeMultiplier'])->name('multipliers.store');
+        Route::delete('/multipliers/{id}', [\App\Http\Controllers\Admin\LoyaltyController::class, 'destroyMultiplier'])->name('multipliers.destroy');
     });
 });
 

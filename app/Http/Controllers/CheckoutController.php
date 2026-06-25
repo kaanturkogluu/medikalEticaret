@@ -238,13 +238,33 @@ class CheckoutController extends Controller
 
                 $totalDiscount = $eftDiscount + $couponDiscount + $usedPointsDiscount;
 
-                // Kazanılan Puan Hesaplama (İndirimler sonrası Sepet Toplamı üzerinden)
                 $earnedPoints = 0;
                 $rule = LoyaltyRule::where('min_amount', '<=', $subtotal - $couponDiscount - $usedPointsDiscount)
                                    ->where('max_amount', '>=', $subtotal - $couponDiscount - $usedPointsDiscount)
                                    ->first();
                 if ($rule) {
                     $earnedPoints = $rule->points;
+
+                    // Çarpan (Multiplier) Kontrolü
+                    if (auth()->check()) {
+                        $multipliers = \App\Models\LoyaltyMultiplier::orderBy('multiplier', 'desc')->get();
+                        
+                        foreach ($multipliers as $multiplier) {
+                            $startDate = now()->subDays($multiplier->duration_days);
+                            
+                            // İlgili periyottaki başarılı (iptal/iade olmayan) sipariş sayısı
+                            $pastOrdersCount = Order::where('user_id', auth()->id())
+                                ->where('created_at', '>=', $startDate)
+                                ->whereNotIn('order_status', ['Cancelled', 'Refunded'])
+                                ->count();
+                                
+                            if ($pastOrdersCount >= $multiplier->order_count) {
+                                // En yüksek çarpanı bulduğumuzda puanı çarp ve döngüden çık
+                                $earnedPoints = round($earnedPoints * $multiplier->multiplier);
+                                break;
+                            }
+                        }
+                    }
                 }
 
                 // Determine Order Status (Mapping to Admin statusMap)
@@ -287,7 +307,7 @@ class CheckoutController extends Controller
                     if ($usedPoints > 0) {
                         $user->med_puan -= $usedPoints;
                     }
-                    if ($earnedPoints > 0) {
+                    if ($earnedPoints > 0 && $validated['payment_method'] !== 'eft') {
                         $user->med_puan += $earnedPoints;
                     }
                     $user->save();

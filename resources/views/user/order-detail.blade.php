@@ -16,7 +16,7 @@
             <div>
                 <h1 class="font-black text-xl text-gray-900">Sipariş Detayı</h1>
                 <p class="text-sm text-gray-400 mt-1">Sipariş No: <span class="font-bold text-gray-600">#{{ $order->external_order_id ?? $order->id }}</span></p>
-                <p class="text-sm text-gray-400">Tarih: <span class="font-bold text-gray-600">{{ $order->created_at->format('d M Y, H:i') }}</span></p>
+                <p class="text-sm text-gray-400">Tarih: <span class="font-bold text-gray-600">{{ $order->created_at->translatedFormat('d F Y, H:i') }}</span></p>
             </div>
             <div class="text-right">
                 @php

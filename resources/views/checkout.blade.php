@@ -245,7 +245,7 @@
                             <span>Kupon İndirimi</span>
                             <span x-text="'-' + calculateCouponDiscount().toFixed(2) + ' TL'"></span>
                         </div>
-                        <div x-show="appliedPoints > 0" x-cloak class="flex justify-between text-brand-600 bg-brand-50 px-3 py-2 rounded-xl border border-brand-100">
+                        <div x-show="appliedPoints > 0" x-cloak class="flex justify-between text-orange-600 bg-orange-50 px-3 py-2 rounded-xl border border-orange-100">
                             <span>Med Puan İndirimi</span>
                             <span x-text="'-' + (appliedPoints * medPuanRate).toFixed(2) + ' TL'"></span>
                         </div>
@@ -288,27 +288,30 @@
                     <div class="mb-8 pt-8 border-t border-gray-100">
                         <div class="flex items-center justify-between mb-4">
                             <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Med Puan</p>
-                            <span class="text-[10px] font-bold bg-brand-100 text-brand-700 px-2 py-1 rounded-full">{{ $userMedPuan }} Puanınız Var ({{ $userMedPuan * $medPuanRate }} TL)</span>
+                            <span class="text-[10px] font-bold bg-orange-100 text-orange-700 px-2 py-1 rounded-full">{{ $userMedPuan }} Puanınız Var ({{ $userMedPuan * $medPuanRate }} TL)</span>
                         </div>
                         
-                        <div class="flex gap-2" x-show="appliedPoints === 0">
-                            <input type="number" x-model.number="pointsToApply" placeholder="Kullanmak istediğiniz puan" max="{{ $userMedPuan }}" min="1"
-                                   class="flex-grow px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl text-xs font-bold focus:ring-2 focus:ring-slate-900 focus:border-slate-900 outline-none">
-                            <button @click="applyPoints(pointsToApply)" :disabled="pointsLoading || !pointsToApply || pointsToApply > userMedPuan || pointsToApply < 1" 
-                                    class="px-4 py-2.5 bg-brand-600 text-white rounded-xl text-[10px] font-bold hover:bg-brand-700 transition-all disabled:opacity-50">
-                                <span x-show="!pointsLoading">KULLAN</span>
+                        <div class="flex flex-wrap gap-2" x-show="appliedPoints === 0">
+                            @if($userMedPuan >= 50)
+                                <button @click="applyPoints(50)" :disabled="pointsLoading" class="px-3 py-2 bg-white border border-gray-200 rounded-xl text-xs font-bold hover:bg-orange-50 hover:border-orange-500 hover:text-orange-600 transition-all shadow-sm">50</button>
+                            @endif
+                            @if($userMedPuan >= 100)
+                                <button @click="applyPoints(100)" :disabled="pointsLoading" class="px-3 py-2 bg-white border border-gray-200 rounded-xl text-xs font-bold hover:bg-orange-50 hover:border-orange-500 hover:text-orange-600 transition-all shadow-sm">100</button>
+                            @endif
+                            @if($userMedPuan >= 150)
+                                <button @click="applyPoints(150)" :disabled="pointsLoading" class="px-3 py-2 bg-white border border-gray-200 rounded-xl text-xs font-bold hover:bg-orange-50 hover:border-orange-500 hover:text-orange-600 transition-all shadow-sm">150</button>
+                            @endif
+                            <button @click="applyPoints({{ $userMedPuan }})" :disabled="pointsLoading" class="px-4 py-2 bg-orange-600 text-white rounded-xl text-xs font-bold hover:bg-orange-700 transition-all flex items-center gap-2 shadow-sm">
+                                <span x-show="!pointsLoading">Tümünü Kullan ({{ $userMedPuan }})</span>
                                 <i x-show="pointsLoading" class="fas fa-spinner fa-spin"></i>
                             </button>
                         </div>
-                        <div class="flex gap-2 mt-2" x-show="appliedPoints === 0">
-                            <button @click="applyPoints(userMedPuan)" class="text-[10px] font-bold text-brand-600 underline">Tümünü Kullan</button>
-                        </div>
 
-                        <div x-show="appliedPoints > 0" x-cloak class="flex items-center justify-between bg-brand-50 px-4 py-3 rounded-xl border border-brand-100 mt-2">
+                        <div x-show="appliedPoints > 0" x-cloak class="flex items-center justify-between bg-orange-50 px-4 py-3 rounded-xl border border-orange-100 mt-2">
                             <div class="flex items-center gap-2">
-                                <i class="fas fa-star text-brand-600 text-xs"></i>
-                                <span class="text-[10px] font-black text-brand-800 uppercase tracking-widest" x-text="appliedPoints + ' Puan Uygulandı'"></span>
-                                <span class="text-[9px] font-bold text-brand-600" x-text="'(₺' + (appliedPoints * medPuanRate).toFixed(2) + ' İndirim)'"></span>
+                                <i class="fas fa-star text-orange-600 text-xs"></i>
+                                <span class="text-[10px] font-black text-orange-800 uppercase tracking-widest" x-text="appliedPoints + ' Puan Uygulandı'"></span>
+                                <span class="text-[9px] font-bold text-orange-600" x-text="'(₺' + (appliedPoints * medPuanRate).toFixed(2) + ' İndirim)'"></span>
                             </div>
                             <button @click="removePoints" class="text-rose-600 hover:text-rose-700">
                                 <i class="fas fa-times"></i>
@@ -683,8 +686,8 @@ function checkoutPage() {
                         icon: 'success',
                         title: 'Başarılı!',
                         text: result.message,
-                        confirmButtonText: 'Tamam',
-                        confirmButtonColor: '#0f172a',
+                        showConfirmButton: false,
+                        allowOutsideClick: false,
                         timer: 3000,
                         timerProgressBar: true
                     }).then(() => {

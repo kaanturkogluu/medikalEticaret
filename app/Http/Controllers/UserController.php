@@ -177,7 +177,8 @@ class UserController extends Controller
         $user = Auth::user();
         $rate = \App\Models\Setting::getValue('med_puan_rate', 1);
         $rules = \App\Models\LoyaltyRule::orderBy('min_amount')->get();
+        $multipliers = \App\Models\LoyaltyMultiplier::orderBy('duration_days')->get();
 
-        return view('user.points', compact('user', 'rate', 'rules'));
+        return view('user.points', compact('user', 'rate', 'rules', 'multipliers'));
     }
 }

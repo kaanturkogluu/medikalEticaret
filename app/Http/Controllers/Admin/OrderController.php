@@ -59,6 +59,15 @@ class OrderController extends Controller
             ]);
         }
         
+        // Eğer sipariş EFT ise, puanı şimdi yükle
+        if ($order->payment_method === 'eft' && $order->earned_points > 0 && $order->user_id) {
+            $user = \App\Models\User::find($order->user_id);
+            if ($user) {
+                $user->med_puan += $order->earned_points;
+                $user->save();
+            }
+        }
+
         return back()->with('success', 'Sipariş başarıyla onaylandı.');
     }
 
@@ -69,6 +78,12 @@ class OrderController extends Controller
     {
         if (in_array(strtolower($order->order_status), ['cancelled', 'iptal edildi'])) {
             return back()->with('error', 'Bu sipariş zaten iptal edilmiş.');
+        }
+
+        // EFT Siparişi onaylanmadan önce iptal ediliyorsa, kazanılan puanlar henüz yüklenmediğinden geri alınmamalı.
+        $pointsWereAwarded = true;
+        if ($order->payment_method === 'eft' && $order->order_status === 'Awaiting') {
+            $pointsWereAwarded = false;
         }
 
         $order->update([
@@ -95,8 +110,8 @@ class OrderController extends Controller
                     $user->med_puan += $order->used_points;
                 }
                 
-                // Kazanılan puanları geri al (Eğer varsa)
-                if ($order->earned_points > 0) {
+                // Kazanılan puanları geri al (Eğer varsa ve yüklenmişse)
+                if ($order->earned_points > 0 && $pointsWereAwarded) {
                     $user->med_puan -= $order->earned_points;
                     // Puanın eksiye düşmemesini sağlayalım
                     if ($user->med_puan < 0) {
@@ -108,7 +123,7 @@ class OrderController extends Controller
             }
         }
 
-        return back()->with('success', 'Sipariş başarıyla iptal edildi. Kullanılan puanlar iade edildi, kazanılan puanlar geri alındı.');
+        return back()->with('success', 'Sipariş başarıyla iptal edildi.');
     }
 
     /**

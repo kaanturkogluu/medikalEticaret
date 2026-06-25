@@ -92,6 +92,78 @@
                 </div>
             </div>
         </div>
+        
+        <!-- Çarpan Kuralları (Bonus) -->
+        <div class="md:col-span-2 space-y-6 mt-8">
+            <div class="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm">
+                <h3 class="text-lg font-black text-slate-800 mb-4">Puan Çarpanı Kuralları (Bonus)</h3>
+                <p class="text-xs text-slate-500 mb-4">Belirli bir gün sayısı içerisinde, belirtilen sayıda sipariş veren müşterilerinizin puanlarını katlayın.</p>
+                
+                <form action="{{ route('admin.loyalty.multipliers.store') }}" method="POST" class="flex gap-4 items-end mb-6 bg-brand-50/50 p-4 rounded-xl border border-brand-100/50">
+                    @csrf
+                    <div class="flex-1">
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-1" title="Örn: 30 gün">Süre (Gün)</label>
+                        <input type="number" name="duration_days" required min="1" placeholder="30" class="w-full p-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 outline-none">
+                    </div>
+                    <div class="flex-1">
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-1" title="Örn: 5 Sipariş">Sipariş Sayısı</label>
+                        <input type="number" name="order_count" required min="1" placeholder="5" class="w-full p-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 outline-none">
+                    </div>
+                    <div class="flex-1">
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-1" title="Örn: 2 Katı">Puan Çarpanı</label>
+                        <input type="number" step="0.1" name="multiplier" required min="1" placeholder="2" class="w-full p-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 outline-none">
+                    </div>
+                    <button type="submit" class="py-2.5 px-4 bg-brand-500 text-white rounded-lg font-bold text-sm hover:bg-brand-600 transition-colors">
+                        <i class="fas fa-plus mr-1"></i> Ekle
+                    </button>
+                </form>
+
+                <div class="overflow-x-auto border border-slate-200 rounded-xl">
+                    <table class="w-full text-left">
+                        <thead class="bg-slate-50 border-b border-slate-200">
+                            <tr>
+                                <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-widest">Süre</th>
+                                <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-widest text-center">Gerekli Sipariş</th>
+                                <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-widest text-center">Çarpan</th>
+                                <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-widest text-right">İşlem</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            @forelse($multipliers as $multiplier)
+                            <tr class="hover:bg-slate-50">
+                                <td class="p-4 text-sm font-medium text-slate-800">
+                                    Son {{ $multiplier->duration_days }} Gün
+                                </td>
+                                <td class="p-4 text-center">
+                                    <span class="bg-slate-100 text-slate-600 font-bold px-3 py-1 rounded-full text-xs">
+                                        {{ $multiplier->order_count }} Sipariş
+                                    </span>
+                                </td>
+                                <td class="p-4 text-center">
+                                    <span class="bg-brand-50 text-brand-600 font-bold px-3 py-1 rounded-full text-xs">
+                                        x{{ number_format($multiplier->multiplier, 1) }} Kat
+                                    </span>
+                                </td>
+                                <td class="p-4 text-right">
+                                    <form action="{{ route('admin.loyalty.multipliers.destroy', $multiplier->id) }}" method="POST" onsubmit="return confirm('Bu çarpan kuralını silmek istediğinize emin misiniz?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="text-rose-500 hover:text-rose-700 bg-rose-50 w-8 h-8 rounded-lg flex items-center justify-center transition-colors ml-auto">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            @empty
+                            <tr>
+                                <td colspan="4" class="p-8 text-center text-slate-500">Henüz çarpan kuralı eklenmemiş.</td>
+                            </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
 
         <!-- Sağ Taraf: Ayarlar ve Manuel Ekleme -->
         <div class="space-y-6">
