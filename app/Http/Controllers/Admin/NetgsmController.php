@@ -56,6 +56,12 @@ class NetgsmController extends Controller
 
         // Siparişleri ürünleriyle çekelim
         $orders = \App\Models\Order::with('items.product')
+            ->where(function($query) {
+                $query->whereNull('channel_id')
+                      ->orWhereHas('channel', function($q) {
+                          $q->where('slug', 'website');
+                      });
+            })
             ->whereNotNull('customer_phone')
             ->where('customer_phone', '!=', '')
             // İsterseniz sadece başarılı siparişleri getirebilirsiniz. Şimdilik iptal harici diyelim.
