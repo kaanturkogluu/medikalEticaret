@@ -245,10 +245,11 @@
     </div>
 
     <!-- Header -->
-    <header class="shadow-sm sticky top-0 z-[1000]">
+    <header class="shadow-sm sticky top-0 z-[1000]" x-data="{ mobileCatOpen: false }">
         <div class="py-4 bg-white border-b border-gray-100">
             <div class="ty-container">
-                <div class="flex items-center gap-8">
+                <!-- Desktop Header (Hidden on Mobile) -->
+                <div class="hidden md:flex items-center gap-8">
                     <!-- Logo -->
                     <a href="{{ route('home') }}" class="flex-shrink-0">
                         <h1 class="text-3xl font-black italic tracking-tighter text-slate-900">
@@ -394,16 +395,103 @@
                         </a>
                     </div>
                 </div>
+                
+                <!-- Mobile Header (Visible only on Mobile) -->
+                <div class="flex md:hidden flex-col gap-4">
+                    <!-- Top Row: Logo, Search, Account -->
+                    <div class="flex items-center justify-between gap-3">
+                        <!-- Logo -->
+                        <a href="{{ route('home') }}" class="flex-shrink-0">
+                            <h1 class="text-2xl font-black italic tracking-tighter text-slate-900 leading-none">
+                                umut<span class="text-[var(--primary-color)]">Med</span>
+                            </h1>
+                        </a>
+                        
+                        <!-- Search -->
+                        <div class="flex-grow relative">
+                            <form action="{{ route('home') }}" method="GET">
+                                <input type="text" name="q" value="{{ request('q') }}" placeholder="Ara..." class="w-full bg-gray-50 border border-gray-200 rounded-full py-2 pl-4 pr-10 text-xs focus:outline-none focus:border-[var(--primary-color)]">
+                                <button type="submit" class="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--primary-color)]">
+                                    <i class="fas fa-search text-sm"></i>
+                                </button>
+                            </form>
+                        </div>
+                        
+                        <!-- Account -->
+                        <div class="flex-shrink-0">
+                            @if (Route::has('login'))
+                                @auth
+                                    @if(auth()->user()->isAdmin())
+                                        <a href="{{ route('admin.dashboard') }}" class="text-xl text-gray-400">
+                                            <i class="fas fa-cog"></i>
+                                        </a>
+                                    @else
+                                        <div class="relative" x-data="{ openMob: false }" @click.outside="openMob = false">
+                                            <button @click="openMob = !openMob" class="text-xl text-gray-400">
+                                                <i class="far fa-user"></i>
+                                            </button>
+                                            
+                                            <!-- Mobile User Dropdown -->
+                                            <div x-show="openMob" x-cloak class="absolute top-full right-0 mt-2 w-48 bg-white shadow-xl rounded-xl py-2 z-[1001] border border-gray-100">
+                                                <div class="px-4 py-2 mb-2 border-b border-gray-50">
+                                                    <p class="text-[10px] text-slate-400 font-black uppercase tracking-widest italic">Hoş Geldiniz</p>
+                                                    <p class="text-xs font-black text-slate-900 truncate uppercase mt-0.5">{{ auth()->user()->name }}</p>
+                                                </div>
+                                                <a href="{{ route('user.dashboard') }}" class="block px-4 py-2 text-xs font-bold text-gray-700 hover:bg-gray-50">Hesabım</a>
+                                                <a href="{{ route('user.orders') }}" class="block px-4 py-2 text-xs font-bold text-gray-700 hover:bg-gray-50">Siparişlerim</a>
+                                                <form action="{{ route('logout') }}" method="POST">
+                                                    @csrf
+                                                    <button type="submit" class="block w-full text-left px-4 py-2 text-xs font-bold text-red-600 hover:bg-red-50">Çıkış Yap</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    @endif
+                                @else
+                                    <div class="relative" x-data="{ openMob: false }" @click.outside="openMob = false">
+                                        <button @click="openMob = !openMob" class="text-xl text-gray-400">
+                                            <i class="far fa-user"></i>
+                                        </button>
+                                        <!-- Guest Dropdown -->
+                                        <div x-show="openMob" x-cloak class="absolute top-full right-0 mt-2 w-40 bg-white shadow-xl rounded-xl py-2 z-[1001] border border-gray-100">
+                                            <a href="{{ route('login') }}" class="block px-4 py-2 text-xs font-bold text-gray-700 hover:bg-gray-50">Giriş Yap</a>
+                                            <a href="{{ route('register') }}" class="block px-4 py-2 text-xs font-bold text-gray-700 hover:bg-gray-50">Üye Ol</a>
+                                        </div>
+                                    </div>
+                                @endauth
+                            @endif
+                        </div>
+                    </div>
+                    
+                    <!-- Bottom Row: Categories Hamburger, Fav, Cart -->
+                    <div class="flex items-center justify-between mt-1">
+                        <!-- Categories Hamburger Trigger -->
+                        <button @click="mobileCatOpen = true" class="flex items-center gap-2 text-[var(--primary-color)] font-black text-[13px] tracking-tight">
+                            <i class="fas fa-bars text-lg"></i> KATEGORİLER
+                        </button>
+                        
+                        <!-- Favorites & Cart -->
+                        <div class="flex items-center gap-5">
+                            <a href="{{ route('favorites') }}" class="relative text-xl text-gray-400">
+                                <i class="far fa-heart"></i>
+                                <span x-show="$store.fav.items.length" x-text="$store.fav.items.length" class="absolute -top-1.5 -right-2 bg-red-500 text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center border border-white"></span>
+                            </a>
+                            <button @click="$store.cart.open = true" class="relative text-xl text-gray-400">
+                                <i class="fas fa-shopping-cart"></i>
+                                <span x-show="$store.cart.items.length" x-text="$store.cart.items.length" class="absolute -top-1.5 -right-2 bg-[var(--primary-color)] text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center border border-white"></span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- Sub Navbar Categories -->
+        <!-- Sub Navbar Categories (Desktop Only) -->
         <nav class="category-nav hidden md:block bg-white shadow-sm border-b border-gray-200">
-            <div class="ty-container flex items-center justify-center">
+            <div class="ty-container flex items-center justify-center w-full relative" x-data="{ openAll: false }">
                 @if($categories->count() > 10)
-                    <div class="category-link cursor-pointer group" x-data="{ allCatSearch: '' }">
+                    <div class="category-link cursor-pointer group" @mouseenter="openAll = true" @mouseleave="openAll = false">
                         <span class="flex items-center gap-2 font-black italic">TÜM KATEGORİLER <i class="fas fa-chevron-down text-[10px]"></i></span>
-                        <div class="absolute hidden group-hover:block top-full left-0 bg-white border border-gray-100 shadow-2xl p-0 w-[1000px] z-[1001] rounded-b-xl overflow-hidden">
+                        <div x-show="openAll" x-cloak class="absolute top-full left-0 bg-white border border-gray-100 shadow-2xl p-0 w-[1000px] z-[1001] rounded-b-xl overflow-hidden" x-data="{ allCatSearch: '' }">
                             <!-- Search Sidebar in Dropdown -->
                             <div class="p-6 bg-gray-50/50 border-b border-gray-100">
                                 <div class="relative">
@@ -487,6 +575,59 @@
                 @endforeach
             </div>
         </nav>
+
+    <!-- Mobile Categories Offcanvas Drawer -->
+    <div x-show="mobileCatOpen" x-cloak class="md:hidden fixed inset-0 z-[2000] flex">
+        <!-- Backdrop -->
+        <div x-show="mobileCatOpen" x-transition.opacity class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm" @click="mobileCatOpen = false"></div>
+        
+        <!-- Drawer Content -->
+        <div x-show="mobileCatOpen" 
+             x-transition:enter="transition ease-out duration-300 transform"
+             x-transition:enter-start="-translate-x-full"
+             x-transition:enter-end="translate-x-0"
+             x-transition:leave="transition ease-in duration-200 transform"
+             x-transition:leave-start="translate-x-0"
+             x-transition:leave-end="-translate-x-full"
+             class="relative w-4/5 max-w-[320px] h-full bg-white shadow-2xl flex flex-col" x-data="{ mobileCatSearch: '' }">
+            
+            <!-- Header -->
+            <div class="p-5 border-b border-gray-100 flex items-center justify-between bg-gray-50/80">
+                <span class="font-black italic text-slate-800 tracking-tight flex items-center gap-2">
+                    <i class="fas fa-bars text-[var(--primary-color)]"></i> KATEGORİLER
+                </span>
+                <button @click="mobileCatOpen = false" class="w-8 h-8 flex items-center justify-center bg-white rounded-lg shadow-sm text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <!-- Search -->
+            <div class="p-4 border-b border-gray-100 bg-white">
+                <div class="relative">
+                    <input type="text" x-model="mobileCatSearch" placeholder="Kategorilerde ara..." class="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 pl-11 pr-4 text-sm focus:outline-none focus:border-[var(--primary-color)] focus:bg-white transition-colors">
+                    <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                </div>
+            </div>
+            
+            <!-- Category List -->
+            <div class="flex-1 overflow-y-auto custom-scrollbar p-2 bg-slate-50/50">
+                @foreach($categories as $cat)
+                    @php $searchText = strtolower(($cat->parent ? $cat->parent->name . ' ' : '') . $cat->name); @endphp
+                    <a href="{{ route('home', ['category' => $cat->slug ?? $cat->id]) }}" 
+                       x-show="mobileCatSearch === '' || '{{ $searchText }}'.includes(mobileCatSearch.toLowerCase())"
+                       class="flex items-center justify-between px-4 py-3 mb-1 text-sm font-bold text-gray-700 bg-white border border-gray-100 rounded-xl hover:border-[var(--primary-color)] hover:text-[var(--primary-color)] transition-all group/mobcat">
+                        <span class="flex flex-col">
+                            @if($cat->parent)
+                                <span class="text-[10px] text-gray-400 font-normal leading-tight">{{ $cat->parent->name }}</span>
+                            @endif
+                            <span class="leading-snug">{{ $cat->name }}</span>
+                        </span>
+                        <i class="fas fa-chevron-right text-[10px] text-gray-300 group-hover/mobcat:text-[var(--primary-color)] transition-colors"></i>
+                    </a>
+                @endforeach
+            </div>
+        </div>
+    </div>
     </header>
 
     @yield('sub_header')
