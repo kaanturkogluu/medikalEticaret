@@ -293,7 +293,7 @@
                                              x-transition:enter-start="opacity-0 translate-y-4"
                                              x-transition:enter-end="opacity-100 translate-y-0"
                                              x-cloak 
-                                             class="absolute top-full -left-10 w-60 bg-white shadow-[0_20px_50px_rgba(0,0,0,0.15)] rounded-2xl py-3 transform z-[100] border border-slate-50">
+                                             class="absolute top-full right-0 w-60 bg-white shadow-[0_20px_50px_rgba(0,0,0,0.15)] rounded-2xl py-3 transform z-[100] border border-slate-50">
                                             
                                             <!-- Invisible Bridge -->
                                             <div class="absolute w-full h-6 -top-6 bg-transparent"></div>
@@ -355,7 +355,7 @@
                                          x-transition:enter-start="opacity-0 translate-y-4"
                                          x-transition:enter-end="opacity-100 translate-y-0"
                                          x-cloak 
-                                         class="absolute top-full -left-10 w-48 bg-white shadow-[0_20px_50px_rgba(0,0,0,0.15)] rounded-2xl p-4 transform z-[100] border border-slate-50">
+                                         class="absolute top-full right-0 w-48 bg-white shadow-[0_20px_50px_rgba(0,0,0,0.15)] rounded-2xl p-4 transform z-[100] border border-slate-50">
                                         
                                         <div class="absolute w-full h-6 -top-6 bg-transparent"></div>
 
