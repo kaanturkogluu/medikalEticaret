@@ -136,9 +136,9 @@
                             <p class="text-xs text-blue-700">Seçtiğiniz <span id="selectedCount" class="font-black">0</span> kişiye tek seferde toplu gönderim yapılacaktır.</p>
                         </div>
 
-                        <button type="button" onclick="confirmBulkSend()" class="w-full py-4 bg-brand-500 hover:bg-brand-600 text-white rounded-xl text-sm font-black tracking-wide shadow-lg shadow-brand-500/20 transition-all flex items-center justify-center gap-2 group">
-                            <i class="fas fa-paper-plane group-hover:translate-x-1 transition-transform"></i>
-                            <span>Seçili Müşterilere Gönder</span>
+                        <button type="button" id="submitBtn" onclick="confirmBulkSend()" class="w-full py-4 bg-brand-500 hover:bg-brand-600 text-white rounded-xl text-sm font-black tracking-wide shadow-lg shadow-brand-500/20 transition-all flex items-center justify-center gap-2 group">
+                            <i id="submitIcon" class="fas fa-paper-plane group-hover:translate-x-1 transition-transform"></i>
+                            <span id="submitText">Seçili Müşterilere Gönder</span>
                         </button>
                     </div>
                 </div>
@@ -211,6 +211,15 @@
         const confirmMsg = "Dikkat!\n\nYazdığınız mesaj " + checkedCount + " farklı müşteriye gönderilecektir.\nOnaylıyor musunuz?";
         
         if (confirm(confirmMsg)) {
+            const btn = document.getElementById('submitBtn');
+            const icon = document.getElementById('submitIcon');
+            const text = document.getElementById('submitText');
+            
+            btn.disabled = true;
+            btn.classList.add('opacity-75', 'cursor-not-allowed');
+            icon.className = 'fas fa-spinner fa-spin';
+            text.textContent = 'Gönderiliyor... Lütfen Bekleyin';
+
             document.getElementById('bulkSmsForm').submit();
         }
     }
