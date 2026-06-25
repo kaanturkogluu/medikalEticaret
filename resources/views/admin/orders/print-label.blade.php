@@ -139,7 +139,7 @@
         if ($order->items && $order->items->count() > 0) {
             foreach($order->items as $item) {
                 $itemsToPrint[] = [
-                    'product_name' => $item->product ? $item->product->name : 'Bilinmeyen Ürün',
+                    'product_name' => $item->product ? (($item->product->brand ? $item->product->brand->name . ' - ' : '') . $item->product->name) : 'Bilinmeyen Ürün',
                     'barcode' => ($item->product && $item->product->barcode) ? $item->product->barcode : ($item->product ? $item->product->sku : $order->external_order_id),
                     'qty' => $item->quantity
                 ];
@@ -201,7 +201,7 @@
                     <div style="display: flex; justify-content: space-between; align-items: flex-start;">
                         <div>
                             <span class="label-text">ÜRÜN ({{ $idx + 1 }}/{{ count($itemsToPrint) }}):</span>
-                            <div class="value-text product">{{ str($item['product_name'])->limit(60) }}</div>
+                            <div class="value-text product">{{ $item['product_name'] }}</div>
                         </div>
                         <div class="qty-badge">{{ $item['qty'] }} Adet</div>
                     </div>

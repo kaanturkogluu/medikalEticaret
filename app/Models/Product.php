@@ -117,8 +117,9 @@ class Product extends Model
 
         $price = $this->price;
         foreach ($rules as $rule) {
-            $min = $rule->min_amount;
-            $max = $rule->max_amount ?: 9999999;
+            $min = (float) $rule->min_amount;
+            $maxAmt = (float) $rule->max_amount;
+            $max = $maxAmt > 0 ? $maxAmt : 9999999;
             if ($price >= $min && $price <= $max) {
                 return $rule->points;
             }

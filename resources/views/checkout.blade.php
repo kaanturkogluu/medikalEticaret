@@ -254,22 +254,16 @@
                             <span>Havale/EFT İndirimi (%5)</span>
                             <span x-text="'-' + calculateEftDiscount().toFixed(2) + ' TL'"></span>
                         </div>
+                        <div x-show="calculateEarnedPoints() > 0" x-cloak class="flex justify-between text-orange-600 pt-2 border-t border-gray-100/50 mt-2">
+                            <span>Kazanılacak Puan :</span>
+                            <span x-text="calculateEarnedPoints()"></span>
+                        </div>
                     </div>
 
                     <div class="flex items-center justify-between pt-6 border-t border-gray-100">
                         <span class="text-sm font-black text-gray-900 uppercase tracking-widest">Genel Toplam</span>
                         <div class="text-right">
                             <span class="text-2xl font-black text-brand-600 tracking-tighter" x-text="grandTotal() + ' TL'"></span>
-                        </div>
-                    </div>
-                    
-                    <div x-show="calculateEarnedPoints() > 0" x-cloak class="mt-4 p-3 bg-gradient-to-r from-orange-50 to-amber-50 rounded-xl border border-orange-100/50 flex items-center gap-3">
-                        <div class="w-8 h-8 bg-orange-100 text-orange-500 rounded-lg flex items-center justify-center text-sm">
-                            <i class="fas fa-gift"></i>
-                        </div>
-                        <div>
-                            <p class="text-[10px] font-black text-orange-800 uppercase tracking-widest mb-0.5">Bu Siparişten Kazanılacak</p>
-                            <p class="text-xs font-black text-orange-600" x-text="'+' + calculateEarnedPoints() + ' Med Puan'"></p>
                         </div>
                     </div>
 
@@ -438,7 +432,8 @@ function checkoutPage() {
             for (let i = 0; i < this.loyaltyRules.length; i++) {
                 let rule = this.loyaltyRules[i];
                 let min = parseFloat(rule.min_amount);
-                let max = rule.max_amount ? parseFloat(rule.max_amount) : 9999999;
+                let maxAmt = parseFloat(rule.max_amount);
+                let max = maxAmt > 0 ? maxAmt : 9999999;
                 if (p >= min && p <= max) {
                     pts = parseInt(rule.points);
                 }
@@ -446,13 +441,15 @@ function checkoutPage() {
             return pts;
         },
         calculateEarnedPoints() {
+            if (!this.cart) return 0;
             let baseAmount = Math.max(0, this.cart.subtotal() - this.calculateCouponDiscount() - (this.appliedPoints * this.medPuanRate));
             let earnedPoints = 0;
             
             for (let i = 0; i < this.loyaltyRules.length; i++) {
                 let rule = this.loyaltyRules[i];
                 let min = parseFloat(rule.min_amount);
-                let max = rule.max_amount ? parseFloat(rule.max_amount) : 9999999;
+                let maxAmt = parseFloat(rule.max_amount);
+                let max = maxAmt > 0 ? maxAmt : 9999999;
                 if (baseAmount >= min && baseAmount <= max) {
                     earnedPoints = parseInt(rule.points);
                 }
@@ -471,6 +468,7 @@ function checkoutPage() {
             return earnedPoints;
         },
         calculateEftDiscount() {
+            if (!this.cart) return 0;
             let baseAmount = Math.max(0, this.cart.subtotal() - this.calculateCouponDiscount() - (this.appliedPoints * this.medPuanRate));
             return baseAmount * 0.05;
         },

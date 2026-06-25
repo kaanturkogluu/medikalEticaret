@@ -256,9 +256,17 @@ class CheckoutController extends Controller
                 $totalDiscount = $eftDiscount + $couponDiscount + $usedPointsDiscount;
 
                 $earnedPoints = 0;
-                $rule = LoyaltyRule::where('min_amount', '<=', $subtotal - $couponDiscount - $usedPointsDiscount)
-                                   ->where('max_amount', '>=', $subtotal - $couponDiscount - $usedPointsDiscount)
-                                   ->first();
+                $amount = max(0, $subtotal - $couponDiscount - $usedPointsDiscount);
+                        
+                $rule = \App\Models\LoyaltyRule::where('min_amount', '<=', $amount)
+                    ->where(function($query) use ($amount) {
+                        $query->where('max_amount', '>=', $amount)
+                              ->orWhere('max_amount', 0)
+                              ->orWhereNull('max_amount');
+                    })
+                    ->orderBy('min_amount', 'desc')
+                    ->first();
+
                 if ($rule) {
                     $earnedPoints = $rule->points;
 

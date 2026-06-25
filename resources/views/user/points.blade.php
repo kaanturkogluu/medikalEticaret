@@ -21,7 +21,7 @@
         </div>
         <div class="relative z-10 flex items-center gap-6">
             <div class="w-20 h-20 bg-white/20 rounded-2xl flex items-center justify-center text-4xl border-2 border-white/30 shadow-inner">
-                <i class="fas fa-coins text-white drop-shadow-md"></i>
+                <i class="fas fa-lira-sign text-white drop-shadow-md"></i>
             </div>
             <div>
                 <p class="text-orange-100 font-bold uppercase tracking-widest text-sm mb-1">Mevcut Bakiyeniz</p>

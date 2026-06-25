@@ -111,7 +111,7 @@
     <div class="label-container">
         <!-- 1. Product Name (Max 2 lines) -->
         <h1 class="product-name">
-            {{ $product->name }}
+            {{ $product->brand ? $product->brand->name . ' - ' : '' }}{{ $product->name }}
         </h1>
 
         <!-- 2. Price (Prominent) -->
