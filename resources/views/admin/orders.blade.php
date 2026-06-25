@@ -45,10 +45,6 @@
         </div>
         <div class="flex flex-wrap items-stretch sm:items-center gap-3 w-full xl:w-auto">
             <form action="{{ route('admin.orders') }}" method="GET" class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto flex-grow xl:flex-grow-0">
-                <div class="relative group w-full sm:w-auto">
-                    <input type="text" name="q" value="{{ request('q') }}" placeholder="Sipariş No, Müşteri Adı..." class="w-full pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all shadow-sm sm:min-w-[240px]">
-                    <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs transition-colors group-focus-within:text-brand-500"></i>
-                </div>
                 <select name="channel_id" onchange="this.form.submit()" class="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all shadow-sm w-full sm:w-auto">
                     <option value="">Tüm Pazaryerleri</option>
                     @foreach($channels as $channel)
@@ -57,16 +53,8 @@
                         </option>
                     @endforeach
                 </select>
-                <button type="submit" class="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors flex items-center justify-center gap-2 shadow-sm w-full sm:w-auto">
-                    <i class="fas fa-filter text-brand-500 text-[10px]"></i> Filtrele
-                </button>
             </form>
-            <form action="{{ route('admin.orders.sync') }}" method="POST" class="w-full sm:w-auto">
-                @csrf
-                <button type="submit" class="w-full sm:w-auto px-4 py-2 bg-brand-600 text-white rounded-lg text-sm font-semibold hover:bg-brand-700 transition-colors flex items-center justify-center gap-2 shadow-lg shadow-brand-500/20">
-                    <i class="fas fa-sync-alt text-[10px]"></i> Pazaryeri Siparişlerini Çek
-                </button>
-            </form>
+
         </div>
     </div>
 
