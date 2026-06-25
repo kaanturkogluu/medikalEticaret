@@ -117,7 +117,7 @@
                         </span>
                     </td>
                     <td class="px-6 py-4 text-right">
-                        @php $o->load(['items.product', 'channel', 'shippingCompany']); @endphp
+                        @php $o->load(['items.product.productImages', 'channel', 'shippingCompany']); @endphp
                         <button @click="selectedOrder = {{ json_encode($o) }}" class="p-2 bg-white border border-slate-200 rounded-lg shadow-sm hover:border-brand-500 hover:text-brand-600 transition-all lg:opacity-0 lg:group-hover:opacity-100 opacity-100">
                             <i class="fas fa-eye text-sm"></i>
                         </button>
@@ -364,10 +364,23 @@
                                 <template x-for="item in selectedOrder?.items" :key="item.id">
                                     <tr class="hover:bg-slate-50/50 transition-colors">
                                         <td class="px-6 py-4">
-                                            <div class="flex flex-col">
-                                                <span class="text-xs font-bold text-slate-800 tracking-tight" x-text="item.product?.name || 'Ürün'"></span>
-                                                <div class="flex items-center gap-2 mt-1">
-                                                    <span class="text-[10px] px-1.5 py-0.5 bg-slate-100 text-slate-500 rounded font-black tracking-tighter" x-text="item.product?.sku || '-'"></span>
+                                            <div class="flex items-center gap-3">
+                                                <template x-if="item.product?.product_images && item.product.product_images.length > 0">
+                                                    <img :src="item.product.product_images[0].url" 
+                                                         @click="window.open(item.product.product_images[0].url, '_blank')"
+                                                         class="w-10 h-10 object-cover rounded-lg border border-slate-200 cursor-pointer hover:scale-105 transition-transform" 
+                                                         title="Büyütmek için tıklayın">
+                                                </template>
+                                                <template x-if="!(item.product?.product_images && item.product.product_images.length > 0)">
+                                                    <div class="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center text-slate-300 flex-shrink-0">
+                                                        <i class="fas fa-image"></i>
+                                                    </div>
+                                                </template>
+                                                <div class="flex flex-col">
+                                                    <span class="text-xs font-bold text-slate-800 tracking-tight" x-text="item.product?.name || 'Ürün'"></span>
+                                                    <div class="flex items-center gap-2 mt-1">
+                                                        <span class="text-[10px] px-1.5 py-0.5 bg-slate-100 text-slate-500 rounded font-black tracking-tighter" x-text="item.product?.sku || '-'"></span>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </td>
