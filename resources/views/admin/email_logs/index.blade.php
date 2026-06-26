@@ -82,7 +82,7 @@
                         {{ $log->created_at->format('d.m.Y H:i') }}
                     </td>
                     <td class="px-6 py-4 text-right">
-                        <button onclick="showMailDetails({{ $log->id }})" class="text-brand-600 hover:text-brand-800 text-sm font-medium">
+                        <button type="button" @click="$dispatch('open-mail-modal', { id: {{ $log->id }} })" class="text-brand-600 hover:text-brand-800 text-sm font-medium">
                             <i class="fas fa-eye"></i> Görüntüle
                         </button>
                     </td>
@@ -109,50 +109,26 @@
 </div>
 
 <!-- Modal for Mail Details -->
-<div id="mailModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4" x-cloak>
-    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden" @click.away="closeMailModal()">
-        <div class="p-4 border-b border-slate-200 flex justify-between items-center bg-slate-50 shrink-0">
-            <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
-                <i class="fas fa-envelope text-brand-500"></i> Mail Detayı
-            </h3>
-            <button onclick="closeMailModal()" class="text-slate-400 hover:text-slate-600 p-2">
-                <i class="fas fa-times text-xl"></i>
-            </button>
-        </div>
-        <div class="p-6 overflow-y-auto flex-1 custom-scrollbar" id="mailModalContent">
-            <!-- Content loaded via AJAX -->
-            <div class="flex justify-center py-10">
-                <i class="fas fa-spinner fa-spin text-3xl text-brand-500"></i>
+<div x-data="{ mailModalOpen: false, loading: false, content: '' }" 
+     @open-mail-modal.window="mailModalOpen = true; loading = true; fetch('/admin/email-logs/' + $event.detail.id).then(r => r.text()).then(html => { content = html; loading = false; }).catch(() => { content = '<div class=\'p-4 bg-rose-50 text-rose-600 rounded-lg\'>Hata oluştu.</div>'; loading = false; })">
+
+    <div x-show="mailModalOpen" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" x-cloak>
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden" @click.away="mailModalOpen = false">
+            <div class="p-4 border-b border-slate-200 flex justify-between items-center bg-slate-50 shrink-0">
+                <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                    <i class="fas fa-envelope text-brand-500"></i> Mail Detayı
+                </h3>
+                <button @click="mailModalOpen = false" class="text-slate-400 hover:text-slate-600 p-2">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div class="p-6 overflow-y-auto flex-1 custom-scrollbar">
+                <div x-show="loading" class="flex justify-center py-10">
+                    <i class="fas fa-spinner fa-spin text-3xl text-brand-500"></i>
+                </div>
+                <div x-show="!loading" x-html="content"></div>
             </div>
         </div>
     </div>
 </div>
-
-<script>
-    function showMailDetails(id) {
-        document.getElementById('mailModal').classList.remove('hidden');
-        document.getElementById('mailModalContent').innerHTML = `
-            <div class="flex justify-center py-10">
-                <i class="fas fa-spinner fa-spin text-3xl text-brand-500"></i>
-            </div>
-        `;
-        
-        fetch(`/admin/email-logs/${id}`)
-            .then(response => response.text())
-            .then(html => {
-                document.getElementById('mailModalContent').innerHTML = html;
-            })
-            .catch(error => {
-                document.getElementById('mailModalContent').innerHTML = `
-                    <div class="p-4 bg-rose-50 text-rose-600 rounded-lg">
-                        Mail detayı yüklenirken bir hata oluştu.
-                    </div>
-                `;
-            });
-    }
-
-    function closeMailModal() {
-        document.getElementById('mailModal').classList.add('hidden');
-    }
-</script>
 @endsection

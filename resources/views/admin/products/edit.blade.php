@@ -66,6 +66,10 @@
             </div>
         </div>
         <div class="flex items-center gap-2">
+            <a href="{{ route('product.show', $product->slug) }}" target="_blank" class="px-4 py-2.5 bg-white border border-slate-200 text-slate-700 rounded-xl text-sm font-bold hover:bg-slate-50 transition-all flex items-center gap-2 shadow-sm">
+                <i class="fas fa-external-link-alt"></i>
+                <span class="hidden sm:inline">Sitede Gör</span>
+            </a>
             <button type="submit" form="editProductForm" :disabled="saving || isReadingFiles" class="px-6 py-2.5 bg-brand-600 text-white rounded-xl text-sm font-bold hover:bg-brand-700 transition-all flex items-center gap-2 shadow-lg shadow-brand-500/20 disabled:opacity-50 disabled:cursor-not-allowed">
                 <i class="fas" :class="(saving || isReadingFiles) ? 'fa-spinner fa-spin' : 'fa-save'"></i>
                 <span x-text="saving ? 'Yükleniyor...' : (isReadingFiles ? 'Okunuyor...' : 'Değişiklikleri Kaydet')"></span>
