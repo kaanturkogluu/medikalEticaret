@@ -175,6 +175,10 @@
                                 <p class="text-xs font-black text-brand-600 uppercase tracking-tighter" x-text="selectedOrder?.payment_method || (selectedOrder?.channel_id ? 'Pazaryeri' : '-')"></p>
                             </div>
                             <div>
+                                <p class="text-[10px] font-bold text-slate-400 uppercase">Müşteri Adı Soyadı</p>
+                                <p class="text-xs font-bold text-slate-800" x-text="selectedOrder?.customer_name || (selectedOrder?.raw_marketplace_data?.customerFirstName ? selectedOrder.raw_marketplace_data.customerFirstName + ' ' + selectedOrder.raw_marketplace_data.customerLastName : '-')"></p>
+                            </div>
+                            <div>
                                 <p class="text-[10px] font-bold text-slate-400 uppercase">Müşteri E-Posta</p>
                                 <p class="text-xs font-bold text-slate-800" x-text="selectedOrder?.customer_email || '-'"></p>
                             </div>

@@ -130,7 +130,7 @@
                                         </button>
                                     </div>
                                     <div>
-                                        <p class="text-sm font-bold text-slate-800 tracking-tight" x-text="p.name"></p>
+                                        <a :href="'/urun/' + p.slug" target="_blank" class="text-sm font-bold text-slate-800 tracking-tight hover:text-brand-600 hover:underline transition-colors" x-text="p.name" title="Sitede Gör"></a>
                                         <div class="flex items-center gap-2 mt-1">
                                             <span class="text-[10px] font-bold text-slate-400 uppercase">SKU:</span>
                                             <span class="text-[11px] font-bold text-brand-600 bg-brand-50 px-1.5 py-0.5 rounded tracking-tighter" x-text="p.sku || '-'"></span>
