@@ -22,11 +22,12 @@ class OrderController extends Controller
     {
         $query = Order::with('channel');
 
-        $channelId = $request->input('channel_id', 'website'); // Varsayılan olarak websitesi
+        $websiteChannel = \App\Models\Channel::where('slug', 'website')->first();
+        $defaultChannelId = $websiteChannel ? (string)$websiteChannel->id : 'all';
+        
+        $channelId = $request->input('channel_id', $defaultChannelId);
 
-        if ($channelId === 'website') {
-            $query->whereNull('channel_id');
-        } elseif ($channelId !== 'all') {
+        if ($channelId !== 'all' && $channelId !== null && $channelId !== '') {
             $query->where('channel_id', $channelId);
         }
 

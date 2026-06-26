@@ -47,7 +47,6 @@
             <form action="{{ route('admin.orders') }}" method="GET" class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto flex-grow xl:flex-grow-0">
                 <select name="channel_id" onchange="this.form.submit()" class="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all shadow-sm w-full sm:w-auto">
                     <option value="all" {{ $channelId === 'all' ? 'selected' : '' }}>Tüm Siparişler</option>
-                    <option value="website" {{ $channelId === 'website' ? 'selected' : '' }}>Web Sitesi</option>
                     @foreach($channels as $channel)
                         <option value="{{ $channel->id }}" {{ $channelId == $channel->id ? 'selected' : '' }}>
                             {{ $channel->name }}
