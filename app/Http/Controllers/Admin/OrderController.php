@@ -79,7 +79,7 @@ class OrderController extends Controller
     /**
      * Cancel an order and revert points/coupons
      */
-    public function cancel(Order $order)
+    public function cancel(Request $request, Order $order)
     {
         if (in_array(strtolower($order->order_status), ['cancelled', 'iptal edildi'])) {
             return back()->with('error', 'Bu sipariş zaten iptal edilmiş.');
@@ -94,6 +94,7 @@ class OrderController extends Controller
         $order->update([
             'order_status' => 'cancelled',
             'canceled_at' => now(), // We can use updated_at, but we set status
+            'cancel_reason' => $request->input('cancel_reason'),
         ]);
 
         // Kuponu iptal et (Tekrar kullanılabilir hale getir)
@@ -128,7 +129,16 @@ class OrderController extends Controller
             }
         }
 
-        return back()->with('success', 'Sipariş başarıyla iptal edildi.');
+        // İptal e-postasını gönder
+        try {
+            if ($order->customer_email) {
+                \Illuminate\Support\Facades\Mail::to($order->customer_email)->send(new \App\Mail\OrderCancelled($order));
+            }
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Order Cancel Email Error: ' . $e->getMessage());
+        }
+
+        return back()->with('success', 'Sipariş başarıyla iptal edildi ve müşteriye e-posta gönderildi.');
     }
 
     /**

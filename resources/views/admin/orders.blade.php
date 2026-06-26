@@ -458,8 +458,9 @@
                         <form :action="'{{ route('admin.orders.cancel', ':id') }}'.replace(':id', selectedOrder.id)" 
                               method="POST"
                               x-data="{ cancelling: false }"
-                              @submit="if(cancelling) { $event.preventDefault(); return; } if(!confirm('Siparişi iptal etmek istediğinize emin misiniz?')) { $event.preventDefault(); return; } cancelling = true">
+                              @submit="if(cancelling) { $event.preventDefault(); return; } let reason = prompt('Lütfen sipariş iptal nedenini giriniz (Müşteriye gönderilecektir):'); if(!reason) { $event.preventDefault(); return; } $refs.reasonInput.value = reason; cancelling = true">
                             @csrf
+                            <input type="hidden" name="cancel_reason" x-ref="reasonInput" value="">
                             <button type="submit" 
                                     :disabled="cancelling"
                                     class="px-6 py-3 bg-red-600 text-white rounded-2xl text-xs font-black hover:bg-red-700 transition-all shadow-lg shadow-red-500/30 uppercase tracking-widest disabled:opacity-70 disabled:cursor-not-allowed flex items-center gap-2">
