@@ -243,6 +243,11 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
         Route::post('/multipliers', [\App\Http\Controllers\Admin\LoyaltyController::class, 'storeMultiplier'])->name('multipliers.store');
         Route::delete('/multipliers/{id}', [\App\Http\Controllers\Admin\LoyaltyController::class, 'destroyMultiplier'])->name('multipliers.destroy');
     });
+    // Email Logs
+    Route::group(['prefix' => 'email-logs', 'as' => 'admin.email-logs.'], function () {
+        Route::get('/', [\App\Http\Controllers\Admin\EmailLogController::class, 'index'])->name('index');
+        Route::get('/{log}', [\App\Http\Controllers\Admin\EmailLogController::class, 'show'])->name('show');
+    });
 });
 
 // Comment submission (Protected + Throttled)

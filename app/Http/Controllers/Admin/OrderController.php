@@ -22,8 +22,12 @@ class OrderController extends Controller
     {
         $query = Order::with('channel');
 
-        if ($request->filled('channel_id')) {
-            $query->where('channel_id', $request->channel_id);
+        $channelId = $request->input('channel_id', 'website'); // Varsayılan olarak websitesi
+
+        if ($channelId === 'website') {
+            $query->whereNull('channel_id');
+        } elseif ($channelId !== 'all') {
+            $query->where('channel_id', $channelId);
         }
 
 
@@ -32,7 +36,7 @@ class OrderController extends Controller
         $channels = \App\Models\Channel::all();
         $shippingCompanies = \App\Models\ShippingCompany::where('active', true)->get();
 
-        return view('admin.orders', compact('orders', 'channels', 'shippingCompanies'));
+        return view('admin.orders', compact('orders', 'channels', 'shippingCompanies', 'channelId'));
     }
 
     /**
