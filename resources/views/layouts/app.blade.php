@@ -191,6 +191,16 @@
         }
     </style>
     @yield('styles')
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-9R61M1L3PK"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-9R61M1L3PK');
+    </script>
 </head>
 
 <body x-data>
