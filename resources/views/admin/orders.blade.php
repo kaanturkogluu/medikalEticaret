@@ -221,6 +221,9 @@
                         </h4>
                         <div class="space-y-3">
                             <p class="text-xs font-bold text-slate-800 leading-relaxed" x-text="selectedOrder?.address_info?.address || selectedOrder?.raw_marketplace_data?.shipmentAddress?.fullAddress || selectedOrder?.raw_marketplace_data?.shippingAddress?.address"></p>
+                            <template x-if="selectedOrder?.address_info?.neighborhood">
+                                <p class="text-[10px] font-semibold text-slate-500" x-text="selectedOrder.address_info.neighborhood + ' Mahallesi'"></p>
+                            </template>
                             <p class="text-[10px] font-black text-slate-400 uppercase tracking-tighter" x-text="(selectedOrder?.address_info?.district || selectedOrder?.raw_marketplace_data?.shipmentAddress?.district || selectedOrder?.raw_marketplace_data?.shippingAddress?.district || '-') + ' / ' + (selectedOrder?.address_info?.city || selectedOrder?.raw_marketplace_data?.shipmentAddress?.city || selectedOrder?.raw_marketplace_data?.shippingAddress?.city || '-')"></p>
                         </div>
                     </div>
