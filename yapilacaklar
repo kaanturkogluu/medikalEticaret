@@ -1,0 +1,4 @@
+http://127.0.0.1:8000/admin/products  ürün adındaki linke tıklandığında ürünü sitedeki linkine yeni sekmede gidecek , suan undefined olarak geliyor 
+odeme sayfasına 
+Fatura istiyorum checkbox ı eklencek  . Kullanıcı bunu seçtğinde bireysel , kurumsal arasında seçim yapacak . 
+Birseysel için tc kimlik numarası alınacak , Kurumsal için Ticari Unvan: Firmanın resmi kayıtlı adı (örn. X Anonim Şirketi veya Ahmet Yılmaz).Vergi Dairesi: Firmanın bağlı olduğu resmi vergi dairesi bilgisi.Vergi Numarası (VKN): Şirketler için 10 haneli VKN, şahıs işletmeleri için ise 11 haneli T.C. Kimlik Numarası.Yasal Adres: Şirketin resmi tebligat adresi.  kullanıcdan alınacak ve alanlar zorunlu olacaktıur    

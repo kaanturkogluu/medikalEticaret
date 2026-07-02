@@ -104,6 +104,60 @@
                             <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Açık Adres</label>
                             <textarea x-model="form.address" rows="3" class="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-sm font-bold focus:outline-none focus:ring-4 focus:ring-slate-900/5 focus:border-slate-900 transition-all resize-none"></textarea>
                         </div>
+                        
+                        <!-- Fatura İstiyorum Checkbox -->
+                        <div class="md:col-span-2 mt-4 space-y-4 border-t border-gray-100 pt-4">
+                            <label class="flex items-center gap-3 cursor-pointer group w-fit">
+                                <div class="relative flex items-center justify-center">
+                                    <input type="checkbox" x-model="form.wants_invoice" class="peer sr-only">
+                                    <div class="w-5 h-5 bg-white border-2 border-gray-300 rounded peer-checked:bg-slate-900 peer-checked:border-slate-900 transition-all flex items-center justify-center">
+                                        <i class="fas fa-check text-white text-xs opacity-0 peer-checked:opacity-100 transition-opacity"></i>
+                                    </div>
+                                </div>
+                                <span class="text-sm font-bold text-gray-700 group-hover:text-slate-900 transition-colors">Fatura İstiyorum</span>
+                            </label>
+
+                            <!-- Fatura Bilgileri -->
+                            <div x-show="form.wants_invoice" x-collapse class="space-y-6 bg-gray-50/50 p-6 rounded-2xl border border-gray-100">
+                                <!-- Fatura Tipi Seçimi -->
+                                <div class="flex gap-4">
+                                    <label class="flex items-center gap-2 cursor-pointer">
+                                        <input type="radio" x-model="form.invoice_type" value="bireysel" class="text-slate-900 focus:ring-slate-900 w-4 h-4">
+                                        <span class="text-sm font-bold text-gray-700">Bireysel</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 cursor-pointer">
+                                        <input type="radio" x-model="form.invoice_type" value="kurumsal" class="text-slate-900 focus:ring-slate-900 w-4 h-4">
+                                        <span class="text-sm font-bold text-gray-700">Kurumsal</span>
+                                    </label>
+                                </div>
+
+                                <!-- Bireysel Fatura Alanları -->
+                                <div x-show="form.invoice_type === 'bireysel'" class="space-y-2">
+                                    <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">T.C. Kimlik Numarası *</label>
+                                    <input type="text" x-model="form.tc_no" maxlength="11" class="w-full px-6 py-4 bg-white border border-gray-200 rounded-2xl text-sm font-bold focus:outline-none focus:ring-4 focus:ring-slate-900/5 focus:border-slate-900 transition-all" placeholder="11 haneli T.C. Kimlik Numaranız">
+                                </div>
+
+                                <!-- Kurumsal Fatura Alanları -->
+                                <div x-show="form.invoice_type === 'kurumsal'" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div class="md:col-span-2 space-y-2">
+                                        <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Ticari Unvan *</label>
+                                        <input type="text" x-model="form.company_name" class="w-full px-6 py-4 bg-white border border-gray-200 rounded-2xl text-sm font-bold focus:outline-none focus:ring-4 focus:ring-slate-900/5 focus:border-slate-900 transition-all" placeholder="Firmanın resmi kayıtlı adı">
+                                    </div>
+                                    <div class="space-y-2">
+                                        <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Vergi Dairesi *</label>
+                                        <input type="text" x-model="form.tax_office" class="w-full px-6 py-4 bg-white border border-gray-200 rounded-2xl text-sm font-bold focus:outline-none focus:ring-4 focus:ring-slate-900/5 focus:border-slate-900 transition-all" placeholder="Vergi Dairesi">
+                                    </div>
+                                    <div class="space-y-2">
+                                        <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Vergi Numarası (VKN) *</label>
+                                        <input type="text" x-model="form.tax_number" maxlength="11" class="w-full px-6 py-4 bg-white border border-gray-200 rounded-2xl text-sm font-bold focus:outline-none focus:ring-4 focus:ring-slate-900/5 focus:border-slate-900 transition-all" placeholder="10 haneli VKN veya 11 haneli T.C. No">
+                                    </div>
+                                    <div class="md:col-span-2 space-y-2">
+                                        <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Yasal Adres *</label>
+                                        <textarea x-model="form.legal_address" rows="2" class="w-full px-6 py-4 bg-white border border-gray-200 rounded-2xl text-sm font-bold focus:outline-none focus:ring-4 focus:ring-slate-900/5 focus:border-slate-900 transition-all resize-none" placeholder="Şirketin resmi tebligat adresi"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -412,7 +466,14 @@ function checkoutPage() {
             neighborhood: '',
             address: '',
             payment_method: 'credit_card',
-            selected_address_id: null
+            selected_address_id: null,
+            wants_invoice: false,
+            invoice_type: 'bireysel',
+            tc_no: '',
+            company_name: '',
+            tax_office: '',
+            tax_number: '',
+            legal_address: ''
         },
         appliedCoupon: null,
         couponCode: '',
@@ -698,6 +759,32 @@ function checkoutPage() {
                 }
             }
 
+            if (this.form.wants_invoice) {
+                if (this.form.invoice_type === 'bireysel') {
+                    if (!this.form.tc_no || this.form.tc_no.length !== 11) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Eksik Bilgi',
+                            text: 'Lütfen 11 haneli T.C. Kimlik Numaranızı girin.',
+                            confirmButtonText: 'Tamam',
+                            confirmButtonColor: '#0f172a'
+                        });
+                        return;
+                    }
+                } else if (this.form.invoice_type === 'kurumsal') {
+                    if (!this.form.company_name || !this.form.tax_office || !this.form.tax_number || !this.form.legal_address) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Eksik Bilgi',
+                            text: 'Lütfen kurumsal fatura bilgilerini eksiksiz doldurun.',
+                            confirmButtonText: 'Tamam',
+                            confirmButtonColor: '#0f172a'
+                        });
+                        return;
+                    }
+                }
+            }
+
             const cleanPhone = this.form.phone.replace(/[^\d+]/g, '');
             const phoneRegex = /^(\+90|0)?5[0-9]{9}$/;
             if (!phoneRegex.test(cleanPhone)) {
@@ -722,6 +809,7 @@ function checkoutPage() {
                     },
                     body: JSON.stringify({
                         ...this.form,
+                        wants_invoice: this.form.wants_invoice ? 1 : 0,
                         phone: cleanPhone,
                         cart_items: this.cart.items
                     })

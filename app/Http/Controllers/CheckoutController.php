@@ -191,6 +191,13 @@ class CheckoutController extends Controller
             'cart_items' => 'required|array',
             'cart_items.*.id' => 'required|exists:products,id',
             'cart_items.*.qty' => 'required|integer|min:1',
+            'wants_invoice' => 'nullable|boolean',
+            'invoice_type' => 'required_if:wants_invoice,1|in:bireysel,kurumsal',
+            'tc_no' => 'required_if:invoice_type,bireysel|nullable|digits:11',
+            'company_name' => 'required_if:invoice_type,kurumsal|nullable|string',
+            'tax_office' => 'required_if:invoice_type,kurumsal|nullable|string',
+            'tax_number' => ['required_if:invoice_type,kurumsal', 'nullable', 'regex:/^[0-9]{10,11}$/'],
+            'legal_address' => 'required_if:invoice_type,kurumsal|nullable|string',
         ]);
 
         try {
@@ -316,6 +323,14 @@ class CheckoutController extends Controller
                         'neighborhood' => $validated['neighborhood'],
                         'address' => $validated['address']
                     ],
+                    'invoice_info' => !empty($validated['wants_invoice']) ? [
+                        'type' => $validated['invoice_type'],
+                        'tc_no' => $validated['invoice_type'] === 'bireysel' ? ($validated['tc_no'] ?? null) : null,
+                        'company_name' => $validated['invoice_type'] === 'kurumsal' ? ($validated['company_name'] ?? null) : null,
+                        'tax_office' => $validated['invoice_type'] === 'kurumsal' ? ($validated['tax_office'] ?? null) : null,
+                        'tax_number' => $validated['invoice_type'] === 'kurumsal' ? ($validated['tax_number'] ?? null) : null,
+                        'legal_address' => $validated['invoice_type'] === 'kurumsal' ? ($validated['legal_address'] ?? null) : null,
+                    ] : null,
                     'payment_method' => $validated['payment_method'],
                     'order_date' => now(),
                     'discount_amount' => $totalDiscount,

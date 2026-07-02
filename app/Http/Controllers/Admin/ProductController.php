@@ -36,6 +36,7 @@ class ProductController extends Controller
         $mappedProducts = $products->getCollection()->map(function ($product) {
             return [
                 'id' => $product->id,
+                'slug' => $product->slug,
                 'name' => $product->name,
                 'sku' => $product->sku,
                 'barcode' => $product->barcode,

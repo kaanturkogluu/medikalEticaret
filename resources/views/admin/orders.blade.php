@@ -225,6 +225,43 @@
                         </div>
                     </div>
 
+                    <!-- Invoice Info -->
+                    <template x-if="selectedOrder?.invoice_info">
+                        <div class="p-6 bg-amber-50/50 rounded-3xl border border-amber-100 space-y-4 md:col-span-3">
+                            <h4 class="text-[10px] font-black text-amber-600 uppercase tracking-widest flex items-center gap-2">
+                                <i class="fas fa-file-invoice text-amber-500"></i> Fatura Bilgileri
+                            </h4>
+                            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                                <div>
+                                    <p class="text-[10px] font-bold text-amber-700/60 uppercase">Fatura Tipi</p>
+                                    <p class="text-xs font-black text-amber-700 uppercase" x-text="selectedOrder.invoice_info.type === 'bireysel' ? 'Bireysel Fatura' : 'Kurumsal Fatura'"></p>
+                                </div>
+                                <template x-if="selectedOrder.invoice_info.type === 'bireysel'">
+                                    <div>
+                                        <p class="text-[10px] font-bold text-amber-700/60 uppercase">T.C. Kimlik No</p>
+                                        <p class="text-xs font-bold text-amber-900" x-text="selectedOrder.invoice_info.tc_no || '-'"></p>
+                                    </div>
+                                </template>
+                                <template x-if="selectedOrder.invoice_info.type === 'kurumsal'">
+                                    <div class="col-span-3 grid grid-cols-1 md:grid-cols-3 gap-6">
+                                        <div>
+                                            <p class="text-[10px] font-bold text-amber-700/60 uppercase">Ticari Unvan</p>
+                                            <p class="text-xs font-bold text-amber-900" x-text="selectedOrder.invoice_info.company_name || '-'"></p>
+                                        </div>
+                                        <div>
+                                            <p class="text-[10px] font-bold text-amber-700/60 uppercase">Vergi Dairesi & No</p>
+                                            <p class="text-xs font-bold text-amber-900" x-text="(selectedOrder.invoice_info.tax_office || '-') + ' / ' + (selectedOrder.invoice_info.tax_number || '-')"></p>
+                                        </div>
+                                        <div>
+                                            <p class="text-[10px] font-bold text-amber-700/60 uppercase">Yasal Adres</p>
+                                            <p class="text-xs font-bold text-amber-900" x-text="selectedOrder.invoice_info.legal_address || '-'"></p>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    </template>
+
                     <!-- Cancellation Info -->
                     <template x-if="selectedOrder?.order_status?.toLowerCase() === 'cancelled'">
                         <div class="p-6 bg-red-50 rounded-3xl border border-red-100 space-y-4 md:col-span-3">
