@@ -251,4 +251,200 @@ class ProductController extends Controller
     {
         return view('admin.products.print-barcode', compact('product'));
     }
+
+    public function importPreview(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:csv,txt'
+        ]);
+
+        $file = $request->file('file');
+        $path = $file->getRealPath();
+        
+        $data = [];
+        $headers = [];
+        
+        $content = file_get_contents($path);
+        
+        // Ensure UTF-8
+        if (!mb_check_encoding($content, 'UTF-8')) {
+            $content = mb_convert_encoding($content, 'UTF-8', 'ISO-8859-9');
+        }
+        
+        // Detect delimiter
+        $firstLine = strtok($content, "\n");
+        $delimiter = ',';
+        if (strpos($firstLine, "\t") !== false) $delimiter = "\t";
+        elseif (strpos($firstLine, ';') !== false) $delimiter = ';';
+
+        $stream = fopen('php://memory', 'r+');
+        fwrite($stream, $content);
+        rewind($stream);
+
+        $row = 0;
+        while (($row_data = fgetcsv($stream, 0, $delimiter)) !== false) {
+            if ($row === 0) {
+                $headers = $row_data;
+                $row++;
+                continue;
+            }
+            
+            if (empty(array_filter($row_data))) continue;
+                
+                $product = [
+                    'name' => $row_data[0] ?? null,
+                    'sku' => $row_data[1] ?? null,
+                    'barcode' => $row_data[2] ?? null,
+                    'price' => $row_data[3] ?? 0,
+                    'stock' => $row_data[4] ?? 0,
+                    'description' => $row_data[5] ?? null,
+                    'brand_name' => $row_data[6] ?? null,
+                    'category_name' => $row_data[7] ?? null,
+                    'active' => isset($row_data[8]) ? (bool)$row_data[8] : true,
+                    'is_popular' => isset($row_data[9]) ? (bool)$row_data[9] : false,
+                    'free_shipping' => isset($row_data[10]) ? (bool)$row_data[10] : false,
+                    'images' => []
+                ];
+                
+                foreach ($headers as $index => $header) {
+                    if (stripos(trim($header), 'resim') !== false && !empty($row_data[$index])) {
+                        $url = $row_data[$index];
+                        $url = str_replace('{size}', '960-1280', $url);
+                        $product['images'][] = $url;
+                    }
+                }
+                
+                $data[] = $product;
+                $row++;
+        }
+        fclose($stream);
+        $importKey = 'import_' . uniqid();
+        \Illuminate\Support\Facades\Cache::put($importKey, $data, now()->addHours(2));
+
+        return response()->json([
+            'success' => true,
+            'import_key' => $importKey
+        ]);
+    }
+
+    public function previewPage(Request $request)
+    {
+        $importKey = $request->query('key');
+        if (!$importKey) {
+            return redirect()->route('admin.products')->with('error', 'Geçersiz ön izleme anahtarı.');
+        }
+
+        $data = \Illuminate\Support\Facades\Cache::get($importKey);
+        if (!$data) {
+            return redirect()->route('admin.products')->with('error', 'Ön izleme süresi dolmuş veya geçersiz.');
+        }
+
+        $categories = \App\Models\Category::orderBy('name')->get(['id', 'name']);
+        $brands = \App\Models\Brand::orderBy('name')->get(['id', 'name']);
+
+        $skus = collect($data)->pluck('sku')->filter()->toArray();
+        $existingSkus = \App\Models\Product::whereIn('sku', $skus)->pluck('sku')->toArray();
+
+        $mappedData = array_map(function($item) use ($categories, $brands, $existingSkus) {
+            $catMatch = $categories->first(fn($c) => mb_strtolower((string)$c->name, 'UTF-8') === mb_strtolower((string)$item['category_name'], 'UTF-8'));
+            $item['category_id'] = $catMatch ? $catMatch->id : null;
+
+            $brandMatch = $brands->first(fn($b) => mb_strtolower((string)$b->name, 'UTF-8') === mb_strtolower((string)$item['brand_name'], 'UTF-8'));
+            $item['brand_id'] = $brandMatch ? $brandMatch->id : null;
+            
+            $item['is_duplicate'] = !empty($item['sku']) && in_array($item['sku'], $existingSkus);
+
+            return $item;
+        }, $data);
+
+        return view('admin.products.import-preview', [
+            'importKey' => $importKey,
+            'previewData' => $mappedData,
+            'categories' => $categories,
+            'brands' => $brands
+        ]);
+    }
+
+    public function importProcess(Request $request)
+    {
+        $request->validate([
+            'import_key' => 'required|string',
+            'products' => 'required|array',
+            'products.*.category_id' => 'nullable|exists:categories,id',
+            'products.*.brand_id' => 'nullable|exists:brands,id',
+        ]);
+
+        $importKey = $request->input('import_key');
+        $originalData = \Illuminate\Support\Facades\Cache::get($importKey);
+        
+        if (!$originalData) {
+            return response()->json(['success' => false, 'message' => 'İçe aktarma süresi dolmuş veya geçersiz işlem.'], 400);
+        }
+        
+        $productsInput = $request->input('products'); 
+
+        $importedCount = 0;
+        foreach ($originalData as $index => $item) {
+            // Check if frontend sent this product (to handle skipping duplicates/unselected rows)
+            if (!isset($productsInput[$index])) {
+                continue;
+            }
+
+            $selectedInput = $productsInput[$index];
+            
+            $data = [
+                'name' => $item['name'],
+                'barcode' => $item['barcode'],
+                'price' => (float)$item['price'],
+                'stock' => (int)$item['stock'],
+                'description' => $item['description'],
+                'active' => $item['active'],
+                'is_popular' => $item['is_popular'],
+                'free_shipping' => $item['free_shipping'],
+                'category_id' => $selectedInput['category_id'] ?? null,
+                'brand_id' => $selectedInput['brand_id'] ?? null,
+            ];
+
+            if (!empty($item['sku'])) {
+                $product = Product::updateOrCreate(
+                    ['sku' => $item['sku']],
+                    $data
+                );
+            } else {
+                $data['sku'] = null;
+                $product = Product::create($data);
+            }
+
+            // Update category_name and brand_name from relationships if IDs exist, or keep original from CSV
+            if (!empty($selectedInput['category_id'])) {
+                $product->category_name = \App\Models\Category::find($selectedInput['category_id'])?->name;
+            } else {
+                $product->category_name = $item['category_name'];
+            }
+            if (!empty($selectedInput['brand_id'])) {
+                $product->brand_name = \App\Models\Brand::find($selectedInput['brand_id'])?->name;
+            } else {
+                $product->brand_name = $item['brand_name'];
+            }
+            $product->save();
+            
+            if (!empty($item['images'])) {
+                foreach ($item['images'] as $i => $url) {
+                    $product->productImages()->create([
+                        'url' => $url,
+                        'order' => $i + 1
+                    ]);
+                }
+            }
+            
+            $importedCount++;
+        }
+        
+        \Illuminate\Support\Facades\Cache::forget($importKey);
+
+        return response()->json([
+            'success' => true,
+            'message' => $importedCount . ' adet ürün başarıyla içe aktarıldı.'
+        ]);
+    }
 }

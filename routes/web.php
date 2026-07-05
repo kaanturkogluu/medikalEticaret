@@ -88,6 +88,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::get('/', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('admin.dashboard');
     Route::get('/products', [\App\Http\Controllers\Admin\ProductController::class, 'index'])->name('admin.products');
     Route::get('/products/create', [\App\Http\Controllers\Admin\ProductController::class, 'create'])->name('admin.products.create');
+    Route::post('/products/import/preview', [\App\Http\Controllers\Admin\ProductController::class, 'importPreview'])->name('admin.products.import.preview');
+    Route::get('/products/import/preview-page', [\App\Http\Controllers\Admin\ProductController::class, 'previewPage'])->name('admin.products.import.preview-page');
+    Route::post('/products/import/process', [\App\Http\Controllers\Admin\ProductController::class, 'importProcess'])->name('admin.products.import.process');
     Route::post('/products', [\App\Http\Controllers\Admin\ProductController::class, 'store'])->name('admin.products.store');
     Route::get('/products/{product:id}/edit', [\App\Http\Controllers\Admin\ProductController::class, 'edit'])->name('admin.products.edit');
     Route::put('/products/{product:id}', [\App\Http\Controllers\Admin\ProductController::class, 'update'])->name('admin.products.update');
