@@ -36,6 +36,11 @@ class Product extends Model
                 // Combine name and SKU for uniqueness and SEO
                 $product->slug = $baseSlug . '-' . $skuSlug;
             }
+
+            // Otomatik stok kontrolü: Stok 0 veya daha az ise satışı (active) kapat
+            if ($product->stock <= 0) {
+                $product->active = false;
+            }
         });
     }
 
