@@ -392,8 +392,10 @@
                     <button @click="submitOrder" 
                             :disabled="loading || cart.items.length === 0"
                             class="w-full py-5 bg-slate-900 text-white rounded-[25px] font-black italic shadow-xl shadow-slate-900/20 hover:bg-orange-600 transition-all flex items-center justify-center gap-3 active:scale-95 disabled:opacity-50 group">
+                        
+                        <i x-show="loading" class="fas fa-spinner fa-spin text-lg" x-cloak></i>
                         <span x-text="loading ? 'İşleniyor...' : 'SİPARİŞİ TAMAMLA'"></span>
-                        <i class="fas fa-chevron-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
+                        <i x-show="!loading" class="fas fa-chevron-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
                     </button>
 
                     <p class="text-[10px] text-center text-gray-400 mt-6 font-medium leading-relaxed">Siparişi tamamlayarak <a href="javascript:void(0)" @click="showAgreement = true" class="underline hover:text-slate-900">Mesafeli Satış Sözleşmesi</a>'ni kabul etmiş sayılırsınız.</p>
@@ -828,18 +830,9 @@ function checkoutPage() {
 
                 const result = await response.json();
                 if (result.success) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Başarılı!',
-                        text: result.message,
-                        showConfirmButton: false,
-                        allowOutsideClick: false,
-                        timer: 3000,
-                        timerProgressBar: true
-                    }).then(() => {
-                        this.cart.clear();
-                        window.location.href = result.redirect_url;
-                    });
+                    this.cart.clear();
+                    window.location.href = result.redirect_url;
+                    // Do not set this.loading = false here, keep spinning until redirect
                 } else {
                     Swal.fire({
                         icon: 'error',
@@ -848,6 +841,7 @@ function checkoutPage() {
                         confirmButtonText: 'Tamam',
                         confirmButtonColor: '#0f172a'
                     });
+                    this.loading = false;
                 }
             } catch (e) {
                 Swal.fire({
@@ -858,7 +852,6 @@ function checkoutPage() {
                     confirmButtonColor: '#0f172a'
                 });
                 console.error(e);
-            } finally {
                 this.loading = false;
             }
         },
