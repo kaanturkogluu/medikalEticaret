@@ -55,11 +55,6 @@ class NetgsmService
 
             $result = $response->json();
 
-            Log::info('Netgsm API Response', [
-                'response' => $result,
-                'payload'  => $payload
-            ]);
-
             // Default status and error info
             $statusCode = $result['code'] ?? 'Bilinmiyor';
             $jobId = $result['jobid'] ?? null;
@@ -200,11 +195,6 @@ class NetgsmService
 
             $result = $response->json();
 
-            Log::info('Netgsm Report API Response', [
-                'response' => $result,
-                'payload'  => $payload
-            ]);
-
             if (isset($result['code']) && $result['code'] === '00') {
                 return [
                     'status' => true,
@@ -265,11 +255,6 @@ class NetgsmService
             ])->timeout(10)->post('https://api.netgsm.com.tr/balance', $payload);
 
             $result = $response->json();
-            
-            Log::info('Netgsm Balance API Response', [
-                'response' => $result,
-                'payload'  => $payload
-            ]);
 
             // Check for errors
             if (isset($result['code']) && $result['code'] !== '00') {

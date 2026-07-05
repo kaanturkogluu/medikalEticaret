@@ -43,5 +43,9 @@ return Application::configure(basePath: dirname(__DIR__))
 
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $exceptions->reportable(function (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error($e->getMessage());
+
+            return false; // Laravel'in varsayılan detaylı logunu engeller
+        });
     })->create();
