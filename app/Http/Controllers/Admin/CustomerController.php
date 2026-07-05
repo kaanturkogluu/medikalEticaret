@@ -14,21 +14,30 @@ class CustomerController extends Controller
      */
     public function index(Request $request): View
     {
-        // channel_id null olanlar site siparişleridir
-        $query = Order::whereNull('channel_id')
+        // 1. Sipariş Verenler (Misafir + Üye)
+        $customerQuery = Order::whereNull('channel_id')
             ->selectRaw('customer_email, MAX(customer_name) as customer_name, MAX(customer_phone) as customer_phone, MAX(user_id) as user_id, MAX(created_at) as last_order_date, COUNT(id) as total_orders, SUM(total_price) as total_spent')
             ->whereNotNull('customer_email')
             ->groupBy('customer_email');
 
         if ($request->filled('q')) {
             $q = $request->q;
-            $query->havingRaw('customer_name LIKE ? OR customer_email LIKE ? OR customer_phone LIKE ?', ["%$q%", "%$q%", "%$q%"]);
+            $customerQuery->havingRaw('customer_name LIKE ? OR customer_email LIKE ? OR customer_phone LIKE ?', ["%$q%", "%$q%", "%$q%"]);
         }
 
-        // We use simplePaginate or get() because groupBy with paginate() sometimes counts incorrectly.
-        // To safely paginate a grouped query:
-        $customers = $query->orderByDesc('last_order_date')->paginate(15)->withQueryString();
+        $customers = $customerQuery->orderByDesc('last_order_date')->paginate(15, ['*'], 'customers_page')->withQueryString();
 
-        return view('admin.customers.index', compact('customers'));
+        // 2. Sisteme Kayıtlı Üyeler
+        $userQuery = \App\Models\User::query();
+        if ($request->filled('q')) {
+            $q = $request->q;
+            $userQuery->where(function($query) use ($q) {
+                $query->where('name', 'LIKE', "%$q%")
+                      ->orWhere('email', 'LIKE', "%$q%");
+            });
+        }
+        $users = $userQuery->orderByDesc('created_at')->paginate(15, ['*'], 'users_page')->withQueryString();
+
+        return view('admin.customers.index', compact('customers', 'users'));
     }
 }
