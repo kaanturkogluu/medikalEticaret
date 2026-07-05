@@ -1,6 +1,10 @@
 @extends('layouts.admin')
 
 @section('content')
+<script id="openOrderData" type="application/json">
+    {!! isset($openOrder) && $openOrder ? json_encode($openOrder) : 'null' !!}
+</script>
+
 <div class="space-y-6" x-data="{ 
     selectedOrder: null,
     statusMap: {
@@ -23,9 +27,17 @@
     formatDate(ms) {
         if (!ms) return '-';
         return new Intl.DateTimeFormat('tr-TR', { 
-            day: '2-digit', month: '2-digit', year: 'numeric', 
-            hour: '2-digit', minute: '2-digit' 
+            day: '2-digit', month: '2-digit', year: 'numeric',
+            hour: '2-digit', minute: '2-digit'
         }).format(new Date(ms));
+    },
+    init() {
+        let openOrder = JSON.parse(document.getElementById('openOrderData').textContent);
+        if (openOrder) {
+            setTimeout(() => {
+                this.selectedOrder = openOrder;
+            }, 100);
+        }
     },
     getStatus(status) {
         const s = (status || '').toLowerCase();

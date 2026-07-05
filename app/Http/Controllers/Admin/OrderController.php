@@ -37,7 +37,13 @@ class OrderController extends Controller
         $channels = \App\Models\Channel::all();
         $shippingCompanies = \App\Models\ShippingCompany::where('active', true)->get();
 
-        return view('admin.orders', compact('orders', 'channels', 'shippingCompanies', 'channelId'));
+        $openOrderId = $request->input('open_order_id');
+        $openOrder = null;
+        if ($openOrderId) {
+            $openOrder = Order::with('channel')->find($openOrderId);
+        }
+
+        return view('admin.orders', compact('orders', 'channels', 'shippingCompanies', 'channelId', 'openOrder'));
     }
 
     /**

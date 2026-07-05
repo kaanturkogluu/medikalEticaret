@@ -35,7 +35,7 @@ class NotificationController extends Controller
                     'message' => $order->customer_name . ' - ' . number_format($order->total_price, 2) . ' ₺',
                     'time' => $order->created_at->diffForHumans(),
                     'channel' => $order->channel->name ?? 'Web',
-                    'url' => '/admin/orders',
+                    'url' => '/admin/orders?open_order_id=' . $order->id,
                     'is_new' => $order->id > $lastReadId,
                 ];
             })
