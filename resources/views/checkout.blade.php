@@ -105,20 +105,10 @@
                             <textarea x-model="form.address" rows="3" class="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-sm font-bold focus:outline-none focus:ring-4 focus:ring-slate-900/5 focus:border-slate-900 transition-all resize-none"></textarea>
                         </div>
                         
-                        <!-- Fatura İstiyorum Checkbox -->
+                        <!-- Fatura Bilgileri (Zorunlu) -->
                         <div class="md:col-span-2 mt-4 space-y-4 border-t border-gray-100 pt-4">
-                            <label class="flex items-center gap-3 cursor-pointer group w-fit">
-                                <div class="relative flex items-center justify-center">
-                                    <input type="checkbox" x-model="form.wants_invoice" class="peer sr-only">
-                                    <div class="w-5 h-5 bg-white border-2 border-gray-300 rounded peer-checked:bg-slate-900 peer-checked:border-slate-900 transition-all flex items-center justify-center">
-                                        <i class="fas fa-check text-white text-xs opacity-0 peer-checked:opacity-100 transition-opacity"></i>
-                                    </div>
-                                </div>
-                                <span class="text-sm font-bold text-gray-700 group-hover:text-slate-900 transition-colors">Fatura İstiyorum</span>
-                            </label>
-
-                            <!-- Fatura Bilgileri -->
-                            <div x-show="form.wants_invoice" x-collapse class="space-y-6 bg-gray-50/50 p-6 rounded-2xl border border-gray-100">
+                            <div class="space-y-6 bg-gray-50/50 p-6 rounded-2xl border border-gray-100">
+                                <h3 class="text-sm font-bold text-gray-900 mb-2">Fatura Bilgileri</h3>
                                 <!-- Fatura Tipi Seçimi -->
                                 <div class="flex gap-4">
                                     <label class="flex items-center gap-2 cursor-pointer">
@@ -469,7 +459,7 @@ function checkoutPage() {
             address: '',
             payment_method: 'credit_card',
             selected_address_id: null,
-            wants_invoice: false,
+            wants_invoice: true,
             invoice_type: 'bireysel',
             tc_no: '',
             company_name: '',
@@ -761,29 +751,27 @@ function checkoutPage() {
                 }
             }
 
-            if (this.form.wants_invoice) {
-                if (this.form.invoice_type === 'bireysel') {
-                    if (!this.form.tc_no || this.form.tc_no.length !== 11) {
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'Eksik Bilgi',
-                            text: 'Lütfen 11 haneli T.C. Kimlik Numaranızı girin.',
-                            confirmButtonText: 'Tamam',
-                            confirmButtonColor: '#0f172a'
-                        });
-                        return;
-                    }
-                } else if (this.form.invoice_type === 'kurumsal') {
-                    if (!this.form.company_name || !this.form.tax_office || !this.form.tax_number || !this.form.legal_address) {
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'Eksik Bilgi',
-                            text: 'Lütfen kurumsal fatura bilgilerini eksiksiz doldurun.',
-                            confirmButtonText: 'Tamam',
-                            confirmButtonColor: '#0f172a'
-                        });
-                        return;
-                    }
+            if (this.form.invoice_type === 'bireysel') {
+                if (!this.form.tc_no || this.form.tc_no.length !== 11) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Eksik Bilgi',
+                        text: 'Lütfen 11 haneli T.C. Kimlik Numaranızı girin.',
+                        confirmButtonText: 'Tamam',
+                        confirmButtonColor: '#0f172a'
+                    });
+                    return;
+                }
+            } else if (this.form.invoice_type === 'kurumsal') {
+                if (!this.form.company_name || !this.form.tax_office || !this.form.tax_number || !this.form.legal_address) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Eksik Bilgi',
+                        text: 'Lütfen kurumsal fatura bilgilerini eksiksiz doldurun.',
+                        confirmButtonText: 'Tamam',
+                        confirmButtonColor: '#0f172a'
+                    });
+                    return;
                 }
             }
 

@@ -192,7 +192,7 @@ class CheckoutController extends Controller
             'cart_items.*.id' => 'required|exists:products,id',
             'cart_items.*.qty' => 'required|integer|min:1',
             'wants_invoice' => 'nullable|boolean',
-            'invoice_type' => 'required_if:wants_invoice,1|in:bireysel,kurumsal',
+            'invoice_type' => 'required|in:bireysel,kurumsal',
             'tc_no' => 'required_if:invoice_type,bireysel|nullable|digits:11',
             'company_name' => 'required_if:invoice_type,kurumsal|nullable|string',
             'tax_office' => 'required_if:invoice_type,kurumsal|nullable|string',
