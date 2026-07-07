@@ -12,7 +12,7 @@ class SitemapController extends Controller
 {
     public function index()
     {
-        $products = Product::where('active', 1)->get();
+        $products = Product::where('active', 1)->where('stock', '>', 0)->get();
         $categories = Category::all();
         $pages = Page::all();
         $brands = Brand::all();
@@ -24,6 +24,7 @@ class SitemapController extends Controller
     {
         $products = Product::with(['category', 'brand', 'images'])
             ->where('active', 1)
+            ->where('stock', '>', 0)
             ->get();
 
         return response()->view('akakce', compact('products'))->header('Content-Type', 'text/xml');

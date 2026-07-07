@@ -130,6 +130,7 @@ class HomeController extends Controller
             $popularProducts = Product::with(['brand', 'productImages'])
                 ->whereIn('id', $manualPopularIds)
                 ->where('active', true)
+                ->where('stock', '>', 0)
                 ->get();
 
             if ($popularProducts->count() < 12) {
@@ -197,7 +198,8 @@ class HomeController extends Controller
             ->where('category_id', $product->category_id)
             ->where('id', '!=', $product->id)
             ->where('active', true)
-            ->orderByRaw('stock > 0 DESC')
+            ->where('stock', '>', 0)
+            ->latest()
             ->take(10)
             ->get();
 
