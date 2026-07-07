@@ -208,6 +208,9 @@ class CheckoutController extends Controller
 
                 foreach ($validated['cart_items'] as $itemData) {
                     $product = Product::findOrFail($itemData['id']);
+                    if ($product->stock < $itemData['qty']) {
+                        throw new \Exception("{$product->name} ürünü için yeterli stok bulunmamaktadır. (Mevcut stok: {$product->stock})");
+                    }
                     if ($product->free_shipping) {
                         $hasFreeShippingProduct = true;
                     }

@@ -228,9 +228,15 @@
                             <div class="text-[var(--primary-color)] font-black text-base">{{ number_format($product->price, 2) }} TL</div>
                         </div>
                         
-                        <button @click="$store.cart.add({id: '{{ $product->id }}', slug: '{{ $product->slug }}', name: '{{ addslashes($product->name) }}', brand: '{{ addslashes($product->brand->name ?? '') }}', price: {{ $product->price }}, category_id: '{{ $product->category_id }}', image: '{{ $img }}', free_shipping: {{ $product->free_shipping ? 'true' : 'false' }}})" class="w-full mt-3 py-2 bg-slate-900 text-white text-[11px] font-black rounded hover:bg-slate-800 transition-colors uppercase tracking-widest">
-                            Sepete Ekle
-                        </button>
+                        @if($product->stock > 0)
+                            <button @click="$store.cart.add({id: '{{ $product->id }}', slug: '{{ $product->slug }}', name: '{{ addslashes($product->name) }}', brand: '{{ addslashes($product->brand->name ?? '') }}', price: {{ $product->price }}, category_id: '{{ $product->category_id }}', image: '{{ $img }}', free_shipping: {{ $product->free_shipping ? 'true' : 'false' }}})" class="w-full mt-3 py-2 bg-slate-900 text-white text-[11px] font-black rounded hover:bg-slate-800 transition-colors uppercase tracking-widest">
+                                Sepete Ekle
+                            </button>
+                        @else
+                            <button disabled class="w-full mt-3 py-2 bg-gray-400 text-white text-[11px] font-black rounded cursor-not-allowed uppercase tracking-widest">
+                                Stokta Yok
+                            </button>
+                        @endif
                     </div>
                 </div>
             @endforeach
@@ -441,9 +447,15 @@
                                     </div>
                                 </div>
                                 
-                                <button @click="$store.cart.add({id: '{{ $product->id }}', slug: '{{ $product->slug }}', name: '{{ addslashes($product->name) }}', brand: '{{ addslashes($product->brand->name ?? '') }}', price: {{ $product->price }}, category_id: '{{ $product->category_id }}', image: '{{ $img }}', free_shipping: {{ $product->free_shipping ? 'true' : 'false' }}})" class="w-full mt-3 py-2 bg-slate-900 text-white text-[11px] font-black rounded hover:bg-slate-800 transition-colors uppercase tracking-widest">
-                                    Sepete Ekle
-                                </button>
+                                @if($product->stock > 0)
+                                    <button @click="$store.cart.add({id: '{{ $product->id }}', slug: '{{ $product->slug }}', name: '{{ addslashes($product->name) }}', brand: '{{ addslashes($product->brand->name ?? '') }}', price: {{ $product->price }}, category_id: '{{ $product->category_id }}', image: '{{ $img }}', free_shipping: {{ $product->free_shipping ? 'true' : 'false' }}})" class="w-full mt-3 py-2 bg-slate-900 text-white text-[11px] font-black rounded hover:bg-slate-800 transition-colors uppercase tracking-widest">
+                                        Sepete Ekle
+                                    </button>
+                                @else
+                                    <button disabled class="w-full mt-3 py-2 bg-gray-400 text-white text-[11px] font-black rounded cursor-not-allowed uppercase tracking-widest">
+                                        Stokta Yok
+                                    </button>
+                                @endif
                             </div>
                         </div>
                     @empty
@@ -528,9 +540,15 @@
                             <div class="text-[var(--primary-color)] font-black text-sm">{{ number_format($product->price, 2) }} TL</div>
                         </div>
                         
-                        <button @click="$store.cart.add({id: '{{ $product->id }}', slug: '{{ $product->slug }}', name: '{{ addslashes($product->name) }}', brand: '{{ addslashes($product->brand->name ?? '') }}', price: {{ $product->price }}, category_id: '{{ $product->category_id }}', image: '{{ $img }}', free_shipping: {{ $product->free_shipping ? 'true' : 'false' }}})" class="w-full mt-3 py-1.5 bg-slate-900 text-white text-[10px] font-black rounded hover:bg-slate-800 transition-colors uppercase tracking-widest">
-                            Sepete Ekle
-                        </button>
+                        @if($product->stock > 0)
+                            <button @click="$store.cart.add({id: '{{ $product->id }}', slug: '{{ $product->slug }}', name: '{{ addslashes($product->name) }}', brand: '{{ addslashes($product->brand->name ?? '') }}', price: {{ $product->price }}, category_id: '{{ $product->category_id }}', image: '{{ $img }}', free_shipping: {{ $product->free_shipping ? 'true' : 'false' }}})" class="w-full mt-3 py-1.5 bg-slate-900 text-white text-[10px] font-black rounded hover:bg-slate-800 transition-colors uppercase tracking-widest">
+                                Sepete Ekle
+                            </button>
+                        @else
+                            <button disabled class="w-full mt-3 py-1.5 bg-gray-400 text-white text-[10px] font-black rounded cursor-not-allowed uppercase tracking-widest">
+                                Stokta Yok
+                            </button>
+                        @endif
                     </div>
                 </div>
             @endforeach
