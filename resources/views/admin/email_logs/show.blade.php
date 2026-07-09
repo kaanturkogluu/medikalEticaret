@@ -49,7 +49,7 @@
         <div class="p-4 bg-white">
             <div class="border border-slate-100 rounded-lg p-4 bg-slate-50/50 min-h-[200px] overflow-hidden">
                 <!-- Render HTML safely inside iframe to avoid CSS conflicts -->
-                <iframe srcdoc="{{ htmlspecialchars($log->body) }}" class="w-full min-h-[400px] border-0" sandbox="allow-same-origin"></iframe>
+                <iframe srcdoc="{{ $log->body }}" class="w-full min-h-[400px] border-0" sandbox="allow-same-origin"></iframe>
             </div>
         </div>
     </div>
