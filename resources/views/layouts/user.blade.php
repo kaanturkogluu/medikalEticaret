@@ -48,9 +48,11 @@
                 </div>
                 @auth
                 @unless(auth()->user()->email_verified_at)
-                <a href="{{ route('verify.send') }}" class="mt-4 block text-center text-[10px] font-black uppercase tracking-widest text-orange-600 bg-orange-50 border border-orange-100 rounded-xl py-3 hover:bg-orange-100 transition-all">
-                    <i class="fas fa-exclamation-circle mr-1"></i> E-postanı Doğrula
-                </a>
+                <form action="{{ route('verify.send') }}" method="GET" onsubmit="this.btn.disabled = true; this.btn.innerHTML = '<i class=\'fas fa-circle-notch fa-spin mr-1\'></i> Gönderiliyor...';">
+                    <button type="submit" name="btn" class="w-full mt-4 block text-center text-[10px] font-black uppercase tracking-widest text-orange-600 bg-orange-50 border border-orange-100 rounded-xl py-3 hover:bg-orange-100 transition-all disabled:opacity-70 disabled:cursor-not-allowed">
+                        <i class="fas fa-exclamation-circle mr-1"></i> E-postanı Doğrula
+                    </button>
+                </form>
                 @endunless
                 @else
                 <a href="{{ route('login') }}" class="mt-4 block text-center text-[10px] font-black uppercase tracking-widest text-orange-600 bg-orange-50 border border-orange-100 rounded-xl py-3 hover:bg-orange-100 transition-all">
