@@ -102,7 +102,12 @@
                 <tr @dblclick="selectedOrder = {{ json_encode($o) }}" class="hover:bg-slate-50 transition-all group border-b border-slate-50 cursor-pointer">
                     <td class="px-6 py-4">
                         <div class="flex flex-col">
-                            <span class="text-xs font-black text-slate-800 tracking-tighter">#{{ $o->external_order_id ?? $o->id }}</span>
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs font-black text-slate-800 tracking-tighter">#{{ $o->external_order_id ?? $o->id }}</span>
+                                @if($o->invoice_file)
+                                    <span title="Fatura Gönderildi" class="text-teal-500 text-[10px]"><i class="fas fa-file-invoice"></i></span>
+                                @endif
+                            </div>
                             @if($o->channel_id)
                                 <span class="text-[9px] font-bold text-brand-600 uppercase tracking-tighter opacity-70">
                                     {{ $o->raw_marketplace_data['shipmentNumber'] ?? 'Paket No Yok' }}
