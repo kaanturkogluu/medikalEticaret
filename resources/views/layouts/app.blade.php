@@ -1186,6 +1186,22 @@
             </div>
         </div>
     </div>
+
+    <!-- Google Customer Reviews Widget -->
+    <script id='merchantWidgetScript' src="https://www.gstatic.com/shopping/merchant/merchantwidget.js" defer></script>
+    <script>
+      merchantWidgetScript.addEventListener('load', function () {
+        merchantwidget.start({
+             // REQUIRED FIELDS
+             merchant_id: 5822707197,
+
+             // OPTIONAL FIELDS
+             position: 'BOTTOM_LEFT',
+             region: 'TR'
+        });
+      });
+    </script>
+
     @yield('scripts')
 </body>
 
