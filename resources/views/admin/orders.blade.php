@@ -498,6 +498,15 @@
                         <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Toplam İndirim</p>
                         <p class="text-xl font-black text-red-500 tabular-nums" x-text="'- ' + (selectedOrder?.raw_marketplace_data?.totalDiscount || selectedOrder?.discount_amount || 0).toFixed(2) + ' ₺'"></p>
                     </div>
+                    <template x-if="selectedOrder?.used_points > 0">
+                        <div class="hidden sm:block h-10 w-px bg-slate-200"></div>
+                    </template>
+                    <template x-if="selectedOrder?.used_points > 0">
+                        <div>
+                            <p class="text-[10px] font-black text-orange-500 uppercase tracking-widest mb-1">Kullanılan Puan</p>
+                            <p class="text-xl font-black text-orange-500 tabular-nums" x-text="selectedOrder.used_points + ' Med Puan'"></p>
+                        </div>
+                    </template>
                     <div class="hidden sm:block h-10 w-px bg-slate-200"></div>
                     <div>
                         <p class="text-[10px] font-black text-brand-600 uppercase tracking-widest mb-1">Genel Toplam (NET)</p>
