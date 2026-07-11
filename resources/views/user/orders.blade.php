@@ -51,6 +51,12 @@
                        <i class="fas fa-credit-card mr-1"></i> ÖDEME YAP
                     </a>
                 @endif
+                @if($order->invoice_file)
+                    <a href="{{ route('user.orders.download-invoice', $order->id) }}"
+                       class="px-5 py-2.5 bg-cyan-600 text-white text-xs font-bold rounded-lg hover:bg-cyan-700 transition-all flex-shrink-0">
+                       <i class="fas fa-file-pdf mr-1"></i> Fatura
+                    </a>
+                @endif
                 <a href="{{ route('user.orders.show', $order->id) }}"
                    class="px-5 py-2.5 bg-orange-500 text-white text-xs font-bold rounded-lg hover:bg-orange-600 transition-all flex-shrink-0">
                    Detaylar

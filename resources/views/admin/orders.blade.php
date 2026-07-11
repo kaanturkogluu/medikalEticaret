@@ -550,6 +550,56 @@
                     <button x-show="!selectedOrder?.channel_id || selectedOrder?.channel?.slug === 'website'" @click="printLabel()" class="px-6 py-3 bg-brand-600 text-white rounded-2xl text-xs font-black hover:bg-brand-700 transition-all shadow-lg shadow-brand-500/30 uppercase tracking-widest flex items-center gap-2">
                         <i class="fas fa-barcode"></i> Barkod
                     </button>
+
+                    <template x-if="selectedOrder?.order_status === 'Shipped' || selectedOrder?.order_status === 'Delivered'">
+                        <div x-data="{ 
+                            showUpload: false, 
+                            fileSelected: false, 
+                            fileUrl: null,
+                            uploading: false,
+                            handleFile(e) {
+                                const file = e.target.files[0];
+                                if(file && file.type === 'application/pdf') {
+                                    this.fileSelected = true;
+                                    this.fileUrl = URL.createObjectURL(file);
+                                } else {
+                                    this.fileSelected = false;
+                                    this.fileUrl = null;
+                                }
+                            }
+                        }" class="relative">
+                            <button type="button" @click="showUpload = !showUpload" 
+                                    :class="selectedOrder?.invoice_file ? 'bg-teal-600 hover:bg-teal-700 shadow-teal-500/30' : 'bg-cyan-600 hover:bg-cyan-700 shadow-cyan-500/30'"
+                                    class="px-6 py-3 text-white rounded-2xl text-xs font-black transition-all shadow-lg uppercase tracking-widest flex items-center gap-2">
+                                <i class="fas" :class="selectedOrder?.invoice_file ? 'fa-check-circle' : 'fa-file-invoice'"></i> 
+                                <span x-text="selectedOrder?.invoice_file ? 'Fatura Gönderildi (Güncelle)' : 'Fatura Gönder'"></span>
+                            </button>
+                            <div x-show="showUpload" @click.away="showUpload = false" class="absolute bottom-full right-0 mb-4 w-80 bg-white rounded-2xl shadow-2xl border border-slate-100 p-4 animate-in slide-in-from-bottom-2">
+                                <form :action="'{{ route('admin.orders.upload-invoice', ':id') }}'.replace(':id', selectedOrder.id)" 
+                                      method="POST" 
+                                      enctype="multipart/form-data" 
+                                      class="space-y-4"
+                                      @submit="if(uploading) { $event.preventDefault(); return; } uploading = true">
+                                    @csrf
+                                    <h4 class="text-xs font-black text-slate-700 uppercase tracking-widest mb-2 border-b pb-2">Fatura Yükle (PDF)</h4>
+                                    
+                                    <input type="file" name="invoice_file" accept=".pdf" required @change="handleFile" class="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-cyan-50 file:text-cyan-700 hover:file:bg-cyan-100 cursor-pointer">
+                                    
+                                    <div x-show="fileSelected" class="flex flex-col gap-2 pt-2">
+                                        <div class="flex gap-2">
+                                            <a :href="fileUrl" target="_blank" class="flex-1 py-2 bg-slate-100 text-slate-700 rounded-xl text-center text-xs font-bold hover:bg-slate-200 transition-colors">
+                                                İncele
+                                            </a>
+                                            <button type="submit" :disabled="uploading" class="flex-1 py-2 bg-cyan-600 text-white rounded-xl text-xs font-bold hover:bg-cyan-700 transition-colors shadow-md disabled:opacity-70 flex items-center justify-center">
+                                                <span x-show="!uploading">İşlemi Onayla</span>
+                                                <i x-show="uploading" class="fas fa-spinner fa-spin"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </template>
                 </div>
             </div>
         </div>

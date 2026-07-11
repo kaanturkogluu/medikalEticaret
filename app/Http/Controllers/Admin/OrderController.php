@@ -230,4 +230,42 @@ class OrderController extends Controller
 
         return view('admin.test_products', compact('json', 'url'));
     }
+
+    /**
+     * Upload and send invoice PDF
+     */
+    public function uploadInvoice(Request $request, Order $order)
+    {
+        $request->validate([
+            'invoice_file' => 'required|mimes:pdf|max:5120', // Max 5MB
+        ]);
+
+        try {
+            if ($request->hasFile('invoice_file')) {
+                // Delete old invoice if exists
+                if ($order->invoice_file && \Illuminate\Support\Facades\Storage::exists($order->invoice_file)) {
+                    \Illuminate\Support\Facades\Storage::delete($order->invoice_file);
+                }
+
+                // Store new invoice in storage/app/invoices (private)
+                $path = $request->file('invoice_file')->store('invoices');
+                
+                $order->update([
+                    'invoice_file' => $path
+                ]);
+
+                // Send Email to Customer
+                if ($order->customer_email) {
+                    \Illuminate\Support\Facades\Mail::to($order->customer_email)->send(new \App\Mail\OrderInvoiceMail($order));
+                }
+
+                return back()->with('success', 'Fatura başarıyla yüklendi ve müşteriye e-posta olarak gönderildi.');
+            }
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Invoice Upload Error: ' . $e->getMessage());
+            return back()->with('error', 'Fatura yüklenirken bir hata oluştu: ' . $e->getMessage());
+        }
+
+        return back()->with('error', 'Lütfen geçerli bir PDF dosyası seçin.');
+    }
 }

@@ -73,6 +73,7 @@ Route::middleware(['auth', 'user'])->prefix('hesabim')->name('user.')->group(fun
     Route::get('/', [\App\Http\Controllers\UserController::class, 'dashboard'])->name('dashboard');
     Route::get('/siparislerim', [\App\Http\Controllers\UserController::class, 'orders'])->name('orders');
     Route::get('/siparislerim/{order}', [\App\Http\Controllers\UserController::class, 'orderShow'])->name('orders.show');
+    Route::get('/siparislerim/{order}/fatura-indir', [\App\Http\Controllers\UserController::class, 'downloadInvoice'])->name('orders.download-invoice');
     Route::get('/adreslerim', [\App\Http\Controllers\UserController::class, 'addresses'])->name('addresses');
     Route::post('/adreslerim', [\App\Http\Controllers\UserController::class, 'addressStore'])->name('addresses.store');
     Route::delete('/adreslerim/{address}', [\App\Http\Controllers\UserController::class, 'addressDestroy'])->name('addresses.destroy');
@@ -102,6 +103,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::post('/orders/{order}/approve', [\App\Http\Controllers\Admin\OrderController::class, 'approve'])->name('admin.orders.approve');
     Route::post('/orders/{order}/cancel', [\App\Http\Controllers\Admin\OrderController::class, 'cancel'])->name('admin.orders.cancel');
     Route::post('/orders/{order}/update-shipping', [\App\Http\Controllers\Admin\OrderController::class, 'updateShipping'])->name('admin.orders.update-shipping');
+    Route::post('/orders/{order}/upload-invoice', [\App\Http\Controllers\Admin\OrderController::class, 'uploadInvoice'])->name('admin.orders.upload-invoice');
     Route::get('/orders/{order}/print-label', [\App\Http\Controllers\Admin\OrderController::class, 'printLabel'])->name('admin.orders.print-label');
     Route::get('/orders/{order}', [\App\Http\Controllers\Admin\OrderController::class, 'show'])->name('admin.orders.show');
     Route::get('/customers', [\App\Http\Controllers\Admin\CustomerController::class, 'index'])->name('admin.customers');

@@ -69,6 +69,23 @@ class UserController extends Controller
         return view('user.order-detail', compact('order', 'bankDetails'));
     }
 
+    /** Download Invoice */
+    public function downloadInvoice(Order $order)
+    {
+        if ($order->customer_email !== Auth::user()->email) {
+            abort(403);
+        }
+
+        if (!$order->invoice_file || !\Illuminate\Support\Facades\Storage::exists($order->invoice_file)) {
+            abort(404, 'Fatura bulunamadı.');
+        }
+
+        return \Illuminate\Support\Facades\Storage::download(
+            $order->invoice_file, 
+            'Fatura-' . ($order->external_order_id ?? $order->id) . '.pdf'
+        );
+    }
+
     /** Addresses */
     public function addresses()
     {

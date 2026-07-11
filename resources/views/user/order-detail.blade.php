@@ -36,6 +36,13 @@
                     </a>
                 </div>
                 @endif
+                @if($order->invoice_file)
+                <div class="mt-4">
+                    <a href="{{ route('user.orders.download-invoice', $order->id) }}" class="inline-flex items-center gap-2 px-6 py-3 bg-cyan-600 text-white rounded-xl text-sm font-black hover:bg-cyan-700 transition-all shadow-lg shadow-cyan-100 uppercase tracking-tighter">
+                        <i class="fas fa-file-pdf"></i> FATURAYI İNDİR
+                    </a>
+                </div>
+                @endif
             </div>
         </div>
     </div>
