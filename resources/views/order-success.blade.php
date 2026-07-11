@@ -113,4 +113,32 @@ function copyToClipboard(text) {
     });
 }
 </script>
+
+@section('scripts')
+<!-- BEGIN GCR Opt-in Module Code -->
+<script src="https://apis.google.com/js/platform.js?onload=renderOptIn" async defer></script>
+<script>
+window.renderOptIn = function() {
+    window.gapi.load('surveyoptin', function() {
+        window.gapi.surveyoptin.render({
+            "merchant_id": 5822707197,
+            "order_id": "{{ $order->id }}",
+            "email": "{{ $order->customer_email }}",
+            "delivery_country": "TR",
+            "estimated_delivery_date": "{{ \Carbon\Carbon::parse($order->created_at)->addDays(3)->format('Y-m-d') }}"
+        });
+    });
+}
+</script>
+<!-- END GCR Opt-in Module Code -->
+
+<!-- BEGIN GCR Language Code -->
+<script>
+window.___gcfg = {
+    lang: 'tr'
+};
+</script>
+<!-- END GCR Language Code -->
+@endsection
+
 @endsection
