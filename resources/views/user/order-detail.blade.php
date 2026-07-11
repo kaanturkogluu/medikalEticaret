@@ -178,6 +178,12 @@
                         <span>Kargo</span>
                         <span class="font-semibold text-green-600">Ücretsiz</span>
                     </div>
+                    @if($order->used_points > 0)
+                    <div class="flex justify-between text-orange-500 mt-2">
+                        <span>Kullanılan Med Puan</span>
+                        <span class="font-semibold">{{ $order->used_points }} Puan (-{{ number_format($order->used_points_discount ?? 0, 2, ',', '.') }} TL)</span>
+                    </div>
+                    @endif
                     <div class="border-t border-gray-100 pt-3 flex justify-between font-black text-gray-900">
                         <span>Genel Toplam</span>
                         <span class="text-orange-500 text-lg">{{ number_format($order->total_price, 2, ',', '.') }} TL</span>
