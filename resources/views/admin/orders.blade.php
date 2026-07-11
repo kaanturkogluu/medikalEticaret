@@ -51,7 +51,7 @@
         else if (cleaned.startsWith('0')) cleaned = cleaned.substring(1);
         
         if (cleaned.length === 10) {
-            return `+90 ${cleaned.substring(0,3)} - ${cleaned.substring(3,6)} - ${cleaned.substring(6,8)} -${cleaned.substring(8,10)}`;
+            return `+90 ${cleaned.substring(0,3)} ${cleaned.substring(3,6)} ${cleaned.substring(6,8)} ${cleaned.substring(8,10)}`;
         }
         return phone;
     },
