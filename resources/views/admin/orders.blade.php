@@ -44,6 +44,17 @@
         return this.statusMap[s] || { label: status, color: 'bg-slate-100 text-slate-600' };
     },
     packerName: 'Turgay Vural',
+    formatPhone(phone) {
+        if (!phone) return '-';
+        let cleaned = phone.toString().replace(/\D/g, '');
+        if (cleaned.startsWith('90')) cleaned = cleaned.substring(2);
+        else if (cleaned.startsWith('0')) cleaned = cleaned.substring(1);
+        
+        if (cleaned.length === 10) {
+            return `+90 ${cleaned.substring(0,3)} - ${cleaned.substring(3,6)} - ${cleaned.substring(6,8)} -${cleaned.substring(8,10)}`;
+        }
+        return phone;
+    },
     printLabel() {
         const url = '{{ route("admin.orders.print-label", ":id") }}'.replace(':id', this.selectedOrder.id) + '?packer=' + encodeURIComponent(this.packerName);
         window.open(url, '_blank', 'width=800,height=600');
@@ -196,7 +207,7 @@
                             </div>
                             <div>
                                 <p class="text-[10px] font-bold text-slate-400 uppercase">Müşteri Numarası</p>
-                                <p class="text-xs font-bold text-slate-800" x-text="selectedOrder?.customer_phone || '-'"></p>
+                                <p class="text-xs font-bold text-slate-800" x-text="formatPhone(selectedOrder?.customer_phone)"></p>
                             </div>
                         </div>
                     </div>
