@@ -179,7 +179,7 @@
         <div class="page-break">
             <div class="label-border">
                 <div class="header">
-                    <h1>umutMed</h1>
+                    <h1>umutmedikalmarket.com</h1>
                     <p>Sip: #{{ $order->external_order_id ?? $order->id }}</p>
                 </div>
 
@@ -191,6 +191,7 @@
                 <div class="section-box" style="flex-grow: 1;">
                     <span class="label-text">ADRES:</span>
                     <div class="value-text address">
+                        @if(isset($order->address_info['neighborhood'])){{ $order->address_info['neighborhood'] }} Mah. @elseif(isset($order->raw_marketplace_data['shipmentAddress']['neighborhood'])){{ $order->raw_marketplace_data['shipmentAddress']['neighborhood'] }} Mah. @endif
                         {{ $order->address_info['address'] ?? ($order->raw_marketplace_data['shipmentAddress']['fullAddress'] ?? '-') }}<br>
                         {{ $order->address_info['district'] ?? ($order->raw_marketplace_data['shipmentAddress']['district'] ?? '') }} / 
                         {{ $order->address_info['city'] ?? ($order->raw_marketplace_data['shipmentAddress']['city'] ?? '') }}
