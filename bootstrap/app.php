@@ -36,11 +36,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withSchedule(function (\Illuminate\Console\Scheduling\Schedule $schedule) {
-        $schedule->command('sync:orders')->everyThreeMinutes();
-        $schedule->command('sync:n11-orders')->everyThreeMinutes();
-        $schedule->command('sync:ptt-orders')->everyThreeMinutes();
-        $schedule->command('orders:cancel-pending')->everyFiveMinutes();
-
+        $schedule->command('orders:cancel-pending')->everyTwentyMinutes();
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->reportable(function (\Throwable $e) {
