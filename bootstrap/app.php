@@ -36,7 +36,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withSchedule(function (\Illuminate\Console\Scheduling\Schedule $schedule) {
-        $schedule->command('orders:cancel-pending')->everyTwentyMinutes();
+        $schedule->command('orders:cancel-pending')->cron('*/20 * * * *');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->reportable(function (\Throwable $e) {

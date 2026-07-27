@@ -20,30 +20,21 @@ class OrderController extends Controller
      */
     public function index(Request $request): View
     {
+        $websiteChannel = \App\Models\Channel::where('slug', 'website')->first();
+        $websiteChannelId = $websiteChannel ? $websiteChannel->id : null;
+
         $query = Order::with('channel');
 
-        $websiteChannel = \App\Models\Channel::where('slug', 'website')->first();
-        $defaultChannelId = $websiteChannel ? (string)$websiteChannel->id : 'all';
-        
-        $channelId = $request->input('channel_id', $defaultChannelId);
-
-        if ($channelId !== 'all' && $channelId !== null && $channelId !== '') {
-            $query->where('channel_id', $channelId);
+        if ($websiteChannelId) {
+            $query->where('channel_id', $websiteChannelId);
+        } else {
+            $query->whereNull('channel_id');
         }
-
-
 
         $orders = $query->orderByDesc('order_date')->orderByDesc('id')->paginate(15)->withQueryString();
-        $channels = \App\Models\Channel::all();
         $shippingCompanies = \App\Models\ShippingCompany::where('active', true)->get();
 
-        $openOrderId = $request->input('open_order_id');
-        $openOrder = null;
-        if ($openOrderId) {
-            $openOrder = Order::with('channel')->find($openOrderId);
-        }
-
-        return view('admin.orders', compact('orders', 'channels', 'shippingCompanies', 'channelId', 'openOrder'));
+        return view('admin.orders', compact('orders', 'shippingCompanies'));
     }
 
     /**

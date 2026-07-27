@@ -1,12 +1,7 @@
 @extends('layouts.admin')
 
 @section('content')
-<script id="openOrderData" type="application/json">
-    {!! isset($openOrder) && $openOrder ? json_encode($openOrder) : 'null' !!}
-</script>
-
 <div class="space-y-6" x-data="{ 
-    selectedOrder: null,
     statusMap: {
         'awaiting': { label: 'Onay Bekliyor', color: 'bg-indigo-100 text-indigo-700' },
         'created': { label: 'Hazırlanıyor', color: 'bg-blue-100 text-blue-700' },
@@ -24,60 +19,18 @@
         'undeliveredandreturned': { label: 'İade Edildi', color: 'bg-gray-100 text-gray-700' },
         'readytoship': { label: 'Kargoya Hazır', color: 'bg-indigo-100 text-indigo-700' }
     },
-    formatDate(ms) {
-        if (!ms) return '-';
-        return new Intl.DateTimeFormat('tr-TR', { 
-            day: '2-digit', month: '2-digit', year: 'numeric',
-            hour: '2-digit', minute: '2-digit'
-        }).format(new Date(ms));
-    },
-    init() {
-        let openOrder = JSON.parse(document.getElementById('openOrderData').textContent);
-        if (openOrder) {
-            setTimeout(() => {
-                this.selectedOrder = openOrder;
-            }, 100);
-        }
-    },
     getStatus(status) {
         const s = (status || '').toLowerCase();
         return this.statusMap[s] || { label: status, color: 'bg-slate-100 text-slate-600' };
-    },
-    packerName: 'Turgay Vural',
-    formatPhone(phone) {
-        if (!phone) return '-';
-        let cleaned = phone.toString().replace(/\D/g, '');
-        if (cleaned.startsWith('90')) cleaned = cleaned.substring(2);
-        else if (cleaned.startsWith('0')) cleaned = cleaned.substring(1);
-        
-        if (cleaned.length === 10) {
-            return `+90 ${cleaned.substring(0,3)} ${cleaned.substring(3,6)} ${cleaned.substring(6,8)} ${cleaned.substring(8,10)}`;
-        }
-        return phone;
-    },
-    printLabel() {
-        const url = '{{ route("admin.orders.print-label", ":id") }}'.replace(':id', this.selectedOrder.id) + '?packer=' + encodeURIComponent(this.packerName);
-        window.open(url, '_blank', 'width=800,height=600');
     }
 }">
     <!-- Header -->
     <div class="flex flex-col xl:flex-row gap-4 xl:items-center xl:justify-between">
         <div>
-            <h2 class="text-2xl font-bold text-slate-800 tracking-tight">Sipariş Yönetimi (Tüm Siparişler)</h2>
-            <p class="text-sm text-slate-500 mt-1">Trendyol, Hepsiburada, N11 ve Web Sitenizden gelen tüm siparişleri buradan yönetebilirsiniz.</p>
+            <h2 class="text-2xl font-bold text-slate-800 tracking-tight">Sipariş Yönetimi</h2>
+            <p class="text-sm text-slate-500 mt-1">Web sitenizden gelen tüm siparişleri buradan yönetebilirsiniz.</p>
         </div>
         <div class="flex flex-wrap items-stretch sm:items-center gap-3 w-full xl:w-auto">
-            <form action="{{ route('admin.orders') }}" method="GET" class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto flex-grow xl:flex-grow-0">
-                <select name="channel_id" onchange="this.form.submit()" class="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all shadow-sm w-full sm:w-auto">
-                    <option value="all" {{ $channelId === 'all' ? 'selected' : '' }}>Tüm Siparişler</option>
-                    @foreach($channels as $channel)
-                        <option value="{{ $channel->id }}" {{ $channelId == $channel->id ? 'selected' : '' }}>
-                            {{ $channel->name }}
-                        </option>
-                    @endforeach
-                </select>
-            </form>
-
         </div>
     </div>
 
@@ -99,7 +52,7 @@
             <tbody>
                 @foreach($orders as $o)
                 @php $o->load(['items.product.productImages', 'channel', 'shippingCompany']); @endphp
-                <tr @dblclick="selectedOrder = {{ json_encode($o) }}" class="hover:bg-slate-50 transition-all group border-b border-slate-50 cursor-pointer">
+                <tr onclick="window.location='{{ route('admin.orders.show', $o->id) }}'" class="hover:bg-slate-50 transition-all group border-b border-slate-50 cursor-pointer">
                     <td class="px-6 py-4">
                         <div class="flex flex-col">
                             <div class="flex items-center gap-2">
@@ -118,7 +71,7 @@
                     <td class="px-6 py-4">
                         @if($o->channel)
                             <div class="flex items-center gap-2">
-                                <span class="px-2 py-0.5 rounded text-[10px] font-bold text-black uppercase tracking-tighter" style="background-color: {{ $o->channel->color ?? '#64748b' }}">
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold text-white uppercase tracking-tighter" style="background-color: {{ $o->channel->color ?? '#64748b' }}">
                                     {{ $o->channel->name }}
                                 </span>
                             </div>
@@ -146,9 +99,9 @@
                         </span>
                     </td>
                     <td class="px-6 py-4 text-right">
-                        <button @click="selectedOrder = {{ json_encode($o) }}" class="p-2 bg-white border border-slate-200 rounded-lg shadow-sm hover:border-brand-500 hover:text-brand-600 transition-all lg:opacity-0 lg:group-hover:opacity-100 opacity-100">
+                        <a href="{{ route('admin.orders.show', $o->id) }}" onclick="event.stopPropagation()" class="inline-flex p-2 bg-white border border-slate-200 rounded-lg shadow-sm hover:border-brand-500 hover:text-brand-600 transition-all lg:opacity-0 lg:group-hover:opacity-100 opacity-100">
                             <i class="fas fa-eye text-sm"></i>
-                        </button>
+                        </a>
                     </td>
                 </tr>
                 @endforeach
@@ -157,456 +110,6 @@
         </div>
         <div class="p-4 bg-slate-50 border-t border-slate-100">
             {{ $orders->links() }}
-        </div>
-    </div>
-
-    <!-- Dynamic Order Details Modal -->
-    <div x-show="selectedOrder" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm transition-all overflow-y-auto">
-        <div @click.away="selectedOrder = null" class="bg-white rounded-[2.5rem] w-full max-w-4xl shadow-2xl relative animate-in fade-in zoom-in duration-200 flex flex-col max-h-[90vh] my-8">
-            <!-- Modal Header -->
-            <div class="p-4 md:p-8 pb-4 flex items-center justify-between border-b border-slate-50">
-                <div class="flex items-center gap-4">
-                    <div class="h-12 w-12 bg-brand-50 rounded-2xl flex items-center justify-center text-brand-600 text-xl font-black">
-                        <i class="fas fa-box"></i>
-                    </div>
-                    <div>
-                        <h3 class="text-xl font-bold text-slate-800" x-text="'Sipariş Detayı: #' + (selectedOrder?.external_order_id || selectedOrder?.id)"></h3>
-                        <div class="flex items-center gap-3 mt-1">
-                            <span class="text-xs font-bold text-slate-400 uppercase tracking-widest" x-text="selectedOrder?.channel?.name || 'WEB SİTE'"></span>
-                            <span class="w-1 h-1 rounded-full bg-slate-200"></span>
-                            <span :class="getStatus(selectedOrder?.order_status).color" class="px-2 py-0.5 rounded-lg text-[9px] font-black uppercase tracking-widest" x-text="getStatus(selectedOrder?.order_status).label"></span>
-                        </div>
-                    </div>
-                </div>
-                <button @click="selectedOrder = null" class="h-10 w-10 flex items-center justify-center rounded-xl hover:bg-slate-100 text-slate-400 transition-colors">
-                    <i class="fas fa-times text-xl"></i>
-                </button>
-            </div>
-
-            <!-- Modal Content -->
-            <div class="flex-1 overflow-y-auto p-4 md:p-8 pt-6 space-y-8 custom-scrollbar">
-                
-                <!-- Info Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <!-- General Info -->
-                    <div class="p-6 bg-slate-50 rounded-3xl border border-slate-100 space-y-4">
-                        <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                            <i class="fas fa-info-circle text-brand-500"></i> Genel Bilgiler
-                        </h4>
-                        <div class="space-y-4">
-                            <div>
-                                <p class="text-[10px] font-bold text-slate-400 uppercase">Sipariş Tarihi</p>
-                                <p class="text-xs font-bold text-slate-800" x-text="selectedOrder?.raw_marketplace_data?.orderDate ? formatDate(selectedOrder.raw_marketplace_data.orderDate) : formatDate(new Date(selectedOrder?.created_at).getTime())"></p>
-                            </div>
-                            <div>
-                                <p class="text-[10px] font-bold text-slate-400 uppercase">Ödeme Yöntemi</p>
-                                <p class="text-xs font-black text-brand-600 uppercase tracking-tighter" x-text="selectedOrder?.payment_method || (selectedOrder?.channel_id ? 'Pazaryeri' : '-')"></p>
-                            </div>
-                            <div>
-                                <p class="text-[10px] font-bold text-slate-400 uppercase">Müşteri Adı Soyadı</p>
-                                <p class="text-xs font-bold text-slate-800" x-text="selectedOrder?.customer_name || (selectedOrder?.raw_marketplace_data?.customerFirstName ? selectedOrder.raw_marketplace_data.customerFirstName + ' ' + selectedOrder.raw_marketplace_data.customerLastName : '-')"></p>
-                            </div>
-                            <div>
-                                <p class="text-[10px] font-bold text-slate-400 uppercase">Müşteri E-Posta</p>
-                                <p class="text-xs font-bold text-slate-800" x-text="selectedOrder?.customer_email || '-'"></p>
-                            </div>
-                            <div>
-                                <p class="text-[10px] font-bold text-slate-400 uppercase">Müşteri Numarası</p>
-                                <p class="text-xs font-bold text-slate-800" x-text="formatPhone(selectedOrder?.customer_phone)"></p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Cargo Info -->
-                    <div class="p-6 bg-slate-50 rounded-3xl border border-slate-100 space-y-4">
-                        <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                            <i class="fas fa-truck text-brand-500"></i> Kargo Bilgileri
-                        </h4>
-                        <div class="space-y-4">
-                            <div>
-                                <p class="text-[10px] font-bold text-slate-400 uppercase">Kargo Şirketi</p>
-                                <p class="text-xs font-bold text-slate-800" x-text="selectedOrder?.shipping_company?.name || selectedOrder?.raw_marketplace_data?.cargoProviderName || '-'"></p>
-                            </div>
-                            <div>
-                                <p class="text-[10px] font-bold text-slate-400 uppercase">Takip Numarası</p>
-                                <div class="flex items-center gap-2">
-                                    <p class="text-xs font-black text-slate-900 tracking-tighter tabular-nums" x-text="selectedOrder?.tracking_code || selectedOrder?.raw_marketplace_data?.cargoTrackingNumber || '-'"></p>
-                                    <template x-if="selectedOrder?.tracking_code || selectedOrder?.raw_marketplace_data?.cargoTrackingNumber">
-                                        <a :href="selectedOrder?.shipping_company?.tracking_url ? selectedOrder.shipping_company.tracking_url.replace('[TRACKING_CODE]', selectedOrder.tracking_code) : '#'" target="_blank" class="text-[10px] text-brand-500 font-bold hover:underline">Sorgula</a>
-                                    </template>
-                                </div>
-                            </div>
-                            <div>
-                                <p class="text-[10px] font-bold text-slate-400 uppercase">Paket Durumu</p>
-                                <p class="text-xs font-extrabold text-brand-600 uppercase tracking-tighter" x-text="selectedOrder?.raw_marketplace_data?.shipmentPackageStatus || (selectedOrder?.order_status === 'Shipped' ? 'Kargoya Verildi' : '-')"></p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="p-6 bg-slate-50 rounded-3xl border border-slate-100 space-y-4">
-                        <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                            <i class="fas fa-map-marker-alt text-brand-500"></i> Teslimat Adresi
-                        </h4>
-                        <div class="space-y-3">
-                            <p class="text-xs font-bold text-slate-800 leading-relaxed" x-text="selectedOrder?.address_info?.address || selectedOrder?.raw_marketplace_data?.shipmentAddress?.fullAddress || selectedOrder?.raw_marketplace_data?.shippingAddress?.address"></p>
-                            <template x-if="selectedOrder?.address_info?.neighborhood">
-                                <p class="text-[10px] font-semibold text-slate-500" x-text="selectedOrder.address_info.neighborhood + ' Mahallesi'"></p>
-                            </template>
-                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-tighter" x-text="(selectedOrder?.address_info?.district || selectedOrder?.raw_marketplace_data?.shipmentAddress?.district || selectedOrder?.raw_marketplace_data?.shippingAddress?.district || '-') + ' / ' + (selectedOrder?.address_info?.city || selectedOrder?.raw_marketplace_data?.shipmentAddress?.city || selectedOrder?.raw_marketplace_data?.shippingAddress?.city || '-')"></p>
-                        </div>
-                    </div>
-
-                    <!-- Invoice Info -->
-                    <template x-if="selectedOrder?.invoice_info">
-                        <div class="p-6 bg-amber-50/50 rounded-3xl border border-amber-100 space-y-4 md:col-span-3">
-                            <h4 class="text-[10px] font-black text-amber-600 uppercase tracking-widest flex items-center gap-2">
-                                <i class="fas fa-file-invoice text-amber-500"></i> Fatura Bilgileri
-                            </h4>
-                            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                                <div>
-                                    <p class="text-[10px] font-bold text-amber-700/60 uppercase">Fatura Tipi</p>
-                                    <p class="text-xs font-black text-amber-700 uppercase" x-text="selectedOrder.invoice_info.type === 'bireysel' ? 'Bireysel Fatura' : 'Kurumsal Fatura'"></p>
-                                </div>
-                                <template x-if="selectedOrder.invoice_info.type === 'bireysel'">
-                                    <div>
-                                        <p class="text-[10px] font-bold text-amber-700/60 uppercase">T.C. Kimlik No</p>
-                                        <p class="text-xs font-bold text-amber-900" x-text="selectedOrder.invoice_info.tc_no || '-'"></p>
-                                    </div>
-                                </template>
-                                <template x-if="selectedOrder.invoice_info.type === 'kurumsal'">
-                                    <div class="col-span-3 grid grid-cols-1 md:grid-cols-3 gap-6">
-                                        <div>
-                                            <p class="text-[10px] font-bold text-amber-700/60 uppercase">Ticari Unvan</p>
-                                            <p class="text-xs font-bold text-amber-900" x-text="selectedOrder.invoice_info.company_name || '-'"></p>
-                                        </div>
-                                        <div>
-                                            <p class="text-[10px] font-bold text-amber-700/60 uppercase">Vergi Dairesi & No</p>
-                                            <p class="text-xs font-bold text-amber-900" x-text="(selectedOrder.invoice_info.tax_office || '-') + ' / ' + (selectedOrder.invoice_info.tax_number || '-')"></p>
-                                        </div>
-                                        <div>
-                                            <p class="text-[10px] font-bold text-amber-700/60 uppercase">Yasal Adres</p>
-                                            <p class="text-xs font-bold text-amber-900" x-text="selectedOrder.invoice_info.legal_address || '-'"></p>
-                                        </div>
-                                    </div>
-                                </template>
-                            </div>
-                        </div>
-                    </template>
-
-                    <!-- Cancellation Info -->
-                    <template x-if="selectedOrder?.order_status?.toLowerCase() === 'cancelled'">
-                        <div class="p-6 bg-red-50 rounded-3xl border border-red-100 space-y-4 md:col-span-3">
-                            <h4 class="text-[10px] font-black text-red-500 uppercase tracking-widest flex items-center gap-2">
-                                <i class="fas fa-ban"></i> İptal Bilgileri
-                            </h4>
-                            <div class="flex flex-wrap gap-8">
-                                <div>
-                                    <p class="text-[10px] font-bold text-red-400 uppercase">İptal Zamanı</p>
-                                    <p class="text-xs font-bold text-red-900" x-text="selectedOrder?.canceled_at ? formatDate(new Date(selectedOrder.canceled_at).getTime()) : formatDate(new Date(selectedOrder?.updated_at).getTime())"></p>
-                                </div>
-                                <div>
-                                    <p class="text-[10px] font-bold text-red-400 uppercase">Ödeme Durumu (İptal Anında)</p>
-                                    <p class="text-xs font-black uppercase tracking-tighter" :class="selectedOrder?.is_paid ? 'text-green-600' : 'text-red-600'" x-text="selectedOrder?.is_paid ? 'ÖDEME YAPILDIKTAN SONRA İPTAL EDİLDİ' : 'ÖDEME YAPILMADAN İPTAL EDİLDİ'"></p>
-                                </div>
-                                <template x-if="selectedOrder?.cancel_reason">
-                                    <div>
-                                        <p class="text-[10px] font-bold text-red-400 uppercase">İptal Nedeni</p>
-                                        <p class="text-xs font-bold text-red-900" x-text="selectedOrder.cancel_reason"></p>
-                                    </div>
-                                </template>
-                            </div>
-                        </div>
-                    </template>
-                </div>
-
-                <!-- Shipping Management (Website Orders only or Manual Override) -->
-                <template x-if="selectedOrder && (selectedOrder.order_status === 'Created' || selectedOrder.order_status === 'Picking')">
-                    <div class="p-4 md:p-8 bg-brand-50 rounded-[2rem] border border-brand-100 space-y-6">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-brand-600 shadow-sm">
-                                <i class="fas fa-truck-loading text-lg"></i>
-                            </div>
-                            <div>
-                                <h4 class="text-sm font-black text-slate-800 uppercase italic tracking-tighter">Kargo İşlemleri</h4>
-                                <p class="text-[10px] font-bold text-slate-400 uppercase">Siparişi kargoya vermek için firma ve takip kodu girin.</p>
-                            </div>
-                        </div>
-                        
-                        <form :action="'{{ route('admin.orders.update-shipping', ':id') }}'.replace(':id', selectedOrder.id)" 
-                              method="POST" 
-                              class="space-y-4"
-                              x-data="{ loading: false }"
-                              @submit="if(loading) { $event.preventDefault(); return; } loading = true">
-                            @csrf
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div>
-                                    <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 px-1">Kargo Firması</label>
-                                    <select name="shipping_company_id" required class="w-full px-5 py-3 bg-white border border-slate-200 rounded-2xl text-xs font-bold focus:ring-4 focus:ring-brand-500/10 focus:border-brand-500 outline-none transition-all">
-                                        <option value="">Seçiniz...</option>
-                                        @foreach($shippingCompanies as $company)
-                                            <option value="{{ $company->id }}">{{ $company->name }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 px-1">Takip Kodu</label>
-                                    <input type="text" name="tracking_code" required placeholder="Örn: 123456789" class="w-full px-5 py-3 bg-white border border-slate-200 rounded-2xl text-xs font-bold focus:ring-4 focus:ring-brand-500/10 focus:border-brand-500 outline-none transition-all">
-                                </div>
-                            </div>
-                            <button type="submit" 
-                                    :disabled="loading"
-                                    class="w-full py-4 bg-brand-600 text-white rounded-[1.5rem] text-xs font-black hover:bg-brand-700 transition-all shadow-xl shadow-brand-500/20 uppercase tracking-widest flex items-center justify-center gap-3 disabled:opacity-70 disabled:cursor-not-allowed">
-                                <span x-show="!loading" class="flex items-center gap-3">
-                                    <i class="fas fa-paper-plane"></i> Kargoya Ver ve Müşteriyi Bilgilendir
-                                </span>
-                                <span x-show="loading" class="flex items-center gap-3">
-                                    <i class="fas fa-spinner fa-spin"></i> İşlem Yapılıyor...
-                                </span>
-                            </button>
-                        </form>
-                    </div>
-                </template>
-
-
-
-                <!-- Items Table -->
-                <div class="bg-white rounded-3xl border border-slate-100 overflow-hidden shadow-sm">
-                    <div class="px-6 py-4 bg-slate-50 border-b border-slate-100 flex justify-between items-center">
-                        <h4 class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Sipariş İçeriği (Lines)</h4>
-                        <span class="text-[10px] font-extrabold text-brand-600 bg-brand-50 px-2 py-0.5 rounded-lg" x-text="(selectedOrder?.raw_marketplace_data?.lines?.length || selectedOrder?.items?.length || 0) + ' Kalem Ürün'"></span>
-                    </div>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left min-w-[600px]">
-                        <thead>
-                            <tr class="text-[9px] font-black text-slate-400 uppercase tracking-widest bg-slate-50/50">
-                                <th class="px-6 py-3">Ürün / SKU</th>
-                                <th class="px-6 py-3 text-center">Adet</th>
-                                <th class="px-6 py-3 text-right">Birim Fiyat</th>
-                                <th class="px-6 py-3 text-right">İndirim</th>
-                                <th class="px-6 py-3 text-right">KDV (%)</th>
-                                <th class="px-6 py-3 text-right">Toplam</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-50">
-                            <!-- Marketplace Lines (Generic/Trendyol) -->
-                            <template x-if="selectedOrder?.raw_marketplace_data?.lines">
-                                <template x-for="item in selectedOrder?.raw_marketplace_data?.lines" :key="item.id">
-                                    <tr class="hover:bg-slate-50/50 transition-colors">
-                                        <td class="px-6 py-4">
-                                            <div class="flex flex-col">
-                                                <span class="text-xs font-bold text-slate-800 tracking-tight" x-text="item.productName || item.name"></span>
-                                                <div class="flex items-center gap-2 mt-1">
-                                                    <span class="text-[10px] px-1.5 py-0.5 bg-slate-100 text-slate-500 rounded font-black tracking-tighter" x-text="item.sku || item.stockCode || item.sellerStockCode || '-'"></span>
-                                                    <span class="text-[9px] text-slate-400" x-text="item.barcode ? 'Barkod: ' + item.barcode : ''"></span>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td class="px-6 py-4 text-center font-black text-slate-900 tabular-nums" x-text="item.quantity"></td>
-                                        <td class="px-6 py-4 text-right text-xs font-bold text-slate-700 tabular-nums" x-text="item.price.toFixed(2) + ' ₺'"></td>
-                                        <td class="px-6 py-4 text-right text-xs font-bold text-red-500 tabular-nums" x-text="(item.discount || 0).toFixed(2) + ' ₺'"></td>
-                                        <td class="px-6 py-4 text-right text-[10px] font-bold text-slate-400" x-text="'%' + (item.vatRate || 0)"></td>
-                                        <td class="px-6 py-4 text-right text-sm font-black text-slate-900 tabular-nums" x-text="((item.price * item.quantity) - (item.discount || 0)).toFixed(2) + ' ₺'"></td>
-                                    </tr>
-                                </template>
-                            </template>
-
-                            <!-- PTT AVM Lines -->
-                            <template x-if="selectedOrder?.raw_marketplace_data?.siparisUrunler">
-                                <template x-for="item in selectedOrder?.raw_marketplace_data?.siparisUrunler" :key="item.lineItemId || item.urunId">
-                                    <tr class="hover:bg-slate-50/50 transition-colors">
-                                        <td class="px-6 py-4">
-                                            <div class="flex flex-col">
-                                                <span class="text-xs font-bold text-slate-800 tracking-tight" x-text="item.urun"></span>
-                                                <div class="flex items-center gap-2 mt-1">
-                                                    <span class="text-[10px] px-1.5 py-0.5 bg-slate-100 text-slate-500 rounded font-black tracking-tighter" x-text="item.urunBarkod || item.variantBarkod || '-'"></span>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td class="px-6 py-4 text-center font-black text-slate-900 tabular-nums" x-text="item.toplamIslemAdedi"></td>
-                                        <td class="px-6 py-4 text-right text-xs font-bold text-slate-700 tabular-nums" x-text="(item.kdvDahilToplamTutar / item.toplamIslemAdedi).toFixed(2) + ' ₺'"></td>
-                                        <td class="px-6 py-4 text-right text-xs font-bold text-red-500 tabular-nums" x-text="(item.indirimToplam || 0).toFixed(2) + ' ₺'"></td>
-                                        <td class="px-6 py-4 text-right text-[10px] font-bold text-slate-400" x-text="'%' + (item.kdvOrani || 0)"></td>
-                                        <td class="px-6 py-4 text-right text-sm font-black text-slate-900 tabular-nums" x-text="item.kdvDahilToplamTutar.toFixed(2) + ' ₺'"></td>
-                                    </tr>
-                                </template>
-                            </template>
-
-                            <!-- Website Lines -->
-                            <template x-if="!selectedOrder?.raw_marketplace_data?.lines && !selectedOrder?.raw_marketplace_data?.siparisUrunler && selectedOrder?.items">
-                                <template x-for="item in selectedOrder?.items" :key="item.id">
-                                    <tr class="hover:bg-slate-50/50 transition-colors">
-                                        <td class="px-6 py-4">
-                                            <div class="flex items-center gap-3">
-                                                <template x-if="item.product?.product_images && item.product.product_images.length > 0">
-                                                    <img :src="item.product.product_images[0].url" 
-                                                         @click="window.open(item.product.product_images[0].url, '_blank')"
-                                                         class="w-10 h-10 object-cover rounded-lg border border-slate-200 cursor-pointer hover:scale-105 transition-transform" 
-                                                         title="Büyütmek için tıklayın">
-                                                </template>
-                                                <template x-if="!(item.product?.product_images && item.product.product_images.length > 0)">
-                                                    <div class="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center text-slate-300 flex-shrink-0">
-                                                        <i class="fas fa-image"></i>
-                                                    </div>
-                                                </template>
-                                                <div class="flex flex-col">
-                                                    <span class="text-xs font-bold text-slate-800 tracking-tight" x-text="item.product?.name || 'Ürün'"></span>
-                                                    <div class="flex items-center gap-2 mt-1">
-                                                        <span class="text-[10px] px-1.5 py-0.5 bg-slate-100 text-slate-500 rounded font-black tracking-tighter" x-text="item.product?.sku || '-'"></span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td class="px-6 py-4 text-center font-black text-slate-900 tabular-nums" x-text="item.quantity"></td>
-                                        <td class="px-6 py-4 text-right text-xs font-bold text-slate-700 tabular-nums" x-text="(item.price * 1).toFixed(2) + ' ₺'"></td>
-                                        <td class="px-6 py-4 text-right text-xs font-bold text-red-500 tabular-nums" x-text="selectedOrder?.payment_method === 'eft' ? (item.price * item.quantity * 0.05).toFixed(2) + ' ₺' : '0.00 ₺'"></td>
-                                        <td class="px-6 py-4 text-right text-[10px] font-bold text-slate-400">-</td>
-                                        <td class="px-6 py-4 text-right text-sm font-black text-slate-900 tabular-nums" x-text="(selectedOrder?.payment_method === 'eft' ? (item.price * item.quantity * 0.95) : (item.price * item.quantity)).toFixed(2) + ' ₺'"></td>
-                                    </tr>
-                                </template>
-                            </template>
-                        </tbody>
-                    </table>
-                </div>
-                </div>
-
-                <!-- History Timeline -->
-                <div class="space-y-4">
-                    <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2 px-1">
-                        <i class="fas fa-history text-brand-500"></i> Paket Geçmişi (Package History)
-                    </h4>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <template x-for="history in selectedOrder?.raw_marketplace_data?.packageHistories" :key="history.createdDate">
-                            <div class="p-4 bg-slate-50 rounded-2xl border border-slate-100 flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <div class="h-8 w-8 rounded-full bg-white border border-slate-200 flex items-center justify-center text-brand-500">
-                                        <i class="fas fa-clock text-xs"></i>
-                                    </div>
-                                    <span :class="getStatus(history.status).color" class="px-2 py-0.5 rounded-lg text-[9px] font-black uppercase tracking-widest" x-text="getStatus(history.status).label"></span>
-                                </div>
-                                <span class="text-[10px] font-bold text-slate-400" x-text="formatDate(history.createdDate)"></span>
-                            </div>
-                        </template>
-                    </div>
-                </div>
-
-            </div>
-
-            <!-- Modal Footer -->
-            <div class="p-4 md:p-8 bg-slate-50 rounded-b-[2.5rem] border-t border-slate-100 flex flex-col lg:flex-row gap-6 items-stretch lg:items-center lg:justify-between">
-                <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 sm:gap-8">
-                    <div>
-                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Toplam Brüt</p>
-                        <p class="text-xl font-black text-slate-800 tabular-nums" x-text="((selectedOrder?.raw_marketplace_data?.grossAmount * 1 || (selectedOrder?.total_price * 1 + selectedOrder?.discount_amount * 1) || 0)).toFixed(2) + ' ₺'"></p>
-                    </div>
-                    <div class="hidden sm:block h-10 w-px bg-slate-200"></div>
-                    <div>
-                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Toplam İndirim</p>
-                        <p class="text-xl font-black text-red-500 tabular-nums" x-text="'- ' + (selectedOrder?.raw_marketplace_data?.totalDiscount || selectedOrder?.discount_amount || 0).toFixed(2) + ' ₺'"></p>
-                    </div>
-                    <template x-if="selectedOrder?.used_points > 0">
-                        <div class="hidden sm:block h-10 w-px bg-slate-200"></div>
-                    </template>
-                    <template x-if="selectedOrder?.used_points > 0">
-                        <div>
-                            <p class="text-[10px] font-black text-orange-500 uppercase tracking-widest mb-1">Kullanılan Puan</p>
-                            <p class="text-xl font-black text-orange-500 tabular-nums" x-text="selectedOrder.used_points + ' Med Puan'"></p>
-                        </div>
-                    </template>
-                    <div class="hidden sm:block h-10 w-px bg-slate-200"></div>
-                    <div>
-                        <p class="text-[10px] font-black text-brand-600 uppercase tracking-widest mb-1">Genel Toplam (NET)</p>
-                        <p class="text-2xl font-black text-brand-600 tabular-nums" x-text="(selectedOrder?.total_price * 1 || 0).toLocaleString('tr-TR', { minimumFractionDigits: 2 }) + ' ₺'"></p>
-                    </div>
-                </div>
-                <div class="flex flex-wrap gap-3 justify-end">
-                    <template x-if="selectedOrder?.order_status === 'Awaiting' || selectedOrder?.order_status === 'pending_payment'">
-                        <form :action="'{{ route('admin.orders.approve', ':id') }}'.replace(':id', selectedOrder.id)" 
-                              method="POST"
-                              x-data="{ approving: false }"
-                              @submit="if(approving) { $event.preventDefault(); return; } approving = true">
-                            @csrf
-                            <button type="submit" 
-                                    :disabled="approving"
-                                    class="px-6 py-3 bg-emerald-600 text-white rounded-2xl text-xs font-black hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-500/30 uppercase tracking-widest disabled:opacity-70 disabled:cursor-not-allowed flex items-center gap-2">
-                                <span x-show="!approving">Siparişi Onayla</span>
-                                <span x-show="approving" class="flex items-center gap-2">
-                                    <i class="fas fa-spinner fa-spin"></i> Onaylanıyor...
-                                </span>
-                            </button>
-                        </form>
-                    </template>
-                    <template x-if="selectedOrder?.order_status !== 'cancelled' && selectedOrder?.order_status !== 'İptal Edildi' && selectedOrder?.order_status !== 'Shipped' && selectedOrder?.order_status !== 'Delivered'">
-                        <form :action="'{{ route('admin.orders.cancel', ':id') }}'.replace(':id', selectedOrder.id)" 
-                              method="POST"
-                              x-data="{ cancelling: false }"
-                              @submit="if(cancelling) { $event.preventDefault(); return; } let reason = prompt('Lütfen sipariş iptal nedenini giriniz (Müşteriye gönderilecektir):'); if(!reason) { $event.preventDefault(); return; } $refs.reasonInput.value = reason; cancelling = true">
-                            @csrf
-                            <input type="hidden" name="cancel_reason" x-ref="reasonInput" value="">
-                            <button type="submit" 
-                                    :disabled="cancelling"
-                                    class="px-6 py-3 bg-red-600 text-white rounded-2xl text-xs font-black hover:bg-red-700 transition-all shadow-lg shadow-red-500/30 uppercase tracking-widest disabled:opacity-70 disabled:cursor-not-allowed flex items-center gap-2">
-                                <span x-show="!cancelling">Siparişi İptal Et</span>
-                                <span x-show="cancelling" class="flex items-center gap-2">
-                                    <i class="fas fa-spinner fa-spin"></i> İptal Ediliyor...
-                                </span>
-                            </button>
-                        </form>
-                    </template>
-                    <button x-show="!selectedOrder?.channel_id || selectedOrder?.channel?.slug === 'website'" @click="printLabel()" class="px-6 py-3 bg-brand-600 text-white rounded-2xl text-xs font-black hover:bg-brand-700 transition-all shadow-lg shadow-brand-500/30 uppercase tracking-widest flex items-center gap-2">
-                        <i class="fas fa-barcode"></i> Barkod
-                    </button>
-
-                    <template x-if="selectedOrder?.order_status === 'Shipped' || selectedOrder?.order_status === 'Delivered'">
-                        <div x-data="{ 
-                            showUpload: false, 
-                            fileSelected: false, 
-                            fileUrl: null,
-                            uploading: false,
-                            handleFile(e) {
-                                const file = e.target.files[0];
-                                if(file && file.type === 'application/pdf') {
-                                    this.fileSelected = true;
-                                    this.fileUrl = URL.createObjectURL(file);
-                                } else {
-                                    this.fileSelected = false;
-                                    this.fileUrl = null;
-                                }
-                            }
-                        }" class="relative">
-                            <button type="button" @click="showUpload = !showUpload" 
-                                    :class="selectedOrder?.invoice_file ? 'bg-teal-600 hover:bg-teal-700 shadow-teal-500/30' : 'bg-cyan-600 hover:bg-cyan-700 shadow-cyan-500/30'"
-                                    class="px-6 py-3 text-white rounded-2xl text-xs font-black transition-all shadow-lg uppercase tracking-widest flex items-center gap-2">
-                                <i class="fas" :class="selectedOrder?.invoice_file ? 'fa-check-circle' : 'fa-file-invoice'"></i> 
-                                <span x-text="selectedOrder?.invoice_file ? 'Fatura Gönderildi (Güncelle)' : 'Fatura Gönder'"></span>
-                            </button>
-                            <div x-show="showUpload" @click.away="showUpload = false" class="absolute bottom-full right-0 mb-4 w-80 bg-white rounded-2xl shadow-2xl border border-slate-100 p-4 animate-in slide-in-from-bottom-2">
-                                <form :action="'{{ route('admin.orders.upload-invoice', ':id') }}'.replace(':id', selectedOrder.id)" 
-                                      method="POST" 
-                                      enctype="multipart/form-data" 
-                                      class="space-y-4"
-                                      @submit="if(uploading) { $event.preventDefault(); return; } uploading = true">
-                                    @csrf
-                                    <h4 class="text-xs font-black text-slate-700 uppercase tracking-widest mb-2 border-b pb-2">Fatura Yükle (PDF)</h4>
-                                    
-                                    <input type="file" name="invoice_file" accept=".pdf" required @change="handleFile" class="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-cyan-50 file:text-cyan-700 hover:file:bg-cyan-100 cursor-pointer">
-                                    
-                                    <div x-show="fileSelected" class="flex flex-col gap-2 pt-2">
-                                        <div class="flex gap-2">
-                                            <a :href="fileUrl" target="_blank" class="flex-1 py-2 bg-slate-100 text-slate-700 rounded-xl text-center text-xs font-bold hover:bg-slate-200 transition-colors">
-                                                İncele
-                                            </a>
-                                            <button type="submit" :disabled="uploading" class="flex-1 py-2 bg-cyan-600 text-white rounded-xl text-xs font-bold hover:bg-cyan-700 transition-colors shadow-md disabled:opacity-70 flex items-center justify-center">
-                                                <span x-show="!uploading">İşlemi Onayla</span>
-                                                <i x-show="uploading" class="fas fa-spinner fa-spin"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </template>
-                </div>
-            </div>
         </div>
     </div>
 </div>
