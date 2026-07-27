@@ -20,7 +20,7 @@ class CancelPendingOrders extends Command
      *
      * @var string
      */
-    protected $description = 'Cancels orders that have been in pending_payment status for more than 2 hours.';
+    protected $description = 'Cancels orders that have been in pending_payment status for more than 30 minutes.';
 
     /**
      * Execute the console command.
@@ -30,7 +30,8 @@ class CancelPendingOrders extends Command
         $websiteChannel = \App\Models\Channel::where('slug', 'website')->first();
         $websiteChannelId = $websiteChannel ? $websiteChannel->id : null;
 
-        $expiryTime = Carbon::now()->subMinutes(5);
+        // 30 dakika: 3D Secure doğrulaması + iyzico ödeme süreci için yeterli süre
+        $expiryTime = Carbon::now()->subMinutes(30);
 
         $query = Order::where('order_status', 'pending_payment')
             ->where('created_at', '<=', $expiryTime);
