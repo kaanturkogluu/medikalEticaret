@@ -97,7 +97,7 @@
                 </thead>
                 <tbody class="divide-y divide-slate-50">
                     @foreach($recentOrders as $ro)
-                        <tr class="group hover:bg-slate-50 transition-colors">
+                        <tr onclick="window.location='{{ route('admin.orders.show', $ro->id) }}'" class="group hover:bg-slate-50 transition-colors cursor-pointer">
                             <td class="py-4 px-2">
                                 <span class="text-xs font-bold text-slate-800">#{{ $ro->external_order_id ?? $ro->id }}</span>
                             </td>
