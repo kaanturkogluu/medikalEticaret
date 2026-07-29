@@ -425,4 +425,34 @@ class OrderController extends Controller
 
         return back()->with('error', 'Lütfen geçerli bir PDF dosyası seçin.');
     }
+
+    /**
+     * Delete the specified order after verifying the admin's password.
+     */
+    public function destroy(Request $request, Order $order)
+    {
+        $request->validate([
+            'password' => 'required|string'
+        ]);
+
+        $admin = auth()->user();
+
+        // Verify the password using Hash::check
+        if (!\Illuminate\Support\Facades\Hash::check($request->password, $admin->password)) {
+            $this->logIyzico('Manual Order Delete Failed: Incorrect password entered for Order #' . $order->id . ' by admin ID: ' . $admin->id, 'warning');
+            return back()->with('error', 'Girdiğiniz yönetici şifresi hatalı. Sipariş silinemedi.');
+        }
+
+        $orderId = $order->id;
+
+        // Delete order items
+        $order->items()->delete();
+        
+        // Delete order
+        $order->delete();
+
+        $this->logIyzico('Manual Order Delete Success: Order #' . $orderId . ' has been deleted by admin ID: ' . $admin->id, 'warning');
+
+        return redirect()->route('admin.orders')->with('success', 'Sipariş ve ilişkili ürün kayıtları başarıyla silindi.');
+    }
 }

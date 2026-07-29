@@ -14,9 +14,15 @@
             <i class="fas fa-chevron-right text-xs"></i>
             <span class="text-slate-800 font-semibold">Sipariş #{{ $order->external_order_id ?? $order->id }}</span>
         </div>
-        <a href="{{ route('admin.orders') }}" class="flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-all">
-            <i class="fas fa-arrow-left"></i> Listeye Geri Dön
-        </a>
+        <div class="flex items-center gap-3">
+            {{-- Delete Order Button --}}
+            <button onclick="confirmDeleteOrder({{ $order->id }})" class="flex items-center gap-2 px-4 py-2 bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-black uppercase tracking-widest rounded-xl transition-all shadow-sm border border-rose-100">
+                <i class="fas fa-trash-alt"></i> Siparişi Sil
+            </button>
+            <a href="{{ route('admin.orders') }}" class="flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-all">
+                <i class="fas fa-arrow-left"></i> Listeye Geri Dön
+            </a>
+        </div>
     </div>
 
     {{-- Main Order Info Header --}}
@@ -462,6 +468,55 @@
         const packerName = 'Turgay Vural';
         const url = '{{ route("admin.orders.print-label", $order->id) }}' + '?packer=' + encodeURIComponent(packerName);
         window.open(url, '_blank', 'width=800,height=600');
+    }
+
+    function confirmDeleteOrder(orderId) {
+        Swal.fire({
+            title: 'Siparişi Silmek İstediğinize Emin misiniz?',
+            text: 'Bu işlem geri alınamaz! Lütfen onaylamak için yönetici şifrenizi girin:',
+            input: 'password',
+            inputPlaceholder: 'Yönetici Şifresi',
+            showCancelButton: true,
+            confirmButtonText: 'Sil',
+            cancelButtonText: 'İptal',
+            confirmButtonColor: '#e11d48', // rose-600
+            cancelButtonColor: '#64748b',  // slate-500
+            preConfirm: (password) => {
+                if (!password) {
+                    Swal.showValidationMessage('Şifre girmek zorunludur!');
+                }
+                return password;
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Create a form dynamically and submit it
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = `{{ url('/admin/orders') }}/${orderId}/delete`;
+                
+                const csrfToken = '{{ csrf_token() }}';
+                const csrfInput = document.createElement('input');
+                csrfInput.type = 'hidden';
+                csrfInput.name = '_token';
+                csrfInput.value = csrfToken;
+                form.appendChild(csrfInput);
+
+                const methodInput = document.createElement('input');
+                methodInput.type = 'hidden';
+                methodInput.name = '_method';
+                methodInput.value = 'DELETE';
+                form.appendChild(methodInput);
+
+                const passwordInput = document.createElement('input');
+                passwordInput.type = 'hidden';
+                passwordInput.name = 'password';
+                passwordInput.value = result.value;
+                form.appendChild(passwordInput);
+
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
     }
 </script>
 @endsection

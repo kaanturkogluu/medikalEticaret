@@ -107,6 +107,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::get('/orders/{order}/print-label', [\App\Http\Controllers\Admin\OrderController::class, 'printLabel'])->name('admin.orders.print-label');
     Route::get('/orders/{order}', [\App\Http\Controllers\Admin\OrderController::class, 'show'])->name('admin.orders.show');
     Route::post('/orders/{order}/check-iyzico', [\App\Http\Controllers\Admin\OrderController::class, 'checkIyzico'])->name('admin.orders.check-iyzico');
+    Route::delete('/orders/{order}/delete', [\App\Http\Controllers\Admin\OrderController::class, 'destroy'])->name('admin.orders.destroy');
     Route::get('/customers', [\App\Http\Controllers\Admin\CustomerController::class, 'index'])->name('admin.customers');
     Route::get('/test-products', [\App\Http\Controllers\Admin\OrderController::class, 'testProducts'])->name('admin.test-products');
     Route::view('/sync/stock', 'admin.sync.stock')->name('admin.sync.stock');
