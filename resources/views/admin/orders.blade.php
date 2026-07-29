@@ -124,7 +124,12 @@
                         </div>
                     </td>
                     <td class="px-6 py-4 text-right">
-                        <span class="text-sm font-black text-slate-900 tabular-nums">{{ number_format($o->total_price, 2, ',', '.') }} ₺</span>
+                        <div class="flex flex-col items-end">
+                            <span class="text-sm font-black text-slate-900 tabular-nums">{{ number_format($o->total_price, 2, ',', '.') }} ₺</span>
+                            @if($o->installment && $o->installment > 1)
+                                <span class="text-[9px] font-bold text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded mt-0.5">{{ $o->installment }} Taksit</span>
+                            @endif
+                        </div>
                     </td>
                     <td class="px-6 py-4 text-center">
                         <span :class="getStatus('{{ $o->order_status }}').color" class="px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-wider" x-text="getStatus('{{ $o->order_status }}').label"></span>

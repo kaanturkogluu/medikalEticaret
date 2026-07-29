@@ -183,10 +183,38 @@
                                 </span>
                             @endif
                         </div>
-                        @if($order->payment_method === 'credit_card' && $order->iyzico_payment_id)
+                        @if($order->payment_method === 'credit_card' && ($order->iyzico_payment_id || $order->is_paid))
+                            @if($order->iyzico_payment_id)
+                                <div>
+                                    <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Iyzico Ödeme ID</span>
+                                    <span class="text-xs font-mono text-slate-700">{{ $order->iyzico_payment_id }}</span>
+                                </div>
+                            @endif
                             <div>
-                                <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Iyzico Ödeme ID</span>
-                                <span class="text-xs font-mono text-slate-700">{{ $order->iyzico_payment_id }}</span>
+                                <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Banka / Kart Programı</span>
+                                <span class="text-xs font-bold text-slate-800">{{ $order->card_family ?: 'Banka / Kredi Kartı' }}</span>
+                            </div>
+                            <div>
+                                <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Taksit Sayısı</span>
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-100">
+                                    <i class="fas fa-layer-group text-[10px]"></i>
+                                    {{ ($order->installment && $order->installment > 1) ? $order->installment . ' Taksit' : 'Tek Çekim' }}
+                                </span>
+                            </div>
+
+                            <div class="pt-3 border-t border-slate-100 space-y-2">
+                                <div class="flex justify-between items-center text-xs">
+                                    <span class="text-slate-500 font-medium">Müşteriden Çekilen Tutar</span>
+                                    <span class="font-black text-slate-800">{{ number_format($order->paid_price ?? $order->total_price, 2, ',', '.') }} ₺</span>
+                                </div>
+                                <div class="flex justify-between items-center text-xs">
+                                    <span class="text-amber-600 font-medium">Banka & Iyzico Kesintisi</span>
+                                    <span class="font-bold text-amber-700">-{{ number_format($order->iyzico_fee ?? 0, 2, ',', '.') }} ₺</span>
+                                </div>
+                                <div class="flex justify-between items-center text-xs pt-1.5 border-t border-slate-100">
+                                    <span class="text-emerald-700 font-bold">Net Hakediş (Satıcıya Kalan)</span>
+                                    <span class="font-black text-emerald-700">{{ number_format(($order->paid_price ?? $order->total_price) - ($order->iyzico_fee ?? 0), 2, ',', '.') }} ₺</span>
+                                </div>
                             </div>
                         @endif
                     </div>

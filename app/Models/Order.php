@@ -12,7 +12,7 @@ class Order extends Model
         'channel_id', 'coupon_id', 'user_id', 'external_order_id', 'customer_name', 'customer_email', 'customer_phone',
         'total_price', 'order_date', 'currency', 'order_status', 'address_info', 'invoice_info', 'invoice_file', 'raw_marketplace_data', 'synced',
         'payment_method', 'shipping_price', 'discount_amount', 'payment_token', 'shipping_company_id', 'tracking_code',
-        'earned_points', 'used_points', 'used_points_discount', 'iyzico_payment_id', 'is_paid', 'canceled_at', 'cancel_reason'
+        'earned_points', 'used_points', 'used_points_discount', 'iyzico_payment_id', 'installment', 'card_family', 'paid_price', 'iyzico_fee', 'is_paid', 'canceled_at', 'cancel_reason'
     ];
 
     public function user(): BelongsTo

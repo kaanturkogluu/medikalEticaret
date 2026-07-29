@@ -246,7 +246,17 @@ class OrderController extends Controller
                 $processed = \Illuminate\Support\Facades\DB::transaction(function () use ($order, $payment) {
                     $lockedOrder = Order::where('id', $order->id)->lockForUpdate()->first();
 
+                    $iyziFee   = (float) $payment->getIyziCommissionRateAmount() + (float) $payment->getIyziCommissionFee() + (float) $payment->getMerchantCommissionRateAmount();
+                    $paidPrice = (float) $payment->getPaidPrice() ?: $lockedOrder->total_price;
+
                     if ($lockedOrder->is_paid) {
+                        $lockedOrder->update([
+                            'iyzico_payment_id' => $payment->getPaymentId() ?: $lockedOrder->iyzico_payment_id,
+                            'installment'       => $payment->getInstallment() ?: ($lockedOrder->installment ?: 1),
+                            'card_family'       => $payment->getCardFamily() ?: ($payment->getCardAssociation() ?: ($lockedOrder->card_family ?: 'Banka / Kredi Kartı')),
+                            'paid_price'        => $paidPrice > 0 ? $paidPrice : ($lockedOrder->paid_price ?: $lockedOrder->total_price),
+                            'iyzico_fee'        => $iyziFee > 0 ? $iyziFee : ($lockedOrder->iyzico_fee ?: 0),
+                        ]);
                         return false; // Already paid
                     }
 
@@ -255,6 +265,10 @@ class OrderController extends Controller
                         'order_status'      => 'Created', // Hazırlanıyor
                         'is_paid'           => true,
                         'iyzico_payment_id' => $payment->getPaymentId(),
+                        'installment'       => $payment->getInstallment() ?: 1,
+                        'card_family'       => $payment->getCardFamily() ?: ($payment->getCardAssociation() ?: 'Banka / Kredi Kartı'),
+                        'paid_price'        => $paidPrice > 0 ? $paidPrice : $lockedOrder->total_price,
+                        'iyzico_fee'        => $iyziFee > 0 ? $iyziFee : 0,
                         'synced'            => false
                     ]);
 
