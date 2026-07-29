@@ -79,8 +79,10 @@
                 @endif
 
                 <div class="flex flex-col md:flex-row items-center justify-center gap-6">
-                    <a href="{{ route('user.orders') }}" class="w-full md:w-auto px-12 py-5 bg-slate-900 text-white rounded-[25px] font-black italic shadow-xl shadow-slate-900/20 hover:bg-orange-600 transition-all active:scale-95 uppercase tracking-tighter">Siparişlerimi Görüntüle</a>
-                    <a href="{{ route('home') }}" class="w-full md:w-auto px-12 py-5 bg-gray-100 text-slate-900 rounded-[25px] font-black italic hover:bg-gray-200 transition-all active:scale-95 uppercase tracking-tighter">Alışverişe Devam Et</a>
+                    @auth
+                        <a href="{{ route('user.orders') }}" class="w-full md:w-auto px-12 py-5 bg-slate-900 text-white rounded-[25px] font-black italic shadow-xl shadow-slate-900/20 hover:bg-orange-600 transition-all active:scale-95 uppercase tracking-tighter">Siparişlerimi Görüntüle</a>
+                    @endauth
+                    <a href="{{ route('home') }}" class="w-full md:w-auto px-12 py-5 bg-slate-900 text-white rounded-[25px] font-black italic hover:bg-orange-600 transition-all active:scale-95 uppercase tracking-tighter">Alışverişe Devam Et</a>
                 </div>
 
                 <div class="mt-16 pt-8 border-t border-gray-100 flex items-center justify-center gap-12 grayscale opacity-40">

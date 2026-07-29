@@ -35,13 +35,19 @@
                     </div>
                     <div>
                         <h4 class="text-lg font-black text-blue-900 uppercase italic tracking-tighter mb-1">Siparişiniz Hazırlanıyor</h4>
-                        <p class="text-sm text-blue-700 font-bold leading-relaxed">Ödemeniz onaylandı. Kargo takip bilgileri en kısa sürede tarafınıza e-posta ile iletilecektir.</p>
+                        @auth
+                            <p class="text-sm text-blue-700 font-bold leading-relaxed">Ödemeniz onaylandı. Kargo takip bilgileri en kısa sürede tarafınıza e-posta ile iletilecektir.</p>
+                        @else
+                            <p class="text-sm text-blue-700 font-bold leading-relaxed">Ödemeniz onaylandı. Üye olmadan alışveriş yaptığınız için siparişinizin tüm durum güncellemeleri ve kargo takip bilgileri girdiğiniz e-posta adresine ve telefon numaranıza gönderilecektir.</p>
+                        @endauth
                     </div>
                 </div>
 
                 <div class="flex flex-col md:flex-row items-center justify-center gap-6">
-                    <a href="{{ route('user.orders') }}" class="w-full md:w-auto px-12 py-5 bg-slate-900 text-white rounded-[25px] font-black italic shadow-xl shadow-slate-900/20 hover:bg-orange-600 transition-all active:scale-95 uppercase tracking-tighter">Siparişlerimi Görüntüle</a>
-                    <a href="{{ route('home') }}" class="w-full md:w-auto px-12 py-5 bg-gray-100 text-slate-900 rounded-[25px] font-black italic hover:bg-gray-200 transition-all active:scale-95 uppercase tracking-tighter">Alışverişe Devam Et</a>
+                    @auth
+                        <a href="{{ route('user.orders') }}" class="w-full md:w-auto px-12 py-5 bg-slate-900 text-white rounded-[25px] font-black italic shadow-xl shadow-slate-900/20 hover:bg-orange-600 transition-all active:scale-95 uppercase tracking-tighter">Siparişlerimi Görüntüle</a>
+                    @endauth
+                    <a href="{{ route('home') }}" class="w-full md:w-auto px-12 py-5 bg-slate-900 text-white rounded-[25px] font-black italic hover:bg-orange-600 transition-all active:scale-95 uppercase tracking-tighter">Alışverişe Devam Et</a>
                 </div>
 
                 <div class="mt-16 pt-8 border-t border-gray-100 flex items-center justify-center gap-12 grayscale opacity-40">

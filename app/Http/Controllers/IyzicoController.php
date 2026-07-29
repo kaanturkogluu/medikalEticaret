@@ -234,15 +234,14 @@ class IyzicoController extends Controller
             }
         }
 
-        // Send Customer SMS
+        // Send Customer SMS (Queued to prevent slow page load)
         try {
             if (!empty($order->customer_phone)) {
-                $netgsmService = app(\App\Services\NetgsmService::class);
                 $smsMessage = "Sayın : {$order->customer_name} , Siparişinizi aldık. Kargonuz hazırlandığında kargo bilgileriniz tarafınıza sms olarak iletilecektir.  Bizi tercih ettiğiniz için teşekkür ederiz. \n Umut Medikal Market";
-                $netgsmService->sendSms($order->customer_phone, $smsMessage, 'Sipariş Bildirimi', $order->customer_name);
+                \App\Jobs\SendOrderSmsJob::dispatch($order->customer_phone, $smsMessage, 'Sipariş Bildirimi', $order->customer_name);
             }
         } catch (\Exception $e) {
-            Log::error('Iyzico: Customer SMS sending failed for Order #' . $order->id . ': ' . $e->getMessage());
+            Log::error('Iyzico: Customer SMS queue failed for Order #' . $order->id . ': ' . $e->getMessage());
         }
 
         return true;

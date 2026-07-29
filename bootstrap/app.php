@@ -37,6 +37,11 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withSchedule(function (\Illuminate\Console\Scheduling\Schedule $schedule) {
         $schedule->command('orders:cancel-pending')->cron('*/20 * * * *');
+        
+        // Paylaşımlı hostinglerde kuyruğu çalıştırmak için zamanlayıcı (İş bittiğinde durur, sunucuyu yormaz)
+        $schedule->command('queue:work --stop-when-empty')
+            ->everyMinute()
+            ->withoutOverlapping();
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->reportable(function (\Throwable $e) {
