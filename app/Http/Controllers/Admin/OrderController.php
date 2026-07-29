@@ -216,21 +216,27 @@ class OrderController extends Controller
     /**
      * Manually check payment status from Iyzico and complete order if successful.
      */
-    public function checkIyzico(Order $order)
+    public function checkIyzico(Request $request, Order $order)
     {
+        $token = $order->payment_token ?: $request->input('token');
+
         $this->logIyzico('Manual Check: Started query for Order #' . $order->id, 'info', [
             'order_id' => $order->id,
-            'token' => $order->payment_token
+            'token' => $token
         ]);
 
-        if ($order->payment_method !== 'credit_card' || !$order->payment_token) {
+        if ($order->payment_method !== 'credit_card' || empty($token)) {
             $this->logIyzico('Manual Check Failed: Not credit card or missing token', 'warning', ['order_id' => $order->id]);
-            return back()->with('error', 'Bu sipariş kredi kartı ile oluşturulmamış veya ödeme tokenı bulunamadı.');
+            return back()->with('error', 'Bu sipariş kredi kartı ile oluşturulmamış veya ödeme tokenı girilmemiş.');
+        }
+
+        if (empty($order->payment_token) && !empty($token)) {
+            $order->update(['payment_token' => $token]);
         }
 
         try {
             $iyzicoService = app(\App\Services\IyzicoService::class);
-            $payment = $iyzicoService->getPaymentStatus($order->payment_token);
+            $payment = $iyzicoService->getPaymentStatus($token);
 
             $this->logIyzico('Manual Check: Retrieved payment status', 'info', [
                 'order_id' => $order->id,

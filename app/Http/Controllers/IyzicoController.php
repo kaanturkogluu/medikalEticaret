@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Log;
 use App\Mail\OrderPlaced;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 
 class IyzicoController extends Controller
 {
@@ -28,6 +29,21 @@ class IyzicoController extends Controller
             return redirect()->route('home')->with('error', 'Bu sipariş için ödeme yapılamaz.');
         }
 
+        // Prevent rapid re-creation: If a form was created within the last 2 minutes, serve cached version
+        // Use file cache store (not database) so this works even during MySQL outages
+        $fileCache = Cache::store('file');
+        $cacheKey = 'iyzico_form_' . $order->id;
+        $cached = $fileCache->get($cacheKey);
+
+        if ($cached && !empty($cached['content']) && !empty($cached['token'])) {
+            $this->logIyzico('pay: Serving cached form (preventing token overwrite)', 'info', [
+                'order_id' => $order->id,
+                'cached_token' => substr($cached['token'], 0, 8) . '...'
+            ]);
+            $paymentContent = $cached['content'];
+            return view('iyzico-pay', compact('paymentContent', 'order'));
+        }
+
         $items = $order->items()->with('product')->get()->map(function($item) {
             return [
                 'product_id' => $item->product_id,
@@ -44,10 +60,17 @@ class IyzicoController extends Controller
             return redirect()->back()->with('error', 'Ödeme sistemi şu an başlatılamıyor: ' . $form->getErrorMessage());
         }
 
-        // Save token to order for callback verification
-        $order->update(['payment_token' => $form->getToken()]);
-
+        $newToken = $form->getToken();
         $paymentContent = $form->getCheckoutFormContent();
+
+        // Save token to order for callback verification
+        $order->update(['payment_token' => $newToken]);
+
+        // Cache the form content for 2 minutes to prevent duplicate createForm calls
+        $fileCache->put($cacheKey, [
+            'token' => $newToken,
+            'content' => $paymentContent,
+        ], now()->addMinutes(2));
 
         return view('iyzico-pay', compact('paymentContent', 'order'));
     }
@@ -76,14 +99,7 @@ class IyzicoController extends Controller
             ]);
 
             if ($payment->getStatus() === 'success' && $payment->getPaymentStatus() === 'SUCCESS') {
-                // First try to find by token (most reliable)
-                $order = Order::where('payment_token', $request->token)->first();
-                
-                // Fallback to conversationId
-                if (!$order) {
-                    $orderId = $payment->getConversationId();
-                    $order = Order::find($orderId);
-                }
+                $order = $this->findOrderForPayment($request, $payment, $request->token);
 
                 if (!$order) {
                     $this->logIyzico('Callback Error: Order not found for token ' . $request->token, 'error');
@@ -97,13 +113,9 @@ class IyzicoController extends Controller
                 return redirect()->route('payment.success', $order->id)->with('success', 'Ödemeniz başarıyla alındı.');
             } else {
                 // Try to find the order even on failure to show a better error page
-                $order = Order::where('payment_token', $request->token)->first();
-                if (!$order) {
-                    $orderId = $payment->getConversationId();
-                    $order = Order::find($orderId);
-                }
+                $order = $this->findOrderForPayment($request, $payment, $request->token);
                 
-                $orderId = $order ? $order->id : $payment->getConversationId();
+                $orderId = $order ? $order->id : ($payment ? $payment->getConversationId() : null);
                 $errMsg = $payment->getErrorMessage() ?: 'Ödeme başarısız.';
                 $this->logIyzico('Callback Failed: ' . $errMsg, 'warning', ['order_id' => $orderId]);
                 return redirect()->route('payment.failed', $orderId)->with('error', $errMsg);
@@ -148,12 +160,7 @@ class IyzicoController extends Controller
             ]);
 
             if ($payment->getStatus() === 'success' && $payment->getPaymentStatus() === 'SUCCESS') {
-                $order = Order::where('payment_token', $token)->first();
-
-                if (!$order) {
-                    $orderId = $payment->getConversationId();
-                    $order = Order::find($orderId);
-                }
+                $order = $this->findOrderForPayment($request, $payment, $token);
 
                 if (!$order) {
                     $response = ['status' => 'error', 'message' => 'Order not found'];
@@ -193,9 +200,65 @@ class IyzicoController extends Controller
     }
 
     /**
+     * Find order safely across token, request payload conversationId, SDK conversationId, or iyzico_payment_id.
+     */
+    public function findOrderForPayment(Request $request, $payment, ?string $token): ?Order
+    {
+        // 1. Try finding by payment_token
+        if (!empty($token)) {
+            $order = Order::where('payment_token', $token)->first();
+            if ($order) {
+                return $order;
+            }
+        }
+
+        // 2. Try finding by paymentConversationId or conversationId from HTTP Request payload
+        $conversationIdFromRequest = $request->input('paymentConversationId')
+            ?? $request->input('conversationId')
+            ?? $request->input('payment_conversation_id');
+
+        if (!empty($conversationIdFromRequest) && is_numeric($conversationIdFromRequest)) {
+            $order = Order::find($conversationIdFromRequest);
+            if ($order) {
+                if (!empty($token) && $order->payment_token !== $token) {
+                    $order->update(['payment_token' => $token]);
+                    $this->logIyzico('findOrderForPayment: Linked token ' . $token . ' to Order #' . $order->id, 'info');
+                }
+                return $order;
+            }
+        }
+
+        // 3. Try finding by conversationId from retrieved Payment SDK object
+        $conversationIdFromPayment = $payment ? $payment->getConversationId() : null;
+        if (!empty($conversationIdFromPayment) && is_numeric($conversationIdFromPayment)) {
+            $order = Order::find($conversationIdFromPayment);
+            if ($order) {
+                if (!empty($token) && $order->payment_token !== $token) {
+                    $order->update(['payment_token' => $token]);
+                    $this->logIyzico('findOrderForPayment: Linked token ' . $token . ' to Order #' . $order->id . ' via SDK conversationId', 'info');
+                }
+                return $order;
+            }
+        }
+
+        // 4. Try finding by iyzico_payment_id if already saved on an order
+        if ($payment && $payment->getPaymentId()) {
+            $order = Order::where('iyzico_payment_id', $payment->getPaymentId())->first();
+            if ($order) {
+                if (!empty($token) && $order->payment_token !== $token) {
+                    $order->update(['payment_token' => $token]);
+                }
+                return $order;
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Shared logic to complete an order's payment safely and idempotently.
      */
-    private function completeOrder(Order $order, $payment)
+    public function completeOrder(Order $order, $payment)
     {
         $this->logIyzico('completeOrder: Starting payment completion', 'info', [
             'order_id' => $order->id,

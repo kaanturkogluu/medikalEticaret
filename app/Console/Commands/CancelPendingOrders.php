@@ -54,6 +54,24 @@ class CancelPendingOrders extends Command
         }
 
         foreach ($expiredOrders as $order) {
+            // Safety check: If order has a payment token, query Iyzico to check if payment actually succeeded!
+            if (!empty($order->payment_token)) {
+                try {
+                    $iyzicoService = app(\App\Services\IyzicoService::class);
+                    $payment = $iyzicoService->getPaymentStatus($order->payment_token);
+                    
+                    if ($payment && $payment->getStatus() === 'success' && $payment->getPaymentStatus() === 'SUCCESS') {
+                        // Payment was completed on Iyzico! Auto-recover and complete order instead of canceling it.
+                        $iyzicoController = app(\App\Http\Controllers\IyzicoController::class);
+                        $iyzicoController->completeOrder($order, $payment);
+                        $this->info("Order #{$order->id} was paid on Iyzico. Automatically recovered & completed!");
+                        continue;
+                    }
+                } catch (\Exception $e) {
+                    \Illuminate\Support\Facades\Log::error("CancelPendingOrders: Pre-cancel Iyzico check exception for Order #{$order->id}: " . $e->getMessage());
+                }
+            }
+
             $createdAt = $order->created_at->format('d.m.Y H:i');
             $nowTime = now()->format('d.m.Y H:i');
             $reason = "Sipariş {$createdAt} tarihinde oluşturuldu. {$nowTime} tarihine kadar ödeme Iyzico tarafından onaylanmadığı için sistem tarafından otomatik olarak iptal edildi.";

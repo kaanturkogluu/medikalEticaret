@@ -281,18 +281,30 @@
                     </div>
                     
                     {{-- Manual Iyzico Query Button --}}
-                    @if($order->payment_method === 'credit_card' && $order->payment_token)
+                    @if($order->payment_method === 'credit_card')
                         <div class="border-t border-red-200/50 pt-4 mt-2 flex items-center justify-between flex-wrap gap-4">
                             <div class="text-[11px] text-red-600 font-medium leading-relaxed max-w-xl">
                                 <i class="fas fa-info-circle mr-1"></i> Bu sipariş ödeme zaman aşımı nedeniyle otomatik iptal edilmiş olabilir. Müşteri son anda ödemeyi tamamladıysa durumu Iyzico'dan manuel sorgulayabilirsiniz.
                             </div>
-                            <form action="{{ route('admin.orders.check-iyzico', $order->id) }}" method="POST" class="flex-shrink-0">
+                            <form action="{{ route('admin.orders.check-iyzico', $order->id) }}" method="POST" class="flex-shrink-0" id="checkIyzicoForm">
                                 @csrf
-                                <button type="submit" class="px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-2xl text-xs font-black uppercase tracking-widest shadow-sm transition-all flex items-center gap-2">
+                                <input type="hidden" name="token" id="iyzicoTokenInput" value="{{ $order->payment_token }}">
+                                <button type="button" onclick="submitIyzicoCheck()" class="px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-2xl text-xs font-black uppercase tracking-widest shadow-sm transition-all flex items-center gap-2">
                                     <i class="fas fa-search-dollar"></i> Iyzico'dan Ödeme Sorgula
                                 </button>
                             </form>
                         </div>
+                        <script>
+                            function submitIyzicoCheck() {
+                                let hasToken = @json(!empty($order->payment_token));
+                                if (!hasToken) {
+                                    let token = prompt('Bu siparişte kaydedilmiş Iyzico tokenı bulunamadı. Lütfen Iyzico panelindeki/loglardaki tokenı girin:');
+                                    if (!token) return;
+                                    document.getElementById('iyzicoTokenInput').value = token;
+                                }
+                                document.getElementById('checkIyzicoForm').submit();
+                            }
+                        </script>
                     @endif
                 </div>
             @endif
