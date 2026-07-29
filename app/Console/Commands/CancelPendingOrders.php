@@ -54,9 +54,26 @@ class CancelPendingOrders extends Command
         }
 
         foreach ($expiredOrders as $order) {
+            $createdAt = $order->created_at->format('d.m.Y H:i');
+            $nowTime = now()->format('d.m.Y H:i');
+            $reason = "Sipariş {$createdAt} tarihinde oluşturuldu. {$nowTime} tarihine kadar ödeme Iyzico tarafından onaylanmadığı için sistem tarafından otomatik olarak iptal edildi.";
+
             $order->update([
-                'order_status' => 'cancelled'
+                'order_status' => 'cancelled',
+                'canceled_at' => now(),
+                'cancel_reason' => $reason
             ]);
+
+            // Med Puan İade İşlemleri (Ödeme yapılmadığı için kullanılan puanları iade et)
+            if ($order->user_id && $order->used_points > 0) {
+                $user = \App\Models\User::find($order->user_id);
+                if ($user) {
+                    $user->med_puan += $order->used_points;
+                    $user->save();
+                    $this->info("Refunded {$order->used_points} Med Puan to User ID: {$order->user_id}");
+                }
+            }
+
             $this->info("Order #{$order->id} has been cancelled due to payment timeout.");
         }
 

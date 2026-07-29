@@ -553,6 +553,24 @@
             });
         };
 
+        @if(session('success'))
+            window.addEventListener('DOMContentLoaded', () => {
+                notify('success', "{{ session('success') }}");
+            });
+        @endif
+
+        @if(session('error'))
+            window.addEventListener('DOMContentLoaded', () => {
+                notify('error', "{{ session('error') }}");
+            });
+        @endif
+
+        @if(session('info'))
+            window.addEventListener('DOMContentLoaded', () => {
+                notify('info', "{{ session('info') }}");
+            });
+        @endif
+
         // Tab Title Switcher Logic (Alternating after 30s delay)
         (function() {
             const active = {{ \App\Models\Setting::getValue('tab_switch_active', true) ? 'true' : 'false' }};

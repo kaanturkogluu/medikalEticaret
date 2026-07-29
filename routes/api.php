@@ -13,4 +13,5 @@ Route::prefix('v1')->group(function () {
 
     // Iyzico Callback (No session/CSRF handled here)
     Route::match(['get', 'post'], 'iyzico/callback', [\App\Http\Controllers\IyzicoController::class, 'callback'])->name('iyzico.callback');
+    Route::post('iyzico/webhook', [\App\Http\Controllers\IyzicoController::class, 'webhook'])->name('iyzico.webhook');
 });

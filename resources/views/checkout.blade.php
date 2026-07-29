@@ -726,6 +726,7 @@ function checkoutPage() {
             this.form.phone = e.target.value;
         },
         async submitOrder() {
+            if (this.loading) return;
             // Detailed field check
             const labels = {
                 first_name: 'Adınız',

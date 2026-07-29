@@ -3,6 +3,9 @@
 @section('title', 'Sipariş Detayı #' . ($order->external_order_id ?? $order->id))
 
 @section('content')
+@php
+    $s = strtolower($order->order_status ?? '');
+@endphp
 <div class="space-y-6">
     {{-- Breadcrumb & Back --}}
     <div class="flex items-center justify-between">
@@ -38,13 +41,15 @@
                     </div>
                     <div class="flex flex-wrap items-center gap-3 mt-1.5 text-xs text-slate-500">
                         <span><i class="far fa-calendar-alt mr-1.5"></i>{{ $order->order_date ? $order->order_date->format('d.m.Y H:i') : $order->created_at->format('d.m.Y H:i') }}</span>
-                        <span class="w-1.5 h-1.5 rounded-full bg-slate-200"></span>
-                        <span><i class="fas fa-wallet mr-1.5"></i>{{ match($order->payment_method) { 'credit_card' => 'Kredi Kartı', 'eft' => 'EFT / Havale', 'cash_on_delivery' => 'Kapıda Ödeme', default => $order->payment_method ?? '-' } }}</span>
+                        {{-- Hiding payment method temporarily --}}
+                        {{-- <span class="w-1.5 h-1.5 rounded-full bg-slate-200"></span> --}}
+                        {{-- <span><i class="fas fa-wallet mr-1.5"></i>{{ match($order->payment_method) { 'credit_card' => 'Kredi Kartı', 'eft' => 'EFT / Havale', 'cash_on_delivery' => 'Kapıda Ödeme', default => $order->payment_method ?? '-' } }}</span> --}}
                     </div>
                 </div>
             </div>
 
-            {{-- Status Badge & Simple Fast Actions --}}
+            {{-- Hiding payment status badge and approval/cancel actions temporarily --}}
+            {{--
             <div class="flex flex-wrap items-center gap-3">
                 @php
                     $s = strtolower($order->order_status ?? '');
@@ -85,6 +90,7 @@
                     </form>
                 @endif
             </div>
+            --}}
         </div>
     </div>
 
@@ -93,7 +99,7 @@
         {{-- Left 2 Columns: Client Info, Invoice, Items --}}
         <div class="lg:col-span-2 space-y-6">
             {{-- Client & Delivery Info Cards --}}
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {{-- Client Info --}}
                 <div class="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm space-y-4">
                     <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
@@ -103,7 +109,7 @@
                         <div>
                             <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Ad Soyad</span>
                             @if($order->user_id)
-                                <a href="{{ route('admin.customers.show', $order->user_id) }}" class="text-sm font-bold text-brand-600 hover:underline">
+                                <a href="{{ route('admin.customers', ['q' => $order->customer_email]) }}" class="text-sm font-bold text-brand-600 hover:underline">
                                     {{ $order->customer_name }} <i class="fas fa-external-link-alt text-[10px] ml-1"></i>
                                 </a>
                             @else
@@ -137,6 +143,46 @@
                             {{ $order->address_info['district'] ?? ($order->raw_marketplace_data['shipmentAddress']['district'] ?? ($order->raw_marketplace_data['shippingAddress']['district'] ?? '-')) }} / 
                             {{ $order->address_info['city'] ?? ($order->raw_marketplace_data['shipmentAddress']['city'] ?? ($order->raw_marketplace_data['shippingAddress']['city'] ?? '-')) }}
                         </p>
+                    </div>
+                </div>
+
+                {{-- Payment Info --}}
+                <div class="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm space-y-4">
+                    <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                        <i class="fas fa-wallet text-brand-500"></i> Ödeme Bilgileri
+                    </h3>
+                    <div class="space-y-3">
+                        <div>
+                            <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Ödeme Yöntemi</span>
+                            <span class="text-sm font-bold text-slate-800">
+                                {{ match($order->payment_method) { 
+                                    'credit_card' => 'Kredi Kartı (Iyzico)', 
+                                    'eft' => 'EFT / Havale', 
+                                    'cash_on_delivery' => 'Kapıda Ödeme', 
+                                    default => $order->payment_method ?? '-' 
+                                } }}
+                            </span>
+                        </div>
+                        <div>
+                            <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Ödeme Durumu</span>
+                            @if($order->is_paid)
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-100">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                    Ödeme Yapıldı
+                                </span>
+                            @else
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-bold bg-amber-50 text-amber-700 border border-amber-100">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                                    Ödeme Yapılmadı
+                                </span>
+                            @endif
+                        </div>
+                        @if($order->payment_method === 'credit_card' && $order->iyzico_payment_id)
+                            <div>
+                                <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Iyzico Ödeme ID</span>
+                                <span class="text-xs font-mono text-slate-700">{{ $order->iyzico_payment_id }}</span>
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -199,6 +245,21 @@
                             <span class="text-xs font-bold text-red-900">{{ $order->cancel_reason ?? '-' }}</span>
                         </div>
                     </div>
+                    
+                    {{-- Manual Iyzico Query Button --}}
+                    @if($order->payment_method === 'credit_card' && $order->payment_token)
+                        <div class="border-t border-red-200/50 pt-4 mt-2 flex items-center justify-between flex-wrap gap-4">
+                            <div class="text-[11px] text-red-600 font-medium leading-relaxed max-w-xl">
+                                <i class="fas fa-info-circle mr-1"></i> Bu sipariş ödeme zaman aşımı nedeniyle otomatik iptal edilmiş olabilir. Müşteri son anda ödemeyi tamamladıysa durumu Iyzico'dan manuel sorgulayabilirsiniz.
+                            </div>
+                            <form action="{{ route('admin.orders.check-iyzico', $order->id) }}" method="POST" class="flex-shrink-0">
+                                @csrf
+                                <button type="submit" class="px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-2xl text-xs font-black uppercase tracking-widest shadow-sm transition-all flex items-center gap-2">
+                                    <i class="fas fa-search-dollar"></i> Iyzico'dan Ödeme Sorgula
+                                </button>
+                            </form>
+                        </div>
+                    @endif
                 </div>
             @endif
 

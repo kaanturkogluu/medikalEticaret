@@ -200,6 +200,16 @@ class CheckoutController extends Controller
             'legal_address' => 'required_if:invoice_type,kurumsal|nullable|string',
         ]);
 
+        $lockKey = 'checkout_lock_' . (auth()->check() ? auth()->id() : md5($request->ip() . '_' . $validated['email']));
+        $lock = \Illuminate\Support\Facades\Cache::lock($lockKey, 10);
+
+        if (!$lock->get()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Siparişiniz şu an işleniyor. Lütfen bekleyin.'
+            ], 429);
+        }
+
         try {
             return DB::transaction(function() use ($validated) {
                 $subtotal = 0;
@@ -418,6 +428,10 @@ class CheckoutController extends Controller
                 'success' => false,
                 'message' => 'Sipariş oluşturulurken bir hata oluştu: ' . $e->getMessage()
             ], 500);
+        } finally {
+            if (isset($lock)) {
+                $lock->release();
+            }
         }
     }
 }
