@@ -221,6 +221,9 @@ class IyzicoController extends Controller
                         'iyzico_fee'        => $iyziFee > 0 ? $iyziFee : ($lockedOrder->iyzico_fee ?: 0),
                     ]);
                 }
+                if (empty($lockedOrder->channel_id)) {
+                    \App\Http\Controllers\Admin\CariController::syncOrder($lockedOrder);
+                }
                 $this->logIyzico('completeOrder: Order already marked as paid, skipping DB updates.', 'info', ['order_id' => $order->id]);
                 return false;
             }
@@ -241,6 +244,11 @@ class IyzicoController extends Controller
                 'iyzico_fee'        => $iyziFee > 0 ? $iyziFee : 0,
                 'synced'            => false
             ]);
+
+            // Sync with Cari system (Only Website Sales)
+            if (empty($lockedOrder->channel_id)) {
+                \App\Http\Controllers\Admin\CariController::syncOrder($lockedOrder);
+            }
 
             // Mark coupon as used
             if ($lockedOrder->coupon_id) {

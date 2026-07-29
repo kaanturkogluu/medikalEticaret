@@ -109,6 +109,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::post('/orders/{order}/check-iyzico', [\App\Http\Controllers\Admin\OrderController::class, 'checkIyzico'])->name('admin.orders.check-iyzico');
     Route::delete('/orders/{order}/delete', [\App\Http\Controllers\Admin\OrderController::class, 'destroy'])->name('admin.orders.destroy');
     Route::get('/customers', [\App\Http\Controllers\Admin\CustomerController::class, 'index'])->name('admin.customers');
+    Route::get('/cariler', [\App\Http\Controllers\Admin\CariController::class, 'index'])->name('admin.cariler.index');
+    Route::post('/cariler/sync', [\App\Http\Controllers\Admin\CariController::class, 'syncWebOrders'])->name('admin.cariler.sync');
+    Route::get('/cariler/{cari}', [\App\Http\Controllers\Admin\CariController::class, 'show'])->name('admin.cariler.show');
+    Route::post('/cariler/{cari}/transaction', [\App\Http\Controllers\Admin\CariController::class, 'storeTransaction'])->name('admin.cariler.transaction.store');
     Route::get('/test-products', [\App\Http\Controllers\Admin\OrderController::class, 'testProducts'])->name('admin.test-products');
     Route::view('/sync/stock', 'admin.sync.stock')->name('admin.sync.stock');
     Route::view('/sync/price', 'admin.sync.price')->name('admin.sync.price');

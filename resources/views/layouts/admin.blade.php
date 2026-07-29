@@ -149,6 +149,11 @@
                 <span class="font-medium text-sm">Müşteriler</span>
             </a>
             
+            <a href="{{ route('admin.cariler.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-all group {{ Request::is('admin/cariler*') ? 'sidebar-item-active' : '' }}">
+                <i class="fas fa-file-invoice-dollar w-6 flex justify-center text-lg {{ Request::is('admin/cariler*') ? 'text-white' : 'text-slate-500 group-hover:text-brand-400' }}"></i>
+                <span class="font-medium text-sm">Cari Sistemi (Web)</span>
+            </a>
+            
             <a href="{{ route('admin.shipping-companies.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-all group {{ Request::is('admin/shipping-companies*') ? 'sidebar-item-active' : '' }}">
                 <i class="fas fa-truck w-6 flex justify-center text-lg {{ Request::is('admin/shipping-companies*') ? 'text-white' : 'text-slate-500 group-hover:text-brand-400' }}"></i>
                 <span class="font-medium text-sm">Kargo Firmaları</span>
@@ -258,6 +263,11 @@
             <a href="{{ route('admin.customers') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-all group {{ Request::is('admin/customers*') ? 'sidebar-item-active' : '' }}">
                 <i class="fas fa-users w-6 flex justify-center text-lg {{ Request::is('admin/customers*') ? 'text-white' : 'text-slate-500 group-hover:text-brand-400' }}"></i>
                 <span x-show="sidebarOpen" class="font-medium text-sm">Müşteriler</span>
+            </a>
+
+            <a href="{{ route('admin.cariler.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-all group {{ Request::is('admin/cariler*') ? 'sidebar-item-active' : '' }}">
+                <i class="fas fa-file-invoice-dollar w-6 flex justify-center text-lg {{ Request::is('admin/cariler*') ? 'text-white' : 'text-slate-500 group-hover:text-brand-400' }}"></i>
+                <span x-show="sidebarOpen" class="font-medium text-sm">Cari Sistemi (Web)</span>
             </a>
             
             <a href="{{ route('admin.shipping-companies.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-all group {{ Request::is('admin/shipping-companies*') ? 'sidebar-item-active' : '' }}">

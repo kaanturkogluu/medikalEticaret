@@ -257,6 +257,9 @@ class OrderController extends Controller
                             'paid_price'        => $paidPrice > 0 ? $paidPrice : ($lockedOrder->paid_price ?: $lockedOrder->total_price),
                             'iyzico_fee'        => $iyziFee > 0 ? $iyziFee : ($lockedOrder->iyzico_fee ?: 0),
                         ]);
+                        if (empty($lockedOrder->channel_id)) {
+                            \App\Http\Controllers\Admin\CariController::syncOrder($lockedOrder);
+                        }
                         return false; // Already paid
                     }
 
@@ -271,6 +274,10 @@ class OrderController extends Controller
                         'iyzico_fee'        => $iyziFee > 0 ? $iyziFee : 0,
                         'synced'            => false
                     ]);
+
+                    if (empty($lockedOrder->channel_id)) {
+                        \App\Http\Controllers\Admin\CariController::syncOrder($lockedOrder);
+                    }
 
                     // Coupon usage
                     if ($lockedOrder->coupon_id && !$lockedOrder->coupon->is_used) {
