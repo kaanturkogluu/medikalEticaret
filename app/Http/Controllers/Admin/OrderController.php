@@ -218,13 +218,27 @@ class OrderController extends Controller
      */
     public function checkIyzico(Order $order)
     {
+        $this->logIyzico('Manual Check: Started query for Order #' . $order->id, 'info', [
+            'order_id' => $order->id,
+            'token' => $order->payment_token
+        ]);
+
         if ($order->payment_method !== 'credit_card' || !$order->payment_token) {
+            $this->logIyzico('Manual Check Failed: Not credit card or missing token', 'warning', ['order_id' => $order->id]);
             return back()->with('error', 'Bu sipariş kredi kartı ile oluşturulmamış veya ödeme tokenı bulunamadı.');
         }
 
         try {
             $iyzicoService = app(\App\Services\IyzicoService::class);
             $payment = $iyzicoService->getPaymentStatus($order->payment_token);
+
+            $this->logIyzico('Manual Check: Retrieved payment status', 'info', [
+                'order_id' => $order->id,
+                'status' => $payment->getStatus(),
+                'paymentStatus' => $payment->getPaymentStatus(),
+                'paymentId' => $payment->getPaymentId(),
+                'errorMessage' => $payment->getErrorMessage()
+            ]);
 
             if ($payment->getStatus() === 'success' && $payment->getPaymentStatus() === 'SUCCESS') {
                 
@@ -283,7 +297,10 @@ class OrderController extends Controller
                     try {
                         \Illuminate\Support\Facades\Mail::to($order->customer_email)->send(new \App\Mail\OrderPlaced($order));
                     } catch (\Exception $e) {
-                        \Illuminate\Support\Facades\Log::error('Iyzico Manual check: Customer email sending failed for Order #' . $order->id . ': ' . $e->getMessage());
+                        $this->logIyzico('Manual Check Error: Customer email sending failed', 'error', [
+                            'order_id' => $order->id,
+                            'error' => $e->getMessage()
+                        ]);
                     }
 
                     // Send Admin Email
@@ -292,7 +309,10 @@ class OrderController extends Controller
                         try {
                             \Illuminate\Support\Facades\Mail::to($adminEmail)->send(new \App\Mail\NewOrderAdminNotification($order));
                         } catch (\Exception $e) {
-                            \Illuminate\Support\Facades\Log::error('Iyzico Manual check: Admin email sending failed for Order #' . $order->id . ': ' . $e->getMessage());
+                            $this->logIyzico('Manual Check Error: Admin email sending failed', 'error', [
+                                'order_id' => $order->id,
+                                'error' => $e->getMessage()
+                            ]);
                         }
                     }
 
@@ -303,19 +323,42 @@ class OrderController extends Controller
                             \App\Jobs\SendOrderSmsJob::dispatch($order->customer_phone, $smsMessage, 'Sipariş Bildirimi', $order->customer_name);
                         }
                     } catch (\Exception $e) {
-                        \Illuminate\Support\Facades\Log::error('Iyzico Manual check: Customer SMS queue failed for Order #' . $order->id . ': ' . $e->getMessage());
+                        $this->logIyzico('Manual Check Error: Customer SMS queue dispatch failed', 'error', [
+                            'order_id' => $order->id,
+                            'error' => $e->getMessage()
+                        ]);
                     }
 
+                    $this->logIyzico('Manual Check Success: Order marked as paid', 'info', ['order_id' => $order->id]);
                     return back()->with('success', 'Ödemenin Iyzico tarafında başarılı olduğu tespit edildi! Sipariş onaylandı, stoklar güncellendi ve bildirimler gönderildi.');
                 }
 
+                $this->logIyzico('Manual Check: Order was already paid', 'info', ['order_id' => $order->id]);
                 return back()->with('info', 'Sipariş zaten ödenmiş durumda.');
             } else {
                 $err = $payment->getErrorMessage() ?: 'Ödeme bulunamadı veya onaylanmadı.';
+                $this->logIyzico('Manual Check: Payment not success: ' . $err, 'warning', ['order_id' => $order->id]);
                 return back()->with('error', 'Iyzico sorgusu başarısız veya ödeme yapılmamış. Hata: ' . $err);
             }
         } catch (\Exception $e) {
+            $this->logIyzico('Manual Check Exception: ' . $e->getMessage(), 'error', ['order_id' => $order->id]);
             return back()->with('error', 'Sorgulama yapılırken bir hata oluştu: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Write logs to storage/logs/iyzico.log
+     */
+    private function logIyzico(string $message, string $level = 'info', array $context = [])
+    {
+        try {
+            \Illuminate\Support\Facades\Log::build([
+                'driver' => 'single',
+                'path' => storage_path('logs/iyzico.log'),
+                'level' => 'debug',
+            ])->write($level, $message, $context);
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::write($level, '[Iyzico Log Fallback] ' . $message, $context);
         }
     }
 

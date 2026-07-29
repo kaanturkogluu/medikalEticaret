@@ -54,47 +54,63 @@ class IyzicoController extends Controller
 
     public function callback(Request $request)
     {
-        Log::info('Iyzico Callback received. Token: ' . $request->token);
+        $this->logIyzico('Callback: Received notification request', 'info', [
+            'ip' => $request->ip(),
+            'token' => $request->token,
+            'payload' => $request->all()
+        ]);
 
         if (!$request->token) {
-            Log::warning('Iyzico Callback: Missing token.');
+            $this->logIyzico('Callback Warning: Missing token.', 'warning');
             return redirect()->route('home')->with('error', 'Geçersiz ödeme isteği.');
         }
 
-        $payment = $this->iyzicoService->getPaymentStatus($request->token);
-        
-        Log::info('Iyzico Payment Status: ' . $payment->getStatus() . ' | Payment Status: ' . $payment->getPaymentStatus() . ' | Conversation ID: ' . $payment->getConversationId());
-
-        if ($payment->getStatus() === 'success' && $payment->getPaymentStatus() === 'SUCCESS') {
-            // First try to find by token (most reliable)
-            $order = Order::where('payment_token', $request->token)->first();
+        try {
+            $payment = $this->iyzicoService->getPaymentStatus($request->token);
             
-            // Fallback to conversationId
-            if (!$order) {
-                $orderId = $payment->getConversationId();
-                $order = Order::find($orderId);
-            }
+            $this->logIyzico('Callback: Retrieved payment status', 'info', [
+                'token' => $request->token,
+                'status' => $payment->getStatus(),
+                'paymentStatus' => $payment->getPaymentStatus(),
+                'conversationId' => $payment->getConversationId()
+            ]);
 
-            if (!$order) {
-                Log::error('Iyzico Callback: Order not found! Token: ' . $request->token . ' | ID: ' . $payment->getConversationId());
-                return redirect()->route('home')->with('error', 'Sipariş bulunamadı.');
-            }
+            if ($payment->getStatus() === 'success' && $payment->getPaymentStatus() === 'SUCCESS') {
+                // First try to find by token (most reliable)
+                $order = Order::where('payment_token', $request->token)->first();
+                
+                // Fallback to conversationId
+                if (!$order) {
+                    $orderId = $payment->getConversationId();
+                    $order = Order::find($orderId);
+                }
 
-            // Process order payment completion
-            $this->completeOrder($order, $payment);
+                if (!$order) {
+                    $this->logIyzico('Callback Error: Order not found for token ' . $request->token, 'error');
+                    return redirect()->route('home')->with('error', 'Sipariş bulunamadı.');
+                }
 
-            return redirect()->route('payment.success', $order->id)->with('success', 'Ödemeniz başarıyla alındı.');
-        } else {
-            // Try to find the order even on failure to show a better error page
-            $order = Order::where('payment_token', $request->token)->first();
-            if (!$order) {
-                $orderId = $payment->getConversationId();
-                $order = Order::find($orderId);
+                // Process order payment completion
+                $this->completeOrder($order, $payment);
+
+                $this->logIyzico('Callback Success: Redirecting to success page', 'info', ['order_id' => $order->id]);
+                return redirect()->route('payment.success', $order->id)->with('success', 'Ödemeniz başarıyla alındı.');
+            } else {
+                // Try to find the order even on failure to show a better error page
+                $order = Order::where('payment_token', $request->token)->first();
+                if (!$order) {
+                    $orderId = $payment->getConversationId();
+                    $order = Order::find($orderId);
+                }
+                
+                $orderId = $order ? $order->id : $payment->getConversationId();
+                $errMsg = $payment->getErrorMessage() ?: 'Ödeme başarısız.';
+                $this->logIyzico('Callback Failed: ' . $errMsg, 'warning', ['order_id' => $orderId]);
+                return redirect()->route('payment.failed', $orderId)->with('error', $errMsg);
             }
-            
-            $orderId = $order ? $order->id : $payment->getConversationId();
-            Log::error('Iyzico Payment Failed: ' . $payment->getErrorMessage() . ' | Order ID: ' . $orderId . ' | Token: ' . $request->token);
-            return redirect()->route('payment.failed', $orderId)->with('error', $payment->getErrorMessage());
+        } catch (\Exception $e) {
+            $this->logIyzico('Callback Exception: ' . $e->getMessage(), 'error');
+            return redirect()->route('home')->with('error', 'Sorgulama sırasında bir hata oluştu.');
         }
     }
 
@@ -103,50 +119,77 @@ class IyzicoController extends Controller
      */
     public function webhook(Request $request)
     {
-        Log::info('Iyzico Webhook notification received: ' . json_encode($request->all()));
+        $this->logIyzico('Webhook: Received notification request', 'info', [
+            'ip' => $request->ip(),
+            'headers' => $request->headers->all(),
+            'payload' => $request->all()
+        ]);
 
         $token = $request->input('token');
 
         if (!$token) {
-            Log::warning('Iyzico Webhook: Missing token in payload.');
-            return response()->json(['status' => 'error', 'message' => 'Missing token'], 400);
+            $response = ['status' => 'error', 'message' => 'Missing token'];
+            $this->logIyzico('Webhook Response: Missing token', 'warning', $response);
+            return response()->json($response, 400);
         }
 
-        // Fetch payment details directly from Iyzico API to prevent spoofing
-        $payment = $this->iyzicoService->getPaymentStatus($token);
+        try {
+            // Fetch payment details directly from Iyzico API to prevent spoofing
+            $payment = $this->iyzicoService->getPaymentStatus($token);
 
-        if ($payment->getStatus() === 'success' && $payment->getPaymentStatus() === 'SUCCESS') {
-            $order = Order::where('payment_token', $token)->first();
-
-            if (!$order) {
-                $orderId = $payment->getConversationId();
-                $order = Order::find($orderId);
-            }
-
-            if (!$order) {
-                Log::error('Iyzico Webhook: Order not found for token: ' . $token);
-                return response()->json(['status' => 'error', 'message' => 'Order not found'], 404);
-            }
-
-            // Process order payment completion
-            $processed = $this->completeOrder($order, $payment);
-
-            return response()->json([
-                'status' => 'success',
-                'message' => $processed ? 'Sipariş ödemesi başarıyla onaylandı ve tüm işlemler tamamlandı.' : 'Sipariş zaten onaylanmış/ödenmiş durumda.',
-                'order_id' => $order->id,
-                'customer' => $order->customer_name,
-                'total_price' => $order->total_price . ' ' . $order->currency,
-                'details' => [
-                    'payment_id' => $payment->getPaymentId(),
-                    'is_paid' => $order->fresh()->is_paid,
-                    'order_status' => $order->fresh()->order_status
-                ]
+            $this->logIyzico('Webhook: Retrieved payment details from Iyzico', 'info', [
+                'token' => $token,
+                'status' => $payment->getStatus(),
+                'paymentStatus' => $payment->getPaymentStatus(),
+                'conversationId' => $payment->getConversationId(),
+                'paymentId' => $payment->getPaymentId(),
+                'errorCode' => $payment->getErrorCode(),
+                'errorMessage' => $payment->getErrorMessage()
             ]);
-        }
 
-        Log::warning('Iyzico Webhook: Payment status is not success. Status: ' . $payment->getStatus());
-        return response()->json(['status' => 'ignored']);
+            if ($payment->getStatus() === 'success' && $payment->getPaymentStatus() === 'SUCCESS') {
+                $order = Order::where('payment_token', $token)->first();
+
+                if (!$order) {
+                    $orderId = $payment->getConversationId();
+                    $order = Order::find($orderId);
+                }
+
+                if (!$order) {
+                    $response = ['status' => 'error', 'message' => 'Order not found'];
+                    $this->logIyzico('Webhook Response: Order not found for token ' . $token, 'error', $response);
+                    return response()->json($response, 404);
+                }
+
+                // Process order payment completion
+                $processed = $this->completeOrder($order, $payment);
+
+                $response = [
+                    'status' => 'success',
+                    'message' => $processed ? 'Sipariş ödemesi başarıyla onaylandı ve tüm işlemler tamamlandı.' : 'Sipariş zaten onaylanmış/ödenmiş durumda.',
+                    'order_id' => $order->id,
+                    'customer' => $order->customer_name,
+                    'total_price' => $order->total_price . ' ' . $order->currency,
+                    'details' => [
+                        'payment_id' => $payment->getPaymentId(),
+                        'is_paid' => $order->fresh()->is_paid,
+                        'order_status' => $order->fresh()->order_status
+                    ]
+                ];
+
+                $this->logIyzico('Webhook Response: Order processed successfully', 'info', $response);
+                return response()->json($response);
+            }
+
+            $response = ['status' => 'ignored', 'message' => 'Payment status is not success. Status: ' . $payment->getStatus()];
+            $this->logIyzico('Webhook Response: Ignored (not success)', 'warning', $response);
+            return response()->json($response);
+
+        } catch (\Exception $e) {
+            $response = ['status' => 'error', 'message' => 'Exception occurred: ' . $e->getMessage()];
+            $this->logIyzico('Webhook Response: Error Exception', 'error', $response);
+            return response()->json($response, 500);
+        }
     }
 
     /**
@@ -154,6 +197,11 @@ class IyzicoController extends Controller
      */
     private function completeOrder(Order $order, $payment)
     {
+        $this->logIyzico('completeOrder: Starting payment completion', 'info', [
+            'order_id' => $order->id,
+            'payment_id' => $payment->getPaymentId()
+        ]);
+
         // 1. Wrap database changes in a TRANSACTION and acquire lock
         $processed = DB::transaction(function () use ($order, $payment) {
             // Retrieve and lock the order row
@@ -161,11 +209,13 @@ class IyzicoController extends Controller
 
             // If order is already paid, skip stock decrement and updates
             if ($lockedOrder->is_paid) {
+                $this->logIyzico('completeOrder: Order already marked as paid, skipping DB updates.', 'info', ['order_id' => $order->id]);
                 return false;
             }
 
             $status = strtolower(trim($lockedOrder->order_status));
             if ($status !== 'pending_payment' && $status !== 'cancelled') {
+                $this->logIyzico('completeOrder: Order status is invalid for completion: ' . $status, 'warning', ['order_id' => $order->id]);
                 return false;
             }
 
@@ -204,15 +254,21 @@ class IyzicoController extends Controller
                         $user->med_puan = 0;
                     }
                     $user->save();
+                    $this->logIyzico('completeOrder: Re-deducted used points for recovered cancelled order.', 'info', [
+                        'order_id' => $lockedOrder->id,
+                        'user_id' => $lockedOrder->user_id,
+                        'points' => $lockedOrder->used_points
+                    ]);
                 }
             }
 
+            $this->logIyzico('completeOrder: DB transaction completed successfully', 'info', ['order_id' => $order->id]);
             return true;
         });
 
         // 2. IDEMPOTENCY check: If not processed in this run (was already processed by concurrent request), skip notifications
         if (!$processed) {
-            Log::info('Iyzico: Order #' . $order->id . ' is already paid/processed under lock. Skipping duplicate processing.');
+            $this->logIyzico('completeOrder: Skip notification dispatch (idempotent)', 'info', ['order_id' => $order->id]);
             return false;
         }
 
@@ -221,7 +277,10 @@ class IyzicoController extends Controller
         try {
             Mail::to($order->customer_email)->send(new OrderPlaced($order));
         } catch (\Exception $e) {
-            Log::error('Iyzico: Customer email sending failed for Order #' . $order->id . ': ' . $e->getMessage());
+            $this->logIyzico('completeOrder: Customer email sending failed', 'error', [
+                'order_id' => $order->id,
+                'error' => $e->getMessage()
+            ]);
         }
 
         // Send Admin Email
@@ -230,7 +289,10 @@ class IyzicoController extends Controller
             try {
                 Mail::to($adminEmail)->send(new \App\Mail\NewOrderAdminNotification($order));
             } catch (\Exception $e) {
-                Log::error('Iyzico: Admin email sending failed for Order #' . $order->id . ': ' . $e->getMessage());
+                $this->logIyzico('completeOrder: Admin email sending failed', 'error', [
+                    'order_id' => $order->id,
+                    'error' => $e->getMessage()
+                ]);
             }
         }
 
@@ -241,7 +303,10 @@ class IyzicoController extends Controller
                 \App\Jobs\SendOrderSmsJob::dispatch($order->customer_phone, $smsMessage, 'Sipariş Bildirimi', $order->customer_name);
             }
         } catch (\Exception $e) {
-            Log::error('Iyzico: Customer SMS queue failed for Order #' . $order->id . ': ' . $e->getMessage());
+            $this->logIyzico('completeOrder: Customer SMS queue dispatch failed', 'error', [
+                'order_id' => $order->id,
+                'error' => $e->getMessage()
+            ]);
         }
 
         return true;
@@ -257,5 +322,21 @@ class IyzicoController extends Controller
     {
         $order = $order_id ? Order::find($order_id) : null;
         return view('iyzico-failed', compact('order'));
+    }
+
+    /**
+     * Write logs to storage/logs/iyzico.log using direct single channel config dynamically
+     */
+    private function logIyzico(string $message, string $level = 'info', array $context = [])
+    {
+        try {
+            Log::build([
+                'driver' => 'single',
+                'path' => storage_path('logs/iyzico.log'),
+                'level' => 'debug',
+            ])->write($level, $message, $context);
+        } catch (\Exception $e) {
+            Log::write($level, '[Iyzico Log Fallback] ' . $message, $context);
+        }
     }
 }
