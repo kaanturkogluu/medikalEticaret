@@ -182,6 +182,14 @@
                                     Ödeme Yapılmadı
                                 </span>
                             @endif
+
+                            @if(!$order->is_paid || $s === 'cancelled')
+                                <div class="mt-2">
+                                    <button type="button" onclick="confirmUpdatePaymentStatus({{ $order->id }}, true)" class="w-full text-center px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-[11px] font-bold shadow-sm transition-all flex items-center justify-center gap-1.5">
+                                        <i class="fas fa-key"></i> Ücret Ödendi Yap (Şifre İle)
+                                    </button>
+                                </div>
+                            @endif
                         </div>
                         @if($order->payment_method === 'credit_card' && ($order->iyzico_payment_id || $order->is_paid))
                             @if($order->iyzico_payment_id)
@@ -280,20 +288,27 @@
                         </div>
                     </div>
                     
-                    {{-- Manual Iyzico Query Button --}}
-                    @if($order->payment_method === 'credit_card')
-                        <div class="border-t border-red-200/50 pt-4 mt-2 flex items-center justify-between flex-wrap gap-4">
-                            <div class="text-[11px] text-red-600 font-medium leading-relaxed max-w-xl">
-                                <i class="fas fa-info-circle mr-1"></i> Bu sipariş ödeme zaman aşımı nedeniyle otomatik iptal edilmiş olabilir. Müşteri son anda ödemeyi tamamladıysa durumu Iyzico'dan manuel sorgulayabilirsiniz.
-                            </div>
-                            <form action="{{ route('admin.orders.check-iyzico', $order->id) }}" method="POST" class="flex-shrink-0" id="checkIyzicoForm">
-                                @csrf
-                                <input type="hidden" name="token" id="iyzicoTokenInput" value="{{ $order->payment_token }}">
-                                <button type="button" onclick="submitIyzicoCheck()" class="px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-2xl text-xs font-black uppercase tracking-widest shadow-sm transition-all flex items-center gap-2">
-                                    <i class="fas fa-search-dollar"></i> Iyzico'dan Ödeme Sorgula
-                                </button>
-                            </form>
+                    {{-- Manual Payment Update & Iyzico Query Buttons --}}
+                    <div class="border-t border-red-200/50 pt-4 mt-2 flex items-center justify-between flex-wrap gap-4">
+                        <div class="text-[11px] text-red-600 font-medium leading-relaxed max-w-xl">
+                            <i class="fas fa-info-circle mr-1"></i> Bu sipariş iptal durumundadır. Müşteri ödemeyi tamamladıysa yönetici şifrenizle manuel olarak "Ücret Ödendi" durumuna getirebilir veya Iyzico'dan sorgulayabilirsiniz.
                         </div>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <button type="button" onclick="confirmUpdatePaymentStatus({{ $order->id }}, true)" class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl text-xs font-black uppercase tracking-widest shadow-sm transition-all flex items-center gap-2">
+                                <i class="fas fa-key"></i> Manuel Ücret Ödendi Yap
+                            </button>
+                            @if($order->payment_method === 'credit_card')
+                                <form action="{{ route('admin.orders.check-iyzico', $order->id) }}" method="POST" class="flex-shrink-0" id="checkIyzicoForm">
+                                    @csrf
+                                    <input type="hidden" name="token" id="iyzicoTokenInput" value="{{ $order->payment_token }}">
+                                    <button type="button" onclick="submitIyzicoCheck()" class="px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-2xl text-xs font-black uppercase tracking-widest shadow-sm transition-all flex items-center gap-2">
+                                        <i class="fas fa-search-dollar"></i> Iyzico'dan Sorgula
+                                    </button>
+                                </form>
+                            @endif
+                        </div>
+                    </div>
+                    @if($order->payment_method === 'credit_card')
                         <script>
                             function submitIyzicoCheck() {
                                 let hasToken = @json(!empty($order->payment_token));
@@ -546,6 +561,53 @@
                 methodInput.name = '_method';
                 methodInput.value = 'DELETE';
                 form.appendChild(methodInput);
+
+                const passwordInput = document.createElement('input');
+                passwordInput.type = 'hidden';
+                passwordInput.name = 'password';
+                passwordInput.value = result.value;
+                form.appendChild(passwordInput);
+
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
+    }
+
+    function confirmUpdatePaymentStatus(orderId, isPaid = true) {
+        Swal.fire({
+            title: 'Ödeme Durumunu "Ücret Ödendi" Yap',
+            text: 'Bu siparişi manuel olarak ödenmiş duruma getirmek ve siparişi işleme almak istediğinize emin misiniz? Lütfen onaylamak için yönetici şifrenizi girin:',
+            input: 'password',
+            inputPlaceholder: 'Yönetici Şifreniz',
+            showCancelButton: true,
+            confirmButtonText: 'Ücret Ödendi Olarak Güncelle',
+            cancelButtonText: 'İptal',
+            confirmButtonColor: '#059669', // emerald-600
+            cancelButtonColor: '#64748b',  // slate-500
+            preConfirm: (password) => {
+                if (!password) {
+                    Swal.showValidationMessage('Yönetici şifrenizi girmelisiniz!');
+                }
+                return password;
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = `{{ url('/admin/orders') }}/${orderId}/update-payment-status`;
+                
+                const csrfInput = document.createElement('input');
+                csrfInput.type = 'hidden';
+                csrfInput.name = '_token';
+                csrfInput.value = '{{ csrf_token() }}';
+                form.appendChild(csrfInput);
+
+                const isPaidInput = document.createElement('input');
+                isPaidInput.type = 'hidden';
+                isPaidInput.name = 'is_paid';
+                isPaidInput.value = isPaid ? '1' : '0';
+                form.appendChild(isPaidInput);
 
                 const passwordInput = document.createElement('input');
                 passwordInput.type = 'hidden';

@@ -454,6 +454,86 @@ class OrderController extends Controller
     }
 
     /**
+     * Manually update order payment status (e.g. mark as paid) after verifying admin password.
+     */
+    public function updatePaymentStatus(Request $request, Order $order)
+    {
+        $request->validate([
+            'password' => 'required|string',
+            'is_paid' => 'nullable|boolean',
+            'order_status' => 'nullable|string',
+        ]);
+
+        $admin = auth()->user();
+
+        // Verify admin password using Hash::check
+        if (!\Illuminate\Support\Facades\Hash::check($request->password, $admin->password)) {
+            $this->logIyzico('Manual Payment Status Update Failed: Incorrect password entered for Order #' . $order->id . ' by admin ID: ' . $admin->id, 'warning');
+            return back()->with('error', 'Girdiğiniz yönetici şifresi hatalı. Ödeme durumu güncellenemedi.');
+        }
+
+        $targetIsPaid = $request->has('is_paid') ? $request->boolean('is_paid') : true;
+        $targetStatus = $request->input('order_status', 'Created');
+
+        \Illuminate\Support\Facades\DB::transaction(function () use ($order, $targetIsPaid, $targetStatus, $admin) {
+            $wasCancelled = in_array(strtolower($order->order_status ?? ''), ['cancelled', 'iptal edildi']);
+
+            $updateData = [
+                'is_paid' => $targetIsPaid,
+            ];
+
+            if ($targetIsPaid) {
+                // If order was cancelled or pending, update status to Created (Hazırlanıyor) or targetStatus
+                if ($wasCancelled || in_array($order->order_status, ['pending_payment', 'Awaiting'])) {
+                    $updateData['order_status'] = $targetStatus;
+                }
+                if (empty($order->paid_price) || $order->paid_price <= 0) {
+                    $updateData['paid_price'] = $order->total_price;
+                }
+            } else {
+                if ($request->filled('order_status')) {
+                    $updateData['order_status'] = $targetStatus;
+                }
+            }
+
+            $order->update($updateData);
+
+            if ($targetIsPaid) {
+                // Sync Cari if website order
+                if (empty($order->channel_id)) {
+                    \App\Http\Controllers\Admin\CariController::syncOrder($order);
+                }
+
+                // Kuponu kullanıldı olarak işaretle
+                if ($order->coupon_id && !$order->coupon->is_used) {
+                    $order->coupon()->update([
+                        'is_used' => true,
+                        'used_at' => now(),
+                        'order_id' => $order->id,
+                        'user_id' => $order->user_id
+                    ]);
+                }
+
+                // Med Puan düşümü (Eğer iptal durumundan aktife çevriliyorsa)
+                if ($wasCancelled && $order->user_id && $order->used_points > 0) {
+                    $user = \App\Models\User::find($order->user_id);
+                    if ($user) {
+                        $user->med_puan -= $order->used_points;
+                        if ($user->med_puan < 0) {
+                            $user->med_puan = 0;
+                        }
+                        $user->save();
+                    }
+                }
+            }
+
+            $this->logIyzico('Manual Payment Status Update Success: Order #' . $order->id . ' updated (is_paid=' . ($targetIsPaid ? '1' : '0') . ') by admin ID: ' . $admin->id, 'info');
+        });
+
+        return back()->with('success', 'Sipariş ödeme durumu başarıyla "Ücret Ödendi" olarak güncellendi.');
+    }
+
+    /**
      * Delete the specified order after verifying the admin's password.
      */
     public function destroy(Request $request, Order $order)
