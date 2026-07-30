@@ -27,6 +27,9 @@ class CancelPendingOrders extends Command
      */
     public function handle()
     {
+        // GEÇİCİ OLARAK PASİF HALE GETİRİLDİ (Sipariş iptali yapılmayacak)
+        $this->info('orders:cancel-pending komutu geçici olarak pasif durumdadır.');
+        return 0;
         $websiteChannel = \App\Models\Channel::where('slug', 'website')->first();
         $websiteChannelId = $websiteChannel ? $websiteChannel->id : null;
 
