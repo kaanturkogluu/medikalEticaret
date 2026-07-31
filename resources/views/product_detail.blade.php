@@ -7,7 +7,7 @@
 @section('title', $product->name)
 
 @section('content')
-    <main class="ty-container pb-20">
+    <main class="ty-container pb-20" x-data="{ videoModalOpen: false }">
         <!-- Breadcrumbs -->
         <nav class="breadcrumb flex gap-4 font-bold items-center py-6">
             <a href="{{ route('home') }}" class="text-[11px] text-gray-400 hover:text-slate-900 transition-colors uppercase tracking-widest">Ana Sayfa</a>
@@ -33,6 +33,13 @@
                                 <img src="{{ $image->url }}" class="w-full h-full object-contain" alt="thumbnail">
                             </div>
                         @endforeach
+                        @if($product->youtube_embed_url)
+                            <button type="button" @click="videoModalOpen = true" 
+                               class="w-20 h-24 bg-red-50 border-2 border-red-200 rounded-2xl cursor-pointer transition-all p-2 flex flex-col items-center justify-center text-red-600 hover:bg-red-100 hover:border-red-400 group shadow-sm">
+                                <i class="fab fa-youtube text-2xl group-hover:scale-110 transition-transform"></i>
+                                <span class="text-[9px] font-black uppercase tracking-tighter mt-1">VİDEO</span>
+                            </button>
+                        @endif
                     </div>
                     
                     <!-- Main Image with Zoom -->
@@ -47,6 +54,12 @@
                             }
                          }">
                         <div class="absolute inset-0 bg-gradient-to-tr from-gray-50/50 to-transparent pointer-events-none z-10"></div>
+                        @if($product->youtube_embed_url)
+                            <button type="button" @click="videoModalOpen = true" class="absolute top-6 left-6 z-20 px-4 py-2 bg-red-600/90 hover:bg-red-600 text-white backdrop-blur rounded-2xl flex items-center gap-2 text-xs font-black uppercase tracking-wider shadow-lg hover:scale-105 transition-all">
+                                <i class="fab fa-youtube text-base animate-pulse"></i>
+                                <span>Videoyu İzle</span>
+                            </button>
+                        @endif
                         <img :src="activeImage" 
                              :style="zoom ? `transform: scale(2.5); transform-origin: ${zoomX}% ${zoomY}%;` : ''"
                              class="w-full h-full object-contain transition-transform duration-150" 
@@ -220,9 +233,14 @@
         </div>
 
         <!-- Description & Details Tabs -->
-        <div class="mt-24" x-data="{ tab: 'features' }">
+        <div class="mt-24" id="product-tabs-section" x-data="{ tab: 'features' }">
             <div class="flex border-b border-gray-100 items-center justify-center gap-12 md:gap-16 sticky top-40 bg-white z-[100] py-6 bg-opacity-90 backdrop-blur-xl rounded-t-[40px] flex-wrap md:flex-nowrap">
                 <button @click="tab = 'features'" :class="tab == 'features' ? 'text-slate-900 border-b-4 border-orange-500' : 'text-gray-400 grayscale'" class="pb-2 text-sm font-black italic uppercase tracking-widest transition-all">Ürün Özellikleri</button>
+                @if($product->youtube_embed_url)
+                    <button type="button" @click="videoModalOpen = true" class="pb-2 text-sm font-black italic uppercase tracking-widest transition-all text-red-600 hover:text-red-700 flex items-center gap-2">
+                        <i class="fab fa-youtube text-red-600 text-base animate-pulse"></i> Tanıtım Videosu
+                    </button>
+                @endif
                 <button @click="tab = 'returns'" :class="tab == 'returns' ? 'text-slate-900 border-b-4 border-orange-500' : 'text-gray-400 grayscale'" class="pb-2 text-sm font-black italic uppercase tracking-widest transition-all">İade Koşulları</button>
                 <button @click="tab = 'comments'" :class="tab == 'comments' ? 'text-slate-900 border-b-4 border-orange-500' : 'text-gray-400 grayscale'" class="pb-2 text-sm font-black italic uppercase tracking-widest transition-all">Değerlendirmeler ({{ $product->approvedComments->count() }})</button>
             </div>
@@ -233,6 +251,23 @@
                     <div class="text-slate-600 leading-relaxed text-sm space-y-8 bg-gray-50/50 p-12 rounded-[50px] border border-gray-100 italic mb-10">
                         {!! $product->description !!}
                     </div>
+
+                    @if($product->youtube_embed_url)
+                        <div class="my-8 p-6 bg-gradient-to-r from-slate-900 to-slate-800 rounded-[30px] text-white flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl border border-slate-700">
+                            <div class="flex items-center gap-4">
+                                <div class="w-14 h-14 bg-red-600 rounded-2xl flex items-center justify-center text-white text-2xl shrink-0 shadow-lg shadow-red-600/30">
+                                    <i class="fab fa-youtube"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-sm font-black uppercase italic tracking-wider">Ürün Tanıtım Videosu Mevcut</h4>
+                                    <p class="text-xs text-slate-300 mt-1">Bu ürünün tanıtım ve kullanım videosunu hemen izleyebilirsiniz.</p>
+                                </div>
+                            </div>
+                            <button type="button" @click="videoModalOpen = true" class="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-2xl text-xs font-black uppercase tracking-widest transition-all shadow-md shrink-0 flex items-center gap-2">
+                                <i class="fas fa-play text-xs"></i> Videoyu İzle
+                            </button>
+                        </div>
+                    @endif
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-2">
                         @foreach($product->productAttributes as $attr)
@@ -243,6 +278,37 @@
                         @endforeach
                     </div>
                 </div>
+
+                @if($product->youtube_embed_url)
+                    <div x-show="tab == 'video'" x-cloak x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" class="max-w-4xl mx-auto space-y-6">
+                        <div class="bg-slate-900 p-6 md:p-8 rounded-[40px] shadow-2xl space-y-6 border border-slate-800">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-2xl bg-red-600/20 text-red-500 flex items-center justify-center font-black text-xl">
+                                        <i class="fab fa-youtube"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-lg font-black text-white uppercase italic tracking-tight">{{ $product->name }}</h3>
+                                        <p class="text-xs text-slate-400 font-medium">Ürün Tanıtım ve Kullanım Videosu</p>
+                                    </div>
+                                </div>
+                                <button type="button" @click="videoModalOpen = true" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-2">
+                                    <i class="fas fa-expand"></i> Tam Ekran Aç
+                                </button>
+                            </div>
+                            
+                            <div class="relative w-full aspect-video rounded-[30px] overflow-hidden shadow-2xl border border-slate-700 bg-black">
+                                <iframe src="{{ $product->youtube_embed_url }}" 
+                                        title="{{ $product->name }} Tanıtım Videosu" 
+                                        class="w-full h-full border-0" 
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                                        referrerpolicy="strict-origin-when-cross-origin"
+                                        allowfullscreen>
+                                </iframe>
+                            </div>
+                        </div>
+                    </div>
+                @endif
 
                 <div x-show="tab == 'returns'" x-cloak x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" class="bg-indigo-50/50 p-12 rounded-[50px] border border-indigo-100/50">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
@@ -512,6 +578,80 @@
                 @endforeach
             </div>
         </div>
+
+        @if($product->youtube_embed_url)
+            <!-- Video Pop-up Modal -->
+            <div x-show="videoModalOpen" 
+                 x-cloak 
+                 x-effect="document.body.style.overflow = videoModalOpen ? 'hidden' : ''"
+                 @keydown.escape.window="videoModalOpen = false"
+                 class="fixed inset-0 z-[99999] flex items-center justify-center p-4 sm:p-6 md:p-10"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0"
+                 x-transition:enter-end="opacity-100"
+                 x-transition:leave="transition ease-in duration-200"
+                 x-transition:leave-start="opacity-100"
+                 x-transition:leave-end="opacity-0">
+                 
+                <!-- Backdrop -->
+                <div class="fixed inset-0 bg-slate-950/80 backdrop-blur-md" @click="videoModalOpen = false"></div>
+
+                <!-- Modal Body -->
+                <div class="relative bg-slate-900 w-full max-w-4xl rounded-[32px] md:rounded-[40px] shadow-2xl border border-slate-800 overflow-hidden z-10 flex flex-col"
+                     x-transition:enter="transition ease-out duration-300"
+                     x-transition:enter-start="opacity-0 scale-95 translate-y-4"
+                     x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+                     x-transition:leave="transition ease-in duration-200"
+                     x-transition:leave-start="opacity-100 scale-100 translate-y-0"
+                     x-transition:leave-end="opacity-0 scale-95 translate-y-4">
+                     
+                    <!-- Modal Header -->
+                    <div class="p-6 md:p-8 flex items-center justify-between border-b border-slate-800/80 bg-slate-900/50">
+                        <div class="flex items-center gap-3 pr-4">
+                            <div class="w-10 h-10 rounded-2xl bg-red-600/20 text-red-500 flex items-center justify-center font-black text-xl shrink-0">
+                                <i class="fab fa-youtube"></i>
+                            </div>
+                            <div class="overflow-hidden">
+                                <h3 class="text-base md:text-lg font-black text-white uppercase italic tracking-tight truncate">{{ $product->name }}</h3>
+                                <p class="text-xs text-slate-400 font-medium truncate">Ürün Tanıtım & Kullanım Videosu</p>
+                            </div>
+                        </div>
+                        
+                        <button type="button" @click="videoModalOpen = false" class="w-10 h-10 rounded-2xl bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700 flex items-center justify-center transition-all shrink-0">
+                            <i class="fas fa-times text-lg"></i>
+                        </button>
+                    </div>
+
+                    <!-- Video Frame -->
+                    <div class="p-4 md:p-6 bg-black">
+                        <div class="relative w-full aspect-video rounded-2xl md:rounded-3xl overflow-hidden bg-black shadow-inner border border-slate-800">
+                            <iframe :src="videoModalOpen ? '{{ $product->youtube_embed_url }}&autoplay=1' : ''" 
+                                    title="{{ $product->name }} Tanıtım Videosu" 
+                                    class="w-full h-full border-0" 
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                                    referrerpolicy="strict-origin-when-cross-origin"
+                                    allowfullscreen>
+                            </iframe>
+                        </div>
+                    </div>
+
+                    <!-- Modal Footer & YouTube Fallback -->
+                    <div class="p-4 md:p-6 bg-slate-900 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-slate-800/80 text-xs">
+                        <span class="text-slate-400 font-medium text-center sm:text-left flex items-center gap-1.5">
+                            <i class="fas fa-info-circle text-amber-500"></i> Video oynatılmıyorsa doğrudan YouTube üzerinden izleyebilirsiniz.
+                        </span>
+                        <div class="flex items-center gap-3">
+                            <a href="{{ $product->youtube_watch_url }}" target="_blank" class="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold transition-all shadow-md flex items-center gap-2 whitespace-nowrap">
+                                <i class="fab fa-youtube text-base"></i> YouTube'da İzle <i class="fas fa-external-link-alt text-[10px]"></i>
+                            </a>
+                            <button type="button" @click="videoModalOpen = false" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl font-bold transition-all">
+                                Kapat
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endif
     </main>
 @endsection
 @section('scripts')

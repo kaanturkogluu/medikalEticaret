@@ -13,11 +13,54 @@ class Product extends Model
 
     protected $fillable = [
         'parent_id', 'variant_key', 'brand_id', 'category_id', 'return_template_id', 'sku', 'barcode', 'name', 'slug',
-        'brand_name', 'category_name', 'description', 'price', 'stock', 'active', 'is_popular', 'free_shipping',
+        'brand_name', 'category_name', 'description', 'video_url', 'price', 'stock', 'active', 'is_popular', 'free_shipping',
         'attributes', 'raw_marketplace_data', 'marketplace_status', 'marketplace',
         'external_id', 'platform_listing_id', 'product_content_id', 'supplier_id',
         'views'
     ];
+
+    /**
+     * Extract 11-character YouTube Video ID.
+     */
+    public function getYoutubeVideoIdAttribute(): ?string
+    {
+        if (empty($this->video_url)) {
+            return null;
+        }
+
+        $url = trim($this->video_url);
+
+        // If user pasted the raw 11-char ID directly
+        if (preg_match('/^[a-zA-Z0-9_-]{11}$/', $url)) {
+            return $url;
+        }
+
+        // Match video ID from iframe src, watch?v=, youtu.be/, embed/, shorts/, mobile URLs, etc.
+        $pattern = '/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?|shorts)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/#\s]{11})/';
+        if (preg_match($pattern, $url, $matches)) {
+            return $matches[1];
+        }
+
+        return null;
+    }
+
+    /**
+     * Convert YouTube URL to YouTube Embed URL if valid.
+     */
+    public function getYoutubeEmbedUrlAttribute(): ?string
+    {
+        $id = $this->youtube_video_id;
+        return $id ? "https://www.youtube.com/embed/{$id}?rel=0&enablejsapi=1" : null;
+    }
+
+    /**
+     * Direct YouTube watch link (fallback).
+     */
+    public function getYoutubeWatchUrlAttribute(): ?string
+    {
+        $id = $this->youtube_video_id;
+        return $id ? "https://www.youtube.com/watch?v={$id}" : (trim($this->video_url) ?: null);
+    }
 
     public function returnTemplate(): BelongsTo
     {

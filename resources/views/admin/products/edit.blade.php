@@ -176,6 +176,14 @@
                             <label class="text-xs font-bold text-slate-400 uppercase tracking-widest px-1">Açıklama</label>
                             <textarea name="description" rows="6" class="w-full px-5 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-slate-600 font-medium focus:outline-none focus:ring-4 focus:ring-brand-500/10 focus:border-brand-500 transition-all">{{ old('description', $product->description) }}</textarea>
                         </div>
+
+                        <div class="space-y-2">
+                            <label class="text-xs font-bold text-slate-400 uppercase tracking-widest px-1 flex items-center gap-1.5">
+                                <i class="fab fa-youtube text-red-500 text-sm"></i> YouTube Video Linki (Opsiyonel)
+                            </label>
+                            <input type="url" name="video_url" value="{{ old('video_url', $product->video_url) }}" placeholder="https://www.youtube.com/watch?v=..." class="w-full px-5 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-slate-800 font-medium focus:outline-none focus:ring-4 focus:ring-brand-500/10 focus:border-brand-500 transition-all">
+                            <p class="text-[10px] text-slate-400 px-1">Ürünün tanıtım videosu için YouTube URL adresi ekleyebilirsiniz.</p>
+                        </div>
                     </div>
                 </div>
 
