@@ -86,4 +86,49 @@ class Order extends Model
 
         return $map[$status] ?? ucfirst($status);
     }
+
+    /**
+     * Format any phone number into 0(XXX) - XXX - XX-XX format.
+     */
+    public static function formatPhoneNumber(?string $phone): ?string
+    {
+        if (empty($phone)) {
+            return null;
+        }
+
+        // Clean non-digits
+        $digits = preg_replace('/[^0-9]/', '', $phone);
+
+        // Normalize country codes & leading zeros
+        if (str_starts_with($digits, '0090') && strlen($digits) === 14) {
+            $digits = substr($digits, 4);
+        } elseif (str_starts_with($digits, '090') && strlen($digits) === 13) {
+            $digits = substr($digits, 3);
+        } elseif (str_starts_with($digits, '90') && strlen($digits) === 12) {
+            $digits = substr($digits, 2);
+        }
+
+        if (str_starts_with($digits, '0') && strlen($digits) === 11) {
+            $digits = substr($digits, 1);
+        }
+
+        if (strlen($digits) === 10) {
+            $area = substr($digits, 0, 3);
+            $prefix = substr($digits, 3, 3);
+            $part1 = substr($digits, 6, 2);
+            $part2 = substr($digits, 8, 2);
+
+            return "0({$area}) - {$prefix} - {$part1}-{$part2}";
+        }
+
+        return trim($phone);
+    }
+
+    /**
+     * Accessor for formatted customer phone number.
+     */
+    public function getFormattedCustomerPhoneAttribute(): ?string
+    {
+        return self::formatPhoneNumber($this->customer_phone);
+    }
 }

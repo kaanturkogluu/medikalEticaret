@@ -159,7 +159,7 @@
                                     <i class="fas fa-envelope text-slate-400 w-4"></i> {{ $customer->customer_email }}
                                 </div>
                                 <div class="text-slate-600 flex items-center gap-2 mt-1">
-                                    <i class="fas fa-phone text-slate-400 w-4"></i> {{ $customer->customer_phone ?? '-' }}
+                                    <i class="fas fa-phone text-slate-400 w-4"></i> {{ $customer->customer_phone ? \App\Models\Order::formatPhoneNumber($customer->customer_phone) : '-' }}
                                 </div>
                             </td>
                             <td class="px-6 py-4 text-center">

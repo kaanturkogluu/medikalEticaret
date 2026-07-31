@@ -128,7 +128,7 @@
                         </div>
                         <div>
                             <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Telefon</span>
-                            <span class="text-sm font-medium text-slate-700">{{ $order->customer_phone ?? '-' }}</span>
+                            <span class="text-sm font-medium text-slate-700">{{ $order->formatted_customer_phone ?? '-' }}</span>
                         </div>
                     </div>
                 </div>
