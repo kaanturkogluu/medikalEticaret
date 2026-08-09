@@ -253,9 +253,6 @@
                             </td>
                             <td class="px-6 py-4 text-right">
                                 <div class="flex items-center justify-end gap-1.5 lg:opacity-0 lg:group-hover:opacity-100 opacity-100 transition-opacity">
-                                     <a :href="'/admin/products/' + p.id + '/print-barcode'" target="_blank" class="p-2 bg-white border border-slate-200 rounded-lg hover:bg-slate-900 hover:text-white transition-all shadow-sm" title="Barkod Yazdır (58x40)">
-                                         <i class="fas fa-barcode text-sm"></i>
-                                     </a>
                                      <a :href="'/admin/products/' + p.id + '/edit'" class="p-2 bg-white border border-slate-200 rounded-lg hover:bg-brand-50 hover:border-brand-500 hover:text-brand-600 transition-all shadow-sm">
                                          <i class="fas fa-edit text-sm"></i>
                                      </a>
