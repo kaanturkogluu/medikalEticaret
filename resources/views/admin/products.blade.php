@@ -7,6 +7,11 @@
     marketplaceFilter: 'all',
     syncing: null,
     products: {{ $products->getCollection()->toJson() }},
+    priceModalOpen: false,
+    stockModalOpen: false,
+    editingProduct: null,
+    tempPrice: 0,
+    tempStock: 0,
     filteredProducts() {
         return this.products.filter(p => {
             const matchesSearch = p.name.toLowerCase().includes(this.searchTerm.toLowerCase()) || (p.sku && p.sku.toLowerCase().includes(this.searchTerm.toLowerCase()));
@@ -37,6 +42,83 @@
                 notify('success', data.message);
             }
         });
+    },
+    openPriceModal(product) {
+        this.editingProduct = product;
+        this.tempPrice = product.price;
+        this.priceModalOpen = true;
+    },
+    savePrice() {
+        if (!this.editingProduct) return;
+        fetch(`/admin/products/${this.editingProduct.id}/update-price`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ price: this.tempPrice })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                this.editingProduct.price = data.price;
+                this.priceModalOpen = false;
+                notify('success', data.message);
+            } else if (data.message) {
+                notify('error', data.message);
+            }
+        })
+        .catch(err => notify('error', 'Fiyat güncellenirken bir hata oluştu.'));
+    },
+    openStockModal(product) {
+        this.editingProduct = product;
+        this.tempStock = product.stock;
+        this.stockModalOpen = true;
+    },
+    saveStock() {
+        if (!this.editingProduct) return;
+        fetch(`/admin/products/${this.editingProduct.id}/update-stock`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ stock: this.tempStock })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                this.editingProduct.stock = data.stock;
+                this.editingProduct.active = data.active;
+                this.stockModalOpen = false;
+                notify('success', data.message);
+            } else if (data.message) {
+                notify('error', data.message);
+            }
+        })
+        .catch(err => notify('error', 'Stok güncellenirken bir hata oluştu.'));
+    },
+    toggleActive(product) {
+        fetch(`/admin/products/${product.id}/toggle-active`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                product.active = data.active;
+                notify('success', data.message);
+            } else if (data.message) {
+                notify('error', data.message);
+            }
+        })
+        .catch(err => notify('error', 'Durum güncellenirken bir hata oluştu.'));
     },
     deleteProduct(id) {
         if (!confirm('Bu ürünü silmek istediğinize emin misiniz?')) return;
@@ -110,8 +192,7 @@
                     <tr>
                         <th class="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest border-b border-slate-100">Ürün Bilgisi</th>
                         <th class="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest border-b border-slate-100">Fiyat & Stok</th>
-                        <th class="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest border-b border-slate-100">Bağlı Kanallar</th>
-                        <th class="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest border-b border-slate-100">Durum</th>
+                        <th class="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest border-b border-slate-100">Satış Durumu</th>
                         <th class="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest border-b border-slate-100 text-right">İşlemler</th>
                     </tr>
                 </thead>
@@ -148,40 +229,27 @@
                                 </div>
                             </td>
                             <td class="px-6 py-4">
-                                <div class="flex flex-col gap-1">
-                                    <div class="flex items-center gap-2">
-                                        <i class="fas fa-tag text-[10px] text-slate-400"></i>
-                                        <span class="text-sm font-bold text-slate-900 tabular-nums" x-text="p.price ? p.price.toFixed(2) + ' ₺' : '0.00 ₺'"></span>
-                                    </div>
-                                    <div class="flex items-center gap-2">
-                                        <i class="fas fa-boxes text-[10px] text-slate-400"></i>
-                                        <span :class="p.stock > 0 ? 'text-slate-600' : 'text-red-500'" class="text-xs font-bold tabular-nums" x-text="p.stock + ' Adet'"></span>
-                                    </div>
+                                <div class="flex flex-col gap-1.5">
+                                    <button type="button" @click="openPriceModal(p)" class="inline-flex items-center gap-2 px-2.5 py-1 bg-slate-50 hover:bg-emerald-50 border border-slate-200 hover:border-emerald-300 rounded-lg transition-all text-left w-fit cursor-pointer group/btn" title="Fiyatı Değiştir">
+                                        <i class="fas fa-tag text-[10px] text-slate-400 group-hover/btn:text-emerald-600 transition-colors"></i>
+                                        <span class="text-xs font-bold text-slate-900 group-hover/btn:text-emerald-700 tabular-nums" x-text="p.price ? p.price.toFixed(2) + ' ₺' : '0.00 ₺'"></span>
+                                        <i class="fas fa-pencil-alt text-[9px] text-slate-300 group-hover/btn:text-emerald-500 ml-1"></i>
+                                    </button>
+                                    <button type="button" @click="openStockModal(p)" class="inline-flex items-center gap-2 px-2.5 py-1 bg-slate-50 hover:bg-brand-50 border border-slate-200 hover:border-brand-300 rounded-lg transition-all text-left w-fit cursor-pointer group/btn" title="Stoku Değiştir">
+                                        <i class="fas fa-boxes text-[10px] text-slate-400 group-hover/btn:text-brand-600 transition-colors"></i>
+                                        <span :class="p.stock > 0 ? 'text-slate-600 group-hover/btn:text-brand-700' : 'text-red-500 font-extrabold'" class="text-xs font-bold tabular-nums" x-text="p.stock + ' Adet'"></span>
+                                        <i class="fas fa-pencil-alt text-[9px] text-slate-300 group-hover/btn:text-brand-500 ml-1"></i>
+                                    </button>
                                 </div>
                             </td>
                             <td class="px-6 py-4">
-                                <div class="flex flex-wrap gap-1.5 max-w-[150px]">
-                                    <template x-for="m in p.marketplaces">
-                                        <span class="text-[9px] px-2 py-0.5 rounded-full border border-slate-200 bg-white font-bold text-slate-600 shadow-sm" x-text="m"></span>
-                                    </template>
-                                    <template x-if="!p.marketplaces || p.marketplaces.length === 0">
-                                        <span class="text-[9px] text-slate-400 italic">Kanal Yok</span>
-                                    </template>
-                                </div>
-                            </td>
-                            <td class="px-6 py-4">
-                                <div class="flex items-center gap-2">
-                                    <span :class="{
-                                        'bg-emerald-500': p.status === 'synced',
-                                        'bg-amber-500': p.status === 'pending',
-                                        'bg-red-500': p.status === 'error'
-                                    }" class="h-2 w-2 rounded-full"></span>
-                                    <span :class="{
-                                        'text-emerald-600': p.status === 'synced',
-                                        'text-amber-600': p.status === 'pending',
-                                        'text-red-600': p.status === 'error'
-                                    }" class="text-[10px] font-extrabold uppercase tracking-widest" x-text="p.status"></span>
-                                </div>
+                                <button type="button" @click="toggleActive(p)"
+                                        :class="p.active ? 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100' : 'bg-red-50 text-red-700 border-red-200 hover:bg-red-100'"
+                                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-bold transition-all shadow-sm cursor-pointer"
+                                        :title="p.active ? 'Satışa kapatmak için tıklayın' : 'Satışa açmak için tıklayın'">
+                                    <span :class="p.active ? 'bg-emerald-500 animate-pulse' : 'bg-red-500'" class="w-2 h-2 rounded-full"></span>
+                                    <span x-text="p.active ? 'Satışa Açık' : 'Satışa Kapalı'"></span>
+                                </button>
                             </td>
                             <td class="px-6 py-4 text-right">
                                 <div class="flex items-center justify-end gap-1.5 lg:opacity-0 lg:group-hover:opacity-100 opacity-100 transition-opacity">
@@ -205,6 +273,134 @@
             <p>Sistemde toplam <span class="text-slate-800">{{ $products->total() }}</span> ürün kayıtlı</p>
             <div class="pagination-container">
                 {{ $products->links() }}
+            </div>
+        </div>
+    </div>
+
+    <!-- Price Update Modal -->
+    <div x-show="priceModalOpen" 
+         x-cloak
+         class="fixed inset-0 z-[100] overflow-y-auto" 
+         style="display: none;" 
+         role="dialog" 
+         aria-modal="true">
+        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+            <div x-show="priceModalOpen" 
+                 x-transition:enter="ease-out duration-300" 
+                 x-transition:enter-start="opacity-0" 
+                 x-transition:enter-end="opacity-100" 
+                 x-transition:leave="ease-in duration-200" 
+                 x-transition:leave-start="opacity-100" 
+                 x-transition:leave-end="opacity-0" 
+                 class="fixed inset-0 transition-opacity bg-slate-900/50 backdrop-blur-sm" 
+                 @click="priceModalOpen = false"></div>
+
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+            <div x-show="priceModalOpen" 
+                 x-transition:enter="ease-out duration-300" 
+                 x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" 
+                 x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" 
+                 x-transition:leave="ease-in duration-200" 
+                 x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" 
+                 x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" 
+                 class="inline-block w-full max-w-md p-6 my-8 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl relative">
+                 
+                <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 shadow-sm">
+                            <i class="fas fa-tag text-sm"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-base font-bold text-slate-800">Fiyat Güncelle</h3>
+                            <p class="text-xs text-slate-400 truncate max-w-[240px]" x-text="editingProduct ? editingProduct.name : ''"></p>
+                        </div>
+                    </div>
+                    <button type="button" @click="priceModalOpen = false" class="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+
+                <form @submit.prevent="savePrice()" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1.5">Yeni Fiyat (₺)</label>
+                        <div class="relative">
+                            <input type="number" step="0.01" min="0" x-model="tempPrice" required autofocus class="w-full pl-4 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all">
+                            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-sm font-bold text-slate-400">₺</span>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end gap-2 pt-3 border-t border-slate-100">
+                        <button type="button" @click="priceModalOpen = false" class="px-4 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-50 transition-colors">İptal</button>
+                        <button type="submit" class="px-5 py-2 bg-emerald-600 text-white rounded-xl text-xs font-bold hover:bg-emerald-700 shadow-md shadow-emerald-500/20 transition-all flex items-center gap-1.5">
+                            <i class="fas fa-check text-[10px]"></i> Güncelle
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stock Update Modal -->
+    <div x-show="stockModalOpen" 
+         x-cloak
+         class="fixed inset-0 z-[100] overflow-y-auto" 
+         style="display: none;" 
+         role="dialog" 
+         aria-modal="true">
+        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+            <div x-show="stockModalOpen" 
+                 x-transition:enter="ease-out duration-300" 
+                 x-transition:enter-start="opacity-0" 
+                 x-transition:enter-end="opacity-100" 
+                 x-transition:leave="ease-in duration-200" 
+                 x-transition:leave-start="opacity-100" 
+                 x-transition:leave-end="opacity-0" 
+                 class="fixed inset-0 transition-opacity bg-slate-900/50 backdrop-blur-sm" 
+                 @click="stockModalOpen = false"></div>
+
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+            <div x-show="stockModalOpen" 
+                 x-transition:enter="ease-out duration-300" 
+                 x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" 
+                 x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" 
+                 x-transition:leave="ease-in duration-200" 
+                 x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" 
+                 x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" 
+                 class="inline-block w-full max-w-md p-6 my-8 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl relative">
+                 
+                <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-xl bg-brand-50 border border-brand-100 flex items-center justify-center text-brand-600 shadow-sm">
+                            <i class="fas fa-boxes text-sm"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-base font-bold text-slate-800">Stok Güncelle</h3>
+                            <p class="text-xs text-slate-400 truncate max-w-[240px]" x-text="editingProduct ? editingProduct.name : ''"></p>
+                        </div>
+                    </div>
+                    <button type="button" @click="stockModalOpen = false" class="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+
+                <form @submit.prevent="saveStock()" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1.5">Yeni Stok Miktarı</label>
+                        <div class="relative">
+                            <input type="number" step="1" min="0" x-model="tempStock" required autofocus class="w-full pl-4 pr-14 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all">
+                            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400 uppercase">Adet</span>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end gap-2 pt-3 border-t border-slate-100">
+                        <button type="button" @click="stockModalOpen = false" class="px-4 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-50 transition-colors">İptal</button>
+                        <button type="submit" class="px-5 py-2 bg-slate-900 text-white rounded-xl text-xs font-bold hover:bg-slate-800 shadow-md shadow-slate-900/20 transition-all flex items-center gap-1.5">
+                            <i class="fas fa-check text-[10px]"></i> Güncelle
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

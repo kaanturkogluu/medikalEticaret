@@ -11,8 +11,8 @@ Siparişiniz kargoya verildi! Paketiniz yola çıktı ve en kısa sürede size u
 Kargomu Takip Et
 </x-mail::button>
 
-Sipariş detaylarınızı incelemek için web sitemizi ziyaret edebilirsiniz.
+Sipariş detaylarınızı incelemek için umutmedikalmaket.com web sitemizi ziyaret edebilirsiniz.
 
 Teşekkürler,<br>
-{{ config('app.name') }}
+umutmedikalmaket.com
 </x-mail::message>

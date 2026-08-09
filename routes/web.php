@@ -97,6 +97,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::put('/products/{product:id}', [\App\Http\Controllers\Admin\ProductController::class, 'update'])->name('admin.products.update');
     Route::delete('/products/{product:id}/delete', [\App\Http\Controllers\Admin\ProductController::class, 'destroy'])->name('admin.products.destroy');
     Route::post('/products/{product:id}/toggle-popular', [\App\Http\Controllers\Admin\ProductController::class, 'togglePopular'])->name('admin.products.toggle-popular');
+    Route::post('/products/{product:id}/update-price', [\App\Http\Controllers\Admin\ProductController::class, 'updatePrice'])->name('admin.products.update-price');
+    Route::post('/products/{product:id}/update-stock', [\App\Http\Controllers\Admin\ProductController::class, 'updateStock'])->name('admin.products.update-stock');
+    Route::post('/products/{product:id}/toggle-active', [\App\Http\Controllers\Admin\ProductController::class, 'toggleActive'])->name('admin.products.toggle-active');
     Route::get('/products/{product}/print-barcode', [\App\Http\Controllers\Admin\ProductController::class, 'printBarcode'])->name('admin.products.print-barcode');
     Route::get('/orders', [\App\Http\Controllers\Admin\OrderController::class, 'index'])->name('admin.orders');
     Route::post('/orders/sync', [\App\Http\Controllers\Admin\OrderController::class, 'sync'])->name('admin.orders.sync');

@@ -42,6 +42,7 @@ class ProductController extends Controller
                 'barcode' => $product->barcode,
                 'price' => (float)$product->price,
                 'stock' => (int)$product->stock,
+                'active' => (bool)$product->active,
                 'status' => 'synced', // simplified for now
                 'is_popular' => (bool)$product->is_popular,
                 'marketplaces' => $product->channelProducts->map(fn($cp) => $cp->channel->name)->toArray(),
@@ -149,6 +150,61 @@ class ProductController extends Controller
             'success' => true,
             'is_popular' => $product->is_popular,
             'message' => $product->is_popular ? 'Ürün popüler ürünlere eklendi.' : 'Ürün popüler ürünlerden çıkarıldı.'
+        ]);
+    }
+
+    public function updatePrice(Request $request, Product $product)
+    {
+        $request->validate([
+            'price' => 'required|numeric|min:0',
+        ]);
+
+        $product->price = $request->price;
+        $product->save();
+
+        return response()->json([
+            'success' => true,
+            'price' => (float)$product->price,
+            'message' => 'Ürün fiyatı başarıyla güncellendi.'
+        ]);
+    }
+
+    public function updateStock(Request $request, Product $product)
+    {
+        $request->validate([
+            'stock' => 'required|integer|min:0',
+        ]);
+
+        $product->stock = $request->stock;
+        $product->save();
+
+        return response()->json([
+            'success' => true,
+            'stock' => (int)$product->stock,
+            'active' => (bool)$product->active,
+            'message' => 'Ürün stoğu başarıyla güncellendi.'
+        ]);
+    }
+
+    public function toggleActive(Request $request, Product $product)
+    {
+        $newStatus = $request->has('active') ? filter_var($request->active, FILTER_VALIDATE_BOOLEAN) : !$product->active;
+        
+        if ($newStatus && $product->stock <= 0) {
+            return response()->json([
+                'success' => false,
+                'active' => false,
+                'message' => 'Stok 0 veya altında olduğu için ürün satışa açılamaz. Lütfen önce stoğu güncelleyin.'
+            ], 422);
+        }
+
+        $product->active = $newStatus;
+        $product->save();
+
+        return response()->json([
+            'success' => true,
+            'active' => (bool)$product->active,
+            'message' => $product->active ? 'Ürün satışa açıldı.' : 'Ürün satışa kapatıldı.'
         ]);
     }
 

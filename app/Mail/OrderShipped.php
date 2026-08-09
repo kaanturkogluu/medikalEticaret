@@ -24,7 +24,7 @@ class OrderShipped extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Siparişiniz Kargoya Verildi - ' . $this->order->id,
+            subject: 'Siparişiniz Kargoya Verildi - umutmedikalmaket.com (#' . $this->order->id . ')',
         );
     }
 
