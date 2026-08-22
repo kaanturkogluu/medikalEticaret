@@ -35,7 +35,7 @@ class RandomizeProductViews extends Command
 
         foreach ($products as $product) {
             $product->update([
-                'views' => rand(0, 1000)
+                'views' => rand(1000, 5000)
             ]);
             $bar->advance();
         }
