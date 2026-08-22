@@ -229,7 +229,7 @@
                         </div>
                         
                         @if($product->stock > 0)
-                            <button @click="$store.cart.add({id: '{{ $product->id }}', slug: '{{ $product->slug }}', name: '{{ addslashes($product->name) }}', brand: '{{ addslashes($product->brand->name ?? '') }}', price: {{ $product->price }}, category_id: '{{ $product->category_id }}', image: '{{ $img }}', free_shipping: {{ $product->free_shipping ? 'true' : 'false' }}})" class="w-full mt-3 py-2 bg-slate-900 text-white text-[11px] font-black rounded hover:bg-slate-800 transition-colors uppercase tracking-widest">
+                            <button @click="$store.cart.add({id: '{{ $product->id }}', slug: '{{ $product->slug }}', name: '{{ addslashes($product->name) }}', brand: '{{ addslashes($product->brand->name ?? '') }}', price: {{ $product->price }}, category_id: '{{ $product->category_id }}', image: '{{ $img }}', free_shipping: {{ $product->free_shipping ? 'true' : 'false' }}, eft_discount: {{ $product->eft_discount ? 'true' : 'false' }}})" class="w-full mt-3 py-2 bg-slate-900 text-white text-[11px] font-black rounded hover:bg-slate-800 transition-colors uppercase tracking-widest">
                                 Sepete Ekle
                             </button>
                         @else
@@ -443,12 +443,14 @@
                                     <div class="text-[10px] text-gray-400 line-through font-bold opacity-60">{{ number_format($product->price * 1.2, 2) }} TL</div>
                                     <div class="flex items-center justify-between">
                                         <div class="text-[var(--primary-color)] font-black text-base">{{ number_format($product->price, 2) }} TL</div>
+                                        @if($product->eft_discount)
                                         <div class="text-[9px] font-black text-green-600 bg-green-50 px-1.5 py-0.5 rounded tracking-tighter uppercase italic">EFT -%5</div>
+                                        @endif
                                     </div>
                                 </div>
                                 
                                 @if($product->stock > 0)
-                                    <button @click="$store.cart.add({id: '{{ $product->id }}', slug: '{{ $product->slug }}', name: '{{ addslashes($product->name) }}', brand: '{{ addslashes($product->brand->name ?? '') }}', price: {{ $product->price }}, category_id: '{{ $product->category_id }}', image: '{{ $img }}', free_shipping: {{ $product->free_shipping ? 'true' : 'false' }}})" class="w-full mt-3 py-2 bg-slate-900 text-white text-[11px] font-black rounded hover:bg-slate-800 transition-colors uppercase tracking-widest">
+                                    <button @click="$store.cart.add({id: '{{ $product->id }}', slug: '{{ $product->slug }}', name: '{{ addslashes($product->name) }}', brand: '{{ addslashes($product->brand->name ?? '') }}', price: {{ $product->price }}, category_id: '{{ $product->category_id }}', image: '{{ $img }}', free_shipping: {{ $product->free_shipping ? 'true' : 'false' }}, eft_discount: {{ $product->eft_discount ? 'true' : 'false' }}})" class="w-full mt-3 py-2 bg-slate-900 text-white text-[11px] font-black rounded hover:bg-slate-800 transition-colors uppercase tracking-widest">
                                         Sepete Ekle
                                     </button>
                                 @else
@@ -541,7 +543,7 @@
                         </div>
                         
                         @if($product->stock > 0)
-                            <button @click="$store.cart.add({id: '{{ $product->id }}', slug: '{{ $product->slug }}', name: '{{ addslashes($product->name) }}', brand: '{{ addslashes($product->brand->name ?? '') }}', price: {{ $product->price }}, category_id: '{{ $product->category_id }}', image: '{{ $img }}', free_shipping: {{ $product->free_shipping ? 'true' : 'false' }}})" class="w-full mt-3 py-1.5 bg-slate-900 text-white text-[10px] font-black rounded hover:bg-slate-800 transition-colors uppercase tracking-widest">
+                            <button @click="$store.cart.add({id: '{{ $product->id }}', slug: '{{ $product->slug }}', name: '{{ addslashes($product->name) }}', brand: '{{ addslashes($product->brand->name ?? '') }}', price: {{ $product->price }}, category_id: '{{ $product->category_id }}', image: '{{ $img }}', free_shipping: {{ $product->free_shipping ? 'true' : 'false' }}, eft_discount: {{ $product->eft_discount ? 'true' : 'false' }}})" class="w-full mt-3 py-1.5 bg-slate-900 text-white text-[10px] font-black rounded hover:bg-slate-800 transition-colors uppercase tracking-widest">
                                 Sepete Ekle
                             </button>
                         @else

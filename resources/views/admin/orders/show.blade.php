@@ -366,12 +366,15 @@
                                     <td class="px-6 py-4 text-center font-bold text-slate-900 tabular-nums">{{ $item->quantity }}</td>
                                     <td class="px-6 py-4 text-right text-xs font-bold text-slate-700 tabular-nums">{{ number_format($item->price, 2, ',', '.') }} ₺</td>
                                     <td class="px-6 py-4 text-right text-xs font-bold text-red-500 tabular-nums">
-                                        {{ $order->payment_method === 'eft' ? number_format($item->price * $item->quantity * 0.05, 2, ',', '.') . ' ₺' : '0,00 ₺' }}
+                                        @php
+                                            $hasEftDiscount = $order->payment_method === 'eft' && $item->product && $item->product->eft_discount;
+                                        @endphp
+                                        {{ $hasEftDiscount ? number_format($item->price * $item->quantity * 0.05, 2, ',', '.') . ' ₺' : '0,00 ₺' }}
                                     </td>
                                     <td class="px-6 py-4 text-right text-sm font-black text-slate-900 tabular-nums">
                                         @php
                                             $lineTotal = $item->price * $item->quantity;
-                                            if ($order->payment_method === 'eft') {
+                                            if ($hasEftDiscount) {
                                                 $lineTotal *= 0.95;
                                             }
                                         @endphp

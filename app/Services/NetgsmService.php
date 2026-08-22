@@ -13,9 +13,9 @@ class NetgsmService
 
     public function __construct()
     {
-        $this->usercode = config('services.netgsm.usercode');
-        $this->password = config('services.netgsm.password');
-        $this->header   = config('services.netgsm.header');
+        $this->usercode = config('services.netgsm.usercode') ?? '';
+        $this->password = config('services.netgsm.password') ?? '';
+        $this->header   = config('services.netgsm.header')   ?? '';
     }
 
     public function sendSms(string|array $phoneNumbers, string $message, string $type = 'Diğer', string|array|null $customerNames = null): array

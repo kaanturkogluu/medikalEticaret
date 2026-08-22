@@ -253,6 +253,16 @@
                                     </div>
                                     <input type="checkbox" name="free_shipping" value="1" {{ old('free_shipping') ? 'checked' : '' }} class="h-5 w-5 rounded-md border-blue-300 text-blue-600 focus:ring-blue-500 cursor-pointer">
                                 </div>
+                                <div class="flex items-center justify-between p-4 bg-green-50 text-green-700 rounded-2xl border border-green-100">
+                                    <div class="flex items-center gap-3">
+                                        <i class="fas fa-percent text-xs"></i>
+                                        <div>
+                                            <p class="text-[11px] font-bold uppercase tracking-widest italic">EFT İNDİRİMLİ</p>
+                                            <p class="text-[10px] text-green-500 mt-0.5">EFT ödemede %5 indirim uygulanır</p>
+                                        </div>
+                                    </div>
+                                    <input type="checkbox" name="eft_discount" value="1" {{ old('eft_discount') ? 'checked' : '' }} class="h-5 w-5 rounded-md border-green-300 text-green-600 focus:ring-green-500 cursor-pointer">
+                                </div>
                             </div>
                         </div>
                     </div>

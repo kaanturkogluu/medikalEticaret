@@ -294,7 +294,7 @@
                             <span>Med Puan İndirimi</span>
                             <span x-text="'-' + (appliedPoints * medPuanRate).toFixed(2) + ' TL'"></span>
                         </div>
-                        <div x-show="form.payment_method === 'eft'" x-cloak class="flex justify-between text-green-600 bg-green-50 px-3 py-2 rounded-xl border border-green-100">
+                        <div x-show="form.payment_method === 'eft' && calculateEftDiscount() > 0" x-cloak class="flex justify-between text-green-600 bg-green-50 px-3 py-2 rounded-xl border border-green-100">
                             <span>Havale/EFT İndirimi (%5)</span>
                             <span x-text="'-' + calculateEftDiscount().toFixed(2) + ' TL'"></span>
                         </div>
@@ -522,8 +522,14 @@ function checkoutPage() {
         },
         calculateEftDiscount() {
             if (!this.cart) return 0;
-            let baseAmount = Math.max(0, this.cart.subtotal() - this.calculateCouponDiscount() - (this.appliedPoints * this.medPuanRate));
-            return baseAmount * 0.05;
+            if (this.form.payment_method !== 'eft') return 0;
+            let discount = 0;
+            this.cart.items.forEach(item => {
+                if (item.eft_discount) {
+                    discount += item.price * item.qty * 0.05;
+                }
+            });
+            return discount;
         },
         async applyCoupon() {
             if (!this.couponCode) return;
@@ -708,10 +714,9 @@ function checkoutPage() {
             let pointsDiscount = this.appliedPoints * this.medPuanRate;
             total -= pointsDiscount;
 
-            // EFT Discount
+            // EFT Discount (sadece eft_discount=true olan ürünlere)
             if (this.form.payment_method === 'eft') {
-                let subtotalAfterDiscounts = Math.max(0, this.cart.subtotal() - couponDiscount - pointsDiscount);
-                let eftDiscount = subtotalAfterDiscounts * 0.05;
+                let eftDiscount = this.calculateEftDiscount();
                 total -= eftDiscount;
             }
             return Math.max(0, total).toFixed(2);

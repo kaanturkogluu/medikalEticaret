@@ -107,6 +107,7 @@ class ProductController extends Controller
         $validated['active'] = $request->has('active');
         $validated['is_popular'] = $request->has('is_popular');
         $validated['free_shipping'] = $request->has('free_shipping');
+        $validated['eft_discount'] = $request->has('eft_discount');
         
         // Handle Marketplace URLs
         $validated['raw_marketplace_data'] = [
@@ -257,6 +258,7 @@ class ProductController extends Controller
         $validated['active'] = $request->has('active');
         $validated['is_popular'] = $request->has('is_popular');
         $validated['free_shipping'] = $request->has('free_shipping');
+        $validated['eft_discount'] = $request->has('eft_discount');
 
         // Handle Marketplace URLs
         $raw = $product->raw_marketplace_data ?? [];

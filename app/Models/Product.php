@@ -13,7 +13,7 @@ class Product extends Model
 
     protected $fillable = [
         'parent_id', 'variant_key', 'brand_id', 'category_id', 'return_template_id', 'sku', 'barcode', 'name', 'slug',
-        'brand_name', 'category_name', 'description', 'video_url', 'price', 'stock', 'active', 'is_popular', 'free_shipping',
+        'brand_name', 'category_name', 'description', 'video_url', 'price', 'stock', 'active', 'is_popular', 'free_shipping', 'eft_discount',
         'attributes', 'raw_marketplace_data', 'marketplace_status', 'marketplace',
         'external_id', 'platform_listing_id', 'product_content_id', 'supplier_id',
         'views'
@@ -96,6 +96,7 @@ class Product extends Model
         'active' => 'boolean',
         'is_popular' => 'boolean',
         'free_shipping' => 'boolean',
+        'eft_discount' => 'boolean',
         'attributes' => 'array',
         'raw_marketplace_data' => 'array'
     ];

@@ -157,7 +157,7 @@
                     </div>
                     @php $imgArr = $product->productImages->first()?->url ?? 'https://via.placeholder.com/600x900'; @endphp
                     @if($product->stock > 0)
-                        <button @click="$store.cart.add({id: '{{ $product->id }}', slug: '{{ $product->slug }}', name: '{{ addslashes($product->name) }}', brand: '{{ addslashes($product->brand->name ?? '') }}', price: {{ $product->price }}, category_id: '{{ $product->category_id }}', image: '{{ $imgArr }}', free_shipping: {{ $product->free_shipping ? 'true' : 'false' }}})" 
+                        <button @click="$store.cart.add({id: '{{ $product->id }}', slug: '{{ $product->slug }}', name: '{{ addslashes($product->name) }}', brand: '{{ addslashes($product->brand->name ?? '') }}', price: {{ $product->price }}, category_id: '{{ $product->category_id }}', image: '{{ $imgArr }}', free_shipping: {{ $product->free_shipping ? 'true' : 'false' }}, eft_discount: {{ $product->eft_discount ? 'true' : 'false' }}})" 
                                 class="flex-grow h-20 bg-slate-900 text-white text-xl font-black rounded-3xl shadow-xl shadow-slate-100 hover:bg-orange-600 hover:shadow-orange-100 transition-all flex items-center justify-center gap-4 group active:scale-95">
                             <i class="fas fa-shopping-basket group-hover:rotate-12 transition-transform"></i>
                             <span>SEPETE EKLE</span>
@@ -569,7 +569,7 @@
                         
                         <!-- Quick Add -->
                         @if($rp->stock > 0)
-                            <button @click="$store.cart.add({id: '{{ $rp->id }}', slug: '{{ $rp->slug }}', name: '{{ addslashes($rp->name) }}', brand: '{{ addslashes($rp->brand->name ?? '') }}', price: {{ $rp->price }}, category_id: '{{ $rp->category_id }}', image: '{{ $rp->productImages->first()?->url ?? '' }}', free_shipping: {{ $rp->free_shipping ? 'true' : 'false' }}})" 
+                            <button @click="$store.cart.add({id: '{{ $rp->id }}', slug: '{{ $rp->slug }}', name: '{{ addslashes($rp->name) }}', brand: '{{ addslashes($rp->brand->name ?? '') }}', price: {{ $rp->price }}, category_id: '{{ $rp->category_id }}', image: '{{ $rp->productImages->first()?->url ?? '' }}', free_shipping: {{ $rp->free_shipping ? 'true' : 'false' }}, eft_discount: {{ $rp->eft_discount ? 'true' : 'false' }}})" 
                                     class="absolute top-4 right-4 bg-slate-900 text-white w-12 h-12 rounded-2xl flex items-center justify-center opacity-0 translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all shadow-xl hover:bg-orange-500 hover:scale-110 active:scale-95 z-30">
                                 <i class="fas fa-cart-plus text-lg"></i>
                             </button>

@@ -232,7 +232,8 @@ class CheckoutController extends Controller
                         'product_id' => $product->id,
                         'quantity' => $qty,
                         'price' => $price,
-                        'name' => $product->name
+                        'name' => $product->name,
+                        'eft_discount' => (bool) $product->eft_discount,
                     ];
                 }
 
@@ -265,10 +266,14 @@ class CheckoutController extends Controller
                 $total = $subtotal + $shipping - $couponDiscount - $usedPointsDiscount;
                 if ($total < 0) $total = 0;
 
-                // EFT İndirimi (%5) - Kupon ve Puan sonrası tutar üzerinden
+                // EFT İndirimi (%5) - Sadece eft_discount=true olan ürünlere uygulanır
                 $eftDiscount = 0;
                 if ($validated['payment_method'] === 'eft') {
-                    $eftDiscount = ($subtotal - $couponDiscount - $usedPointsDiscount) * 0.05;
+                    foreach ($items as $item) {
+                        if (!empty($item['eft_discount'])) {
+                            $eftDiscount += $item['price'] * $item['quantity'] * 0.05;
+                        }
+                    }
                     if ($eftDiscount < 0) $eftDiscount = 0;
                     $total -= $eftDiscount;
                 }

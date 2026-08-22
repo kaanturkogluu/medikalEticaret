@@ -113,12 +113,12 @@ class Order extends Model
         }
 
         if (strlen($digits) === 10) {
-            $area = substr($digits, 0, 3);
-            $prefix = substr($digits, 3, 3);
-            $part1 = substr($digits, 6, 2);
-            $part2 = substr($digits, 8, 2);
+            $part1 = substr($digits, 0, 3);
+            $part2 = substr($digits, 3, 3);
+            $part3 = substr($digits, 6, 2);
+            $part4 = substr($digits, 8, 2);
 
-            return "0({$area}) - {$prefix} - {$part1}-{$part2}";
+            return "{$part1} {$part2} {$part3} {$part4}";
         }
 
         return trim($phone);
