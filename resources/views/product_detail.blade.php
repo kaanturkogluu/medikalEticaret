@@ -116,7 +116,9 @@
                                 <span class="text-5xl font-black text-white tracking-tighter">{{ number_format($product->price, 2) }} <span class="text-2xl font-light opacity-80">TL</span></span>
                                 <div class="flex flex-col gap-1">
                                     <div class="bg-orange-500 text-white text-[9px] font-black px-3 py-1 rounded-lg animate-pulse uppercase">-%20 İNDİRİM</div>
+                                    @if($product->eft_discount)
                                     <div class="bg-green-500 text-white text-[9px] font-black px-3 py-1 rounded-lg uppercase whitespace-nowrap">EFT İLE %5 EK İNDİRİM</div>
+                                    @endif
                                 </div>
                             </div>
                         </div>
