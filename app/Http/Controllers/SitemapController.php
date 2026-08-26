@@ -29,4 +29,14 @@ class SitemapController extends Controller
 
         return response()->view('akakce', compact('products'))->header('Content-Type', 'text/xml');
     }
+
+    public function googleMerchant()
+    {
+        $products = Product::with(['category', 'brand', 'images'])
+            ->where('active', 1)
+            ->where('stock', '>', 0)
+            ->get();
+
+        return response()->view('google-merchant', compact('products'))->header('Content-Type', 'text/xml');
+    }
 }
