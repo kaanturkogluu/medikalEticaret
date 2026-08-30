@@ -412,7 +412,21 @@
                     </div>
 
                     <!-- Quantity and Action Buttons -->
-                    @php $imgArr = $product->productImages->first()?->url ?? $mainImage; @endphp
+                    @php 
+                        $imgArr = $product->productImages->first()?->url ?? $mainImage; 
+                        $cartPayload = [
+                            'id' => (string)$product->id,
+                            'slug' => (string)$product->slug,
+                            'name' => (string)$product->name,
+                            'brand' => (string)($product->brand->name ?? ($product->brand_name ?? '')),
+                            'price' => (float)$product->price,
+                            'category_id' => (string)($product->category_id ?? ''),
+                            'image' => (string)$imgArr,
+                            'free_shipping' => (bool)$product->free_shipping,
+                            'eft_discount' => (bool)$product->eft_discount,
+                            'sku' => (string)($product->sku ?? ''),
+                        ];
+                    @endphp
                     <div class="pt-2 space-y-3">
                         
                         <div class="flex flex-col sm:flex-row gap-3">
@@ -433,7 +447,7 @@
 
                                 <!-- Add to cart button -->
                                 <button type="button" 
-                                        @click="for(let i=0; i<selectedQty; i++){ $store.cart.add({id: '{{ $product->id }}', slug: '{{ $product->slug }}', name: '{{ addslashes($product->name) }}', brand: '{{ addslashes($product->brand->name ?? '') }}', price: {{ $product->price }}, category_id: '{{ $product->category_id }}', image: '{{ $imgArr }}', free_shipping: {{ $product->free_shipping ? 'true' : 'false' }}, eft_discount: {{ $product->eft_discount ? 'true' : 'false' }}}) }" 
+                                        @click="$store.cart.add({{ json_encode($cartPayload) }}, selectedQty)" 
                                         class="flex-grow h-14 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-base rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-3 active:scale-[0.98]">
                                     <i class="fas fa-shopping-basket text-lg"></i>
                                     <span>SEPETE EKLE</span>
@@ -447,7 +461,7 @@
 
                             <!-- Favorite button -->
                             <button type="button" 
-                                    @click="$store.fav.toggle({id: '{{ $product->id }}', slug: '{{ $product->slug }}', name: '{{ addslashes($product->name) }}', brand: '{{ addslashes($product->brand->name ?? '') }}', price: {{ $product->price }}, category_id: '{{ $product->category_id }}', image: '{{ $imgArr }}', free_shipping: {{ $product->free_shipping ? 'true' : 'false' }}})" 
+                                    @click="$store.fav.toggle({{ json_encode($cartPayload) }})" 
                                     class="h-14 w-full sm:w-14 border-2 border-slate-300 bg-white hover:border-red-300 rounded-xl flex items-center justify-center transition-all shrink-0 active:scale-95"
                                     :class="$store.fav.has('{{ $product->id }}') ? 'text-red-500 border-red-200 bg-red-50' : 'text-slate-400 hover:text-red-500'"
                                     title="Favorilere Ekle">
@@ -459,7 +473,7 @@
                         <!-- Teklif Sepetine Ekle Button (Bulk & Donation Discount Request) -->
                         <div class="pt-1">
                             <button type="button" 
-                                    @click="$store.quote.add({id: '{{ $product->id }}', slug: '{{ $product->slug }}', name: '{{ addslashes($product->name) }}', brand: '{{ addslashes($product->brand->name ?? '') }}', price: {{ $product->price }}, sku: '{{ $product->sku ?? '' }}', image: '{{ $imgArr }}'}, selectedQty)" 
+                                    @click="$store.quote.add({{ json_encode($cartPayload) }}, selectedQty)" 
                                     class="w-full h-12 bg-amber-50 hover:bg-amber-100 border border-amber-300 text-amber-900 font-extrabold text-xs sm:text-sm rounded-xl transition-all flex items-center justify-center gap-2 shadow-2xs hover:shadow-xs active:scale-98">
                                 <i class="fas fa-file-invoice-dollar text-amber-600 text-base"></i>
                                 <span>TEKLİF SEPETİNE EKLE <span class="text-[11px] font-semibold text-amber-700">(Toplu / Bağış İndirimi Talebi)</span></span>
@@ -1257,7 +1271,7 @@
                                 
                                 @if($rp->stock > 0)
                                     <button type="button" 
-                                            @click="$store.cart.add({id: '{{ $rp->id }}', slug: '{{ $rp->slug }}', name: '{{ addslashes($rp->name) }}', brand: '{{ addslashes($rp->brand->name ?? '') }}', price: {{ $rp->price }}, category_id: '{{ $rp->category_id }}', image: '{{ $rp->productImages->first()?->url ?? '' }}', free_shipping: {{ $rp->free_shipping ? 'true' : 'false' }}, eft_discount: {{ $rp->eft_discount ? 'true' : 'false' }}})" 
+                                            @click="$store.cart.add({id: '{{ $rp->id }}', slug: '{{ $rp->slug }}', name: {{ json_encode($rp->name) }}, brand: {{ json_encode($rp->brand->name ?? ($rp->brand_name ?? '')) }}, price: {{ (float)$rp->price }}, category_id: '{{ $rp->category_id }}', image: '{{ $rp->productImages->first()?->url ?? '' }}', free_shipping: {{ $rp->free_shipping ? 'true' : 'false' }}, eft_discount: {{ $rp->eft_discount ? 'true' : 'false' }}})" 
                                             class="w-8 h-8 rounded-lg bg-slate-900 hover:bg-emerald-600 text-white flex items-center justify-center transition-colors shadow-2xs"
                                             title="Sepete Ekle">
                                         <i class="fas fa-cart-plus text-xs"></i>
@@ -1299,7 +1313,7 @@
                     </a>
                     @if($product->stock > 0)
                         <button type="button" 
-                                @click="$store.cart.add({id: '{{ $product->id }}', slug: '{{ $product->slug }}', name: '{{ addslashes($product->name) }}', brand: '{{ addslashes($product->brand->name ?? '') }}', price: {{ $product->price }}, category_id: '{{ $product->category_id }}', image: '{{ $imgArr }}', free_shipping: {{ $product->free_shipping ? 'true' : 'false' }}, eft_discount: {{ $product->eft_discount ? 'true' : 'false' }}})" 
+                                @click="$store.cart.add({{ json_encode($cartPayload) }}, 1)" 
                                 class="px-4 h-10 bg-emerald-600 text-white font-bold text-xs rounded-xl shadow-md flex items-center gap-1.5 active:scale-95">
                             <i class="fas fa-shopping-basket"></i>
                             <span>Sepete Ekle</span>

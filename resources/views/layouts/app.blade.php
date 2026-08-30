@@ -1213,23 +1213,37 @@
                 Alpine.store('cart', {
                     items: JSON.parse(localStorage.getItem('cart_items')) || [],
                     open: false,
-                    add(product) {
-                        const existing = this.items.find(i => i.id === product.id);
+                    add(product, qty = 1) {
+                        const addQty = parseInt(qty) || 1;
+                        const existing = this.items.find(i => String(i.id) === String(product.id));
                         if (existing) {
-                            existing.qty++;
+                            existing.qty += addQty;
                         } else {
-                            this.items.push({ ...product, qty: 1 });
+                            this.items.push({
+                                id: product.id,
+                                slug: product.slug || '',
+                                name: product.name || '',
+                                brand: product.brand || '',
+                                price: parseFloat(product.price) || 0,
+                                category_id: product.category_id || '',
+                                image: product.image || '',
+                                free_shipping: Boolean(product.free_shipping),
+                                eft_discount: Boolean(product.eft_discount),
+                                sku: product.sku || '',
+                                qty: addQty
+                            });
                         }
                         this.save();
                         this.open = true;
+                        if (window.notify) window.notify('success', 'Ürün sepete eklendi!');
                     },
                     increment(id) {
-                        const item = this.items.find(i => i.id === id);
+                        const item = this.items.find(i => String(i.id) === String(id));
                         if (item) item.qty++;
                         this.save();
                     },
                     decrement(id) {
-                        const item = this.items.find(i => i.id === id);
+                        const item = this.items.find(i => String(i.id) === String(id));
                         if (item && item.qty > 1) {
                             item.qty--;
                         } else {
@@ -1238,7 +1252,7 @@
                         this.save();
                     },
                     remove(id) {
-                        this.items = this.items.filter(i => i.id !== id);
+                        this.items = this.items.filter(i => String(i.id) !== String(id));
                         this.save();
                     },
                     subtotal() {

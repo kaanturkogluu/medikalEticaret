@@ -154,7 +154,7 @@ class QuoteController extends Controller
             ]);
         }
 
-        $paymentLink = route('product.detail', ['slug' => $product->slug]);
+        $paymentLink = route('product.show', ['product' => $product->slug]);
 
         $quote->created_product_id = $product->id;
         $quote->custom_payment_link = $paymentLink;
