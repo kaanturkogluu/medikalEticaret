@@ -123,23 +123,44 @@ class QuoteController extends Controller
             'custom_description' => 'nullable|string|max:5000',
         ]);
 
+        $packageItems = $quote->items->map(function ($item) {
+            return [
+                'name' => $item->product_name,
+                'quantity' => $item->quantity,
+                'image' => $item->product_image,
+                'sku' => $item->product_sku,
+            ];
+        })->toArray();
+
         $productName = $request->filled('custom_name') 
             ? $request->custom_name 
             : "Özel Teklif Siparişi - {$quote->customer_name} (#{$quote->quote_no})";
 
-        // Build itemized description
+        $marketplaceData = [
+            'quote_package' => $packageItems,
+            'quote_no' => $quote->quote_no,
+            'customer_name' => $quote->customer_name,
+        ];
+
+        // Build concise, clean itemized description without redundant noise
         if ($request->filled('custom_description')) {
             $description = $request->custom_description;
         } else {
-            $descriptionHtml = "<div class='p-4 bg-emerald-50 rounded-xl border border-emerald-200 mb-4'>";
-            $descriptionHtml .= "<h3 class='font-bold text-emerald-900 text-lg mb-2'>#{$quote->quote_no} Numaralı Özel Teklif Paketi</h3>";
-            $descriptionHtml .= "<p class='text-sm text-emerald-700 mb-3'>Bu sipariş, <strong>{$quote->customer_name}</strong> adına hazırlanan özel fiyatlı pakettir.</p>";
-            $descriptionHtml .= "<h4 class='font-semibold text-slate-800 text-sm mb-2'>Paket İçeriği:</h4><ul class='list-disc pl-5 space-y-1 text-sm text-slate-700'>";
+            $descriptionHtml = "<div class='p-5 bg-slate-50 rounded-2xl border border-slate-200 mb-6'>";
+            $descriptionHtml .= "<div class='flex items-center gap-3 mb-4 pb-3 border-b border-slate-200'>";
+            $descriptionHtml .= "<h3 class='font-black text-slate-900 text-base'>#{$quote->quote_no} Numaralı Özel Teklif Paketi</h3>";
+            $descriptionHtml .= "</div>";
+            $descriptionHtml .= "<h4 class='text-xs font-black text-slate-700 uppercase tracking-wider mb-3'>Paket İçeriğindeki Ürünler:</h4>";
+            $descriptionHtml .= "<div class='space-y-2'>";
             
             foreach ($quote->items as $item) {
-                $descriptionHtml .= "<li><strong>{$item->quantity} Adet</strong> - {$item->product_name}</li>";
+                $imgTag = $item->product_image ? "<img src='{$item->product_image}' class='w-10 h-10 object-contain rounded-lg border border-slate-200 bg-white p-0.5' alt=''>" : "";
+                $descriptionHtml .= "<div class='p-3 bg-white rounded-xl border border-slate-200 flex items-center justify-between gap-3'>";
+                $descriptionHtml .= "<div class='flex items-center gap-3'>{$imgTag}<span class='text-xs font-bold text-slate-900'>{$item->product_name}</span></div>";
+                $descriptionHtml .= "<span class='px-3 py-1 bg-amber-50 text-amber-900 border border-amber-200 rounded-lg text-xs font-black shrink-0'>{$item->quantity} Adet</span>";
+                $descriptionHtml .= "</div>";
             }
-            $descriptionHtml .= "</ul></div>";
+            $descriptionHtml .= "</div></div>";
             $description = $descriptionHtml;
         }
 
@@ -153,6 +174,7 @@ class QuoteController extends Controller
                 'active' => 1,
                 'free_shipping' => 1,
                 'description' => $description,
+                'raw_marketplace_data' => $marketplaceData,
             ]);
         } else {
             $sku = 'OZEL-' . preg_replace('/[^A-Za-z0-9]/', '', $quote->quote_no) . '-' . strtoupper(Str::random(4));
@@ -169,16 +191,20 @@ class QuoteController extends Controller
                 'description' => $description,
                 'brand_name' => 'umutMed Özel Sipariş',
                 'category_name' => 'Özel Teklif Siparişleri',
+                'raw_marketplace_data' => $marketplaceData,
             ]);
 
-            // Link first item's image if available
-            $firstItemWithImage = $quote->items->whereNotNull('product_image')->first();
-            if ($firstItemWithImage && $firstItemWithImage->product_image) {
-                $product->productImages()->create([
-                    'url' => $firstItemWithImage->product_image,
-                    'path' => $firstItemWithImage->product_image,
-                    'is_primary' => 1,
-                ]);
+            // Attach product images from quote items
+            $addedImages = [];
+            foreach ($quote->items as $idx => $item) {
+                if ($item->product_image && !in_array($item->product_image, $addedImages)) {
+                    $product->productImages()->create([
+                        'url' => $item->product_image,
+                        'path' => $item->product_image,
+                        'is_primary' => count($addedImages) === 0 ? 1 : 0,
+                    ]);
+                    $addedImages[] = $item->product_image;
+                }
             }
         }
 

@@ -329,22 +329,42 @@
                     </div>
                 </div>
 
+                @php
+                    $isQuotePackage = str_starts_with($product->sku ?? '', 'OZEL-') || 
+                                      ($product->brand_name === 'umutMed Özel Sipariş') || 
+                                      !empty($product->raw_marketplace_data['quote_package']);
+                    $packageItems = $product->raw_marketplace_data['quote_package'] ?? [];
+                @endphp
+
                 <!-- Price and Purchase Box -->
                 <div class="bg-slate-50/70 border-2 border-slate-200/90 rounded-2xl p-5 sm:p-6 space-y-5 shadow-xs">
                     
                     <!-- Pricing Header -->
                     <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-3 pb-4 border-b border-slate-200">
                         <div>
-                            <div class="text-xs text-slate-500 font-medium mb-1">Satış Fiyatı (KDV Dahil)</div>
-                            <div class="flex items-baseline gap-3">
-                                <span class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
-                                    {{ number_format($product->price, 2, ',', '.') }} <span class="text-xl sm:text-2xl font-bold text-slate-700">TL</span>
-                                </span>
-                            </div>
+                            @if($isQuotePackage)
+                                <div class="text-xs text-emerald-800 font-black uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                                    <i class="fas fa-tag text-emerald-600"></i>
+                                    <span>Toplu Teklif Paket Fiyatı (Tüm Ürünler Dahil)</span>
+                                </div>
+                                <div class="flex items-baseline gap-3">
+                                    <span class="text-3xl sm:text-4xl font-extrabold text-emerald-900 tracking-tight">
+                                        {{ number_format($product->price, 2, ',', '.') }} <span class="text-xl sm:text-2xl font-bold text-slate-700">TL</span>
+                                    </span>
+                                </div>
+                                <p class="text-[11px] text-slate-500 mt-1 font-semibold">✦ Bu fiyat, aşağıdaki tüm paket içeriği için anlaşılan özel fiyattır.</p>
+                            @else
+                                <div class="text-xs text-slate-500 font-medium mb-1">Satış Fiyatı (KDV Dahil)</div>
+                                <div class="flex items-baseline gap-3">
+                                    <span class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+                                        {{ number_format($product->price, 2, ',', '.') }} <span class="text-xl sm:text-2xl font-bold text-slate-700">TL</span>
+                                    </span>
+                                </div>
+                            @endif
                         </div>
 
                         <!-- EFT Discount Box if active -->
-                        @if($product->eft_discount)
+                        @if($product->eft_discount && !$isQuotePackage)
                             <div class="bg-emerald-50 border border-emerald-200 rounded-xl px-3.5 py-2 text-right">
                                 <div class="text-[11px] font-bold text-emerald-800 uppercase tracking-wide">Havale / EFT İle Ek %5 İndirim</div>
                                 <div class="text-base font-bold text-emerald-700">
@@ -353,6 +373,47 @@
                             </div>
                         @endif
                     </div>
+
+                    <!-- Special Quote Package Items List (Clean & Concise) -->
+                    @if($isQuotePackage && !empty($packageItems))
+                        <div class="bg-white border-2 border-emerald-300/80 rounded-2xl p-4 sm:p-5 space-y-3 shadow-xs">
+                            <div class="flex items-center justify-between border-b border-slate-100 pb-2.5">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center text-xs font-black">
+                                        <i class="fas fa-boxes-stacked"></i>
+                                    </div>
+                                    <h3 class="text-xs font-black text-slate-900 uppercase tracking-wider">
+                                        Paket İçeriğindeki Ürünler ({{ count($packageItems) }} Çeşit)
+                                    </h3>
+                                </div>
+                                <span class="text-[11px] font-extrabold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200/60">
+                                    Toplu Paket
+                                </span>
+                            </div>
+
+                            <div class="divide-y divide-slate-100 max-h-64 overflow-y-auto custom-scrollbar pr-1">
+                                @foreach($packageItems as $pItem)
+                                <div class="py-2.5 flex items-center justify-between gap-3">
+                                    <div class="flex items-center gap-3">
+                                        @if(!empty($pItem['image']))
+                                        <div class="w-12 h-12 rounded-xl bg-slate-50 border border-slate-200/80 p-1 flex-shrink-0 flex items-center justify-center">
+                                            <img src="{{ $pItem['image'] }}" alt="{{ $pItem['name'] }}" class="max-h-full max-w-full object-contain">
+                                        </div>
+                                        @else
+                                        <div class="w-12 h-12 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-center text-slate-400">
+                                            <i class="fas fa-box text-base"></i>
+                                        </div>
+                                        @endif
+                                        <span class="text-xs font-black text-slate-800 line-clamp-2">{{ $pItem['name'] }}</span>
+                                    </div>
+                                    <span class="px-3 py-1.5 bg-amber-50 text-amber-900 border border-amber-200 rounded-xl text-xs font-black shrink-0 whitespace-nowrap">
+                                        {{ $pItem['quantity'] }} Adet
+                                    </span>
+                                </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
 
                     <!-- Stock & Shipping Reassurance Bar -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
@@ -363,7 +424,9 @@
                                 <div>
                                     <span class="font-bold text-emerald-800">Stokta Var</span>
                                     <span class="text-slate-500 block text-[11px]">
-                                        @if($product->stock <= 10)
+                                        @if($isQuotePackage)
+                                            Özel sipariş paketi hazır
+                                        @elseif($product->stock <= 10)
                                             Son {{ $product->stock }} adet kaldı
                                         @else
                                             Hızlı kargo için hazır
@@ -450,7 +513,7 @@
                                         @click="$store.cart.add({{ json_encode($cartPayload) }}, selectedQty)" 
                                         class="flex-grow h-14 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-base rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-3 active:scale-[0.98]">
                                     <i class="fas fa-shopping-basket text-lg"></i>
-                                    <span>SEPETE EKLE</span>
+                                    <span>{{ $isQuotePackage ? 'ÖZEL PAKETİ SEPETE EKLE' : 'SEPETE EKLE' }}</span>
                                 </button>
                             @else
                                 <button disabled class="flex-grow h-14 bg-slate-300 text-slate-600 font-bold text-base rounded-xl flex items-center justify-center gap-3 cursor-not-allowed">
@@ -470,7 +533,8 @@
                             </button>
                         </div>
 
-                        <!-- Teklif Sepetine Ekle Button (Bulk & Donation Discount Request) -->
+                        <!-- Teklif Sepetine Ekle Button (Bulk & Donation Discount Request - hidden on quote package itself) -->
+                        @if(!$isQuotePackage)
                         <div class="pt-1">
                             <button type="button" 
                                     @click="$store.quote.add({{ json_encode($cartPayload) }}, selectedQty)" 
@@ -479,6 +543,7 @@
                                 <span>TEKLİF SEPETİNE EKLE <span class="text-[11px] font-semibold text-amber-700">(Toplu / Bağış İndirimi Talebi)</span></span>
                             </button>
                         </div>
+                        @endif
 
                         <!-- Direct WhatsApp Quick Order Button -->
                         <div class="pt-1">
