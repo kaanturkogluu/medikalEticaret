@@ -5,11 +5,10 @@
   
   <!-- Text Logo -->
   <text x="64" y="72" font-family="'Roboto', 'Arial', sans-serif" font-weight="900" font-style="italic" font-size="76" text-anchor="middle" dominant-baseline="middle" letter-spacing="-4">
-    <tspan fill="#0f172a">u</tspan><tspan fill="#f27a1a">M</tspan>
+    <tspan fill="#0f172a">u</tspan><tspan fill="#059669">M</tspan>
   </text>
   
-  <!-- Subtle medical 'plus' indicator or accent -->
-  <rect x="95" y="30" width="12" height="4" rx="2" fill="#f27a1a"/>
-  <rect x="99" y="26" width="4" height="12" rx="2" fill="#f27a1a"/>
+  <!-- Medical plus indicator -->
+  <rect x="95" y="30" width="12" height="4" rx="2" fill="#059669"/>
+  <rect x="99" y="26" width="4" height="12" rx="2" fill="#059669"/>
 </svg>
-

@@ -14,8 +14,8 @@
         color: #475569; 
         transition: all 0.2s; 
     }
-    .nav-link:hover { background-color: #fff7ed; color: #f27a1a; }
-    .nav-link.active { background-color: #fff7ed; color: #f27a1a; font-weight: 700; }
+    .nav-link:hover { background-color: #ecfdf5; color: #059669; }
+    .nav-link.active { background-color: #ecfdf5; color: #059669; font-weight: 700; }
     .nav-link i { width: 1.25rem; text-align: center; font-size: 1.1rem; }
     
     .user-content-card {
@@ -38,8 +38,8 @@
             {{-- User Info Card --}}
             <div class="sidebar-card p-5 mb-6">
                 <div class="flex items-center gap-4">
-                    <div class="w-14 h-14 bg-orange-100 rounded-2xl flex items-center justify-center border-2 border-white shadow-sm flex-shrink-0">
-                        <span class="text-2xl font-black text-orange-500">{{ strtoupper(substr(auth()->user()->name ?? 'M', 0, 1)) }}</span>
+                    <div class="w-14 h-14 bg-emerald-100 rounded-2xl flex items-center justify-center border-2 border-white shadow-sm flex-shrink-0">
+                        <span class="text-2xl font-black text-emerald-600">{{ strtoupper(substr(auth()->user()->name ?? 'M', 0, 1)) }}</span>
                     </div>
                     <div class="min-w-0">
                         <p class="font-black text-sm text-slate-900 truncate uppercase italic tracking-tighter">{{ auth()->user()->name ?? 'Misafir' }}</p>
@@ -49,13 +49,13 @@
                 @auth
                 @unless(auth()->user()->email_verified_at)
                 <form action="{{ route('verify.send') }}" method="GET" onsubmit="this.btn.disabled = true; this.btn.innerHTML = '<i class=\'fas fa-circle-notch fa-spin mr-1\'></i> Gönderiliyor...';">
-                    <button type="submit" name="btn" class="w-full mt-4 block text-center text-[10px] font-black uppercase tracking-widest text-orange-600 bg-orange-50 border border-orange-100 rounded-xl py-3 hover:bg-orange-100 transition-all disabled:opacity-70 disabled:cursor-not-allowed">
+                    <button type="submit" name="btn" class="w-full mt-4 block text-center text-[10px] font-black uppercase tracking-widest text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-xl py-3 hover:bg-emerald-100 transition-all disabled:opacity-70 disabled:cursor-not-allowed">
                         <i class="fas fa-exclamation-circle mr-1"></i> E-postanı Doğrula
                     </button>
                 </form>
                 @endunless
                 @else
-                <a href="{{ route('login') }}" class="mt-4 block text-center text-[10px] font-black uppercase tracking-widest text-orange-600 bg-orange-50 border border-orange-100 rounded-xl py-3 hover:bg-orange-100 transition-all">
+                <a href="{{ route('login') }}" class="mt-4 block text-center text-[10px] font-black uppercase tracking-widest text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-xl py-3 hover:bg-emerald-100 transition-all">
                     <i class="fas fa-sign-in-alt mr-1"></i> Giriş Yap
                 </a>
                 @endauth

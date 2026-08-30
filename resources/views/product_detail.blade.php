@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @php
-    $primaryColor = \App\Models\Setting::getValue('site_primary_color', '#f27a1a');
+    $primaryColor = \App\Models\Setting::getValue('site_primary_color', '#059669');
     $siteTitle = \App\Models\Setting::getValue('site_title', 'umutMed Market');
     $contactPhone = \App\Models\Setting::getValue('contact_phone', '0546 941 69 96');
     $contactWhatsapp = \App\Models\Setting::getValue('contact_whatsapp', '905469416996');
