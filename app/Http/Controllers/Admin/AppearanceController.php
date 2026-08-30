@@ -100,7 +100,7 @@ class AppearanceController extends Controller
         ];
 
         $settings = [
-            'primary_color' => Setting::getValue('site_primary_color', '#f27a1a'),
+            'primary_color' => Setting::getValue('site_primary_color', '#059669'),
             'site_title' => Setting::getValue('site_title', 'umutMed Market'),
             'site_logo' => Setting::getValue('site_logo', ''),
             'site_favicon' => Setting::getValue('site_favicon', ''),

@@ -6,10 +6,10 @@
 <main class="flex-grow flex items-center justify-center p-6 py-20 bg-gray-50/50">
     <div class="w-full max-w-[450px] bg-white rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100 p-8 md:p-12">
         <div class="text-center mb-10">
-            <div class="inline-flex items-center justify-center w-16 h-16 bg-orange-100 rounded-2xl mb-4">
-                <i class="fas fa-lock-open text-orange-500 text-2xl"></i>
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-emerald-50 rounded-2xl mb-4">
+                <i class="fas fa-lock-open text-emerald-600 text-2xl"></i>
             </div>
-            <h1 class="text-3xl font-black tracking-tight text-slate-900 italic uppercase italic tracking-tighter">Yeni Şifre</h1>
+            <h1 class="text-3xl font-black tracking-tight text-slate-900 italic uppercase tracking-tighter">Yeni Şifre</h1>
             <p class="text-slate-500 mt-2 text-sm font-medium">Lütfen yeni şifrenizi belirleyin.</p>
         </div>
 
@@ -25,7 +25,7 @@
                     id="email" 
                     value="{{ $email ?? old('email') }}"
                     required 
-                    class="w-full border-2 {{ $errors->has('email') ? 'border-red-500' : 'border-slate-100' }} rounded-xl px-4 py-4 focus:border-orange-500 outline-none transition-all text-sm font-bold bg-slate-50/50"
+                    class="w-full border-2 {{ $errors->has('email') ? 'border-red-500' : 'border-slate-100' }} rounded-xl px-4 py-4 focus:border-emerald-500 outline-none transition-all text-sm font-bold bg-slate-50/50"
                     placeholder="ornek@email.com"
                 >
                 @error('email')
@@ -40,7 +40,7 @@
                     name="password" 
                     id="password" 
                     required 
-                    class="w-full border-2 {{ $errors->has('password') ? 'border-red-500' : 'border-slate-100' }} rounded-xl px-4 py-4 focus:border-orange-500 outline-none transition-all text-sm font-bold bg-slate-50/50"
+                    class="w-full border-2 {{ $errors->has('password') ? 'border-red-500' : 'border-slate-100' }} rounded-xl px-4 py-4 focus:border-emerald-500 outline-none transition-all text-sm font-bold bg-slate-50/50"
                     placeholder="••••••••"
                 >
                 @error('password')
@@ -55,12 +55,12 @@
                     name="password_confirmation" 
                     id="password_confirmation" 
                     required 
-                    class="w-full border-2 border-slate-100 rounded-xl px-4 py-4 focus:border-orange-500 outline-none transition-all text-sm font-bold bg-slate-50/50"
+                    class="w-full border-2 border-slate-100 rounded-xl px-4 py-4 focus:border-emerald-500 outline-none transition-all text-sm font-bold bg-slate-50/50"
                     placeholder="••••••••"
                 >
             </div>
 
-            <button type="submit" class="w-full bg-[#f27a1a] py-4 rounded-2xl text-white font-black text-sm uppercase italic tracking-widest shadow-lg shadow-orange-500/20 active:scale-[0.98] transition-transform">
+            <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 py-4 rounded-2xl text-white font-black text-sm uppercase italic tracking-widest shadow-lg shadow-emerald-600/20 active:scale-[0.98] transition-transform">
                 Şifreyi Güncelle
             </button>
         </form>

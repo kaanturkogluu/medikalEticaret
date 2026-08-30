@@ -20,7 +20,7 @@
             $faviconUrl .= '?v=' . filemtime(public_path($siteFavicon));
         }
 
-        $primaryColor = \App\Models\Setting::getValue('site_primary_color', '#f27a1a');
+        $primaryColor = \App\Models\Setting::getValue('site_primary_color', '#059669');
     @endphp
     <link rel="icon" type="{{ $faviconType }}" href="{{ $faviconUrl }}">
     <title>MultiSync | Pazaryeri Entegrasyon Paneli</title>

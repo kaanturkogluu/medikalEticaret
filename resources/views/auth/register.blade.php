@@ -4,16 +4,16 @@
 
 @section('styles')
 <style>
-    .btn-primary { background: #f27a1a; transition: all 0.2s; }
-    .btn-primary:hover { background: #e67216; transform: translateY(-1px); box-shadow: 0 8px 20px rgba(242,122,26,0.3); }
+    .btn-primary { background: #059669; transition: all 0.2s; }
+    .btn-primary:hover { background: #047857; transform: translateY(-1px); box-shadow: 0 8px 20px rgba(5,150,105,0.3); }
     .input-field { transition: all 0.2s; }
-    .input-field:focus { border-color: #f27a1a; box-shadow: 0 0 0 4px rgba(242,122,26,0.1); }
+    .input-field:focus { border-color: #059669; box-shadow: 0 0 0 4px rgba(5,150,105,0.1); }
     .strength-bar div { transition: width 0.3s ease; }
     [x-cloak] { display: none !important; }
     .custom-scrollbar::-webkit-scrollbar { width: 5px; }
     .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
     .custom-scrollbar::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
-    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #f27a1a; }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #059669; }
 </style>
 @endsection
 
@@ -28,7 +28,7 @@
             this.show = true;
             this.loading = true;
             this.title = 'Yükleniyor...';
-            this.content = '<div class=\'flex justify-center p-20\'><i class=\'fas fa-circle-notch fa-spin text-4xl text-orange-500\'></i></div>';
+            this.content = '<div class=\'flex justify-center p-20\'><i class=\'fas fa-circle-notch fa-spin text-4xl text-emerald-500\'></i></div>';
             
             try {
                 const res = await fetch(`/sayfa/${slug}`, {

@@ -43,7 +43,7 @@ class SettingSeeder extends Seeder
         ];
 
         Setting::updateOrCreate(['key' => 'site_footer_columns'], ['value' => json_encode($footerColumns)]);
-        Setting::updateOrCreate(['key' => 'site_primary_color'], ['value' => '#f27a1a']);
+        Setting::updateOrCreate(['key' => 'site_primary_color'], ['value' => '#059669']);
         Setting::updateOrCreate(['key' => 'site_title'], ['value' => 'umutMed Market']);
         Setting::updateOrCreate(['key' => 'site_footer_qr'], ['value' => 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://umutmed.com']);
         

@@ -11,7 +11,7 @@
     <img src="{{ config('app.url') . $logo }}" class="logo" alt="{{ $title }}">
 @else
     <span style="font-size: 24px; font-weight: 900; color: #0f172a; text-decoration: none; font-style: italic;">
-        umut<span style="color: #f27a1a;">Med</span>
+        umut<span style="color: #059669;">Med</span>
     </span>
 @endif
 </a>
