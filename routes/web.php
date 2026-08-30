@@ -35,6 +35,11 @@ Route::get('/sss', [\App\Http\Controllers\HomeController::class, 'faqs'])->name(
 
 Route::get('/sayfa/{slug}', [\App\Http\Controllers\HomeController::class, 'page'])->name('page.show');
 
+// Quote / Teklif Sistemi Routes
+Route::get('/teklif-sepeti', [\App\Http\Controllers\QuoteController::class, 'index'])->name('quote.cart');
+Route::post('/teklif-talebi-gonder', [\App\Http\Controllers\QuoteController::class, 'store'])->name('quote.store');
+Route::get('/teklif-basarili/{quote_no}', [\App\Http\Controllers\QuoteController::class, 'success'])->name('quote.success');
+
 // Authentication Routes (Guest)
 Route::middleware('guest')->group(function () {
     // User login
@@ -114,6 +119,14 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::post('/orders/{order}/update-payment-status', [\App\Http\Controllers\Admin\OrderController::class, 'updatePaymentStatus'])->name('admin.orders.update-payment-status');
     Route::delete('/orders/{order}/delete', [\App\Http\Controllers\Admin\OrderController::class, 'destroy'])->name('admin.orders.destroy');
     Route::get('/customers', [\App\Http\Controllers\Admin\CustomerController::class, 'index'])->name('admin.customers');
+    
+    // Quote / Teklif Yönetimi
+    Route::get('/quotes', [\App\Http\Controllers\Admin\QuoteController::class, 'index'])->name('admin.quotes.index');
+    Route::get('/quotes/{quote}', [\App\Http\Controllers\Admin\QuoteController::class, 'show'])->name('admin.quotes.show');
+    Route::post('/quotes/{quote}/update-status', [\App\Http\Controllers\Admin\QuoteController::class, 'updateStatus'])->name('admin.quotes.update-status');
+    Route::post('/quotes/{quote}/update-offer', [\App\Http\Controllers\Admin\QuoteController::class, 'updateOffer'])->name('admin.quotes.update-offer');
+    Route::post('/quotes/{quote}/generate-product', [\App\Http\Controllers\Admin\QuoteController::class, 'generateProduct'])->name('admin.quotes.generate-product');
+    Route::delete('/quotes/{quote}', [\App\Http\Controllers\Admin\QuoteController::class, 'destroy'])->name('admin.quotes.destroy');
     Route::get('/cariler', [\App\Http\Controllers\Admin\CariController::class, 'index'])->name('admin.cariler.index');
     Route::post('/cariler/sync', [\App\Http\Controllers\Admin\CariController::class, 'syncWebOrders'])->name('admin.cariler.sync');
     Route::get('/cariler/{cari}', [\App\Http\Controllers\Admin\CariController::class, 'show'])->name('admin.cariler.show');

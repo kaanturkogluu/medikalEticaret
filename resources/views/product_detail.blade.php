@@ -456,6 +456,16 @@
                             </button>
                         </div>
 
+                        <!-- Teklif Sepetine Ekle Button (Bulk & Donation Discount Request) -->
+                        <div class="pt-1">
+                            <button type="button" 
+                                    @click="$store.quote.add({id: '{{ $product->id }}', slug: '{{ $product->slug }}', name: '{{ addslashes($product->name) }}', brand: '{{ addslashes($product->brand->name ?? '') }}', price: {{ $product->price }}, sku: '{{ $product->sku ?? '' }}', image: '{{ $imgArr }}'}, selectedQty)" 
+                                    class="w-full h-12 bg-amber-50 hover:bg-amber-100 border border-amber-300 text-amber-900 font-extrabold text-xs sm:text-sm rounded-xl transition-all flex items-center justify-center gap-2 shadow-2xs hover:shadow-xs active:scale-98">
+                                <i class="fas fa-file-invoice-dollar text-amber-600 text-base"></i>
+                                <span>TEKLİF SEPETİNE EKLE <span class="text-[11px] font-semibold text-amber-700">(Toplu / Bağış İndirimi Talebi)</span></span>
+                            </button>
+                        </div>
+
                         <!-- Direct WhatsApp Quick Order Button -->
                         <div class="pt-1">
                             <a href="{{ $waLink }}" target="_blank" 

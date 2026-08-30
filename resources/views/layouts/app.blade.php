@@ -393,6 +393,18 @@
                             <span class="hidden lg:inline">Favorilerim</span>
                         </a>
 
+                        <!-- Teklif Sepeti Trigger (Desktop) -->
+                        <a href="{{ route('quote.cart') }}" @click.prevent="$store.quote.open = true"
+                            class="flex items-center gap-2 hover:text-amber-600 transition-colors group"
+                            title="Toplu & Bağış Alımları İçin Teklif Sepeti">
+                            <div class="relative">
+                                <i class="fas fa-file-invoice-dollar text-lg text-gray-400 group-hover:text-amber-500 transition-colors"></i>
+                                <span x-show="$store.quote.items.length" x-text="$store.quote.items.length"
+                                    class="absolute -top-2 -right-2 bg-amber-500 text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center border-2 border-white font-black"></span>
+                            </div>
+                            <span class="hidden lg:inline text-amber-700 font-black">Teklif Sepeti</span>
+                        </a>
+
                         <a href="#" @click.prevent="$store.cart.open = true"
                             class="flex items-center gap-2 hover:text-[var(--primary-color)] group">
                             <div class="relative">
@@ -449,9 +461,10 @@
                                                 </div>
                                                 <a href="{{ route('user.dashboard') }}" class="block px-4 py-2 text-xs font-bold text-gray-700 hover:bg-gray-50">Hesabım</a>
                                                 <a href="{{ route('user.orders') }}" class="block px-4 py-2 text-xs font-bold text-gray-700 hover:bg-gray-50">Siparişlerim</a>
-                                                <form action="{{ route('logout') }}" method="POST">
+                                                <a href="{{ route('user.addresses') }}" class="block px-4 py-2 text-xs font-bold text-gray-700 hover:bg-gray-50">Adreslerim</a>
+                                                <form action="{{ route('logout') }}" method="POST" class="mt-2 pt-2 border-t border-gray-50">
                                                     @csrf
-                                                    <button type="submit" class="block w-full text-left px-4 py-2 text-xs font-bold text-red-600 hover:bg-red-50">Çıkış Yap</button>
+                                                    <button type="submit" class="block w-full text-left px-4 py-2 text-xs font-bold text-red-500 hover:bg-red-50">Çıkış Yap</button>
                                                 </form>
                                             </div>
                                         </div>
@@ -472,19 +485,23 @@
                         </div>
                     </div>
                     
-                    <!-- Bottom Row: Categories Hamburger, Fav, Cart -->
+                    <!-- Bottom Row: Categories Hamburger, Fav, Quote, Cart -->
                     <div class="flex items-center justify-between mt-1">
                         <!-- Categories Hamburger Trigger -->
                         <button @click="mobileCatOpen = true" class="flex items-center gap-2 text-[var(--primary-color)] font-black text-[13px] tracking-tight">
                             <i class="fas fa-bars text-lg"></i> KATEGORİLER
                         </button>
                         
-                        <!-- Favorites & Cart -->
-                        <div class="flex items-center gap-5">
+                        <!-- Favorites, Quote & Cart -->
+                        <div class="flex items-center gap-4">
                             <a href="{{ route('favorites') }}" class="relative text-xl text-gray-400">
                                 <i class="far fa-heart"></i>
                                 <span x-show="$store.fav.items.length" x-text="$store.fav.items.length" class="absolute -top-1.5 -right-2 bg-red-500 text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center border border-white"></span>
                             </a>
+                            <button @click="$store.quote.open = true" class="relative text-xl text-amber-500" title="Teklif Sepeti">
+                                <i class="fas fa-file-invoice-dollar"></i>
+                                <span x-show="$store.quote.items.length" x-text="$store.quote.items.length" class="absolute -top-1.5 -right-2 bg-amber-500 text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center border border-white font-bold"></span>
+                            </button>
                             <button @click="$store.cart.open = true" class="relative text-xl text-gray-400">
                                 <i class="fas fa-shopping-cart"></i>
                                 <span x-show="$store.cart.items.length" x-text="$store.cart.items.length" class="absolute -top-1.5 -right-2 bg-[var(--primary-color)] text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center border border-white"></span>
@@ -1012,6 +1029,111 @@
         </div>
     </div>
 
+    <!-- Quote Drawer (Teklif Sepeti Çekmecesi) -->
+    <div x-show="$store.quote.open" x-cloak class="fixed inset-0 z-[2000]" aria-labelledby="slide-over-quote-title"
+        role="dialog" aria-modal="true">
+        <div class="fixed inset-0 bg-slate-900/75 backdrop-blur-xs transition-opacity" @click="$store.quote.open = false"></div>
+        <div class="fixed inset-y-0 right-0 flex max-w-full pl-10">
+            <div class="w-screen max-w-md"
+                x-transition:enter="transform transition ease-in-out duration-500 sm:duration-700"
+                x-transition:enter-start="translate-x-full" x-transition:enter-end="translate-x-0"
+                x-transition:leave="transform transition ease-in-out duration-500 sm:duration-700"
+                x-transition:leave-start="translate-x-0" x-transition:leave-end="translate-x-full">
+                <div class="flex h-full flex-col overflow-y-scroll bg-white shadow-2xl">
+                    <div class="flex-1 overflow-y-auto px-4 py-6 sm:px-6">
+                        <div class="flex items-start justify-between border-b border-slate-100 pb-4">
+                            <div>
+                                <h2 class="text-lg font-black text-slate-900 flex items-center gap-2" id="slide-over-quote-title">
+                                    <i class="fas fa-file-invoice-dollar text-amber-500"></i>
+                                    <span>Teklif Sepetim (<span x-text="$store.quote.items.length"></span>)</span>
+                                </h2>
+                                <p class="text-[11px] text-slate-400 font-medium mt-0.5">Toplu alım veya bağış için özel indirimli fiyat teklifi talep edin.</p>
+                            </div>
+                            <button @click="$store.quote.open = false" type="button"
+                                class="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition-colors">
+                                <i class="fas fa-times text-lg"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="mt-6 px-1">
+                            <div class="flow-root">
+                                <ul role="list" class="-my-4 divide-y divide-slate-100">
+                                    <template x-for="item in $store.quote.items" :key="item.id">
+                                        <li class="flex py-4 gap-3 group">
+                                            <div class="h-20 w-16 flex-shrink-0 overflow-hidden rounded-xl border border-slate-200 bg-slate-50 flex items-center justify-center p-1">
+                                                <img :src="item.image" :alt="item.name" class="h-full w-full object-contain">
+                                            </div>
+                                            <div class="flex flex-1 flex-col justify-between">
+                                                <div>
+                                                    <div class="flex justify-between items-start text-xs font-black text-slate-900 gap-1">
+                                                        <p class="line-clamp-2 leading-tight" x-text="item.name"></p>
+                                                        <p class="whitespace-nowrap text-emerald-700 font-black" x-text="(item.price * item.qty).toLocaleString('tr-TR', {minimumFractionDigits: 2}) + ' TL'"></p>
+                                                    </div>
+                                                    <p class="text-[10px] text-slate-400 mt-0.5" x-text="'Birim Liste Fiyatı: ' + item.price.toLocaleString('tr-TR', {minimumFractionDigits: 2}) + ' TL'"></p>
+                                                </div>
+                                                
+                                                <div class="flex items-center justify-between mt-2 pt-1 border-t border-slate-50">
+                                                    <!-- Quantity input & quick bulk buttons -->
+                                                    <div class="flex items-center gap-1.5">
+                                                        <div class="flex items-center border border-slate-200 rounded-lg bg-slate-50 overflow-hidden">
+                                                            <button @click="$store.quote.decrement(item.id)" class="px-2 py-0.5 text-slate-600 hover:bg-slate-200 text-xs font-black">-</button>
+                                                            <input type="number" :value="item.qty" @change="$store.quote.updateQty(item.id, $event.target.value)" class="w-12 text-center text-xs font-bold bg-transparent border-0 py-0.5 focus:ring-0">
+                                                            <button @click="$store.quote.increment(item.id)" class="px-2 py-0.5 text-slate-600 hover:bg-slate-200 text-xs font-black">+</button>
+                                                        </div>
+                                                        <div class="flex gap-1">
+                                                            <button @click="$store.quote.updateQty(item.id, 20)" class="px-1.5 py-0.5 bg-amber-50 text-amber-700 hover:bg-amber-100 rounded text-[10px] font-black" title="20 Adet">+20</button>
+                                                            <button @click="$store.quote.updateQty(item.id, 50)" class="px-1.5 py-0.5 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded text-[10px] font-black" title="50 Adet">+50</button>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <button @click="$store.quote.remove(item.id)" class="text-xs font-bold text-rose-500 hover:text-rose-700">
+                                                        <i class="fas fa-trash-alt text-[10px] mr-0.5"></i> Sil
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    </template>
+                                </ul>
+                                
+                                <div x-show="$store.quote.items.length === 0" class="text-center py-20 text-slate-400 space-y-3">
+                                    <div class="w-16 h-16 bg-amber-50 text-amber-500 rounded-3xl flex items-center justify-center mx-auto shadow-inner">
+                                        <i class="fas fa-file-invoice-dollar text-2xl"></i>
+                                    </div>
+                                    <p class="font-bold text-slate-700 text-sm">Teklif sepetiniz şu an boş.</p>
+                                    <p class="text-xs text-slate-400 max-w-xs mx-auto">Ürün detay sayfalarından "Teklif Sepetine Ekle" butonuna basarak toplu alım veya bağış teklifi isteyebilirsiniz.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div x-show="$store.quote.items.length > 0" class="border-t border-slate-200 px-4 py-5 sm:px-6 bg-slate-50">
+                        <div class="space-y-2 mb-4">
+                            <div class="flex justify-between text-xs font-bold text-slate-500">
+                                <p>Tahmini Standart Tutar</p>
+                                <p x-text="$store.quote.subtotal().toLocaleString('tr-TR', {minimumFractionDigits: 2}) + ' TL'"></p>
+                            </div>
+                            <div class="bg-amber-50 p-2.5 rounded-xl text-[11px] text-amber-800 font-bold border border-amber-200/60 flex items-center gap-2">
+                                <i class="fas fa-percent text-amber-600"></i>
+                                <span>Talebiniz incelendikten sonra size özel indirimli fiyat teklifi verilecektir.</span>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-2">
+                            <a href="{{ route('quote.cart') }}"
+                                class="w-full flex items-center justify-center gap-2 rounded-2xl bg-amber-600 hover:bg-amber-700 px-6 py-3.5 text-sm font-black text-white shadow-lg shadow-amber-600/20 transition-all active:scale-95">
+                                <span>Teklif Formunu Doldur &amp; Gönder</span>
+                                <i class="fas fa-arrow-right text-xs"></i>
+                            </a>
+                            <button type="button" @click="$store.quote.clear()" class="w-full text-center py-1.5 text-[11px] font-bold text-slate-400 hover:text-rose-500 transition-colors">
+                                Sepeti Temizle
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Checkout Choice Modal -->
     <div x-data="{ open: false }" 
          @open-checkout-choice.window="open = true"
@@ -1158,6 +1280,71 @@
                     },
                     save() {
                         localStorage.setItem('fav_items', JSON.stringify(this.items));
+                    }
+                });
+            }
+
+            if (!Alpine.store('quote')) {
+                Alpine.store('quote', {
+                    items: JSON.parse(localStorage.getItem('quote_items')) || [],
+                    open: false,
+                    add(product, qty = 1) {
+                        const addQty = parseInt(qty) || 1;
+                        const existing = this.items.find(i => String(i.id) === String(product.id));
+                        if (existing) {
+                            existing.qty += addQty;
+                        } else {
+                            this.items.push({
+                                id: product.id,
+                                slug: product.slug,
+                                name: product.name,
+                                brand: product.brand || '',
+                                price: parseFloat(product.price) || 0,
+                                sku: product.sku || '',
+                                image: product.image || '',
+                                qty: addQty
+                            });
+                        }
+                        this.save();
+                        window.dispatchEvent(new CustomEvent('quote-added', { detail: 'ÜRÜN TEKLİF SEPETİNE EKLENDİ' }));
+                        if (window.notify) window.notify('success', 'Ürün teklif sepetinize eklendi!');
+                        this.open = true;
+                    },
+                    increment(id) {
+                        const item = this.items.find(i => String(i.id) === String(id));
+                        if (item) item.qty++;
+                        this.save();
+                    },
+                    decrement(id) {
+                        const item = this.items.find(i => String(i.id) === String(id));
+                        if (item && item.qty > 1) {
+                            item.qty--;
+                        } else {
+                            this.remove(id);
+                        }
+                        this.save();
+                    },
+                    updateQty(id, qty) {
+                        const item = this.items.find(i => String(i.id) === String(id));
+                        const validQty = parseInt(qty);
+                        if (item && validQty > 0) {
+                            item.qty = validQty;
+                            this.save();
+                        }
+                    },
+                    remove(id) {
+                        this.items = this.items.filter(i => String(i.id) !== String(id));
+                        this.save();
+                    },
+                    subtotal() {
+                        return this.items.reduce((total, item) => total + (item.price * item.qty), 0);
+                    },
+                    clear() {
+                        this.items = [];
+                        this.save();
+                    },
+                    save() {
+                        localStorage.setItem('quote_items', JSON.stringify(this.items));
                     }
                 });
             }

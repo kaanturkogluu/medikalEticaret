@@ -143,6 +143,17 @@
                 <i class="fas fa-shopping-cart w-6 flex justify-center text-lg {{ Request::is('admin/orders*') ? 'text-white' : 'text-slate-500 group-hover:text-brand-400' }}"></i>
                 <span class="font-medium text-sm">Siparişler</span>
             </a>
+
+            <a href="{{ route('admin.quotes.index') }}" class="flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-all group {{ Request::is('admin/quotes*') ? 'sidebar-item-active' : '' }}">
+                <div class="flex items-center gap-3">
+                    <i class="fas fa-file-invoice-dollar w-6 flex justify-center text-lg {{ Request::is('admin/quotes*') ? 'text-white' : 'text-slate-500 group-hover:text-amber-400' }}"></i>
+                    <span class="font-medium text-sm">Teklif Talepleri</span>
+                </div>
+                @php $pendingQuotesCount = \App\Models\QuoteRequest::where('status', 'pending')->count(); @endphp
+                @if($pendingQuotesCount > 0)
+                <span class="px-2 py-0.5 bg-amber-500 text-white rounded-full text-[10px] font-black">{{ $pendingQuotesCount }}</span>
+                @endif
+            </a>
             
             <a href="{{ route('admin.customers') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-all group {{ Request::is('admin/customers*') ? 'sidebar-item-active' : '' }}">
                 <i class="fas fa-users w-6 flex justify-center text-lg {{ Request::is('admin/customers*') ? 'text-white' : 'text-slate-500 group-hover:text-brand-400' }}"></i>
@@ -198,21 +209,24 @@
                 <span class="font-medium text-sm">Sıkça Sorulan Sorular</span>
             </a>
 
-            <a href="/admin/appearance" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-all group {{ Request::is('admin/appearance*') ? 'sidebar-item-active' : '' }}">
-                <i class="fas fa-eye w-6 flex justify-center text-lg {{ Request::is('admin/appearance*') ? 'text-white' : 'text-slate-500 group-hover:text-brand-400' }}"></i>
-                <span class="font-medium text-sm">Site Görünümü</span>
+            <a href="{{ route('admin.marketplaces') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-all group {{ Request::is('admin/marketplaces*') ? 'sidebar-item-active' : '' }}">
+                <i class="fas fa-store w-6 flex justify-center text-lg {{ Request::is('admin/marketplaces*') ? 'text-white' : 'text-slate-500 group-hover:text-brand-400' }}"></i>
+                <span class="font-medium text-sm">Pazaryerleri</span>
             </a>
 
+            <a href="{{ route('admin.appearance') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-all group {{ Request::is('admin/appearance*') ? 'sidebar-item-active' : '' }}">
+                <i class="fas fa-palette w-6 flex justify-center text-lg {{ Request::is('admin/appearance*') ? 'text-white' : 'text-slate-500 group-hover:text-brand-400' }}"></i>
+                <span class="font-medium text-sm">Görünüm Ayarları</span>
+            </a>
 
+            <a href="/admin/settings" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-all group {{ Request::is('admin/settings*') ? 'sidebar-item-active' : '' }}">
+                <i class="fas fa-sliders-h w-6 flex justify-center text-lg {{ Request::is('admin/settings*') ? 'text-white' : 'text-slate-500 group-hover:text-brand-400' }}"></i>
+                <span class="font-medium text-sm">Ayarlar</span>
+            </a>
 
             <div class="pt-6 pb-2">
                 <p class="px-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Altyapı</p>
             </div>
-
-            <a href="/admin/marketplaces" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-all group {{ Request::is('admin/marketplaces*') ? 'sidebar-item-active' : '' }}">
-                <i class="fas fa-plug w-6 flex justify-center text-lg {{ Request::is('admin/marketplaces*') ? 'text-white' : 'text-slate-500 group-hover:text-brand-400' }}"></i>
-                <span class="font-medium text-sm">Pazaryeri Bağlantıları</span>
-            </a>
 
             <a href="{{ route('google-merchant.xml') }}" target="_blank" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-all group">
                 <i class="fab fa-google w-6 flex justify-center text-lg text-slate-500 group-hover:text-brand-400"></i>
@@ -227,11 +241,6 @@
             <a href="{{ route('admin.email-logs.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-all group {{ Request::is('admin/email-logs*') ? 'sidebar-item-active' : '' }}">
                 <i class="fas fa-envelope-open-text w-6 flex justify-center text-lg {{ Request::is('admin/email-logs*') ? 'text-white' : 'text-slate-500 group-hover:text-brand-400' }}"></i>
                 <span class="font-medium text-sm">Mail Geçmişi</span>
-            </a>
-
-            <a href="/admin/settings" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-all group {{ Request::is('admin/settings*') ? 'sidebar-item-active' : '' }}">
-                <i class="fas fa-sliders-h w-6 flex justify-center text-lg {{ Request::is('admin/settings*') ? 'text-white' : 'text-slate-500 group-hover:text-brand-400' }}"></i>
-                <span class="font-medium text-sm">Ayarlar</span>
             </a>
         </nav>
     </aside>
@@ -263,6 +272,17 @@
             <a href="/admin/orders" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-all group {{ Request::is('admin/orders*') ? 'sidebar-item-active' : '' }}">
                 <i class="fas fa-shopping-cart w-6 flex justify-center text-lg {{ Request::is('admin/orders*') ? 'text-white' : 'text-slate-500 group-hover:text-brand-400' }}"></i>
                 <span x-show="sidebarOpen" class="font-medium text-sm">Siparişler</span>
+            </a>
+
+            @php $pendingQuotesCount = \App\Models\QuoteRequest::where('status', 'pending')->count(); @endphp
+            <a href="{{ route('admin.quotes.index') }}" class="flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-all group {{ Request::is('admin/quotes*') ? 'sidebar-item-active' : '' }}">
+                <div class="flex items-center gap-3">
+                    <i class="fas fa-file-invoice-dollar w-6 flex justify-center text-lg {{ Request::is('admin/quotes*') ? 'text-white' : 'text-slate-500 group-hover:text-amber-400' }}"></i>
+                    <span x-show="sidebarOpen" class="font-medium text-sm">Teklif Talepleri</span>
+                </div>
+                @if($pendingQuotesCount > 0)
+                <span x-show="sidebarOpen" class="px-2 py-0.5 bg-amber-500 text-white rounded-full text-[10px] font-black">{{ $pendingQuotesCount }}</span>
+                @endif
             </a>
             
             <a href="{{ route('admin.customers') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-all group {{ Request::is('admin/customers*') ? 'sidebar-item-active' : '' }}">
