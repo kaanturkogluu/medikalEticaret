@@ -447,7 +447,7 @@
                             <i class="fas fa-truck-fast text-emerald-600 text-base"></i>
                             <div>
                                 <span class="font-bold text-slate-800">Aynı Gün Kargo</span>
-                                <span class="text-slate-500 block text-[11px]">16:00'a kadar verilen siparişlerde</span>
+                                <span class="text-slate-500 block text-[11px]">14:00'a kadar verilen siparişlerde</span>
                             </div>
                         </div>
                     </div>
@@ -600,7 +600,7 @@
                             <i class="fas fa-truck-fast"></i>
                         </div>
                         <div class="text-xs font-bold text-slate-900 leading-snug">Hızlı Teslimat</div>
-                        <div class="text-[11px] text-slate-500 leading-tight">16:00'a kadar aynı gün sevk</div>
+                        <div class="text-[11px] text-slate-500 leading-tight">14:00'a kadar aynı gün sevk</div>
                     </div>
 
                 </div>
@@ -942,7 +942,7 @@
                         </div>
                         <h4 class="font-bold text-slate-900 text-xs sm:text-sm">Aynı Gün Sevk</h4>
                         <p class="text-xs text-slate-600 leading-relaxed">
-                            Hafta içi saat 16:00'a, Cumartesi günleri 12:00'ye kadar onaylanan siparişleriniz aynı gün kargoya teslim edilir.
+                            Hafta içi saat 14:00'e, Cumartesi günleri 12:00'ye kadar onaylanan siparişleriniz aynı gün kargoya teslim edilir.
                         </p>
                     </div>
 
@@ -1243,7 +1243,7 @@
                             <i class="fas fa-chevron-down text-slate-400 text-xs transition-transform" :class="openFaq === 3 ? 'rotate-180 text-emerald-600' : ''"></i>
                         </button>
                         <div x-show="openFaq === 3" class="p-4 pt-0 text-xs text-slate-600 leading-relaxed border-t border-slate-100 bg-white">
-                            Yurtiçi Kargo ve MNG Kargo gibi kurumsal kargo ağlarıyla çalışmaktayız. Hafta içi saat 16:00'a kadar verilen siparişler aynı gün kargoya teslim edilmekte olup, teslimat adresinize bağlı olarak 1-3 iş günü içerisinde kapınıza ulaşmaktadır.
+                            Yurtiçi Kargo ve MNG Kargo gibi kurumsal kargo ağlarıyla çalışmaktayız. Hafta içi saat 14:00'e kadar verilen siparişler aynı gün kargoya teslim edilmekte olup, teslimat adresinize bağlı olarak 1-3 iş günü içerisinde kapınıza ulaşmaktadır.
                         </div>
                     </div>
 

@@ -133,7 +133,7 @@
                 </div>
                 <div>
                     <h4 class="text-xs font-bold text-slate-900 leading-tight">Aynı Gün Kargo</h4>
-                    <p class="text-[11px] text-slate-500 mt-0.5">16:00'a kadar sevk garantisi</p>
+                    <p class="text-[11px] text-slate-500 mt-0.5">14:00'e kadar sevk garantisi</p>
                 </div>
             </div>
 

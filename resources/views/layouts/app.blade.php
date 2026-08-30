@@ -213,7 +213,7 @@
             ['name' => 'AMAZON', 'url' => 'https://amazon.com.tr', 'logo' => 'https://www.google.com/s2/favicons?domain=amazon.com.tr&sz=128', 'color' => '#000000'],
         ];
         $marketplaces = json_decode(\App\Models\Setting::getValue('marketplaces', json_encode($defaultMarketplaces)), true);
-        $marqueeText = \App\Models\Setting::getValue('marquee_text', "Açılışa Özel Tüm Ürünlerde %20'ye Varan İndirimler! • Saat 16:00'a Kadar Verilen Siparişlerde Aynı Gün Kargo! • Ücretsiz Kargo Fırsatını Kaçırmayın!");
+        $marqueeText = \App\Models\Setting::getValue('marquee_text', "Açılışa Özel Tüm Ürünlerde %20'ye Varan İndirimler! • Saat 14:00'e Kadar Verilen Siparişlerde Aynı Gün Kargo! • Ücretsiz Kargo Fırsatını Kaçırmayın!");
     @endphp
 
     <!-- Top Info Bar -->
