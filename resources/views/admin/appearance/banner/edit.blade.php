@@ -27,7 +27,7 @@
                         <i class="fas fa-camera text-4xl mb-2"></i>
                         <p class="text-xs font-bold italic uppercase tracking-widest leading-none">Görseli Değiştir</p>
                     </div>
-                    <input type="file" name="image" @change="preview = URL.createObjectURL($event.target.files[0])" class="absolute inset-0 opacity-0 cursor-pointer">
+                    <input type="file" name="image" accept="image/*,.svg" @change="preview = URL.createObjectURL($event.target.files[0])" class="absolute inset-0 opacity-0 cursor-pointer">
                 </div>
                 @error('image') <p class="text-xs text-rose-500 font-bold italic mt-2">{{ $message }}</p> @enderror
             </div>

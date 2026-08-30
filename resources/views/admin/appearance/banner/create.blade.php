@@ -27,9 +27,9 @@
                     </template>
                     <div x-show="!preview" class="flex flex-col items-center gap-4 text-slate-400">
                         <i class="fas fa-cloud-upload-alt text-4xl"></i>
-                        <p class="text-xs font-bold italic">Görsel seçmek için tıklayın (1200x400 önerilir)</p>
+                        <p class="text-xs font-bold italic">Görsel seçmek için tıklayın (PNG, JPG, SVG, WebP desteklenir)</p>
                     </div>
-                    <input type="file" name="image" @change="preview = URL.createObjectURL($event.target.files[0])" class="absolute inset-0 opacity-0 cursor-pointer" required>
+                    <input type="file" name="image" accept="image/*,.svg" @change="preview = URL.createObjectURL($event.target.files[0])" class="absolute inset-0 opacity-0 cursor-pointer" required>
                 </div>
                 @error('image') <p class="text-xs text-rose-500 font-bold italic mt-2">{{ $message }}</p> @enderror
             </div>
