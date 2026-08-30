@@ -247,6 +247,11 @@
 
             <!-- Right Side: Links -->
             <div class="flex items-center gap-6 shrink-0">
+                <a href="{{ route('quote.track') }}"
+                    class="hover:text-amber-300 text-amber-300 transition-colors uppercase font-black italic tracking-tighter text-[12px] flex items-center gap-1.5">
+                    <i class="fas fa-search-dollar text-xs"></i>
+                    <span>Teklif Sorgula</span>
+                </a>
                 <a href="{{ route('contact') }}"
                     class="hover:text-emerald-400 transition-colors uppercase font-black italic tracking-tighter text-[12px]">İletişim
                     & Konum</a>
@@ -325,6 +330,12 @@
                                                     <i class="fas fa-box text-gray-400 group-hover/item:text-slate-900"></i>
                                                 </div>
                                                 Siparişlerim
+                                            </a>
+                                            <a href="{{ route('user.quotes') }}" class="flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 text-[11px] font-black uppercase italic tracking-tighter transition-colors group/item">
+                                                <div class="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center group-hover/item:bg-white transition-colors">
+                                                    <i class="fas fa-file-invoice-dollar text-amber-500 group-hover/item:text-amber-600"></i>
+                                                </div>
+                                                Teklif Taleplerim
                                             </a>
                                             <a href="{{ route('user.addresses') }}" class="flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 text-[11px] font-black uppercase italic tracking-tighter transition-colors group/item">
                                                 <div class="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center group-hover/item:bg-white transition-colors">
@@ -461,6 +472,8 @@
                                                 </div>
                                                 <a href="{{ route('user.dashboard') }}" class="block px-4 py-2 text-xs font-bold text-gray-700 hover:bg-gray-50">Hesabım</a>
                                                 <a href="{{ route('user.orders') }}" class="block px-4 py-2 text-xs font-bold text-gray-700 hover:bg-gray-50">Siparişlerim</a>
+                                                <a href="{{ route('user.quotes') }}" class="block px-4 py-2 text-xs font-bold text-amber-700 hover:bg-amber-50">Teklif Taleplerim</a>
+                                                <a href="{{ route('quote.track') }}" class="block px-4 py-2 text-xs font-bold text-emerald-700 hover:bg-emerald-50">Teklif Sorgula</a>
                                                 <a href="{{ route('user.addresses') }}" class="block px-4 py-2 text-xs font-bold text-gray-700 hover:bg-gray-50">Adreslerim</a>
                                                 <form action="{{ route('logout') }}" method="POST" class="mt-2 pt-2 border-t border-gray-50">
                                                     @csrf

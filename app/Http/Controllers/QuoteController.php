@@ -4,9 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\QuoteRequest;
 use App\Models\QuoteRequestItem;
-use App\Models\Product;
+use App\Models\Setting;
+use App\Mail\QuoteReceivedMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
 class QuoteController extends Controller
@@ -42,10 +45,11 @@ class QuoteController extends Controller
             'items.min' => 'Teklif sepetinizde en az 1 ürün bulunmalıdır.',
         ]);
 
+        // Generate unique quote number (TK-YYYY-XXXXX)
         $year = date('Y');
-        $random = strtoupper(Str::random(5));
-        $count = QuoteRequest::whereYear('created_at', $year)->count() + 1;
-        $quoteNo = sprintf('TK-%s-%04d', $year, $count);
+        do {
+            $quoteNo = 'TK-' . $year . '-' . strtoupper(Str::random(5));
+        } while (QuoteRequest::where('quote_no', $quoteNo)->exists());
 
         $estimatedTotal = 0;
         foreach ($request->items as $item) {
@@ -83,6 +87,25 @@ class QuoteController extends Controller
             ]);
         }
 
+        // Queue notification emails
+        if ($quote->customer_email) {
+            try {
+                Mail::to($quote->customer_email)->queue(new QuoteReceivedMail($quote));
+            } catch (\Throwable $e) {
+                Log::error('Quote customer email queue error: ' . $e->getMessage());
+            }
+        }
+
+        // Admin notification email
+        $adminEmail = Setting::getValue('site_contact_email', config('mail.from.address'));
+        if ($adminEmail) {
+            try {
+                Mail::to($adminEmail)->queue(new QuoteReceivedMail($quote));
+            } catch (\Throwable $e) {
+                Log::error('Quote admin email queue error: ' . $e->getMessage());
+            }
+        }
+
         if ($request->wantsJson() || $request->ajax()) {
             return response()->json([
                 'success' => true,
@@ -97,11 +120,60 @@ class QuoteController extends Controller
     }
 
     /**
-     * Display the Quote Success & Tracking page.
+     * Display the Quote Success confirmation page.
      */
-    public function success(string $quote_no)
+    public function success($quote_no)
     {
         $quote = QuoteRequest::with('items')->where('quote_no', $quote_no)->firstOrFail();
         return view('quote_success', compact('quote'));
+    }
+
+    /**
+     * Display the Quote Tracking / Query page (Teklif Sorgulama).
+     */
+    public function track(Request $request)
+    {
+        $searchedNo = trim($request->input('quote_no', ''));
+        $quote = null;
+        $errorMessage = null;
+
+        if ($searchedNo !== '') {
+            $quote = QuoteRequest::with('items')->where('quote_no', $searchedNo)->first();
+            if (!$quote) {
+                // Try case-insensitive lookup or strip spaces
+                $cleanNo = strtoupper(preg_replace('/[^A-Za-z0-9\-]/', '', $searchedNo));
+                $quote = QuoteRequest::with('items')->where('quote_no', $cleanNo)->first();
+            }
+
+            if (!$quote) {
+                $errorMessage = 'Belirtilen "' . htmlspecialchars($searchedNo) . '" takip numarasına ait teklif talebi bulunamadı. Lütfen takip numaranızı kontrol ediniz.';
+            }
+        }
+
+        return view('quote_track', compact('quote', 'searchedNo', 'errorMessage'));
+    }
+
+    /**
+     * Logged-in User Quotes History.
+     */
+    public function userQuotes()
+    {
+        $user = Auth::user();
+        if (!$user) {
+            return redirect()->route('login');
+        }
+
+        $quotes = QuoteRequest::with('items')
+            ->where(function ($query) use ($user) {
+                $query->where('user_id', $user->id)
+                      ->orWhere('customer_email', $user->email);
+                if (!empty($user->phone)) {
+                    $query->orWhere('customer_phone', $user->phone);
+                }
+            })
+            ->latest()
+            ->paginate(10);
+
+        return view('user.quotes', compact('quotes'));
     }
 }

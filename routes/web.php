@@ -39,6 +39,7 @@ Route::get('/sayfa/{slug}', [\App\Http\Controllers\HomeController::class, 'page'
 Route::get('/teklif-sepeti', [\App\Http\Controllers\QuoteController::class, 'index'])->name('quote.cart');
 Route::post('/teklif-talebi-gonder', [\App\Http\Controllers\QuoteController::class, 'store'])->name('quote.store');
 Route::get('/teklif-basarili/{quote_no}', [\App\Http\Controllers\QuoteController::class, 'success'])->name('quote.success');
+Route::get('/teklif-sorgula', [\App\Http\Controllers\QuoteController::class, 'track'])->name('quote.track');
 
 // Authentication Routes (Guest)
 Route::middleware('guest')->group(function () {
@@ -80,6 +81,7 @@ Route::middleware(['auth', 'user'])->prefix('hesabim')->name('user.')->group(fun
     Route::get('/siparislerim', [\App\Http\Controllers\UserController::class, 'orders'])->name('orders');
     Route::get('/siparislerim/{order}', [\App\Http\Controllers\UserController::class, 'orderShow'])->name('orders.show');
     Route::get('/siparislerim/{order}/fatura-indir', [\App\Http\Controllers\UserController::class, 'downloadInvoice'])->name('orders.download-invoice');
+    Route::get('/tekliflerim', [\App\Http\Controllers\QuoteController::class, 'userQuotes'])->name('quotes');
     Route::get('/adreslerim', [\App\Http\Controllers\UserController::class, 'addresses'])->name('addresses');
     Route::post('/adreslerim', [\App\Http\Controllers\UserController::class, 'addressStore'])->name('addresses.store');
     Route::delete('/adreslerim/{address}', [\App\Http\Controllers\UserController::class, 'addressDestroy'])->name('addresses.destroy');

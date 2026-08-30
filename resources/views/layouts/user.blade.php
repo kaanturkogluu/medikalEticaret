@@ -71,6 +71,14 @@
                     </a>
                 </div>
 
+                {{-- Tekliflerim Group --}}
+                <div>
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest px-4 mb-3 opacity-50">Teklif Taleplerim</p>
+                    <a href="{{ route('user.quotes') }}" class="nav-link {{ Request::is('hesabim/tekliflerim*') ? 'active' : '' }}">
+                        <i class="fas fa-file-invoice-dollar text-amber-500"></i> Teklif Taleplerim
+                    </a>
+                </div>
+
                 {{-- Favoriler Group --}}
                 <div>
                     <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest px-4 mb-3 opacity-50">Alışveriş Listem</p>

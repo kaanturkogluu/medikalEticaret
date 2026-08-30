@@ -60,42 +60,56 @@ class QuoteController extends Controller
     }
 
     /**
-     * Update status and notes.
+     * Update quote request status and admin notes.
      */
     public function updateStatus(Request $request, QuoteRequest $quote)
     {
         $request->validate([
-            'status' => 'required|string|in:pending,reviewed,offered,converted,completed,rejected',
-            'admin_notes' => 'nullable|string|max:3000',
+            'status' => 'required|in:pending,reviewed,offered,converted,completed,rejected',
+            'admin_notes' => 'nullable|string|max:2000',
         ]);
 
+        $oldStatus = $quote->status;
         $quote->status = $request->status;
-        if ($request->has('admin_notes')) {
-            $quote->admin_notes = $request->admin_notes;
-        }
+        $quote->admin_notes = $request->admin_notes;
         $quote->save();
 
-        return redirect()->route('admin.quotes.show', $quote)->with('success', 'Teklif durumu güncellendi.');
+        // Send notification email if status changed and customer has email
+        if ($quote->customer_email && $oldStatus !== $quote->status) {
+            try {
+                \Illuminate\Support\Facades\Mail::to($quote->customer_email)->queue(new \App\Mail\QuoteStatusUpdatedMail($quote));
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error('Quote status email error: ' . $e->getMessage());
+            }
+        }
+
+        return redirect()->route('admin.quotes.show', $quote)->with('success', 'Teklif talebi durumu başarıyla güncellendi.');
     }
 
     /**
-     * Save offered price to customer.
+     * Update offer total price.
      */
     public function updateOffer(Request $request, QuoteRequest $quote)
     {
         $request->validate([
             'offered_total' => 'required|numeric|min:0',
-            'admin_notes' => 'nullable|string|max:3000',
         ]);
 
         $quote->offered_total = $request->offered_total;
-        $quote->status = 'offered';
-        if ($request->filled('admin_notes')) {
-            $quote->admin_notes = $request->admin_notes;
+        if ($quote->status === 'pending' || $quote->status === 'reviewed') {
+            $quote->status = 'offered';
         }
         $quote->save();
 
-        return redirect()->route('admin.quotes.show', $quote)->with('success', 'Müşteriye teklif edilen özel fiyat kaydedildi.');
+        if ($quote->customer_email) {
+            try {
+                \Illuminate\Support\Facades\Mail::to($quote->customer_email)->queue(new \App\Mail\QuoteStatusUpdatedMail($quote));
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error('Quote offer email error: ' . $e->getMessage());
+            }
+        }
+
+        return redirect()->route('admin.quotes.show', $quote)->with('success', 'Teklif fiyatı başarıyla kaydedildi.');
     }
 
     /**
@@ -129,29 +143,43 @@ class QuoteController extends Controller
             $description = $descriptionHtml;
         }
 
-        $slug = Str::slug("ozel-siparis-{$quote->quote_no}-" . Str::lower(Str::random(5)));
-
-        // Create the product in the system
-        $product = Product::create([
-            'name' => $productName,
-            'slug' => $slug,
-            'price' => $request->price,
-            'stock' => 1,
-            'active' => 1,
-            'free_shipping' => 1,
-            'description' => $description,
-            'brand_name' => 'umutMed Özel Sipariş',
-            'category_name' => 'Özel Teklif Siparişleri',
-        ]);
-
-        // Link first item's image if available
-        $firstItemWithImage = $quote->items->whereNotNull('product_image')->first();
-        if ($firstItemWithImage && $firstItemWithImage->product_image) {
-            $product->productImages()->create([
-                'url' => $firstItemWithImage->product_image,
-                'path' => $firstItemWithImage->product_image,
-                'is_primary' => 1,
+        // Check if an existing custom product was already created for this quote
+        if ($quote->created_product_id && ($existingProduct = Product::find($quote->created_product_id))) {
+            $product = $existingProduct;
+            $product->update([
+                'name' => $productName,
+                'price' => $request->price,
+                'stock' => 1,
+                'active' => 1,
+                'free_shipping' => 1,
+                'description' => $description,
             ]);
+        } else {
+            $sku = 'OZEL-' . preg_replace('/[^A-Za-z0-9]/', '', $quote->quote_no) . '-' . strtoupper(Str::random(4));
+            $slug = Str::slug("ozel-siparis-{$quote->quote_no}-" . Str::lower(Str::random(5)));
+
+            $product = Product::create([
+                'sku' => $sku,
+                'name' => $productName,
+                'slug' => $slug,
+                'price' => $request->price,
+                'stock' => 1,
+                'active' => 1,
+                'free_shipping' => 1,
+                'description' => $description,
+                'brand_name' => 'umutMed Özel Sipariş',
+                'category_name' => 'Özel Teklif Siparişleri',
+            ]);
+
+            // Link first item's image if available
+            $firstItemWithImage = $quote->items->whereNotNull('product_image')->first();
+            if ($firstItemWithImage && $firstItemWithImage->product_image) {
+                $product->productImages()->create([
+                    'url' => $firstItemWithImage->product_image,
+                    'path' => $firstItemWithImage->product_image,
+                    'is_primary' => 1,
+                ]);
+            }
         }
 
         $paymentLink = route('product.show', ['product' => $product->slug]);
@@ -161,6 +189,15 @@ class QuoteController extends Controller
         $quote->offered_total = $request->price;
         $quote->status = 'converted';
         $quote->save();
+
+        // Send notification email to customer
+        if ($quote->customer_email) {
+            try {
+                \Illuminate\Support\Facades\Mail::to($quote->customer_email)->queue(new \App\Mail\QuoteStatusUpdatedMail($quote));
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error('Quote converted email error: ' . $e->getMessage());
+            }
+        }
 
         return redirect()->route('admin.quotes.show', $quote)->with('success', 'Özel sipariş ürünü ve ödeme linki başarıyla oluşturuldu!');
     }
