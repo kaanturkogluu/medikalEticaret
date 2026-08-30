@@ -677,147 +677,231 @@
         @yield('content')
     </main>
 
-    <!-- Pre-Footer Action Bar -->
-    @php
-        $socialActive = \App\Models\Setting::getValue('social_media_active', true);
-        $whatsappActive = \App\Models\Setting::getValue('whatsapp_support_active', true);
-        $appsActive = \App\Models\Setting::getValue('app_stores_active', true);
-
-        $facebook = \App\Models\Setting::getValue('social_facebook', '#');
-        $instagram = \App\Models\Setting::getValue('social_instagram', '#');
-        $twitter = \App\Models\Setting::getValue('social_twitter', '#');
-        $linkedin = \App\Models\Setting::getValue('social_linkedin', '#');
-
-        $googlePlay = \App\Models\Setting::getValue('app_google_play', '#');
-        $appleStore = \App\Models\Setting::getValue('app_apple_store', '#');
-    @endphp
-    @if($socialActive || $whatsappActive || $appsActive)
-        <section class="bg-white border-t border-gray-50 py-16">
-            <div class="ty-container flex flex-col md:flex-row items-center justify-between gap-12">
-                <!-- Social Media -->
-                @if($socialActive)
-                    <div class="flex flex-col gap-6 w-full md:w-auto items-center md:items-start text-center md:text-left">
-                        <h4
-                            class="text-xs font-black text-slate-900 uppercase italic tracking-tighter border-b-2 md:border-b-0 md:border-l-4 border-[var(--primary-color)] md:pl-3 pb-2 md:pb-0 w-fit">
-                            Sosyal Medyada Biz</h4>
-                        <div class="flex gap-4">
-                            <a href="{{ $facebook }}" target="_blank"
-                                class="w-12 h-12 rounded-2xl bg-slate-50 border border-gray-100 flex items-center justify-center text-slate-600 hover:bg-[#3b5998] hover:text-white transition-all transform hover:-translate-y-1 shadow-sm"><i
-                                    class="fab fa-facebook-f"></i></a>
-                            <a href="{{ $instagram }}" target="_blank"
-                                class="w-12 h-12 rounded-2xl bg-slate-50 border border-gray-100 flex items-center justify-center text-slate-600 hover:bg-[#E1306C] hover:text-white transition-all transform hover:-translate-y-1 shadow-sm"><i
-                                    class="fab fa-instagram"></i></a>
-                            <a href="{{ $twitter }}" target="_blank"
-                                class="w-12 h-12 rounded-2xl bg-slate-50 border border-gray-100 flex items-center justify-center text-slate-600 hover:bg-black hover:text-white transition-all transform hover:-translate-y-1 shadow-sm"><i
-                                    class="fa-brands fa-x-twitter text-lg"></i></a>
-                            <a href="{{ $linkedin }}" target="_blank"
-                                class="w-12 h-12 rounded-2xl bg-slate-50 border border-gray-100 flex items-center justify-center text-slate-600 hover:bg-[#0077b5] hover:text-white transition-all transform hover:-translate-y-1 shadow-sm"><i
-                                    class="fab fa-linkedin-in"></i></a>
-                        </div>
-                    </div>
-                @endif
-
-                <!-- WhatsApp Support -->
-                @if($whatsappActive)
-                    <div class="flex flex-col items-center gap-6">
-                        <h4
-                            class="text-xs font-black text-slate-900 uppercase italic tracking-tighter border-b-2 border-green-500 pb-2 w-fit">
-                            Hızlı Destek Hattı</h4>
-                        <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', \App\Models\Setting::getValue('contact_whatsapp', '905300000000')) }}"
-                            target="_blank"
-                            class="bg-[#25D366] text-white px-10 py-5 rounded-2xl font-black italic shadow-2xl shadow-green-100 flex items-center gap-5 hover:bg-[#128C7E] transition-all transform hover:-translate-y-1 border-b-4 border-green-700 active:border-b-0 active:translate-y-1">
-                            <i class="fab fa-whatsapp text-4xl"></i>
-                            <div class="flex flex-col leading-none text-left">
-                                <span class="text-[10px] opacity-80 uppercase tracking-widest font-bold mb-1">Sorularınız
-                                    İçin</span>
-                                <span class="text-xl">WHATSAPP DESTEK</span>
-                            </div>
-                        </a>
-                    </div>
-                @endif
-
-                <!-- App Stores -->
-                @if($appsActive)
-                    <div class="flex flex-col items-center md:items-end gap-6 w-full md:w-auto text-center md:text-right">
-                        <h4
-                            class="text-xs font-black text-slate-900 uppercase italic tracking-tighter border-b-2 md:border-b-0 md:border-r-4 border-slate-900 md:pr-3 pb-2 md:pb-0 w-fit">
-                            Mobil Uygulamamız</h4>
-                        <div class="flex flex-wrap gap-4 justify-center md:justify-end">
-                            <a href="{{ $googlePlay }}" target="_blank"
-                                class="bg-slate-900 text-white px-6 py-4 rounded-2xl flex items-center gap-4 hover:bg-black transition-all border border-slate-800 shadow-2xl transform hover:-translate-y-1 group">
-                                <i
-                                    class="fab fa-google-play text-3xl text-white group-hover:text-green-400 transition-colors"></i>
-                                <div class="flex flex-col leading-none items-start">
-                                    <span class="text-[9px] opacity-50 uppercase font-bold mb-1">Google Play'den</span>
-                                    <span class="text-sm font-black font-sans tracking-tight italic">İNDİRİN</span>
-                                </div>
-                            </a>
-                            <a href="{{ $appleStore }}" target="_blank"
-                                class="bg-slate-900 text-white px-6 py-4 rounded-2xl flex items-center gap-4 hover:bg-black transition-all border border-slate-800 shadow-2xl transform hover:-translate-y-1 group">
-                                <i class="fab fa-apple text-3xl text-white group-hover:text-amber-400 transition-colors"></i>
-                                <div class="flex flex-col leading-none items-start">
-                                    <span class="text-[9px] opacity-50 uppercase font-bold mb-1">App Store'dan</span>
-                                    <span class="text-sm font-black font-sans tracking-tight italic">İNDİRİN</span>
-                                </div>
-                            </a>
-                        </div>
-                    </div>
-                @endif
-            </div>
-        </section>
-    @endif
-
     <!-- Footer -->
-    <footer class="bg-slate-900 text-white py-16">
-        <div class="ty-container grid grid-cols-1 md:grid-cols-4 gap-12">
-            @foreach($footerCols as $col)
-                <div>
-                    <h4 class="text-sm font-black italic tracking-tighter uppercase mb-6 text-white/90">{{ $col['title'] }}
-                    </h4>
-                    <ul class="space-y-3 text-sm text-gray-400 font-medium">
-                        @foreach($col['links'] ?? [] as $link)
-                            <li><a href="{{ $link['url'] }}"
-                                    class="hover:text-[var(--primary-color)] transition-colors">{{ $link['text'] }}</a></li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endforeach
+    <footer class="bg-slate-900 text-slate-300 pt-16 pb-12 border-t border-slate-800">
+        <div class="ty-container">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-8 pb-10 border-b border-slate-800">
+                
+                <!-- Col 1: Brand Info & Social Media (2 cols in desktop) -->
+                <div class="lg:col-span-2 space-y-5">
+                    <a href="{{ route('home') }}" class="inline-block">
+                        <span class="text-2xl font-black text-white tracking-tight">
+                            umut<span class="text-emerald-500">Med</span>
+                        </span>
+                    </a>
+                    
+                    <p class="text-xs text-slate-400 leading-relaxed max-w-md">
+                        T.C. Sağlık Bakanlığı ÜTS kayıtlı medikal hijyen ve hasta bakım sarf malzemeleri tedarikçiniz. Adınıza resmi fatura ve aynı gün kargo güvencesiyle hizmetinizdeyiz.
+                    </p>
 
-            <div>
-                <h4 class="text-sm font-black italic tracking-tighter uppercase mb-6 text-white/90">Güvenli Alışveriş
-                </h4>
-                <div class="flex flex-col gap-6">
-                    <div class="flex flex-wrap items-center gap-6">
-                        <img src="{{ asset('images/logo_bandx.png') }}" class="h-8" alt="Ödeme Seçenekleri">
-                        <div class="h-6 w-px bg-white/20 mx-2"></div>
-                        <div class="flex items-center gap-3">
-                            <img src="https://cdn-icons-png.flaticon.com/512/5950/5950545.png" class="h-6 invert opacity-80" alt="SSL">
-                            <div class="flex flex-col leading-none">
-                                <span class="text-[8px] font-black tracking-tighter text-white">256-BIT SSL</span>
-                                <span class="text-[7px] font-bold text-slate-400">GÜVENLİ ÖDEME</span>
+                    <!-- Contact Details Snippet -->
+                    <div class="space-y-2 text-xs text-slate-300">
+                        @php
+                            $contactPhoneVal = \App\Models\Setting::getValue('contact_phone', '0546 941 69 96');
+                            $contactAddressVal = \App\Models\Setting::getValue('contact_address', 'Numune Evler, Ezgi Sk., 31600 Dörtyol/Hatay');
+                            $facebook = \App\Models\Setting::getValue('social_facebook', '#');
+                            $instagram = \App\Models\Setting::getValue('social_instagram', '#');
+                            $twitter = \App\Models\Setting::getValue('social_twitter', '#');
+                            $linkedin = \App\Models\Setting::getValue('social_linkedin', '#');
+                        @endphp
+
+                        @if($contactPhoneVal)
+                            <div class="flex items-center gap-2.5">
+                                <i class="fas fa-phone text-emerald-500 w-4 text-center"></i>
+                                <a href="tel:{{ $contactPhoneVal }}" class="hover:text-white transition-colors font-medium">{{ $contactPhoneVal }}</a>
                             </div>
+                        @endif
+                        @if($contactAddressVal)
+                            <div class="flex items-start gap-2.5">
+                                <i class="fas fa-location-dot text-emerald-500 w-4 text-center mt-0.5"></i>
+                                <span>{{ $contactAddressVal }}</span>
+                            </div>
+                        @endif
+                    </div>
+
+                    <!-- Social Media Links In Footer -->
+                    <div class="pt-2">
+                        <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-3">Sosyal Medyada Bizi Takip Edin</div>
+                        <div class="flex items-center gap-2.5">
+                            @if($facebook && $facebook !== '#')
+                                <a href="{{ $facebook }}" target="_blank" rel="noopener noreferrer" 
+                                   class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-[#1877F2] text-slate-300 hover:text-white flex items-center justify-center transition-all shadow-xs" title="Facebook">
+                                    <i class="fab fa-facebook-f text-sm"></i>
+                                </a>
+                            @endif
+                            @if($instagram && $instagram !== '#')
+                                <a href="{{ $instagram }}" target="_blank" rel="noopener noreferrer" 
+                                   class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-[#E4405F] text-slate-300 hover:text-white flex items-center justify-center transition-all shadow-xs" title="Instagram">
+                                    <i class="fab fa-instagram text-sm"></i>
+                                </a>
+                            @endif
+                            @if($twitter && $twitter !== '#')
+                                <a href="{{ $twitter }}" target="_blank" rel="noopener noreferrer" 
+                                   class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-black text-slate-300 hover:text-white flex items-center justify-center transition-all shadow-xs" title="X (Twitter)">
+                                    <i class="fa-brands fa-x-twitter text-sm"></i>
+                                </a>
+                            @endif
+                            @if($linkedin && $linkedin !== '#')
+                                <a href="{{ $linkedin }}" target="_blank" rel="noopener noreferrer" 
+                                   class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-[#0A66C2] text-slate-300 hover:text-white flex items-center justify-center transition-all shadow-xs" title="LinkedIn">
+                                    <i class="fab fa-linkedin-in text-sm"></i>
+                                </a>
+                            @endif
                         </div>
-                        <div class="flex items-center gap-1.5 border border-white/20 rounded-md px-2 py-1">
-                            <i class="fas fa-shield-alt text-[10px] text-green-400"></i>
-                            <span class="text-[9px] font-black italic tracking-tighter">3D SECURE</span>
+                    </div>
+                </div>
+
+                <!-- Footer Dynamic Columns (Only rendered if they contain valid links!) -->
+                @foreach($footerCols as $col)
+                    @php
+                        $validLinks = collect($col['links'] ?? [])->filter(function($l) {
+                            return !empty($l['text']) && trim($l['text']) !== '';
+                        });
+                    @endphp
+                    @if($validLinks->isNotEmpty())
+                        <div class="space-y-4">
+                            <h4 class="text-sm font-bold text-white uppercase tracking-wider">{{ $col['title'] }}</h4>
+                            <ul class="space-y-2.5 text-xs text-slate-400">
+                                @foreach($validLinks as $link)
+                                    <li>
+                                        <a href="{{ $link['url'] ?? '#' }}" class="hover:text-emerald-400 transition-colors inline-block">
+                                            {{ $link['text'] }}
+                                        </a>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+                @endforeach
+
+                <!-- ETBİS Verification QR (if configured) -->
+                @if($footerQr)
+                    <div class="space-y-4 flex flex-col items-start lg:items-end">
+                        <h4 class="text-sm font-bold text-white uppercase tracking-wider">ETBİS Doğrulama</h4>
+                        <a href="{{ \App\Models\Setting::getValue('etbis_url', '#') }}" target="_blank" rel="noopener noreferrer"
+                           class="bg-white p-2 rounded-xl w-fit shadow-md hover:scale-105 transition-transform flex flex-col items-center cursor-pointer">
+                            <img src="{{ $footerQr }}" class="w-18 h-18 object-contain" alt="ETBİS QR Kod">
+                            <span class="text-[9px] text-slate-900 font-bold uppercase tracking-tight mt-1">ETBİS'E KAYITLIDIR</span>
+                        </a>
+                    </div>
+                @endif
+
+            </div>
+
+            <!-- Horizontal Single-Row Güvenli Alışveriş Bar -->
+            <div class="py-6 border-b border-slate-800 my-2">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+                    
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-xl bg-slate-800 flex items-center justify-center text-emerald-400 shrink-0">
+                            <i class="fas fa-lock text-sm"></i>
+                        </div>
+                        <div>
+                            <div class="text-xs font-bold text-white leading-tight">256-Bit SSL & iyzico</div>
+                            <div class="text-[11px] text-slate-400 mt-0.5">Uçtan uca şifreli güvenli ödeme</div>
                         </div>
                     </div>
 
-                    @if($footerQr)
-                        <a href="{{ \App\Models\Setting::getValue('etbis_url', '#') }}" target="_blank"
-                            class="bg-white p-2 pb-3 rounded-[24px] w-fit shadow-2xl shadow-black/40 group hover:scale-105 transition-transform duration-300 flex flex-col items-center cursor-pointer">
-                            <img src="{{ $footerQr }}" class="w-24 h-24 object-contain" alt="QR Kod">
-                            <span class="text-[8px] text-slate-900 font-black italic uppercase tracking-tighter mt-1">ETBİS'E KAYITLIDIR</span>
-                        </a>
-                    @endif
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-xl bg-slate-800 flex items-center justify-center text-blue-400 shrink-0">
+                            <i class="fas fa-shield-check text-sm"></i>
+                        </div>
+                        <div>
+                            <div class="text-xs font-bold text-white leading-tight">3D Secure Koruma</div>
+                            <div class="text-[11px] text-slate-400 mt-0.5">Tüm banka kartlarına taksit imkanı</div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-xl bg-slate-800 flex items-center justify-center text-amber-400 shrink-0">
+                            <i class="fas fa-file-invoice text-sm"></i>
+                        </div>
+                        <div>
+                            <div class="text-xs font-bold text-white leading-tight">Resmi E-Fatura</div>
+                            <div class="text-[11px] text-slate-400 mt-0.5">SGK geri ödeme mevzuatına uygun</div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-xl bg-slate-800 flex items-center justify-center text-purple-400 shrink-0">
+                            <i class="fas fa-certificate text-sm"></i>
+                        </div>
+                        <div>
+                            <div class="text-xs font-bold text-white leading-tight">%100 Orijinal Medikal</div>
+                            <div class="text-[11px] text-slate-400 mt-0.5">Sağlık Bakanlığı ÜTS kayıtlı</div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
-        </div>
-        <div
-            class="ty-container border-t border-slate-800 mt-16 pt-8 flex flex-col md:flex-row items-center justify-between text-xs text-slate-500 font-bold uppercase tracking-widest">
-            <p>&copy; 2026 {{ config('app.name') }} | Tüm Hakları Saklıdır.</p>
+
+            <!-- iyzico & Payment Methods Bar -->
+            <div class="py-4 border-b border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
+                <div class="flex flex-wrap items-center gap-3">
+                    <span class="text-[11px] font-semibold text-slate-400">Güvenli Ödeme Altyapısı:</span>
+                    <div class="inline-flex items-center gap-2 bg-white px-3 py-1 rounded-lg shadow-xs">
+                        <img src="https://www.iyzico.com/assets/images/content/iyzico-logo.svg" alt="iyzico Güvenli Ödeme" class="h-4 object-contain" onerror="this.outerHTML='<span class=\'text-[#1E64FF] font-black text-xs\'>iyzico</span>'">
+                    </div>
+                    <span class="inline-flex items-center gap-1.5 text-[11px] text-emerald-400 bg-emerald-950/60 border border-emerald-800/60 px-2.5 py-0.5 rounded-md font-medium">
+                        <i class="fas fa-shield-halved text-[10px]"></i>
+                        <span>iyzico Korumalı Alışveriş</span>
+                    </span>
+                </div>
+
+                <!-- Card provider logos -->
+                <div class="flex items-center gap-2">
+                    <div class="bg-white px-2.5 py-1 rounded-lg h-7 flex items-center shadow-xs">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/Visa_2021.svg/1200px-Visa_2021.svg.png" alt="Visa" class="h-3 object-contain">
+                    </div>
+                    <div class="bg-white px-2.5 py-1 rounded-lg h-7 flex items-center shadow-xs">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard-logo.svg/1280px-Mastercard-logo.svg.png" alt="Mastercard" class="h-4 object-contain">
+                    </div>
+                    <div class="bg-white px-2.5 py-1 rounded-lg h-7 flex items-center shadow-xs">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/Troy_logo.svg/1280px-Troy_logo.svg.png" alt="Troy" class="h-3.5 object-contain">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Copyright & Compliance Bar -->
+            <div class="pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+                <p>&copy; {{ date('Y') }} {{ $siteTitle }}. Tüm hakları saklıdır.</p>
+                <div class="flex items-center gap-4 text-slate-400">
+                    <span class="flex items-center gap-1.5"><i class="fas fa-shield-halved text-emerald-500"></i> T.C. Sağlık Bakanlığı ÜTS Kayıtlı</span>
+                    <span>•</span>
+                    <span>T.C. Ticaret Bakanlığı ETBİS Kayıtlı</span>
+                </div>
+            </div>
         </div>
     </footer>
+
+    <!-- Fixed Floating WhatsApp Button (Bottom-Left) -->
+    @php
+        $waRaw = preg_replace('/[^0-9]/', '', \App\Models\Setting::getValue('contact_whatsapp', '905469416996'));
+        $waDefaultMsg = urlencode("Merhaba " . $siteTitle . ", ürünler hakkında bilgi almak istiyorum.");
+    @endphp
+    <div class="fixed bottom-6 left-6 z-50 group flex items-center">
+        <a href="https://wa.me/{{ $waRaw }}?text={{ $waDefaultMsg }}" 
+           target="_blank" 
+           rel="noopener noreferrer"
+           class="relative w-14 h-14 bg-[#25D366] hover:bg-[#20ba5a] text-white rounded-full flex items-center justify-center shadow-2xl hover:shadow-emerald-500/50 transition-all duration-300 transform hover:scale-110 active:scale-95"
+           title="WhatsApp Destek Hattı"
+           aria-label="WhatsApp Destek Hattı">
+            
+            <!-- Animated subtle pulse ring -->
+            <span class="absolute inset-0 rounded-full bg-[#25D366] opacity-40 animate-ping pointer-events-none"></span>
+            
+            <i class="fab fa-whatsapp text-3xl relative z-10"></i>
+        </a>
+
+        <!-- Hover Tooltip Message -->
+        <a href="https://wa.me/{{ $waRaw }}?text={{ $waDefaultMsg }}" 
+           target="_blank" 
+           rel="noopener noreferrer"
+           class="hidden sm:inline-flex items-center gap-2 ml-3 bg-slate-900 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow-xl opacity-0 group-hover:opacity-100 translate-x-[-10px] group-hover:translate-x-0 transition-all duration-200 pointer-events-none group-hover:pointer-events-auto border border-slate-700">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span>WhatsApp Destek Hattı</span>
+        </a>
+    </div>
 
     <!-- Cart Drawer -->
     <div x-show="$store.cart.open" x-cloak class="fixed inset-0 z-[2000]" aria-labelledby="slide-over-title"
