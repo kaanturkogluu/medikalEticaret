@@ -774,23 +774,11 @@
                     @endif
                 @endforeach
 
-                <!-- ETBİS Verification QR (if configured) -->
-                @if($footerQr)
-                    <div class="space-y-3 flex flex-col items-start lg:items-end">
-                        <h4 class="text-sm font-bold text-white uppercase tracking-wider">ETBİS Doğrulama</h4>
-                        <a href="{{ \App\Models\Setting::getValue('etbis_url', '#') }}" target="_blank" rel="noopener noreferrer"
-                           class="bg-white p-2 rounded-xl shadow-md hover:scale-105 transition-transform flex flex-col items-center cursor-pointer border border-slate-700/50">
-                            <img src="{{ $footerQr }}" class="w-16 h-16 max-w-[64px] max-h-[64px] object-contain rounded-md" alt="ETBİS QR Kod">
-                            <span class="text-[8px] text-slate-900 font-bold uppercase tracking-tight mt-1">ETBİS'E KAYITLIDIR</span>
-                        </a>
-                    </div>
-                @endif
-
             </div>
 
             <!-- Horizontal Single-Row Güvenli Alışveriş Bar -->
             <div class="py-6 border-b border-slate-800 my-2">
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
                     
                     <div class="flex items-center gap-3">
                         <div class="w-9 h-9 rounded-xl bg-slate-800 flex items-center justify-center text-emerald-400 shrink-0">
@@ -822,14 +810,24 @@
                         </div>
                     </div>
 
-                    <div class="flex items-center gap-3">
-                        <div class="w-9 h-9 rounded-xl bg-slate-800 flex items-center justify-center text-purple-400 shrink-0">
-                            <i class="fas fa-certificate text-sm"></i>
+                    <div class="flex items-center justify-between gap-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-xl bg-slate-800 flex items-center justify-center text-purple-400 shrink-0">
+                                <i class="fas fa-certificate text-sm"></i>
+                            </div>
+                            <div>
+                                <div class="text-xs font-bold text-white leading-tight">%100 Orijinal Medikal</div>
+                                <div class="text-[11px] text-slate-400 mt-0.5">Sağlık Bakanlığı ÜTS kayıtlı</div>
+                            </div>
                         </div>
-                        <div>
-                            <div class="text-xs font-bold text-white leading-tight">%100 Orijinal Medikal</div>
-                            <div class="text-[11px] text-slate-400 mt-0.5">Sağlık Bakanlığı ÜTS kayıtlı</div>
-                        </div>
+
+                        @if($footerQr)
+                            <a href="{{ \App\Models\Setting::getValue('etbis_url', '#') }}" target="_blank" rel="noopener noreferrer"
+                               class="bg-white p-1 rounded-lg shadow-xs hover:scale-105 transition-transform flex flex-col items-center cursor-pointer shrink-0 border border-white/20" title="ETBİS Doğrulama">
+                                <img src="{{ $footerQr }}" class="w-9 h-9 max-w-[36px] max-h-[36px] object-contain rounded" alt="ETBİS QR Kod">
+                                <span class="text-[6px] text-slate-900 font-black uppercase tracking-tighter leading-none mt-0.5">ETBİS</span>
+                            </a>
+                        @endif
                     </div>
 
                 </div>
