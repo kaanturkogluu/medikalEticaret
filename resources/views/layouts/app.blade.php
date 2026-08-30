@@ -776,12 +776,12 @@
 
                 <!-- ETBİS Verification QR (if configured) -->
                 @if($footerQr)
-                    <div class="space-y-4 flex flex-col items-start lg:items-end">
+                    <div class="space-y-3 flex flex-col items-start lg:items-end">
                         <h4 class="text-sm font-bold text-white uppercase tracking-wider">ETBİS Doğrulama</h4>
                         <a href="{{ \App\Models\Setting::getValue('etbis_url', '#') }}" target="_blank" rel="noopener noreferrer"
-                           class="bg-white p-2 rounded-xl w-fit shadow-md hover:scale-105 transition-transform flex flex-col items-center cursor-pointer">
-                            <img src="{{ $footerQr }}" class="w-18 h-18 object-contain" alt="ETBİS QR Kod">
-                            <span class="text-[9px] text-slate-900 font-bold uppercase tracking-tight mt-1">ETBİS'E KAYITLIDIR</span>
+                           class="bg-white p-2 rounded-xl shadow-md hover:scale-105 transition-transform flex flex-col items-center cursor-pointer border border-slate-700/50">
+                            <img src="{{ $footerQr }}" class="w-16 h-16 max-w-[64px] max-h-[64px] object-contain rounded-md" alt="ETBİS QR Kod">
+                            <span class="text-[8px] text-slate-900 font-bold uppercase tracking-tight mt-1">ETBİS'E KAYITLIDIR</span>
                         </a>
                     </div>
                 @endif
@@ -839,8 +839,10 @@
             <div class="py-4 border-b border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
                 <div class="flex flex-wrap items-center gap-3">
                     <span class="text-[11px] font-semibold text-slate-400">Güvenli Ödeme Altyapısı:</span>
-                    <div class="inline-flex items-center gap-2 bg-white px-3 py-1 rounded-lg shadow-xs">
-                        <img src="https://www.iyzico.com/assets/images/content/iyzico-logo.svg" alt="iyzico Güvenli Ödeme" class="h-4 object-contain" onerror="this.outerHTML='<span class=\'text-[#1E64FF] font-black text-xs\'>iyzico</span>'">
+                    <div class="inline-flex items-center gap-2 bg-white px-3 py-1 rounded-lg shadow-xs h-7">
+                        <svg class="h-4 w-auto" viewBox="0 0 70 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M5.5 3.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0zm-1.2 5H1.8V17h2.5V8.5zM14.8 8.5l-2.7 6.6-2.6-6.6H7l3.9 9.3-2.3 5.2h2.6l6.3-14.5h-2.7zM23.5 14.8h-5.6l5.6-4.7v-1.6H15.4v2.1h5.3l-5.6 4.7v1.7h8.4v-2.2zM30.8 3.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0zm-1.2 5H27.1V17h2.5V8.5zM38.5 8.3c-2.6 0-4.4 2-4.4 4.5 0 2.6 1.8 4.5 4.4 4.5 1.7 0 3.1-.8 3.8-2.1l-2-.9c-.4.7-1.1 1.1-1.8 1.1-1.2 0-2-.9-2.1-2.1h6.1c.1-.2.1-.6.1-.8 0-2.4-1.7-4.2-4.1-4.2zm-2 3.7c.2-1.1.8-1.7 1.9-1.7 1 0 1.7.6 1.8 1.7h-3.7zM50.2 8.3c-2.7 0-4.7 2-4.7 4.5 0 2.5 2 4.5 4.7 4.5 2.7 0 4.7-2 4.7-4.5 0-2.5-2-4.5-4.7-4.5zm0 6.9c-1.5 0-2.5-1.1-2.5-2.4 0-1.3 1-2.4 2.5-2.4 1.5 0 2.5 1.1 2.5 2.4 0 1.3-1 2.4-2.5 2.4z" fill="#1E64FF"/>
+                        </svg>
                     </div>
                     <span class="inline-flex items-center gap-1.5 text-[11px] text-emerald-400 bg-emerald-950/60 border border-emerald-800/60 px-2.5 py-0.5 rounded-md font-medium">
                         <i class="fas fa-shield-halved text-[10px]"></i>
@@ -848,16 +850,28 @@
                     </span>
                 </div>
 
-                <!-- Card provider logos -->
+                <!-- Card provider logos (Sharp Inline SVGs - Never Break) -->
                 <div class="flex items-center gap-2">
-                    <div class="bg-white px-2.5 py-1 rounded-lg h-7 flex items-center shadow-xs">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/Visa_2021.svg/1200px-Visa_2021.svg.png" alt="Visa" class="h-3 object-contain">
+                    <!-- Visa -->
+                    <div class="bg-white px-2.5 py-1 rounded-lg h-7 flex items-center justify-center shadow-xs" title="Visa">
+                        <svg class="h-3.5 w-auto" viewBox="0 0 100 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M38.868 1.168L25.568 30.832H16.888L10.364 7.332C9.97 5.798 9.638 5.25 8.458 4.604C6.534 3.552 3.346 2.576 0.592 1.97L0.774 1.168H14.436C16.186 1.168 17.754 2.336 18.14 4.328L21.592 22.704L30.128 1.168H38.868ZM72.472 20.914C72.506 12.942 61.418 12.498 61.496 8.928C61.522 7.846 62.564 6.684 64.834 6.38C65.958 6.23 69.09 6.118 72.568 7.728L73.938 1.41C72.07 0.738 69.686 0.1 66.688 0.1C58.56 0.1 52.834 4.422 52.786 10.618C52.736 15.19 56.87 17.742 59.976 19.264C63.168 20.826 64.24 21.824 64.224 23.21C64.198 25.336 61.67 26.268 59.328 26.302C55.192 26.362 52.786 25.186 50.876 24.296L49.458 30.944C51.376 31.826 54.928 32.584 58.606 32.628C67.242 32.628 72.432 28.362 72.472 20.914ZM93.76 30.832H101.338L94.724 1.168H87.728C86.152 1.168 84.826 2.084 84.238 3.496L71.95 30.832H80.64L82.37 26.046H92.982L93.76 30.832ZM84.772 19.458L89.14 7.476L91.668 19.458H84.772ZM50.148 1.168L43.312 30.832H35.028L41.864 1.168H50.148Z" fill="#1A1F71"/>
+                        </svg>
                     </div>
-                    <div class="bg-white px-2.5 py-1 rounded-lg h-7 flex items-center shadow-xs">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard-logo.svg/1280px-Mastercard-logo.svg.png" alt="Mastercard" class="h-4 object-contain">
+                    <!-- Mastercard -->
+                    <div class="bg-white px-2 py-1 rounded-lg h-7 flex items-center justify-center shadow-xs" title="Mastercard">
+                        <svg class="h-4 w-auto" viewBox="0 0 36 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="13" cy="12" r="7.5" fill="#EB001B"/>
+                            <circle cx="23" cy="12" r="7.5" fill="#F79E1B"/>
+                            <path d="M18 6.4A7.47 7.47 0 0 0 15 12c0 2.24 1 4.25 2.56 5.6A7.47 7.47 0 0 0 21 12a7.47 7.47 0 0 0-3-5.6Z" fill="#FF5F00"/>
+                        </svg>
                     </div>
-                    <div class="bg-white px-2.5 py-1 rounded-lg h-7 flex items-center shadow-xs">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/Troy_logo.svg/1280px-Troy_logo.svg.png" alt="Troy" class="h-3.5 object-contain">
+                    <!-- TROY -->
+                    <div class="bg-white px-2 py-1 rounded-lg h-7 flex items-center justify-center shadow-xs" title="TROY">
+                        <svg class="h-4 w-auto" viewBox="0 0 54 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M0 3C0 1.34315 1.34315 0 3 0H51C52.6569 0 54 1.34315 54 3V17C54 18.6569 52.6569 20 51 20H3C1.34315 20 0 18.6569 0 17V3Z" fill="#0079C1"/>
+                            <path d="M8 5H17V8H14V15H11V8H8V5ZM18.5 5H24.5C26.5 5 28 6.2 28 8.2C28 9.6 27.2 10.7 25.8 11.1L28.5 15H25.2L22.8 11.5H21.5V15H18.5V5ZM21.5 7.5V9.5H24.2C24.8 9.5 25.2 9.1 25.2 8.5C25.2 7.9 24.8 7.5 24.2 7.5H21.5ZM29.5 10C29.5 7.2 31.8 5 34.8 5C37.8 5 40.1 7.2 40.1 10C40.1 12.8 37.8 15 34.8 15C31.8 15 29.5 12.8 29.5 10ZM32.5 10C32.5 11.5 33.5 12.6 34.8 12.6C36.1 12.6 37.1 11.5 37.1 10C37.1 8.5 36.1 7.4 34.8 7.4C33.5 7.4 32.5 8.5 32.5 10ZM41.5 5H44.8L47 9.2L49.2 5H52.5L48.6 11.2V15H45.4V11.2L41.5 5Z" fill="#FFFFFF"/>
+                        </svg>
                     </div>
                 </div>
             </div>
