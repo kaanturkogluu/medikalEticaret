@@ -50,38 +50,46 @@
 
                 <!-- Buttons Section (Dynamic Repeater) -->
             <div class="space-y-4" x-data="{ 
-                buttons: [
-                    { text: 'ALIŞVERİŞE BAŞLA', link: '#', bg: '#FB923C', color: '#FFFFFF' }
-                ],
+                buttons: [],
                 addButton() {
-                    this.buttons.push({ text: 'YENİ BUTON', link: '#', bg: '#000000', color: '#FFFFFF' })
+                    this.buttons.push({ text: 'ALIŞVERİŞE BAŞLA', link: '#', bg: '#059669', color: '#FFFFFF' })
                 },
                 removeButton(index) {
                     this.buttons.splice(index, 1)
                 }
             }">
                 <div class="flex items-center justify-between pl-2">
-                    <label class="text-xs font-black text-slate-400 uppercase tracking-widest">Eylem Butonları</label>
-                    <button type="button" @click="addButton()" class="px-4 py-1.5 bg-emerald-50 text-emerald-600 rounded-full text-[10px] font-black italic uppercase tracking-tighter hover:bg-emerald-100 transition-colors">
-                        <i class="fas fa-plus mr-1"></i> YENİ BUTON EKLE
+                    <div>
+                        <label class="text-xs font-black text-slate-700 uppercase tracking-widest">Eylem Butonları (İsteğe Bağlı)</label>
+                        <p class="text-[11px] text-slate-400 font-medium mt-0.5">Banner üzerinde tıklanabilir buton istemiyorsanız boş bırakabilirsiniz.</p>
+                    </div>
+                    <button type="button" @click="addButton()" class="px-4 py-2 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5 shadow-2xs">
+                        <i class="fas fa-plus text-xs"></i>
+                        <span>Buton Ekle</span>
                     </button>
                 </div>
                 
                 <div class="space-y-4">
+                    <div x-show="buttons.length === 0" class="p-6 bg-slate-50 border border-slate-200/80 rounded-2xl text-center space-y-2">
+                        <i class="fas fa-hand-pointer text-slate-300 text-2xl"></i>
+                        <p class="text-xs font-semibold text-slate-500">Bu banner için henüz buton eklenmedi.</p>
+                        <p class="text-[11px] text-slate-400">Görselinizin kendisi tasarımlıysa buton eklemeden doğrudan kaydedebilirsiniz.</p>
+                    </div>
+
                     <template x-for="(btn, index) in buttons" :key="index">
-                        <div class="bg-slate-50 p-6 rounded-[24px] border border-slate-100 relative group/btn-row">
-                            <button type="button" @click="removeButton(index)" x-show="buttons.length > 1" class="absolute -right-2 -top-2 w-6 h-6 bg-rose-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover/btn-row:opacity-100 transition-opacity shadow-lg">
-                                <i class="fas fa-times text-[10px]"></i>
+                        <div class="bg-slate-50 p-6 rounded-[24px] border border-slate-200/80 relative group/btn-row">
+                            <button type="button" @click="removeButton(index)" class="absolute -right-2 -top-2 w-7 h-7 bg-rose-500 hover:bg-rose-600 text-white rounded-full flex items-center justify-center transition-all shadow-md">
+                                <i class="fas fa-times text-xs"></i>
                             </button>
                             
                             <div class="grid grid-cols-1 gap-5">
                                 <div class="space-y-2">
                                     <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">Buton Metni</label>
-                                    <input type="text" :name="'buttons['+index+'][text]'" x-model="btn.text" placeholder="GÖRÜNEN METİN" class="w-full bg-white border border-slate-200 rounded-2xl px-6 py-4 text-sm font-black italic tracking-tighter outline-none focus:border-brand-500 focus:ring-4 focus:ring-brand-50 transition-all">
+                                    <input type="text" :name="'buttons['+index+'][text]'" x-model="btn.text" placeholder="Örn: ALIŞVERİŞE BAŞLA" class="w-full bg-white border border-slate-200 rounded-2xl px-6 py-4 text-sm font-black italic tracking-tighter outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-50 transition-all">
                                 </div>
                                 <div class="space-y-2">
                                     <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">Yönlendirilecek Link</label>
-                                    <input type="text" :name="'buttons['+index+'][link]'" x-model="btn.link" placeholder="/kategori/..." class="w-full bg-white border border-slate-200 rounded-2xl px-6 py-4 text-sm outline-none focus:border-brand-500 focus:ring-4 focus:ring-brand-50 transition-all font-medium">
+                                    <input type="text" :name="'buttons['+index+'][link]'" x-model="btn.link" placeholder="Örn: https://... veya /kategori/..." class="w-full bg-white border border-slate-200 rounded-2xl px-6 py-4 text-sm outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-50 transition-all font-medium">
                                 </div>
                                 <div class="grid grid-cols-2 gap-4">
                                     <div class="space-y-2">
@@ -102,7 +110,7 @@
             <!-- Styling Section -->
             <div class="bg-slate-50 p-8 rounded-[30px] border border-slate-100 space-y-8">
                 <div class="flex items-center gap-3 border-b border-slate-200 pb-4">
-                    <i class="fas fa-paint-brush text-brand-500"></i>
+                    <i class="fas fa-paint-brush text-emerald-600"></i>
                     <h4 class="text-xs font-black text-slate-900 uppercase italic tracking-tighter">Yazı Tasarımı</h4>
                 </div>
                 
@@ -116,7 +124,7 @@
                     <!-- Title Size -->
                     <div class="space-y-2">
                         <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">Başlık Boyutu (px)</label>
-                        <input type="number" name="title_size" value="60" min="10" max="150" class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-900 focus:ring-4 focus:ring-brand-50 outline-none transition-all">
+                        <input type="number" name="title_size" value="60" min="10" max="150" class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-900 focus:ring-4 focus:ring-emerald-50 outline-none transition-all">
                     </div>
 
                     <!-- Subtitle Color -->
@@ -128,13 +136,13 @@
                     <!-- Subtitle Size -->
                     <div class="space-y-2">
                         <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">Alt Başlık Boyutu (px)</label>
-                        <input type="number" name="subtitle_size" value="12" min="8" max="50" class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-900 focus:ring-4 focus:ring-brand-50 outline-none transition-all">
+                        <input type="number" name="subtitle_size" value="12" min="8" max="50" class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-900 focus:ring-4 focus:ring-emerald-50 outline-none transition-all">
                     </div>
 
                     <!-- Button BG Color -->
                     <div class="space-y-2">
                         <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">Buton Arka Plan Rengi</label>
-                        <input type="color" name="button_color" value="#FB923C" class="w-full h-12 rounded-xl border border-slate-200 p-1 cursor-pointer">
+                        <input type="color" name="button_color" value="#059669" class="w-full h-12 rounded-xl border border-slate-200 p-1 cursor-pointer">
                     </div>
 
                     <!-- Button Text Color -->

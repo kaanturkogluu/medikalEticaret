@@ -51,7 +51,11 @@
                  x-cloak>
                 <img src="{{ asset('storage/' . $banner->image_path) }}" class="w-full h-full object-cover" alt="{{ $banner->title ?? 'Banner' }}">
                 
-                <!-- Elegant Backdrop Overlay -->
+                <!-- Elegant Backdrop Overlay (Only when banner has text or buttons) -->
+                @php
+                    $hasOverlayContent = !empty($banner->title) || !empty($banner->subtitle) || (!empty($banner->buttons) && count($banner->buttons) > 0);
+                @endphp
+                @if($hasOverlayContent)
                 <div class="absolute inset-0 bg-gradient-to-r from-slate-950/85 via-slate-900/40 to-transparent flex items-center px-6 sm:px-12 md:px-16">
                     <div class="max-w-xl space-y-3 sm:space-y-4">
                         @if($banner->subtitle)
@@ -62,10 +66,12 @@
                         </div>
                         @endif
 
+                        @if($banner->title)
                         <h2 class="text-xl sm:text-3xl lg:text-4xl font-extrabold text-white leading-tight tracking-tight drop-shadow-md"
                             style="{{ $banner->title_color ? 'color: ' . $banner->title_color . ';' : '' }}">
                             {!! nl2br(e($banner->title)) !!}
                         </h2>
+                        @endif
 
                         @if($banner->buttons && count($banner->buttons) > 0)
                         <div class="flex flex-wrap gap-3 pt-2">
@@ -80,6 +86,7 @@
                         @endif
                     </div>
                 </div>
+                @endif
             </div>
             @endforeach
 

@@ -35,6 +35,16 @@ class BannerController extends Controller
 
         $path = $request->file('image')->store('banners', 'public');
 
+        $filteredButtons = null;
+        if ($request->has('buttons') && is_array($request->buttons)) {
+            $valid = array_values(array_filter($request->buttons, function($btn) {
+                return !empty($btn['text']) && trim($btn['text']) !== '';
+            }));
+            if (count($valid) > 0) {
+                $filteredButtons = $valid;
+            }
+        }
+
         Banner::create([
             'image_path' => $path,
             'title' => $request->title,
@@ -43,7 +53,7 @@ class BannerController extends Controller
             'subtitle_color' => $request->subtitle_color ?? '#FFFFFF',
             'title_size' => $request->title_size ?? 60,
             'subtitle_size' => $request->subtitle_size ?? 12,
-            'buttons' => $request->buttons,
+            'buttons' => $filteredButtons,
             'order' => Banner::max('order') + 1,
             'is_active' => $request->has('is_active'),
         ]);
@@ -74,13 +84,23 @@ class BannerController extends Controller
             $banner->image_path = $request->file('image')->store('banners', 'public');
         }
 
+        $filteredButtons = null;
+        if ($request->has('buttons') && is_array($request->buttons)) {
+            $valid = array_values(array_filter($request->buttons, function($btn) {
+                return !empty($btn['text']) && trim($btn['text']) !== '';
+            }));
+            if (count($valid) > 0) {
+                $filteredButtons = $valid;
+            }
+        }
+
         $banner->title = $request->title;
         $banner->subtitle = $request->subtitle;
         $banner->title_color = $request->title_color ?? '#FFFFFF';
         $banner->subtitle_color = $request->subtitle_color ?? '#FFFFFF';
         $banner->title_size = $request->title_size ?? 60;
         $banner->subtitle_size = $request->subtitle_size ?? 12;
-        $banner->buttons = $request->buttons;
+        $banner->buttons = $filteredButtons;
         $banner->is_active = $request->has('is_active');
         $banner->save();
 
