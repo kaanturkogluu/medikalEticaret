@@ -1,0 +1,251 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1920 640" width="100%" height="100%">
+  <defs>
+    <!-- Background Gradient: Warm Compassionate Medical Dark Emerald/Navy -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#081826" />
+      <stop offset="40%" stop-color="#063e32" />
+      <stop offset="75%" stop-color="#064e3b" />
+      <stop offset="100%" stop-color="#141e30" />
+    </linearGradient>
+
+    <!-- Glowing Accents -->
+    <linearGradient id="heartGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f43f5e" />
+      <stop offset="100%" stop-color="#e11d48" />
+    </linearGradient>
+
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fbbf24" />
+      <stop offset="100%" stop-color="#d97706" />
+    </linearGradient>
+
+    <linearGradient id="ctaBtn" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#10b981" />
+      <stop offset="100%" stop-color="#047857" />
+    </linearGradient>
+
+    <linearGradient id="cardBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.14" />
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.04" />
+    </linearGradient>
+
+    <!-- Filters -->
+    <filter id="cardShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="16" stdDeviation="20" flood-color="#000000" flood-opacity="0.45" />
+    </filter>
+    <filter id="softGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="70" result="blur" />
+    </filter>
+    <filter id="badgeShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="6" stdDeviation="10" flood-color="#000000" flood-opacity="0.3" />
+    </filter>
+
+    <clipPath id="roundedCorners">
+      <rect x="0" y="0" width="1920" height="640" rx="32" />
+    </clipPath>
+  </defs>
+
+  <g clip-path="url(#roundedCorners)">
+    <!-- Base Background -->
+    <rect width="1920" height="640" fill="url(#bgGrad)" />
+
+    <!-- Ambient Glowing Lights -->
+    <circle cx="180" cy="120" r="320" fill="#f43f5e" opacity="0.18" filter="url(#softGlow)" />
+    <circle cx="1650" cy="300" r="380" fill="#10b981" opacity="0.25" filter="url(#softGlow)" />
+    <circle cx="1000" cy="520" r="280" fill="#38bdf8" opacity="0.12" filter="url(#softGlow)" />
+
+    <!-- Subtle Tech/Medical Grid Lines Pattern -->
+    <g opacity="0.05" stroke="#ffffff" stroke-width="1">
+      <line x1="0" y1="160" x2="1920" y2="160" />
+      <line x1="0" y1="320" x2="1920" y2="320" />
+      <line x1="0" y1="480" x2="1920" y2="480" />
+      <line x1="320" y1="0" x2="320" y2="640" />
+      <line x1="640" y1="0" x2="640" y2="640" />
+      <line x1="960" y1="0" x2="960" y2="640" />
+      <line x1="1280" y1="0" x2="1280" y2="640" />
+      <line x1="1600" y1="0" x2="1600" y2="640" />
+    </g>
+
+    <!-- Floating Heart & Medical Sparkles -->
+    <g opacity="0.15" fill="#ffffff">
+      <rect x="800" y="80" width="26" height="7" rx="3.5" />
+      <rect x="809.5" y="70.5" width="7" height="26" rx="3.5" />
+      <rect x="1830" y="110" width="22" height="6" rx="3" />
+      <rect x="1838" y="102" width="6" height="22" rx="3" />
+      <rect x="100" y="540" width="20" height="6" rx="3" />
+      <rect x="107" y="533" width="6" height="20" rx="3" />
+    </g>
+
+    <!-- ================= LEFT COLUMN: HERO CONTENT ================= -->
+    <g transform="translate(100, 0)">
+
+      <!-- Top Pill: Humanitarian Aid Badge -->
+      <g transform="translate(0, 75)">
+        <rect width="470" height="38" rx="19" fill="#f43f5e" fill-opacity="0.18" stroke="#f43f5e" stroke-opacity="0.45" stroke-width="1.5" />
+        <!-- Heart Icon -->
+        <path d="M22 20 C22 17 25 15 28 17 C31 15 34 17 34 20 C34 24 28 27 28 27 C28 27 22 24 22 20 Z" fill="#fb7185" />
+        <text x="44" y="24" font-family="'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="800" fill="#fecdd3" letter-spacing="1.2">
+          İYİLİK VE DAYANIŞMAYA DESTEK PROGRAMI
+        </text>
+      </g>
+
+      <!-- Main Headline -->
+      <g transform="translate(0, 145)">
+        <text font-family="'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="900" fill="#ffffff" letter-spacing="-1">
+          <tspan x="0" y="44" font-size="44">Bağış ve Yardım Alımlarınızda</tspan>
+          <tspan x="0" y="100" font-size="44" fill="#fbbf24">Özel İndirim </tspan>
+          <tspan y="100" font-size="44" fill="#ffffff">&amp; Destek Fiyatı!</tspan>
+        </text>
+      </g>
+
+      <!-- Subtitle Description -->
+      <g transform="translate(0, 280)">
+        <text font-family="'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="16" font-weight="400" fill="#cbd5e1" line-height="1.6">
+          <tspan x="0" y="0">Hayırseverler, dernekler, vakıflar ve ihtiyaç sahiplerine medikal malzeme ulaştırmak isteyen</tspan>
+          <tspan x="0" y="26">tüm destekçilerimize kâr amacı gözetmeksizin özel bağış indirimli fiyat uyguluyoruz.</tspan>
+        </text>
+      </g>
+
+      <!-- 3 Benefit Pillars -->
+      <g transform="translate(0, 355)">
+        <!-- Box 1 -->
+        <g transform="translate(0, 0)">
+          <rect width="250" height="52" rx="16" fill="#ffffff" fill-opacity="0.08" stroke="#ffffff" stroke-opacity="0.15" />
+          <circle cx="30" cy="26" r="15" fill="#f43f5e" fill-opacity="0.25" />
+          <text x="21" y="32" font-family="'Inter', sans-serif" font-size="15" fill="#fb7185">🤝</text>
+          <text x="56" y="24" font-family="'Inter', sans-serif" font-size="12" font-weight="800" fill="#ffffff">Maliyetine Destek</text>
+          <text x="56" y="39" font-family="'Inter', sans-serif" font-size="10.5" font-weight="500" fill="#94a3b8">Bağışlara Özel İndirimli Fiyat</text>
+        </g>
+
+        <!-- Box 2 -->
+        <g transform="translate(265, 0)">
+          <rect width="250" height="52" rx="16" fill="#ffffff" fill-opacity="0.08" stroke="#ffffff" stroke-opacity="0.15" />
+          <circle cx="30" cy="26" r="15" fill="#38bdf8" fill-opacity="0.25" />
+          <text x="22" y="32" font-family="'Inter', sans-serif" font-size="14" fill="#38bdf8">📍</text>
+          <text x="56" y="24" font-family="'Inter', sans-serif" font-size="12" font-weight="800" fill="#ffffff">Doğrudan Adrese Sevk</text>
+          <text x="56" y="39" font-family="'Inter', sans-serif" font-size="10.5" font-weight="500" fill="#94a3b8">Huzurevi, Dernek &amp; Aileye Teslim</text>
+        </g>
+
+        <!-- Box 3 -->
+        <g transform="translate(530, 0)">
+          <rect width="260" height="52" rx="16" fill="#ffffff" fill-opacity="0.08" stroke="#ffffff" stroke-opacity="0.15" />
+          <circle cx="30" cy="26" r="15" fill="#10b981" fill-opacity="0.25" />
+          <text x="22" y="32" font-family="'Inter', sans-serif" font-size="14" fill="#34d399">📑</text>
+          <text x="56" y="24" font-family="'Inter', sans-serif" font-size="12" font-weight="800" fill="#ffffff">Şeffaf Faturalandırma</text>
+          <text x="56" y="39" font-family="'Inter', sans-serif" font-size="10.5" font-weight="500" fill="#94a3b8">Resmi E-Fatura &amp; Kargo Takibi</text>
+        </g>
+      </g>
+
+      <!-- Bottom Direct Contact CTA Button -->
+      <g transform="translate(0, 445)">
+        <rect width="550" height="64" rx="20" fill="url(#ctaBtn)" filter="url(#badgeShadow)" />
+        
+        <!-- WhatsApp Icon Circle -->
+        <circle cx="36" cy="32" r="18" fill="#ffffff" fill-opacity="0.25" />
+        <path d="M28 32 C28 27.5 31.5 24 36 24 C40.5 24 44 27.5 44 32 C44 33.8 43.4 35.5 42.4 36.8 L43 40 L39.7 39.4 C38.6 40 37.3 40 36 40 C31.5 40 28 36.5 28 32 Z" fill="#ffffff" />
+        
+        <!-- Action Text -->
+        <text x="68" y="29" font-family="'Inter', sans-serif" font-size="15" font-weight="900" fill="#ffffff" letter-spacing="0.2">
+          Bağış İndirimi İçin İletişime Geçin &amp; Teklif Alın
+        </text>
+        <text x="68" y="47" font-family="'Inter', sans-serif" font-size="12" font-weight="700" fill="#d1fae5">
+          📞 0546 941 69 96 • umutMed İyilik &amp; Bağış Destek Hattı
+        </text>
+      </g>
+
+      <!-- Subtle note under CTA -->
+      <g transform="translate(0, 530)">
+        <text font-family="'Inter', sans-serif" font-size="12" font-weight="600" fill="#6ee7b7" letter-spacing="0.3">
+          ✦ Hasta bezi, havalı yatak, tekerlekli sandalye ve tüm medikal yardım alımlarında geçerlidir.
+        </text>
+      </g>
+
+    </g>
+
+    <!-- ================= RIGHT COLUMN: DONATION SHOWCASE CARD ================= -->
+    <g transform="translate(1220, 65)">
+
+      <!-- Main Showcase Container Card -->
+      <g filter="url(#cardShadow)">
+        <rect width="600" height="510" rx="30" fill="url(#cardBg)" stroke="#f43f5e" stroke-width="2" stroke-opacity="0.4" />
+        <rect width="600" height="510" rx="30" fill="#000000" fill-opacity="0.2" />
+      </g>
+
+      <!-- Inner Content Area -->
+      <g transform="translate(30, 30)">
+        
+        <!-- Top Featured Badge -->
+        <g transform="translate(0, 0)">
+          <rect width="540" height="70" rx="20" fill="#f43f5e" fill-opacity="0.18" stroke="#f43f5e" stroke-opacity="0.4" />
+          <circle cx="38" cy="35" r="20" fill="url(#heartGrad)" />
+          <path d="M30 35 C30 31.5 33.5 29 38 31.5 C42.5 29 46 31.5 46 35 C46 40 38 43.5 38 43.5 C38 43.5 30 40 30 35 Z" fill="#ffffff" />
+          
+          <text x="72" y="30" font-family="'Inter', sans-serif" font-size="14" font-weight="900" fill="#ffffff">
+            Bağış Alımlarına Özel Destek İndirimi
+          </text>
+          <text x="72" y="48" font-family="'Inter', sans-serif" font-size="11.5" font-weight="600" fill="#fed7aa">
+            İhtiyaç sahiplerine ulaştırılacak ürünlerde en uygun toptan fiyatlandırma
+          </text>
+        </g>
+
+        <!-- 4 Supported Categories Grid -->
+        <g transform="translate(0, 90)">
+          
+          <!-- Item 1: Hasta Bezleri -->
+          <g transform="translate(0, 0)">
+            <rect width="260" height="100" rx="18" fill="#ffffff" fill-opacity="0.08" stroke="#ffffff" stroke-opacity="0.12" />
+            <text x="20" y="36" font-family="'Inter', sans-serif" font-size="22">🩲</text>
+            <text x="56" y="32" font-family="'Inter', sans-serif" font-size="13" font-weight="800" fill="#ffffff">Hasta Bezleri &amp; Külot</text>
+            <text x="56" y="50" font-family="'Inter', sans-serif" font-size="11" font-weight="500" fill="#cbd5e1">Koli &amp; Palet Bazlı Sevk</text>
+            <text x="56" y="74" font-family="'Inter', sans-serif" font-size="10.5" font-weight="800" fill="#34d399">✓ Özel Bağış Fiyatı</text>
+          </g>
+
+          <!-- Item 2: Tekerlekli Sandalye -->
+          <g transform="translate(280, 0)">
+            <rect width="260" height="100" rx="18" fill="#ffffff" fill-opacity="0.08" stroke="#ffffff" stroke-opacity="0.12" />
+            <text x="20" y="36" font-family="'Inter', sans-serif" font-size="22">♿</text>
+            <text x="56" y="32" font-family="'Inter', sans-serif" font-size="13" font-weight="800" fill="#ffffff">Tekerlekli Sandalye</text>
+            <text x="56" y="50" font-family="'Inter', sans-serif" font-size="11" font-weight="500" fill="#cbd5e1">Manuel &amp; Akülü Modeller</text>
+            <text x="56" y="74" font-family="'Inter', sans-serif" font-size="10.5" font-weight="800" fill="#34d399">✓ Doğrudan İhtiyaç Sahibine</text>
+          </g>
+
+          <!-- Item 3: Havalı Yatak & Karyola -->
+          <g transform="translate(0, 115)">
+            <rect width="260" height="100" rx="18" fill="#ffffff" fill-opacity="0.08" stroke="#ffffff" stroke-opacity="0.12" />
+            <text x="20" y="36" font-family="'Inter', sans-serif" font-size="22">🛏️</text>
+            <text x="56" y="32" font-family="'Inter', sans-serif" font-size="13" font-weight="800" fill="#ffffff">Havalı Yatak &amp; Bakım</text>
+            <text x="56" y="50" font-family="'Inter', sans-serif" font-size="11" font-weight="500" fill="#cbd5e1">Bası Yarası Önleyici Sistemler</text>
+            <text x="56" y="74" font-family="'Inter', sans-serif" font-size="10.5" font-weight="800" fill="#34d399">✓ Kurulum Desteğiyle</text>
+          </g>
+
+          <!-- Item 4: Medikal Sarf Malzemeleri -->
+          <g transform="translate(280, 115)">
+            <rect width="260" height="100" rx="18" fill="#ffffff" fill-opacity="0.08" stroke="#ffffff" stroke-opacity="0.12" />
+            <text x="20" y="36" font-family="'Inter', sans-serif" font-size="22">🩹</text>
+            <text x="56" y="32" font-family="'Inter', sans-serif" font-size="13" font-weight="800" fill="#ffffff">Medikal Sarf &amp; Hijyen</text>
+            <text x="56" y="50" font-family="'Inter', sans-serif" font-size="11" font-weight="500" fill="#cbd5e1">Eldiven, Alt Açma, Dezenfektan</text>
+            <text x="56" y="74" font-family="'Inter', sans-serif" font-size="10.5" font-weight="800" fill="#34d399">✓ Toptan Koli Desteği</text>
+          </g>
+
+        </g>
+
+        <!-- Bottom Assistance Callout -->
+        <g transform="translate(0, 325)">
+          <rect width="540" height="105" rx="20" fill="#064e3b" fill-opacity="0.6" stroke="#10b981" stroke-opacity="0.3" />
+          <text x="270" y="32" font-family="'Inter', sans-serif" font-size="13" font-weight="900" fill="#a7f3d0" text-anchor="middle">
+            Hangi Ürünlere İhtiyaç Var? Danışmanlık Desteği
+          </text>
+          <text x="270" y="54" font-family="'Inter', sans-serif" font-size="11.5" font-weight="500" fill="#e2e8f0" text-anchor="middle">
+            Bağış yapacağınız kurum veya ailenin ihtiyaç durumuna göre en doğru medikal ürünleri
+          </text>
+          <text x="270" y="72" font-family="'Inter', sans-serif" font-size="11.5" font-weight="700" fill="#fbbf24" text-anchor="middle">
+            uzman ekibimizle birlikte belirleyebilir ve özel fiyat teklifi alabilirsiniz.
+          </text>
+        </g>
+
+      </g>
+
+    </g>
+
+  </g>
+</svg>
