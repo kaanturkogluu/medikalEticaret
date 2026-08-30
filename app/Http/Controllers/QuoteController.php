@@ -106,6 +106,18 @@ class QuoteController extends Controller
             }
         }
 
+        // Admin notification SMS (Netgsm)
+        $adminPhone = Setting::getValue('contact_phone', Setting::getValue('contact_whatsapp', '05469416996'));
+        if ($adminPhone) {
+            $totalFormatted = number_format($quote->estimated_total, 2, ',', '.') . ' TL';
+            $smsMessage = "Sayın Yetkili, {$quote->customer_name} isimli müşteri, {$totalFormatted} tutarındaki ürün sepeti için sizden teklif bekliyor. (Takip No: {$quote->quote_no})";
+            try {
+                \App\Jobs\SendOrderSmsJob::dispatch($adminPhone, $smsMessage, 'Teklif Talebi', $quote->customer_name);
+            } catch (\Throwable $e) {
+                Log::error('Quote admin SMS queue error: ' . $e->getMessage());
+            }
+        }
+
         if ($request->wantsJson() || $request->ajax()) {
             return response()->json([
                 'success' => true,
