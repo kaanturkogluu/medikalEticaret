@@ -29,10 +29,10 @@ class DashboardController extends Controller
             $chartData[] = Order::whereDate('created_at', $date->toDateString())->count();
         }
 
-        // Son 10 Website Siparişi (channel_id null olanlar websayfası sayılıyor)
+        // Son 10 Website Siparişi
         $recentOrders = Order::with('channel')
-            ->whereNull('channel_id')
-            ->latest()
+            ->forWebsite()
+            ->latest('id')
             ->take(10)
             ->get();
 

@@ -50,6 +50,20 @@ class Order extends Model
     }
 
     /**
+     * Scope a query to only include website orders (channel_id null, channel slug website, or channel_id 5).
+     */
+    public function scopeForWebsite($query)
+    {
+        return $query->where(function ($q) {
+            $q->whereNull('channel_id')
+              ->orWhereHas('channel', function ($sub) {
+                  $sub->where('slug', 'website');
+              })
+              ->orWhere('channel_id', 5);
+        });
+    }
+
+    /**
      * Get the translated status label.
      */
     public function getStatusLabelAttribute(): string

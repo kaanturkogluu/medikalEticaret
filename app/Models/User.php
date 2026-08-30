@@ -38,6 +38,21 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->role === 'user';
     }
 
+    public function orders(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Order::class);
+    }
+
+    public function addresses(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Address::class);
+    }
+
+    public function quotes(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(QuoteRequest::class);
+    }
+
     /**
      * The attributes that should be hidden for serialization.
      *

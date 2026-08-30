@@ -44,13 +44,17 @@
     <div class="flex items-center gap-2 border-b border-slate-200">
         <button @click="setTab('uyeler')" 
                 :class="activeTab === 'uyeler' ? 'border-brand-600 text-brand-600' : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'" 
-                class="px-6 py-3 border-b-2 font-semibold text-sm transition-colors outline-none">
-            <i class="fas fa-users mr-2"></i> Üyeler
+                class="px-6 py-3 border-b-2 font-semibold text-sm transition-colors outline-none flex items-center gap-2">
+            <i class="fas fa-users"></i>
+            <span>Üyeler</span>
+            <span class="px-2 py-0.5 rounded-full text-xs font-bold" :class="activeTab === 'uyeler' ? 'bg-brand-100 text-brand-700' : 'bg-slate-100 text-slate-600'">{{ $users->total() }}</span>
         </button>
         <button @click="setTab('siparisler')" 
                 :class="activeTab === 'siparisler' ? 'border-brand-600 text-brand-600' : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'" 
-                class="px-6 py-3 border-b-2 font-semibold text-sm transition-colors outline-none">
-            <i class="fas fa-shopping-bag mr-2"></i> Sipariş Verenler
+                class="px-6 py-3 border-b-2 font-semibold text-sm transition-colors outline-none flex items-center gap-2">
+            <i class="fas fa-shopping-bag"></i>
+            <span>Sipariş Verenler</span>
+            <span class="px-2 py-0.5 rounded-full text-xs font-bold" :class="activeTab === 'siparisler' ? 'bg-brand-100 text-brand-700' : 'bg-slate-100 text-slate-600'">{{ $customers->total() }}</span>
         </button>
     </div>
 
@@ -62,6 +66,7 @@
                     <tr>
                         <th class="px-6 py-4 font-semibold">Kullanıcı</th>
                         <th class="px-6 py-4 font-semibold">İletişim</th>
+                        <th class="px-6 py-4 font-semibold text-center">Siparişler</th>
                         <th class="px-6 py-4 font-semibold text-center">Med Puan</th>
                         <th class="px-6 py-4 font-semibold text-right">Kayıt Tarihi</th>
                     </tr>
@@ -97,6 +102,11 @@
                                 @else
                                     <div class="text-[10px] font-bold text-amber-600 mt-1"><i class="fas fa-clock"></i> Onay Bekliyor</div>
                                 @endif
+                            </td>
+                            <td class="px-6 py-4 text-center">
+                                <span class="inline-flex items-center justify-center px-2.5 py-1 rounded-full text-xs font-bold {{ $user->orders_count > 0 ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-slate-100 text-slate-500' }}">
+                                    {{ $user->orders_count ?? 0 }} Sipariş
+                                </span>
                             </td>
                             <td class="px-6 py-4 text-center">
                                 <span class="font-bold text-brand-600">{{ $user->med_puan ?? 0 }} Puan</span>

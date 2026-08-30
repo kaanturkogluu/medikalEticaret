@@ -90,8 +90,9 @@
                 <thead>
                     <tr class="text-[10px] font-bold text-slate-400 uppercase tracking-widest border-b border-slate-50">
                         <th class="pb-3 px-2">Sipariş No</th>
-                        <th class="pb-3 px-2">Pazaryeri / Kaynak</th>
+                        <th class="pb-3 px-2">Tarih</th>
                         <th class="pb-3 px-2">Müşteri</th>
+                        <th class="pb-3 px-2 text-center">Durum</th>
                         <th class="pb-3 px-2 text-right">Tutar</th>
                     </tr>
                 </thead>
@@ -100,17 +101,23 @@
                         <tr onclick="window.location='{{ route('admin.orders.show', $ro->id) }}'" class="group hover:bg-slate-50 transition-colors cursor-pointer">
                             <td class="py-4 px-2">
                                 <span class="text-xs font-bold text-slate-800">#{{ $ro->external_order_id ?? $ro->id }}</span>
+                                <span class="block text-[10px] text-slate-400 font-semibold">{{ $ro->channel->name ?? 'Web Sitesi' }}</span>
                             </td>
-                            <td class="py-4 px-2">
-                                <span class="px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 text-[9px] font-bold uppercase">{{ $ro->channel->name ?? 'Web Sitesi' }}</span>
+                            <td class="py-4 px-2 text-xs text-slate-500 font-medium">
+                                {{ $ro->created_at ? $ro->created_at->format('d.m.Y H:i') : '-' }}
                             </td>
-                            <td class="py-4 px-2 text-xs text-slate-600 font-medium">{{ $ro->customer_name }}</td>
-                            <td class="py-4 px-2 text-xs font-black text-slate-900 text-right tabular-nums">{{ number_format($ro->total_price, 2) }} ₺</td>
+                            <td class="py-4 px-2 text-xs text-slate-700 font-bold">{{ $ro->customer_name }}</td>
+                            <td class="py-4 px-2 text-center">
+                                <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-slate-100 text-slate-700">
+                                    {{ $ro->status_label ?? $ro->order_status }}
+                                </span>
+                            </td>
+                            <td class="py-4 px-2 text-xs font-black text-slate-900 text-right tabular-nums">{{ number_format($ro->total_price, 2, ',', '.') }} ₺</td>
                         </tr>
                     @endforeach
                     @if($recentOrders->isEmpty())
                         <tr>
-                            <td colspan="4" class="py-8 text-center text-xs text-slate-400 italic">Henüz sipariş bulunmuyor.</td>
+                            <td colspan="5" class="py-8 text-center text-xs text-slate-400 italic">Henüz sipariş bulunmuyor.</td>
                         </tr>
                     @endif
                 </tbody>
